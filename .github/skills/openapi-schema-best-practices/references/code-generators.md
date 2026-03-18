@@ -40,7 +40,7 @@ Detailed reference for how the build scripts consume OpenAPI schemas and produce
 ## Go Generator
 
 **Script**: `build/generate-golang.js`
-**Dependency**: `oapi-codegen` v2.5.1
+**Dependency**: `oapi-codegen` v2.x (see go.mod/tools for exact version)
 **Prerequisite**: none beyond the source schemas themselves; `make build` still runs bundling as part of the full pipeline
 
 ### What it does
