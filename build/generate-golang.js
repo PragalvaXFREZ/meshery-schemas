@@ -53,6 +53,112 @@ function addYamlTags(filePath) {
   fs.writeFileSync(filePath, content, "utf-8");
 }
 
+function collectSchemaExtraTags(inputPath) {
+  const document = loadYamlFile(inputPath) || {};
+  const componentSchemas = document.components?.schemas || {};
+  const extraTagsByStruct = new Map();
+
+  for (const [schemaName, schemaDefinition] of Object.entries(componentSchemas)) {
+    if (!schemaDefinition || typeof schemaDefinition !== "object") {
+      continue;
+    }
+
+    if (schemaDefinition.type !== "object" || !schemaDefinition.properties) {
+      continue;
+    }
+
+    const propertyTags = new Map();
+
+    for (const [propertyName, propertyDefinition] of Object.entries(
+      schemaDefinition.properties,
+    )) {
+      if (!propertyDefinition || typeof propertyDefinition !== "object") {
+        continue;
+      }
+
+      const extraTags = propertyDefinition["x-oapi-codegen-extra-tags"];
+      if (!extraTags || typeof extraTags !== "object") {
+        continue;
+      }
+
+      propertyTags.set(propertyName, { ...extraTags });
+    }
+
+    if (propertyTags.size > 0) {
+      extraTagsByStruct.set(schemaName, propertyTags);
+    }
+  }
+
+  return extraTagsByStruct;
+}
+
+function addSchemaExtraTags(filePath, inputPath) {
+  const extraTagsByStruct = collectSchemaExtraTags(inputPath);
+  if (extraTagsByStruct.size === 0) {
+    return;
+  }
+
+  const lines = fs.readFileSync(filePath, "utf-8").split("\n");
+  let currentStructName = null;
+  let structDepth = 0;
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+    const structMatch = line.match(/^type\s+(\w+)\s+struct\s*\{$/);
+    if (structMatch) {
+      currentStructName = structMatch[1];
+      structDepth = 1;
+      continue;
+    }
+
+    if (!currentStructName) {
+      continue;
+    }
+
+    if (structDepth === 1) {
+      const fieldMatch = line.match(/^\s*\w+[^`]*`([^`]*)`/);
+      if (fieldMatch) {
+        const rawTags = fieldMatch[1];
+        const jsonMatch = rawTags.match(/json:"([^",]+)(?:,[^"]*)?"/);
+        if (jsonMatch) {
+          const propertyName = jsonMatch[1];
+          const propertyTags = extraTagsByStruct
+            .get(currentStructName)
+            ?.get(propertyName);
+
+          if (propertyTags) {
+            let updatedTags = rawTags;
+
+            for (const [tagName, tagValue] of Object.entries(propertyTags)) {
+              if (updatedTags.includes(`${tagName}:"`)) {
+                continue;
+              }
+
+              const sanitizedValue = String(tagValue).replace(/"/g, '\\"');
+              updatedTags = `${tagName}:"${sanitizedValue}" ${updatedTags}`;
+            }
+
+            if (updatedTags !== rawTags) {
+              lines[index] = line.replace(`\`${rawTags}\``, `\`${updatedTags}\``);
+            }
+          }
+        }
+      }
+    }
+
+    const opens = (line.match(/struct\s*\{/g) || []).length;
+    const closes = (line.match(/}/g) || []).length;
+    structDepth += opens - closes;
+
+    if (structDepth <= 0) {
+      currentStructName = null;
+      structDepth = 0;
+    }
+  }
+
+  fs.writeFileSync(filePath, lines.join("\n"), "utf-8");
+}
+
 function toPosixPath(filePath) {
   return filePath.split(path.sep).join("/");
 }
@@ -446,8 +552,10 @@ async function generateGoModels(pkg) {
       { stdio: "inherit" },
     );
 
-    // Add YAML struct tags
+    // Add YAML struct tags and restore any schema-declared extra tags that
+    // oapi-codegen omits for referenced object fields.
     addYamlTags(outputPath);
+    addSchemaExtraTags(outputPath, inputPath);
 
     logger.success(`Generated: ${paths.relativePath(outputPath)}`);
   } catch (err) {
