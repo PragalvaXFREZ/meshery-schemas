@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-const KeychainSchema: Record<string, unknown> = {
+const KeychainSchema = {
   "openapi": "3.0.0",
   "info": {
     "title": "Keychain",
@@ -107,7 +107,6 @@ const KeychainSchema: Record<string, unknown> = {
                     "keychains": {
                       "type": "array",
                       "items": {
-                        "x-go-type": "Keychain",
                         "type": "object",
                         "description": "Represents a collection of keys.",
                         "required": [
@@ -1207,7 +1206,6 @@ const KeychainSchema: Record<string, unknown> = {
                     "keys": {
                       "type": "array",
                       "items": {
-                        "x-go-type": "Key",
                         "type": "object",
                         "description": "Represents an authorization key used for access control.",
                         "required": [
@@ -1596,7 +1594,6 @@ const KeychainSchema: Record<string, unknown> = {
           "keychains": {
             "type": "array",
             "items": {
-              "x-go-type": "Keychain",
               "type": "object",
               "description": "Represents a collection of keys.",
               "required": [
@@ -1686,6 +1683,6 @@ const KeychainSchema: Record<string, unknown> = {
       }
     }
   }
-};
+} satisfies Record<string, unknown>;
 
 export default KeychainSchema;

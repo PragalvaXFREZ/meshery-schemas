@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-const CoreSchema: Record<string, unknown> = {
+const CoreSchema = {
   "openapi": "3.0.0",
   "info": {
     "title": "Core Schema Elements",
@@ -47,7 +47,7 @@ const CoreSchema: Record<string, unknown> = {
         "minLength": 5,
         "maxLength": 100,
         "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-        "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
+        "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
       },
       "uuid": {
         "type": "string",
@@ -1914,6 +1914,6 @@ const CoreSchema: Record<string, unknown> = {
       }
     }
   }
-};
+} satisfies Record<string, unknown>;
 
 export default CoreSchema;

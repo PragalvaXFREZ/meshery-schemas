@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-const CredentialSchema: Record<string, unknown> = {
+const CredentialSchema = {
   "openapi": "3.0.0",
   "info": {
     "title": "credential",
@@ -1354,6 +1354,6 @@ const CredentialSchema: Record<string, unknown> = {
       }
     }
   }
-};
+} satisfies Record<string, unknown>;
 
 export default CredentialSchema;

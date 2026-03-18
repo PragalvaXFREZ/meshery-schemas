@@ -21,7 +21,7 @@ export interface components {
      * ]
      */
     versionString: string;
-    /** @description A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+    /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
     semverString: string;
     /**
      * Format: uuid

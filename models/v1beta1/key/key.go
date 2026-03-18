@@ -42,34 +42,7 @@ type KeyPage struct {
 	Page       corev1alpha1.Number `json:"page" yaml:"page"`
 	PageSize   corev1alpha1.Number `json:"page_size" yaml:"page_size"`
 	TotalCount corev1alpha1.Number `json:"total_count" yaml:"total_count"`
-	Keys       []struct {
-		// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-		Id corev1alpha1.Uuid `json:"id" yaml:"id"`
-
-		// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-		Owner corev1alpha1.Uuid `json:"owner" yaml:"owner"`
-
-		// Function Operation permitted by the key.
-		Function string `db:"function" json:"function" yaml:"function"`
-
-		// Category Category for the key.
-		Category string `db:"category" json:"category" yaml:"category"`
-
-		// Subcategory Subcategory for the key.
-		Subcategory string `db:"subcategory" json:"subcategory" yaml:"subcategory"`
-
-		// Description Human readable description of the key.
-		Description string `db:"description" json:"description" yaml:"description"`
-
-		// CreatedAt Timestamp when the resource was created.
-		CreatedAt corev1alpha1.CreatedAt `db:"created_at" json:"created_at" yaml:"created_at"`
-
-		// UpdatedAt Timestamp when the resource was updated.
-		UpdatedAt corev1alpha1.UpdatedAt `db:"updated_at" json:"updated_at" yaml:"updated_at"`
-
-		// DeletedAt SQL null Timestamp to handle null values of time.
-		DeletedAt corev1alpha1.NullTime `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
-	} `json:"keys" yaml:"keys"`
+	Keys       []Key               `json:"keys" yaml:"keys"`
 }
 
 // KeyPayload Payload for creating or updating a key.

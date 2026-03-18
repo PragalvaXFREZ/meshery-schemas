@@ -278,6 +278,5 @@ components:
         keychains:
           type: array
           items:
-            $ref: "./keychain.yaml"
-            x-go-type: Keychain
+            $ref: "#/components/schemas/Keychain"
           x-order: 4

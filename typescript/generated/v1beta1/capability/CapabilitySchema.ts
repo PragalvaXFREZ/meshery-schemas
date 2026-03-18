@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-const CapabilitySchema: Record<string, unknown> = {
+const CapabilitySchema = {
   "openapi": "3.0.0",
   "info": {
     "title": "capability",
@@ -1589,6 +1589,6 @@ const CapabilitySchema: Record<string, unknown> = {
       }
     }
   }
-};
+} satisfies Record<string, unknown>;
 
 export default CapabilitySchema;

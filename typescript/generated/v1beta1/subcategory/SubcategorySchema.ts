@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-const SubcategorySchema: Record<string, unknown> = {
+const SubcategorySchema = {
   "openapi": "3.0.0",
   "info": {
     "title": "SubCategory API",
@@ -86,6 +86,6 @@ const SubcategorySchema: Record<string, unknown> = {
       }
     }
   }
-};
+} satisfies Record<string, unknown>;
 
 export default SubcategorySchema;

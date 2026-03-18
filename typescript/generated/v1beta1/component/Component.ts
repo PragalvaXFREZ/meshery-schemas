@@ -130,7 +130,7 @@ export interface components {
           created_at?: string;
           /** Format: date-time */
           updated_at?: string;
-          /** Format: date-time */
+          /** @description SQL null Timestamp to handle null values of time. */
           deleted_at?: string;
           /** @description Associated environments for this connection */
           environments?: {
@@ -171,7 +171,7 @@ export interface components {
             metadata?: { [key: string]: unknown };
             /** Format: date-time */
             updated_at?: string;
-            /** Format: date-time */
+            /** @description SQL null Timestamp to handle null values of time. */
             deleted_at?: string;
           }[];
           /**
@@ -417,7 +417,7 @@ export interface components {
         id: string;
         /** @description The unique name for the model within the scope of a registrant. */
         name: string;
-        /** @description A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+        /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
         version: string;
         /** @description Human-readable name for the model. */
         displayName: string;

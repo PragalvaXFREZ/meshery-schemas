@@ -45,7 +45,7 @@ type Capability struct {
 	// Type A string starting with an alphanumeric character. Spaces and hyphens allowed.
 	Type corev1alpha1.InputString `json:"type" yaml:"type"`
 
-	// Version A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.
+	// Version A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'.
 	Version corev1alpha1.SemverString `json:"version" yaml:"version"`
 }
 

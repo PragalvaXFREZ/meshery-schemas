@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-const EnvironmentSchema: Record<string, unknown> = {
+const EnvironmentSchema = {
   "openapi": "3.0.0",
   "info": {
     "title": "Environment",
@@ -278,11 +278,10 @@ const EnvironmentSchema: Record<string, unknown> = {
               "db": "deleted_at",
               "yaml": "deleted_at"
             },
-            "x-go-type": "core.NullTime",
-            "x-go-import": "database/sql",
             "x-order": 10,
+            "description": "SQL null Timestamp to handle null values of time.",
+            "x-go-type": "sql.NullTime",
             "type": "string",
-            "format": "date-time",
             "x-go-type-skip-optional-pointer": true
           }
         }
@@ -525,11 +524,10 @@ const EnvironmentSchema: Record<string, unknown> = {
                     "db": "deleted_at",
                     "yaml": "deleted_at"
                   },
-                  "x-go-type": "core.NullTime",
-                  "x-go-import": "database/sql",
                   "x-order": 10,
+                  "description": "SQL null Timestamp to handle null values of time.",
+                  "x-go-type": "sql.NullTime",
                   "type": "string",
-                  "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
                 }
               }
@@ -758,11 +756,10 @@ const EnvironmentSchema: Record<string, unknown> = {
                         "db": "deleted_at",
                         "yaml": "deleted_at"
                       },
-                      "x-go-type": "core.NullTime",
-                      "x-go-import": "database/sql",
                       "x-order": 10,
+                      "description": "SQL null Timestamp to handle null values of time.",
+                      "x-go-type": "sql.NullTime",
                       "type": "string",
-                      "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     }
                   }
@@ -998,11 +995,10 @@ const EnvironmentSchema: Record<string, unknown> = {
                               "db": "deleted_at",
                               "yaml": "deleted_at"
                             },
-                            "x-go-type": "core.NullTime",
-                            "x-go-import": "database/sql",
                             "x-order": 10,
+                            "description": "SQL null Timestamp to handle null values of time.",
+                            "x-go-type": "sql.NullTime",
                             "type": "string",
-                            "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           }
                         }
@@ -1037,6 +1033,6 @@ const EnvironmentSchema: Record<string, unknown> = {
       }
     }
   }
-};
+} satisfies Record<string, unknown>;
 
 export default EnvironmentSchema;

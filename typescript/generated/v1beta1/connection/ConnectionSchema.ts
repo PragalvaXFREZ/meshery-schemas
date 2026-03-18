@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-const ConnectionSchema: Record<string, unknown> = {
+const ConnectionSchema = {
   "openapi": "3.0.0",
   "info": {
     "title": "Connection API",
@@ -311,13 +311,10 @@ const ConnectionSchema: Record<string, unknown> = {
                               "db": "deleted_at",
                               "yaml": "deleted_at"
                             },
-                            "x-go-type": "core.NullTime",
-                            "x-go-type-import": {
-                              "path": "github.com/meshery/schemas/models/core"
-                            },
                             "x-order": 12,
+                            "description": "SQL null Timestamp to handle null values of time.",
+                            "x-go-type": "sql.NullTime",
                             "type": "string",
-                            "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           },
                           "environments": {
@@ -460,11 +457,10 @@ const ConnectionSchema: Record<string, unknown> = {
                                     "db": "deleted_at",
                                     "yaml": "deleted_at"
                                   },
-                                  "x-go-type": "core.NullTime",
-                                  "x-go-import": "database/sql",
                                   "x-order": 10,
+                                  "description": "SQL null Timestamp to handle null values of time.",
+                                  "x-go-type": "sql.NullTime",
                                   "type": "string",
-                                  "format": "date-time",
                                   "x-go-type-skip-optional-pointer": true
                                 }
                               }
@@ -817,13 +813,10 @@ const ConnectionSchema: Record<string, unknown> = {
                         "db": "deleted_at",
                         "yaml": "deleted_at"
                       },
-                      "x-go-type": "core.NullTime",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core"
-                      },
                       "x-order": 12,
+                      "description": "SQL null Timestamp to handle null values of time.",
+                      "x-go-type": "sql.NullTime",
                       "type": "string",
-                      "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     },
                     "environments": {
@@ -966,11 +959,10 @@ const ConnectionSchema: Record<string, unknown> = {
                               "db": "deleted_at",
                               "yaml": "deleted_at"
                             },
-                            "x-go-type": "core.NullTime",
-                            "x-go-import": "database/sql",
                             "x-order": 10,
+                            "description": "SQL null Timestamp to handle null values of time.",
+                            "x-go-type": "sql.NullTime",
                             "type": "string",
-                            "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           }
                         }
@@ -1199,13 +1191,10 @@ const ConnectionSchema: Record<string, unknown> = {
                         "db": "deleted_at",
                         "yaml": "deleted_at"
                       },
-                      "x-go-type": "core.NullTime",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core"
-                      },
                       "x-order": 12,
+                      "description": "SQL null Timestamp to handle null values of time.",
+                      "x-go-type": "sql.NullTime",
                       "type": "string",
-                      "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     },
                     "environments": {
@@ -1348,11 +1337,10 @@ const ConnectionSchema: Record<string, unknown> = {
                               "db": "deleted_at",
                               "yaml": "deleted_at"
                             },
-                            "x-go-type": "core.NullTime",
-                            "x-go-import": "database/sql",
                             "x-order": 10,
+                            "description": "SQL null Timestamp to handle null values of time.",
+                            "x-go-type": "sql.NullTime",
                             "type": "string",
-                            "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           }
                         }
@@ -1676,13 +1664,10 @@ const ConnectionSchema: Record<string, unknown> = {
                         "db": "deleted_at",
                         "yaml": "deleted_at"
                       },
-                      "x-go-type": "core.NullTime",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/core"
-                      },
                       "x-order": 12,
+                      "description": "SQL null Timestamp to handle null values of time.",
+                      "x-go-type": "sql.NullTime",
                       "type": "string",
-                      "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     },
                     "environments": {
@@ -1825,11 +1810,10 @@ const ConnectionSchema: Record<string, unknown> = {
                               "db": "deleted_at",
                               "yaml": "deleted_at"
                             },
-                            "x-go-type": "core.NullTime",
-                            "x-go-import": "database/sql",
                             "x-order": 10,
+                            "description": "SQL null Timestamp to handle null values of time.",
+                            "x-go-type": "sql.NullTime",
                             "type": "string",
-                            "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           }
                         }
@@ -2293,13 +2277,10 @@ const ConnectionSchema: Record<string, unknown> = {
               "db": "deleted_at",
               "yaml": "deleted_at"
             },
-            "x-go-type": "core.NullTime",
-            "x-go-type-import": {
-              "path": "github.com/meshery/schemas/models/core"
-            },
             "x-order": 12,
+            "description": "SQL null Timestamp to handle null values of time.",
+            "x-go-type": "sql.NullTime",
             "type": "string",
-            "format": "date-time",
             "x-go-type-skip-optional-pointer": true
           },
           "environments": {
@@ -2442,11 +2423,10 @@ const ConnectionSchema: Record<string, unknown> = {
                     "db": "deleted_at",
                     "yaml": "deleted_at"
                   },
-                  "x-go-type": "core.NullTime",
-                  "x-go-import": "database/sql",
                   "x-order": 10,
+                  "description": "SQL null Timestamp to handle null values of time.",
+                  "x-go-type": "sql.NullTime",
                   "type": "string",
-                  "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
                 }
               }
@@ -2655,13 +2635,10 @@ const ConnectionSchema: Record<string, unknown> = {
                     "db": "deleted_at",
                     "yaml": "deleted_at"
                   },
-                  "x-go-type": "core.NullTime",
-                  "x-go-type-import": {
-                    "path": "github.com/meshery/schemas/models/core"
-                  },
                   "x-order": 12,
+                  "description": "SQL null Timestamp to handle null values of time.",
+                  "x-go-type": "sql.NullTime",
                   "type": "string",
-                  "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
                 },
                 "environments": {
@@ -2804,11 +2781,10 @@ const ConnectionSchema: Record<string, unknown> = {
                           "db": "deleted_at",
                           "yaml": "deleted_at"
                         },
-                        "x-go-type": "core.NullTime",
-                        "x-go-import": "database/sql",
                         "x-order": 10,
+                        "description": "SQL null Timestamp to handle null values of time.",
+                        "x-go-type": "sql.NullTime",
                         "type": "string",
-                        "format": "date-time",
                         "x-go-type-skip-optional-pointer": true
                       }
                     }
@@ -3308,6 +3284,6 @@ const ConnectionSchema: Record<string, unknown> = {
       }
     }
   }
-};
+} satisfies Record<string, unknown>;
 
 export default ConnectionSchema;

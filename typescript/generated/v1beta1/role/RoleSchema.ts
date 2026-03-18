@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-const RoleSchema: Record<string, unknown> = {
+const RoleSchema = {
   "openapi": "3.0.0",
   "info": {
     "title": "role",
@@ -1605,6 +1605,6 @@ const RoleSchema: Record<string, unknown> = {
       }
     }
   }
-};
+} satisfies Record<string, unknown>;
 
 export default RoleSchema;

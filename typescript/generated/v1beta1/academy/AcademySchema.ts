@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-const AcademySchema: Record<string, unknown> = {
+const AcademySchema = {
   "openapi": "3.0.0",
   "info": {
     "title": "Academy API",
@@ -14170,6 +14170,6 @@ const AcademySchema: Record<string, unknown> = {
       }
     }
   }
-};
+} satisfies Record<string, unknown>;
 
 export default AcademySchema;

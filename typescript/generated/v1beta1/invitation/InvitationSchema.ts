@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-const InvitationSchema: Record<string, unknown> = {
+const InvitationSchema = {
   "openapi": "3.0.0",
   "info": {
     "title": "Invitation",
@@ -1853,6 +1853,6 @@ const InvitationSchema: Record<string, unknown> = {
       }
     }
   }
-};
+} satisfies Record<string, unknown>;
 
 export default InvitationSchema;

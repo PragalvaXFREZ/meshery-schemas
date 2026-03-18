@@ -53,7 +53,7 @@ export interface components {
       metadata?: { [key: string]: unknown };
       /** Format: date-time */
       updated_at?: string;
-      /** Format: date-time */
+      /** @description SQL null Timestamp to handle null values of time. */
       deleted_at?: string;
     };
     environmentConnectionMapping: {
@@ -122,7 +122,7 @@ export interface components {
         metadata?: { [key: string]: unknown };
         /** Format: date-time */
         updated_at?: string;
-        /** Format: date-time */
+        /** @description SQL null Timestamp to handle null values of time. */
         deleted_at?: string;
       }[];
     };
@@ -249,7 +249,7 @@ export interface operations {
               metadata?: { [key: string]: unknown };
               /** Format: date-time */
               updated_at?: string;
-              /** Format: date-time */
+              /** @description SQL null Timestamp to handle null values of time. */
               deleted_at?: string;
             }[];
           };
@@ -313,7 +313,7 @@ export interface operations {
             metadata?: { [key: string]: unknown };
             /** Format: date-time */
             updated_at?: string;
-            /** Format: date-time */
+            /** @description SQL null Timestamp to handle null values of time. */
             deleted_at?: string;
           };
         };

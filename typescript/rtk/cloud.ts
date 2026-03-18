@@ -2387,6 +2387,7 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
     user_id?: string;
     created_at?: string;
     updated_at?: string;
+    /** SQL null Timestamp to handle null values of time. */
     deleted_at?: string;
     /** Associated environments for this connection */
     environments?: {
@@ -2405,6 +2406,7 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
       created_at?: string;
       metadata?: object;
       updated_at?: string;
+      /** SQL null Timestamp to handle null values of time. */
       deleted_at?: string;
     }[];
     /** Specifies the version of the schema used for the definition. */
@@ -2479,6 +2481,7 @@ export type RegisterConnectionApiResponse = /** status 201 Connection registered
   user_id?: string;
   created_at?: string;
   updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
   deleted_at?: string;
   /** Associated environments for this connection */
   environments?: {
@@ -2497,6 +2500,7 @@ export type RegisterConnectionApiResponse = /** status 201 Connection registered
     created_at?: string;
     metadata?: object;
     updated_at?: string;
+    /** SQL null Timestamp to handle null values of time. */
     deleted_at?: string;
   }[];
   /** Specifies the version of the schema used for the definition. */
@@ -2553,6 +2557,7 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
   user_id?: string;
   created_at?: string;
   updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
   deleted_at?: string;
   /** Associated environments for this connection */
   environments?: {
@@ -2571,6 +2576,7 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
     created_at?: string;
     metadata?: object;
     updated_at?: string;
+    /** SQL null Timestamp to handle null values of time. */
     deleted_at?: string;
   }[];
   /** Specifies the version of the schema used for the definition. */
@@ -2609,6 +2615,7 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated succ
   user_id?: string;
   created_at?: string;
   updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
   deleted_at?: string;
   /** Associated environments for this connection */
   environments?: {
@@ -2627,6 +2634,7 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated succ
     created_at?: string;
     metadata?: object;
     updated_at?: string;
+    /** SQL null Timestamp to handle null values of time. */
     deleted_at?: string;
   }[];
   /** Specifies the version of the schema used for the definition. */
@@ -2951,6 +2959,7 @@ export type GetPatternsApiResponse = /** status 200 Designs fetched successfully
             user_id?: string;
             created_at?: string;
             updated_at?: string;
+            /** SQL null Timestamp to handle null values of time. */
             deleted_at?: string;
             /** Associated environments for this connection */
             environments?: {
@@ -2969,6 +2978,7 @@ export type GetPatternsApiResponse = /** status 200 Designs fetched successfully
               created_at?: string;
               metadata?: object;
               updated_at?: string;
+              /** SQL null Timestamp to handle null values of time. */
               deleted_at?: string;
             }[];
             /** Specifies the version of the schema used for the definition. */
@@ -3141,7 +3151,7 @@ export type GetPatternsApiResponse = /** status 200 Designs fetched successfully
           id: string;
           /** The unique name for the model within the scope of a registrant. */
           name: string;
-          /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+          /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
           version: string;
           /** Human-readable name for the model. */
           displayName: string;
@@ -3393,7 +3403,7 @@ export type GetPatternsApiResponse = /** status 200 Designs fetched successfully
         id: string;
         /** Specifies the version of the schema used for the relationship definition. */
         schemaVersion: string;
-        /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+        /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
         version: string;
         /** Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships. */
         kind: "hierarchical" | "edge" | "sibling";
@@ -3531,7 +3541,7 @@ export type GetPatternsApiResponse = /** status 200 Designs fetched successfully
           id: string;
           /** The unique name for the model within the scope of a registrant. */
           name: string;
-          /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+          /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
           version: string;
           /** Human-readable name for the model. */
           displayName: string;
@@ -3585,7 +3595,7 @@ export type GetPatternsApiResponse = /** status 200 Designs fetched successfully
                 id: string;
                 /** The unique name for the model within the scope of a registrant. */
                 name: string;
-                /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+                /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
                 version: string;
                 /** Human-readable name for the model. */
                 displayName: string;
@@ -3650,7 +3660,7 @@ export type GetPatternsApiResponse = /** status 200 Designs fetched successfully
                 id: string;
                 /** The unique name for the model within the scope of a registrant. */
                 name: string;
-                /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+                /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
                 version: string;
                 /** Human-readable name for the model. */
                 displayName: string;
@@ -3718,7 +3728,7 @@ export type GetPatternsApiResponse = /** status 200 Designs fetched successfully
                 id: string;
                 /** The unique name for the model within the scope of a registrant. */
                 name: string;
-                /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+                /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
                 version: string;
                 /** Human-readable name for the model. */
                 displayName: string;
@@ -3783,7 +3793,7 @@ export type GetPatternsApiResponse = /** status 200 Designs fetched successfully
                 id: string;
                 /** The unique name for the model within the scope of a registrant. */
                 name: string;
-                /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+                /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
                 version: string;
                 /** Human-readable name for the model. */
                 displayName: string;
@@ -3962,6 +3972,7 @@ export type UpsertPatternApiResponse = /** status 200 Design saved successfully 
           user_id?: string;
           created_at?: string;
           updated_at?: string;
+          /** SQL null Timestamp to handle null values of time. */
           deleted_at?: string;
           /** Associated environments for this connection */
           environments?: {
@@ -3980,6 +3991,7 @@ export type UpsertPatternApiResponse = /** status 200 Design saved successfully 
             created_at?: string;
             metadata?: object;
             updated_at?: string;
+            /** SQL null Timestamp to handle null values of time. */
             deleted_at?: string;
           }[];
           /** Specifies the version of the schema used for the definition. */
@@ -4152,7 +4164,7 @@ export type UpsertPatternApiResponse = /** status 200 Design saved successfully 
         id: string;
         /** The unique name for the model within the scope of a registrant. */
         name: string;
-        /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+        /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
         version: string;
         /** Human-readable name for the model. */
         displayName: string;
@@ -4404,7 +4416,7 @@ export type UpsertPatternApiResponse = /** status 200 Design saved successfully 
       id: string;
       /** Specifies the version of the schema used for the relationship definition. */
       schemaVersion: string;
-      /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+      /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
       version: string;
       /** Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships. */
       kind: "hierarchical" | "edge" | "sibling";
@@ -4542,7 +4554,7 @@ export type UpsertPatternApiResponse = /** status 200 Design saved successfully 
         id: string;
         /** The unique name for the model within the scope of a registrant. */
         name: string;
-        /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+        /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
         version: string;
         /** Human-readable name for the model. */
         displayName: string;
@@ -4596,7 +4608,7 @@ export type UpsertPatternApiResponse = /** status 200 Design saved successfully 
               id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
-              /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+              /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
               version: string;
               /** Human-readable name for the model. */
               displayName: string;
@@ -4661,7 +4673,7 @@ export type UpsertPatternApiResponse = /** status 200 Design saved successfully 
               id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
-              /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+              /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
               version: string;
               /** Human-readable name for the model. */
               displayName: string;
@@ -4729,7 +4741,7 @@ export type UpsertPatternApiResponse = /** status 200 Design saved successfully 
               id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
-              /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+              /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
               version: string;
               /** Human-readable name for the model. */
               displayName: string;
@@ -4794,7 +4806,7 @@ export type UpsertPatternApiResponse = /** status 200 Design saved successfully 
               id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
-              /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+              /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
               version: string;
               /** Human-readable name for the model. */
               displayName: string;
@@ -4961,6 +4973,7 @@ export type UpsertPatternApiArg = {
               user_id?: string;
               created_at?: string;
               updated_at?: string;
+              /** SQL null Timestamp to handle null values of time. */
               deleted_at?: string;
               /** Associated environments for this connection */
               environments?: {
@@ -4979,6 +4992,7 @@ export type UpsertPatternApiArg = {
                 created_at?: string;
                 metadata?: object;
                 updated_at?: string;
+                /** SQL null Timestamp to handle null values of time. */
                 deleted_at?: string;
               }[];
               /** Specifies the version of the schema used for the definition. */
@@ -5151,7 +5165,7 @@ export type UpsertPatternApiArg = {
             id: string;
             /** The unique name for the model within the scope of a registrant. */
             name: string;
-            /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+            /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
             version: string;
             /** Human-readable name for the model. */
             displayName: string;
@@ -5403,7 +5417,7 @@ export type UpsertPatternApiArg = {
           id: string;
           /** Specifies the version of the schema used for the relationship definition. */
           schemaVersion: string;
-          /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+          /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
           version: string;
           /** Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships. */
           kind: "hierarchical" | "edge" | "sibling";
@@ -5541,7 +5555,7 @@ export type UpsertPatternApiArg = {
             id: string;
             /** The unique name for the model within the scope of a registrant. */
             name: string;
-            /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+            /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
             version: string;
             /** Human-readable name for the model. */
             displayName: string;
@@ -5595,7 +5609,7 @@ export type UpsertPatternApiArg = {
                   id: string;
                   /** The unique name for the model within the scope of a registrant. */
                   name: string;
-                  /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+                  /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
                   version: string;
                   /** Human-readable name for the model. */
                   displayName: string;
@@ -5660,7 +5674,7 @@ export type UpsertPatternApiArg = {
                   id: string;
                   /** The unique name for the model within the scope of a registrant. */
                   name: string;
-                  /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+                  /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
                   version: string;
                   /** Human-readable name for the model. */
                   displayName: string;
@@ -5728,7 +5742,7 @@ export type UpsertPatternApiArg = {
                   id: string;
                   /** The unique name for the model within the scope of a registrant. */
                   name: string;
-                  /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+                  /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
                   version: string;
                   /** Human-readable name for the model. */
                   displayName: string;
@@ -5793,7 +5807,7 @@ export type UpsertPatternApiArg = {
                   id: string;
                   /** The unique name for the model within the scope of a registrant. */
                   name: string;
-                  /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+                  /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
                   version: string;
                   /** Human-readable name for the model. */
                   displayName: string;
@@ -5995,6 +6009,7 @@ export type GetPatternApiResponse = /** status 200 Design fetched successfully *
           user_id?: string;
           created_at?: string;
           updated_at?: string;
+          /** SQL null Timestamp to handle null values of time. */
           deleted_at?: string;
           /** Associated environments for this connection */
           environments?: {
@@ -6013,6 +6028,7 @@ export type GetPatternApiResponse = /** status 200 Design fetched successfully *
             created_at?: string;
             metadata?: object;
             updated_at?: string;
+            /** SQL null Timestamp to handle null values of time. */
             deleted_at?: string;
           }[];
           /** Specifies the version of the schema used for the definition. */
@@ -6185,7 +6201,7 @@ export type GetPatternApiResponse = /** status 200 Design fetched successfully *
         id: string;
         /** The unique name for the model within the scope of a registrant. */
         name: string;
-        /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+        /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
         version: string;
         /** Human-readable name for the model. */
         displayName: string;
@@ -6437,7 +6453,7 @@ export type GetPatternApiResponse = /** status 200 Design fetched successfully *
       id: string;
       /** Specifies the version of the schema used for the relationship definition. */
       schemaVersion: string;
-      /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+      /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
       version: string;
       /** Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships. */
       kind: "hierarchical" | "edge" | "sibling";
@@ -6575,7 +6591,7 @@ export type GetPatternApiResponse = /** status 200 Design fetched successfully *
         id: string;
         /** The unique name for the model within the scope of a registrant. */
         name: string;
-        /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+        /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
         version: string;
         /** Human-readable name for the model. */
         displayName: string;
@@ -6629,7 +6645,7 @@ export type GetPatternApiResponse = /** status 200 Design fetched successfully *
               id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
-              /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+              /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
               version: string;
               /** Human-readable name for the model. */
               displayName: string;
@@ -6694,7 +6710,7 @@ export type GetPatternApiResponse = /** status 200 Design fetched successfully *
               id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
-              /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+              /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
               version: string;
               /** Human-readable name for the model. */
               displayName: string;
@@ -6762,7 +6778,7 @@ export type GetPatternApiResponse = /** status 200 Design fetched successfully *
               id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
-              /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+              /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
               version: string;
               /** Human-readable name for the model. */
               displayName: string;
@@ -6827,7 +6843,7 @@ export type GetPatternApiResponse = /** status 200 Design fetched successfully *
               id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
-              /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+              /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
               version: string;
               /** Human-readable name for the model. */
               displayName: string;
@@ -7000,6 +7016,7 @@ export type ClonePatternApiResponse = /** status 200 Design cloned successfully 
           user_id?: string;
           created_at?: string;
           updated_at?: string;
+          /** SQL null Timestamp to handle null values of time. */
           deleted_at?: string;
           /** Associated environments for this connection */
           environments?: {
@@ -7018,6 +7035,7 @@ export type ClonePatternApiResponse = /** status 200 Design cloned successfully 
             created_at?: string;
             metadata?: object;
             updated_at?: string;
+            /** SQL null Timestamp to handle null values of time. */
             deleted_at?: string;
           }[];
           /** Specifies the version of the schema used for the definition. */
@@ -7190,7 +7208,7 @@ export type ClonePatternApiResponse = /** status 200 Design cloned successfully 
         id: string;
         /** The unique name for the model within the scope of a registrant. */
         name: string;
-        /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+        /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
         version: string;
         /** Human-readable name for the model. */
         displayName: string;
@@ -7442,7 +7460,7 @@ export type ClonePatternApiResponse = /** status 200 Design cloned successfully 
       id: string;
       /** Specifies the version of the schema used for the relationship definition. */
       schemaVersion: string;
-      /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+      /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
       version: string;
       /** Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships. */
       kind: "hierarchical" | "edge" | "sibling";
@@ -7580,7 +7598,7 @@ export type ClonePatternApiResponse = /** status 200 Design cloned successfully 
         id: string;
         /** The unique name for the model within the scope of a registrant. */
         name: string;
-        /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+        /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
         version: string;
         /** Human-readable name for the model. */
         displayName: string;
@@ -7634,7 +7652,7 @@ export type ClonePatternApiResponse = /** status 200 Design cloned successfully 
               id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
-              /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+              /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
               version: string;
               /** Human-readable name for the model. */
               displayName: string;
@@ -7699,7 +7717,7 @@ export type ClonePatternApiResponse = /** status 200 Design cloned successfully 
               id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
-              /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+              /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
               version: string;
               /** Human-readable name for the model. */
               displayName: string;
@@ -7767,7 +7785,7 @@ export type ClonePatternApiResponse = /** status 200 Design cloned successfully 
               id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
-              /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+              /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
               version: string;
               /** Human-readable name for the model. */
               displayName: string;
@@ -7832,7 +7850,7 @@ export type ClonePatternApiResponse = /** status 200 Design cloned successfully 
               id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
-              /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+              /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
               version: string;
               /** Human-readable name for the model. */
               displayName: string;
@@ -7927,6 +7945,7 @@ export type CreateEnvironmentApiResponse = /** status 201 Created environment */
   created_at?: string;
   metadata?: object;
   updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
   deleted_at?: string;
 };
 export type CreateEnvironmentApiArg = {
@@ -7960,6 +7979,7 @@ export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
     created_at?: string;
     metadata?: object;
     updated_at?: string;
+    /** SQL null Timestamp to handle null values of time. */
     deleted_at?: string;
   }[];
 };
@@ -9172,6 +9192,7 @@ export type GetTeamsApiResponse = /** status 200 Teams */ {
     metadata?: object;
     created_at?: string;
     updated_at?: string;
+    /** SQL null Timestamp to handle null values of time. */
     deleted_at?: string;
   }[];
 };
@@ -9200,6 +9221,7 @@ export type CreateTeamApiResponse = /** status 201 Created team */ {
   metadata?: object;
   created_at?: string;
   updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
   deleted_at?: string;
 };
 export type CreateTeamApiArg = {
@@ -9226,6 +9248,7 @@ export type GetTeamByIdApiResponse = /** status 200 Team */ {
   metadata?: object;
   created_at?: string;
   updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
   deleted_at?: string;
 };
 export type GetTeamByIdApiArg = {
@@ -9247,6 +9270,7 @@ export type UpdateTeamApiResponse = /** status 200 Updated team */ {
   metadata?: object;
   created_at?: string;
   updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
   deleted_at?: string;
 };
 export type UpdateTeamApiArg = {
@@ -9278,7 +9302,9 @@ export type GetTeamUsersApiResponse = /** status 200 Team users mapping */ {
     team_id?: string;
     /** user's email or username */
     user_id?: string;
+    /** Timestamp when the resource was created. */
     created_at?: string;
+    /** Timestamp when the resource was updated. */
     updated_at?: string;
     /** SQL null Timestamp to handle null values of time. */
     deleted_at?: string;
@@ -9303,7 +9329,9 @@ export type AddUserToTeamApiResponse = /** status 200 User added to team */ {
   team_id?: string;
   /** user's email or username */
   user_id?: string;
+  /** Timestamp when the resource was created. */
   created_at?: string;
+  /** Timestamp when the resource was updated. */
   updated_at?: string;
   /** SQL null Timestamp to handle null values of time. */
   deleted_at?: string;
@@ -9321,7 +9349,9 @@ export type RemoveUserFromTeamApiResponse = /** status 200 User removed from tea
   team_id?: string;
   /** user's email or username */
   user_id?: string;
+  /** Timestamp when the resource was created. */
   created_at?: string;
+  /** Timestamp when the resource was updated. */
   updated_at?: string;
   /** SQL null Timestamp to handle null values of time. */
   deleted_at?: string;

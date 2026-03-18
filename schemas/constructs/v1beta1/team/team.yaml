@@ -58,10 +58,8 @@ properties:
       yaml: updated_at
     x-order: 7
   deleted_at:
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/nullTime
     x-oapi-codegen-extra-tags:
       db: deleted_at
       yaml: deleted_at
-    x-go-type: core.NullTime
-    x-go-import: database/sql
     x-order: 8

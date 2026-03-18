@@ -54,7 +54,7 @@ export interface components {
       created_at?: string;
       /** Format: date-time */
       updated_at?: string;
-      /** Format: date-time */
+      /** @description SQL null Timestamp to handle null values of time. */
       deleted_at?: string;
     };
     /** @description Payload for creating a new team */
@@ -97,7 +97,7 @@ export interface components {
         created_at?: string;
         /** Format: date-time */
         updated_at?: string;
-        /** Format: date-time */
+        /** @description SQL null Timestamp to handle null values of time. */
         deleted_at?: string;
       }[];
     };
@@ -109,9 +109,15 @@ export interface components {
       team_id?: string;
       /** @description user's email or username */
       user_id?: string;
-      /** Format: date-time */
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was created.
+       */
       created_at?: string;
-      /** Format: date-time */
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was updated.
+       */
       updated_at?: string;
       /** @description SQL null Timestamp to handle null values of time. */
       deleted_at?: string;
@@ -128,9 +134,15 @@ export interface components {
         team_id?: string;
         /** @description user's email or username */
         user_id?: string;
-        /** Format: date-time */
+        /**
+         * Format: date-time
+         * @description Timestamp when the resource was created.
+         */
         created_at?: string;
-        /** Format: date-time */
+        /**
+         * Format: date-time
+         * @description Timestamp when the resource was updated.
+         */
         updated_at?: string;
         /** @description SQL null Timestamp to handle null values of time. */
         deleted_at?: string;
@@ -257,7 +269,7 @@ export interface operations {
               created_at?: string;
               /** Format: date-time */
               updated_at?: string;
-              /** Format: date-time */
+              /** @description SQL null Timestamp to handle null values of time. */
               deleted_at?: string;
             }[];
           };
@@ -310,7 +322,7 @@ export interface operations {
             created_at?: string;
             /** Format: date-time */
             updated_at?: string;
-            /** Format: date-time */
+            /** @description SQL null Timestamp to handle null values of time. */
             deleted_at?: string;
           };
         };
@@ -375,7 +387,7 @@ export interface operations {
             created_at?: string;
             /** Format: date-time */
             updated_at?: string;
-            /** Format: date-time */
+            /** @description SQL null Timestamp to handle null values of time. */
             deleted_at?: string;
           };
         };
@@ -441,7 +453,7 @@ export interface operations {
             created_at?: string;
             /** Format: date-time */
             updated_at?: string;
-            /** Format: date-time */
+            /** @description SQL null Timestamp to handle null values of time. */
             deleted_at?: string;
           };
         };
@@ -557,9 +569,15 @@ export interface operations {
               team_id?: string;
               /** @description user's email or username */
               user_id?: string;
-              /** Format: date-time */
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was created.
+               */
               created_at?: string;
-              /** Format: date-time */
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was updated.
+               */
               updated_at?: string;
               /** @description SQL null Timestamp to handle null values of time. */
               deleted_at?: string;
@@ -616,9 +634,15 @@ export interface operations {
             team_id?: string;
             /** @description user's email or username */
             user_id?: string;
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description Timestamp when the resource was created.
+             */
             created_at?: string;
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description Timestamp when the resource was updated.
+             */
             updated_at?: string;
             /** @description SQL null Timestamp to handle null values of time. */
             deleted_at?: string;
@@ -668,9 +692,15 @@ export interface operations {
             team_id?: string;
             /** @description user's email or username */
             user_id?: string;
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description Timestamp when the resource was created.
+             */
             created_at?: string;
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description Timestamp when the resource was updated.
+             */
             updated_at?: string;
             /** @description SQL null Timestamp to handle null values of time. */
             deleted_at?: string;

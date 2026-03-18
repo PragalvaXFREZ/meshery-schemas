@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-const TeamSchema: Record<string, unknown> = {
+const TeamSchema = {
   "openapi": "3.0.0",
   "info": {
     "title": "Team",
@@ -174,7 +174,7 @@ const TeamSchema: Record<string, unknown> = {
     "securitySchemes": {
       "jwt": {
         "type": "http",
-        "scheme": "Bearer",
+        "scheme": "bearer",
         "bearerFormat": "JWT"
       }
     },
@@ -273,11 +273,10 @@ const TeamSchema: Record<string, unknown> = {
               "db": "deleted_at",
               "yaml": "deleted_at"
             },
-            "x-go-type": "core.NullTime",
-            "x-go-import": "database/sql",
             "x-order": 8,
+            "description": "SQL null Timestamp to handle null values of time.",
+            "x-go-type": "sql.NullTime",
             "type": "string",
-            "format": "date-time",
             "x-go-type-skip-optional-pointer": true
           }
         }
@@ -431,11 +430,10 @@ const TeamSchema: Record<string, unknown> = {
                     "db": "deleted_at",
                     "yaml": "deleted_at"
                   },
-                  "x-go-type": "core.NullTime",
-                  "x-go-import": "database/sql",
                   "x-order": 8,
+                  "description": "SQL null Timestamp to handle null values of time.",
+                  "x-go-type": "sql.NullTime",
                   "type": "string",
-                  "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
                 }
               }
@@ -478,39 +476,39 @@ const TeamSchema: Record<string, unknown> = {
           },
           "user_id": {
             "x-oapi-codegen-extra-tags": {
-              "db": "user_id",
-              "json": "user_id",
-              "yaml": "user_id"
+              "db": "user_id"
             },
             "type": "string",
             "description": "user's email or username",
             "x-go-type-skip-optional-pointer": true
           },
           "created_at": {
-            "x-oapi-codegen-extra-tags": {
-              "db": "created_at",
-              "json": "created_at",
-              "yaml": "created_at"
-            },
+            "description": "Timestamp when the resource was created.",
+            "x-go-type": "time.Time",
             "type": "string",
             "format": "date-time",
+            "x-go-name": "CreatedAt",
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at",
+              "yaml": "created_at"
+            },
             "x-go-type-skip-optional-pointer": true
           },
           "updated_at": {
-            "x-oapi-codegen-extra-tags": {
-              "db": "updated_at",
-              "json": "updated_at",
-              "yaml": "updated_at"
-            },
+            "description": "Timestamp when the resource was updated.",
+            "x-go-type": "time.Time",
             "type": "string",
             "format": "date-time",
+            "x-go-name": "UpdatedAt",
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at",
+              "yaml": "updated_at"
+            },
             "x-go-type-skip-optional-pointer": true
           },
           "deleted_at": {
             "x-oapi-codegen-extra-tags": {
-              "db": "deleted_at",
-              "json": "deleted_at",
-              "yaml": "deleted_at"
+              "db": "deleted_at"
             },
             "description": "SQL null Timestamp to handle null values of time.",
             "x-go-type": "sql.NullTime",
@@ -574,39 +572,39 @@ const TeamSchema: Record<string, unknown> = {
                 },
                 "user_id": {
                   "x-oapi-codegen-extra-tags": {
-                    "db": "user_id",
-                    "json": "user_id",
-                    "yaml": "user_id"
+                    "db": "user_id"
                   },
                   "type": "string",
                   "description": "user's email or username",
                   "x-go-type-skip-optional-pointer": true
                 },
                 "created_at": {
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "created_at",
-                    "json": "created_at",
-                    "yaml": "created_at"
-                  },
+                  "description": "Timestamp when the resource was created.",
+                  "x-go-type": "time.Time",
                   "type": "string",
                   "format": "date-time",
+                  "x-go-name": "CreatedAt",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "created_at",
+                    "yaml": "created_at"
+                  },
                   "x-go-type-skip-optional-pointer": true
                 },
                 "updated_at": {
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "updated_at",
-                    "json": "updated_at",
-                    "yaml": "updated_at"
-                  },
+                  "description": "Timestamp when the resource was updated.",
+                  "x-go-type": "time.Time",
                   "type": "string",
                   "format": "date-time",
+                  "x-go-name": "UpdatedAt",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "updated_at",
+                    "yaml": "updated_at"
+                  },
                   "x-go-type-skip-optional-pointer": true
                 },
                 "deleted_at": {
                   "x-oapi-codegen-extra-tags": {
-                    "db": "deleted_at",
-                    "json": "deleted_at",
-                    "yaml": "deleted_at"
+                    "db": "deleted_at"
                   },
                   "description": "SQL null Timestamp to handle null values of time.",
                   "x-go-type": "sql.NullTime",
@@ -855,11 +853,10 @@ const TeamSchema: Record<string, unknown> = {
                               "db": "deleted_at",
                               "yaml": "deleted_at"
                             },
-                            "x-go-type": "core.NullTime",
-                            "x-go-import": "database/sql",
                             "x-order": 8,
+                            "description": "SQL null Timestamp to handle null values of time.",
+                            "x-go-type": "sql.NullTime",
                             "type": "string",
-                            "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           }
                         }
@@ -1047,11 +1044,10 @@ const TeamSchema: Record<string, unknown> = {
                         "db": "deleted_at",
                         "yaml": "deleted_at"
                       },
-                      "x-go-type": "core.NullTime",
-                      "x-go-import": "database/sql",
                       "x-order": 8,
+                      "description": "SQL null Timestamp to handle null values of time.",
+                      "x-go-type": "sql.NullTime",
                       "type": "string",
-                      "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     }
                   }
@@ -1231,11 +1227,10 @@ const TeamSchema: Record<string, unknown> = {
                         "db": "deleted_at",
                         "yaml": "deleted_at"
                       },
-                      "x-go-type": "core.NullTime",
-                      "x-go-import": "database/sql",
                       "x-order": 8,
+                      "description": "SQL null Timestamp to handle null values of time.",
+                      "x-go-type": "sql.NullTime",
                       "type": "string",
-                      "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     }
                   }
@@ -1457,11 +1452,10 @@ const TeamSchema: Record<string, unknown> = {
                         "db": "deleted_at",
                         "yaml": "deleted_at"
                       },
-                      "x-go-type": "core.NullTime",
-                      "x-go-import": "database/sql",
                       "x-order": 8,
+                      "description": "SQL null Timestamp to handle null values of time.",
+                      "x-go-type": "sql.NullTime",
                       "type": "string",
-                      "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     }
                   }
@@ -1749,39 +1743,39 @@ const TeamSchema: Record<string, unknown> = {
                           },
                           "user_id": {
                             "x-oapi-codegen-extra-tags": {
-                              "db": "user_id",
-                              "json": "user_id",
-                              "yaml": "user_id"
+                              "db": "user_id"
                             },
                             "type": "string",
                             "description": "user's email or username",
                             "x-go-type-skip-optional-pointer": true
                           },
                           "created_at": {
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "created_at",
-                              "json": "created_at",
-                              "yaml": "created_at"
-                            },
+                            "description": "Timestamp when the resource was created.",
+                            "x-go-type": "time.Time",
                             "type": "string",
                             "format": "date-time",
+                            "x-go-name": "CreatedAt",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "yaml": "created_at"
+                            },
                             "x-go-type-skip-optional-pointer": true
                           },
                           "updated_at": {
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "updated_at",
-                              "json": "updated_at",
-                              "yaml": "updated_at"
-                            },
+                            "description": "Timestamp when the resource was updated.",
+                            "x-go-type": "time.Time",
                             "type": "string",
                             "format": "date-time",
+                            "x-go-name": "UpdatedAt",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "yaml": "updated_at"
+                            },
                             "x-go-type-skip-optional-pointer": true
                           },
                           "deleted_at": {
                             "x-oapi-codegen-extra-tags": {
-                              "db": "deleted_at",
-                              "json": "deleted_at",
-                              "yaml": "deleted_at"
+                              "db": "deleted_at"
                             },
                             "description": "SQL null Timestamp to handle null values of time.",
                             "x-go-type": "sql.NullTime",
@@ -1940,39 +1934,39 @@ const TeamSchema: Record<string, unknown> = {
                     },
                     "user_id": {
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id",
-                        "json": "user_id",
-                        "yaml": "user_id"
+                        "db": "user_id"
                       },
                       "type": "string",
                       "description": "user's email or username",
                       "x-go-type-skip-optional-pointer": true
                     },
                     "created_at": {
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "created_at",
-                        "json": "created_at",
-                        "yaml": "created_at"
-                      },
+                      "description": "Timestamp when the resource was created.",
+                      "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
+                      "x-go-name": "CreatedAt",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "yaml": "created_at"
+                      },
                       "x-go-type-skip-optional-pointer": true
                     },
                     "updated_at": {
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "updated_at",
-                        "json": "updated_at",
-                        "yaml": "updated_at"
-                      },
+                      "description": "Timestamp when the resource was updated.",
+                      "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
+                      "x-go-name": "UpdatedAt",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "yaml": "updated_at"
+                      },
                       "x-go-type-skip-optional-pointer": true
                     },
                     "deleted_at": {
                       "x-oapi-codegen-extra-tags": {
-                        "db": "deleted_at",
-                        "json": "deleted_at",
-                        "yaml": "deleted_at"
+                        "db": "deleted_at"
                       },
                       "description": "SQL null Timestamp to handle null values of time.",
                       "x-go-type": "sql.NullTime",
@@ -2116,39 +2110,39 @@ const TeamSchema: Record<string, unknown> = {
                     },
                     "user_id": {
                       "x-oapi-codegen-extra-tags": {
-                        "db": "user_id",
-                        "json": "user_id",
-                        "yaml": "user_id"
+                        "db": "user_id"
                       },
                       "type": "string",
                       "description": "user's email or username",
                       "x-go-type-skip-optional-pointer": true
                     },
                     "created_at": {
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "created_at",
-                        "json": "created_at",
-                        "yaml": "created_at"
-                      },
+                      "description": "Timestamp when the resource was created.",
+                      "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
+                      "x-go-name": "CreatedAt",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "yaml": "created_at"
+                      },
                       "x-go-type-skip-optional-pointer": true
                     },
                     "updated_at": {
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "updated_at",
-                        "json": "updated_at",
-                        "yaml": "updated_at"
-                      },
+                      "description": "Timestamp when the resource was updated.",
+                      "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
+                      "x-go-name": "UpdatedAt",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "yaml": "updated_at"
+                      },
                       "x-go-type-skip-optional-pointer": true
                     },
                     "deleted_at": {
                       "x-oapi-codegen-extra-tags": {
-                        "db": "deleted_at",
-                        "json": "deleted_at",
-                        "yaml": "deleted_at"
+                        "db": "deleted_at"
                       },
                       "description": "SQL null Timestamp to handle null values of time.",
                       "x-go-type": "sql.NullTime",
@@ -2204,6 +2198,6 @@ const TeamSchema: Record<string, unknown> = {
       }
     }
   }
-};
+} satisfies Record<string, unknown>;
 
 export default TeamSchema;

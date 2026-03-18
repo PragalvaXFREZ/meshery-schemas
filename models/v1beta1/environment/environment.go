@@ -31,7 +31,9 @@ type Environment struct {
 	CreatedAt corev1alpha1.Time  `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	Metadata  core.Map           `db:"metadata" json:"metadata,omitempty" yaml:"metadata,omitempty"`
 	UpdatedAt corev1alpha1.Time  `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
-	DeletedAt corev1alpha1.Time  `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+
+	// DeletedAt SQL null Timestamp to handle null values of time.
+	DeletedAt corev1alpha1.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 }
 
 // EnvironmentConnectionMapping defines model for environmentConnectionMapping.

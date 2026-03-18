@@ -192,7 +192,7 @@ type RelationshipDefinition struct {
 	// RelationshipType Classification of relationships. Used to group relationships similar in nature.
 	RelationshipType string `gorm:"column:type" json:"type" yaml:"type"`
 
-	// Version A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.
+	// Version A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'.
 	Version corev1alpha1.SemverString `json:"version" yaml:"version"`
 }
 

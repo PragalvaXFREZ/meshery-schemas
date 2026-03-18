@@ -76,7 +76,9 @@ type Connection struct {
 	UserID    *corev1alpha1.Uuid `db:"user_id" json:"user_id,omitempty" yaml:"user_id,omitempty"`
 	CreatedAt corev1alpha1.Time  `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	UpdatedAt corev1alpha1.Time  `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
-	DeletedAt corev1alpha1.Time  `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+
+	// DeletedAt SQL null Timestamp to handle null values of time.
+	DeletedAt corev1alpha1.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 
 	// Environments Associated environments for this connection
 	Environments []environmentv1beta1.Environment `db:"-" gorm:"-" json:"environments,omitempty" yaml:"environments,omitempty"`
@@ -120,7 +122,9 @@ type ConnectionPage struct {
 		UserId    *corev1alpha1.Uuid `json:"user_id,omitempty" yaml:"user_id,omitempty"`
 		CreatedAt corev1alpha1.Time  `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 		UpdatedAt corev1alpha1.Time  `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
-		DeletedAt corev1alpha1.Time  `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+
+		// DeletedAt SQL null Timestamp to handle null values of time.
+		DeletedAt corev1alpha1.NullTime `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 
 		// Environments Associated environments for this connection
 		Environments []environmentv1beta1.Environment `db:"-" gorm:"-" json:"environments,omitempty" yaml:"environments,omitempty"`

@@ -26,7 +26,9 @@ type Team struct {
 	Metadata  core.Map          `db:"metadata" json:"metadata,omitempty" yaml:"metadata,omitempty"`
 	CreatedAt corev1alpha1.Time `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	UpdatedAt corev1alpha1.Time `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
-	DeletedAt corev1alpha1.Time `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+
+	// DeletedAt SQL null Timestamp to handle null values of time.
+	DeletedAt corev1alpha1.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 }
 
 // TeamPage Paginated list of teams
@@ -51,13 +53,16 @@ type TeamUpdatePayload struct {
 
 // TeamsUsersMapping Mapping between teams and users
 type TeamsUsersMapping struct {
-	CreatedAt corev1alpha1.Time `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	// CreatedAt Timestamp when the resource was created.
+	CreatedAt corev1alpha1.CreatedAt `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
 	DeletedAt corev1alpha1.NullTime  `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 	Id        corev1alpha1.GeneralId `db:"id" json:"id" yaml:"id"`
 	TeamId    corev1alpha1.TeamId    `db:"team_id" json:"team_id" yaml:"team_id"`
-	UpdatedAt corev1alpha1.Time      `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+
+	// UpdatedAt Timestamp when the resource was updated.
+	UpdatedAt corev1alpha1.UpdatedAt `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 
 	// UserId user's email or username
 	UserId corev1alpha1.UserId `db:"user_id" json:"user_id,omitempty" yaml:"user_id,omitempty"`

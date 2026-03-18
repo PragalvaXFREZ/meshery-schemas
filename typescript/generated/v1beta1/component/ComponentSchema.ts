@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-const ComponentSchema: Record<string, unknown> = {
+const ComponentSchema = {
   "openapi": "3.0.0",
   "info": {
     "title": "Component",
@@ -397,13 +397,10 @@ const ComponentSchema: Record<string, unknown> = {
                       "db": "deleted_at",
                       "yaml": "deleted_at"
                     },
-                    "x-go-type": "core.NullTime",
-                    "x-go-type-import": {
-                      "path": "github.com/meshery/schemas/models/core"
-                    },
                     "x-order": 12,
+                    "description": "SQL null Timestamp to handle null values of time.",
+                    "x-go-type": "sql.NullTime",
                     "type": "string",
-                    "format": "date-time",
                     "x-go-type-skip-optional-pointer": true
                   },
                   "environments": {
@@ -546,11 +543,10 @@ const ComponentSchema: Record<string, unknown> = {
                             "db": "deleted_at",
                             "yaml": "deleted_at"
                           },
-                          "x-go-type": "core.NullTime",
-                          "x-go-import": "database/sql",
                           "x-order": 10,
+                          "description": "SQL null Timestamp to handle null values of time.",
+                          "x-go-type": "sql.NullTime",
                           "type": "string",
-                          "format": "date-time",
                           "x-go-type-skip-optional-pointer": true
                         }
                       }
@@ -1078,7 +1074,7 @@ const ComponentSchema: Record<string, unknown> = {
                         "minLength": 5,
                         "maxLength": 100,
                         "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                        "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
+                        "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
                       }
                     ],
                     "x-oapi-codegen-extra-tags": {
@@ -1218,7 +1214,7 @@ const ComponentSchema: Record<string, unknown> = {
                 "minLength": 5,
                 "maxLength": 100,
                 "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
+                "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
               },
               "displayName": {
                 "type": "string",
@@ -1245,7 +1241,7 @@ const ComponentSchema: Record<string, unknown> = {
                         "minLength": 5,
                         "maxLength": 100,
                         "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                        "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
+                        "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
                       }
                     ],
                     "x-oapi-codegen-extra-tags": {
@@ -2164,6 +2160,6 @@ const ComponentSchema: Record<string, unknown> = {
       }
     }
   }
-};
+} satisfies Record<string, unknown>;
 
 export default ComponentSchema;
