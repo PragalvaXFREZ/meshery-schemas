@@ -244,10 +244,10 @@ info:
 paths:
   /api/<constructs>:
     get:
-      operationId: GetAll<Constructs>
+      operationId: getAll<Constructs>
       # ... parameters, responses
     post:
-      operationId: Create<Construct>
+      operationId: create<Construct>
       # ... requestBody, responses
 
 components:
