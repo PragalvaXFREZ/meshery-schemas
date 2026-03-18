@@ -11,10 +11,11 @@ import (
 	"github.com/meshery/meshkit/database"
 	"github.com/meshery/meshkit/models/meshmodel/entity"
 	"github.com/meshery/meshkit/utils"
+	core "github.com/meshery/schemas/models/v1alpha1/core"
 	"gorm.io/gorm/clause"
 )
 
-type Styles = ComponentDefinition_Styles
+type Styles = core.ComponentStyles
 
 func (c ComponentDefinition) TableName() string {
 	return "component_definition_dbs"

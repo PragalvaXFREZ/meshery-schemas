@@ -6,6 +6,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
+	"reflect"
 	"sync"
 
 	"github.com/gofrs/uuid"
@@ -15,6 +16,42 @@ import (
 )
 
 var connectionCreation sync.Mutex //Each entity will perform a check and if the connection already doesn't exist, it will create a connection. This lock will make sure that there are no race conditions.
+
+func setConnectionID(connection *Connection, id uuid.UUID) {
+	value := reflect.ValueOf(connection)
+	if value.Kind() != reflect.Ptr || value.IsNil() {
+		return
+	}
+
+	structValue := value.Elem()
+	for _, fieldName := range []string{"Id", "ID"} {
+		field := structValue.FieldByName(fieldName)
+		if field.IsValid() && field.CanSet() && field.Type() == reflect.TypeOf(id) {
+			field.Set(reflect.ValueOf(id))
+			return
+		}
+	}
+}
+
+func getConnectionID(connection *Connection) uuid.UUID {
+	value := reflect.ValueOf(connection)
+	if value.Kind() != reflect.Ptr || value.IsNil() {
+		return uuid.UUID{}
+	}
+
+	structValue := value.Elem()
+	for _, fieldName := range []string{"Id", "ID"} {
+		field := structValue.FieldByName(fieldName)
+		if field.IsValid() && field.Type() == reflect.TypeOf(uuid.UUID{}) {
+			id, ok := field.Interface().(uuid.UUID)
+			if ok {
+				return id
+			}
+		}
+	}
+
+	return uuid.UUID{}
+}
 
 func (h *Connection) GenerateID() (uuid.UUID, error) {
 	byt, err := json.Marshal(h)
@@ -42,16 +79,16 @@ func (h *Connection) Create(db *database.Handler) (uuid.UUID, error) {
 
 	// if not exists then create a new host and return the id
 	if err == gorm.ErrRecordNotFound {
-		h.ID = hID
+		setConnectionID(h, hID)
 		err = db.Create(&h).Error
 		if err != nil {
 			return uuid.UUID{}, err
 		}
-		return h.ID, nil
+		return getConnectionID(h), nil
 	}
 
 	// else return the id of the existing connection
-	return connection.ID, nil
+	return getConnectionID(&connection), nil
 }
 
 func (c *Connection) EventCategory() string {
