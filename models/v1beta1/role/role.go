@@ -20,7 +20,7 @@ type Preference struct {
 // Role Role definition for Layer5 Cloud (Meshery).
 type Role struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id *externalRef0.Uuid `json:"id,omitempty" yaml:"id,omitempty"`
+	Id *externalRef0.Uuid `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
 
 	// RoleName Unique name of the role.
 	RoleName string `db:"role_name" json:"role_name" yaml:"role_name"`
@@ -35,7 +35,7 @@ type Role struct {
 	UpdatedAt externalRef0.UpdatedAt `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt externalRef0.NullTime `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	DeletedAt externalRef0.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 }
 
 // RoleHolderRequest Request body for assigning a role to a user.
@@ -50,13 +50,13 @@ type RoleHolderRequest struct {
 // RolesKeychainsMapping Mapping between a role and a keychain.
 type RolesKeychainsMapping struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id externalRef0.Uuid `json:"id" yaml:"id"`
+	Id externalRef0.Uuid `db:"id" json:"id" yaml:"id"`
 
 	// KeychainId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	KeychainId externalRef0.Uuid `json:"keychain_id" yaml:"keychain_id"`
+	KeychainId externalRef0.Uuid `db:"keychain_id" json:"keychain_id" yaml:"keychain_id"`
 
 	// RoleId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	RoleId externalRef0.Uuid `json:"role_id" yaml:"role_id"`
+	RoleId externalRef0.Uuid `db:"role_id" json:"role_id" yaml:"role_id"`
 
 	// CreatedAt Timestamp when the resource was created.
 	CreatedAt externalRef0.CreatedAt `db:"created_at" json:"created_at" yaml:"created_at"`
@@ -65,7 +65,7 @@ type RolesKeychainsMapping struct {
 	UpdatedAt externalRef0.UpdatedAt `db:"updated_at" json:"updated_at" yaml:"updated_at"`
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt externalRef0.NullTime `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	DeletedAt externalRef0.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 }
 
 // RolesPage A paginated list of roles.

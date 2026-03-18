@@ -11,13 +11,13 @@ import (
 // Credential Meshery Credentials store sensitive information such as API keys, tokens, and passwords used by connections to external systems.
 type Credential struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id *externalRef0.Uuid `json:"id,omitempty" yaml:"id,omitempty"`
+	Id *externalRef0.Uuid `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
 
 	// Name Human-readable name for the credential.
 	Name string `db:"name" json:"name" yaml:"name"`
 
 	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	UserId *externalRef0.Uuid `json:"user_id,omitempty" yaml:"user_id,omitempty"`
+	UserId *externalRef0.Uuid `db:"user_id" json:"user_id,omitempty" yaml:"user_id,omitempty"`
 
 	// Type Credential type (e.g. token, basic, AWS).
 	Type string `db:"type" json:"type" yaml:"type"`
@@ -32,7 +32,7 @@ type Credential struct {
 	UpdatedAt externalRef0.UpdatedAt `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt externalRef0.NullTime `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	DeletedAt externalRef0.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 }
 
 // CredentialPage A paginated list of credentials.

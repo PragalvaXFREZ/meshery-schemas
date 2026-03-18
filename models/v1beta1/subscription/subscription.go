@@ -69,26 +69,26 @@ type PaymentProcessor string
 // Subscription defines model for Subscription.
 type Subscription struct {
 	// ID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID externalRef0.Uuid `json:"ID" yaml:"ID"`
+	ID externalRef0.Uuid `db:"id" json:"ID" yaml:"ID"`
 
 	// BillingId Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe
 	BillingId string                   `db:"billing_id" json:"billing_id" yaml:"billing_id"`
-	CreatedAt externalRef0.Time        `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	DeletedAt externalRef0.SqlNullTime `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
-	EndDate   externalRef0.Time        `json:"end_date,omitempty" yaml:"end_date,omitempty"`
+	CreatedAt externalRef0.Time        `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	DeletedAt externalRef0.SqlNullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	EndDate   externalRef0.Time        `db:"end_date" json:"end_date,omitempty" yaml:"end_date,omitempty"`
 
 	// OrgId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	OrgId externalRef0.Uuid  `json:"org_id" yaml:"org_id"`
-	Plan  *externalRef1.Plan `json:"plan,omitempty" yaml:"plan,omitempty"`
+	OrgId externalRef0.Uuid  `db:"org_id" json:"org_id" yaml:"org_id"`
+	Plan  *externalRef1.Plan `fk_id:"PlanId" belongs_to:"plans" json:"plan,omitempty" yaml:"plan,omitempty"`
 
 	// PlanId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	PlanId    externalRef0.Uuid `json:"plan_id" yaml:"plan_id"`
+	PlanId    externalRef0.Uuid `db:"plan_id" json:"plan_id" yaml:"plan_id"`
 	Quantity  int               `db:"quantity" json:"quantity" yaml:"quantity"`
-	StartDate externalRef0.Time `json:"start_date,omitempty" yaml:"start_date,omitempty"`
+	StartDate externalRef0.Time `db:"start_date" json:"start_date,omitempty" yaml:"start_date,omitempty"`
 
 	// Status Possible statuses of a Stripe subscription.
-	Status    SubscriptionStatus `json:"status" yaml:"status"`
-	UpdatedAt externalRef0.Time  `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	Status    SubscriptionStatus `db:"status" json:"status" yaml:"status"`
+	UpdatedAt externalRef0.Time  `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 }
 
 // SubscriptionPage defines model for SubscriptionPage.

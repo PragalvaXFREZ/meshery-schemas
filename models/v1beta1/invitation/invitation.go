@@ -48,7 +48,7 @@ type Invitation struct {
 	OrgId string `db:"org_id" json:"org_id" yaml:"org_id"`
 
 	// OwnerId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	OwnerId externalRef0.Uuid `json:"owner_id" yaml:"owner_id"`
+	OwnerId externalRef0.Uuid `db:"owner_id" json:"owner_id" yaml:"owner_id"`
 
 	// Quota Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota
 	Quota *int           `json:"quota,omitempty" yaml:"quota,omitempty"`

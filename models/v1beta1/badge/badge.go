@@ -20,7 +20,7 @@ type Badge struct {
 	Description string `db:"description" json:"description" yaml:"description"`
 
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id externalRef0.Uuid `json:"id" yaml:"id"`
+	Id externalRef0.Uuid `db:"id" json:"id" yaml:"id"`
 
 	// ImageUrl URL to the badge image
 	ImageUrl string `db:"image_url" json:"image_url" yaml:"image_url"`
@@ -32,7 +32,7 @@ type Badge struct {
 	Name string `db:"name" json:"name" yaml:"name"`
 
 	// OrgId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	OrgId externalRef0.Uuid `json:"org_id" yaml:"org_id"`
+	OrgId externalRef0.Uuid `db:"org_id" json:"org_id" yaml:"org_id"`
 
 	// UpdatedAt Timestamp when the resource was updated.
 	UpdatedAt externalRef0.UpdatedAt `db:"updated_at" json:"updated_at" yaml:"updated_at"`

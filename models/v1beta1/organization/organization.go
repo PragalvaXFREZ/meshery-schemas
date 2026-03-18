@@ -64,20 +64,20 @@ type OrgTeamActionPayloadAction string
 // Organization defines model for Organization.
 type Organization struct {
 	Country     string       `db:"country" json:"country" yaml:"country"`
-	CreatedAt   Time         `json:"created_at" yaml:"created_at"`
-	DeletedAt   NullableTime `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	CreatedAt   Time         `db:"created_at" json:"created_at" yaml:"created_at"`
+	DeletedAt   NullableTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 	Description string       `db:"description" json:"description" yaml:"description"`
 	Domain      *string      `db:"domain" json:"domain" yaml:"domain"`
 
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id       UUID        `json:"id" yaml:"id"`
-	Metadata OrgMetadata `json:"metadata" yaml:"metadata"`
+	Id       UUID        `db:"id" json:"id" yaml:"id"`
+	Metadata OrgMetadata `db:"metadata" json:"metadata" yaml:"metadata"`
 	Name     string      `db:"name" json:"name" yaml:"name"`
 
 	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Owner     UUID   `json:"owner" yaml:"owner"`
+	Owner     UUID   `db:"owner" json:"owner" yaml:"owner"`
 	Region    string `db:"region" json:"region" yaml:"region"`
-	UpdatedAt Time   `json:"updated_at" yaml:"updated_at"`
+	UpdatedAt Time   `db:"updated_at" json:"updated_at" yaml:"updated_at"`
 }
 
 // Preferences defines model for Preferences.

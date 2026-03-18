@@ -10,13 +10,13 @@ import (
 // Schedule A schedule defines a recurring cron-based trigger for performance tests or other automated tasks.
 type Schedule struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id *externalRef0.Uuid `json:"id,omitempty" yaml:"id,omitempty"`
+	Id *externalRef0.Uuid `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
 
 	// Name Human-readable name for the schedule.
 	Name string `db:"name" json:"name" yaml:"name"`
 
 	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	UserId externalRef0.Uuid `json:"user_id" yaml:"user_id"`
+	UserId externalRef0.Uuid `db:"user_id" json:"user_id" yaml:"user_id"`
 
 	// CronExpression Cron expression defining the schedule's recurrence (e.g. "0 0 * * *" for daily at midnight).
 	CronExpression string `db:"cron_expression" json:"cron_expression" yaml:"cron_expression"`
