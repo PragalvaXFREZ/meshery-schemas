@@ -22,28 +22,16 @@ const (
 	ConnectionStatusRegistered   ConnectionStatus = "registered"
 )
 
-// Defines values for ConnectionPageConnectionsStatus.
-const (
-	ConnectionPageConnectionsStatusConnected    ConnectionPageConnectionsStatus = "connected"
-	ConnectionPageConnectionsStatusDeleted      ConnectionPageConnectionsStatus = "deleted"
-	ConnectionPageConnectionsStatusDisconnected ConnectionPageConnectionsStatus = "disconnected"
-	ConnectionPageConnectionsStatusDiscovered   ConnectionPageConnectionsStatus = "discovered"
-	ConnectionPageConnectionsStatusIgnored      ConnectionPageConnectionsStatus = "ignored"
-	ConnectionPageConnectionsStatusMaintenance  ConnectionPageConnectionsStatus = "maintenance"
-	ConnectionPageConnectionsStatusNotFound     ConnectionPageConnectionsStatus = "not found"
-	ConnectionPageConnectionsStatusRegistered   ConnectionPageConnectionsStatus = "registered"
-)
-
 // Defines values for ConnectionStatusValue.
 const (
-	Connected    ConnectionStatusValue = "connected"
-	Deleted      ConnectionStatusValue = "deleted"
-	Disconnected ConnectionStatusValue = "disconnected"
-	Discovered   ConnectionStatusValue = "discovered"
-	Ignored      ConnectionStatusValue = "ignored"
-	Maintenance  ConnectionStatusValue = "maintenance"
-	NotFound     ConnectionStatusValue = "not found"
-	Registered   ConnectionStatusValue = "registered"
+	ConnectionStatusValueConnected    ConnectionStatusValue = "connected"
+	ConnectionStatusValueDeleted      ConnectionStatusValue = "deleted"
+	ConnectionStatusValueDisconnected ConnectionStatusValue = "disconnected"
+	ConnectionStatusValueDiscovered   ConnectionStatusValue = "discovered"
+	ConnectionStatusValueIgnored      ConnectionStatusValue = "ignored"
+	ConnectionStatusValueMaintenance  ConnectionStatusValue = "maintenance"
+	ConnectionStatusValueNotFound     ConnectionStatusValue = "not found"
+	ConnectionStatusValueRegistered   ConnectionStatusValue = "registered"
 )
 
 // Connection Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
@@ -93,45 +81,7 @@ type ConnectionStatus string
 // ConnectionPage Represents a page of connections with meta information about connections count
 type ConnectionPage struct {
 	// Connections List of connections on this page
-	Connections []struct {
-		// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-		Id corev1alpha1.Uuid `json:"id" yaml:"id"`
-
-		// Name Connection Name
-		Name string `db:"name" json:"name" yaml:"name"`
-
-		// CredentialId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-		CredentialId *corev1alpha1.Uuid `json:"credential_id,omitempty" yaml:"credential_id,omitempty"`
-
-		// Type Connection Type (platform, telemetry, collaboration)
-		Type string `db:"type" json:"type" yaml:"type"`
-
-		// SubType Connection Subtype (cloud, identity, metrics, chat, git, orchestration)
-		SubType string `db:"sub_type" json:"sub_type" yaml:"sub_type"`
-
-		// Kind Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)
-		Kind string `db:"kind" json:"kind" yaml:"kind"`
-
-		// Metadata Additional connection metadata
-		Metadata core.Map `db:"metadata" json:"metadata,omitempty" yaml:"metadata,omitempty"`
-
-		// Status Connection Status
-		Status ConnectionPageConnectionsStatus `db:"status" json:"status" yaml:"status"`
-
-		// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-		UserId    *corev1alpha1.Uuid `json:"user_id,omitempty" yaml:"user_id,omitempty"`
-		CreatedAt corev1alpha1.Time  `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-		UpdatedAt corev1alpha1.Time  `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
-
-		// DeletedAt SQL null Timestamp to handle null values of time.
-		DeletedAt corev1alpha1.NullTime `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
-
-		// Environments Associated environments for this connection
-		Environments []environmentv1beta1.Environment `db:"-" gorm:"-" json:"environments,omitempty" yaml:"environments,omitempty"`
-
-		// SchemaVersion API version of the object, optionally prefixed with an API group (e.g. "group.example.io/v1beta1" or bare "v1beta1").
-		SchemaVersion corev1alpha1.VersionString `json:"schemaVersion" yaml:"schemaVersion"`
-	} `json:"connections" yaml:"connections"`
+	Connections []*Connection `json:"connections" yaml:"connections"`
 
 	// TotalCount Total number of connections on all pages
 	TotalCount int `json:"total_count" yaml:"total_count"`
@@ -145,9 +95,6 @@ type ConnectionPage struct {
 	// StatusSummary Aggregate count of connections grouped by status
 	StatusSummary *map[ConnectionStatus]int `json:"status_summary,omitempty" yaml:"status_summary,omitempty"`
 }
-
-// ConnectionPageConnectionsStatus Connection Status
-type ConnectionPageConnectionsStatus string
 
 // ConnectionPayload Payload for creating or updating a connection
 type ConnectionPayload struct {

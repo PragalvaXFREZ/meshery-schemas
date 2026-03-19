@@ -54,7 +54,7 @@ type WorkspacesDesignsMapping struct {
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
 	DeletedAt   corev1alpha1.NullTime    `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
-	DesignId    corev1alpha1.DesignId    `db:"design_id" json:"design_id" yaml:"design_id"`
+	DesignId    corev1alpha1.Uuid        `db:"design_id" json:"design_id" yaml:"design_id"`
 	UpdatedAt   corev1alpha1.Time        `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 	WorkspaceId corev1alpha1.WorkspaceId `db:"workspace_id" json:"workspace_id" yaml:"workspace_id"`
 }

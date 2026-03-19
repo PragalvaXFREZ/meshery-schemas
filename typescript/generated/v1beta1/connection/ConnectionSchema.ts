@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-const ConnectionSchema = {
+const ConnectionSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Connection API",
@@ -155,8 +155,8 @@ const ConnectionSchema = {
                     "connections": {
                       "type": "array",
                       "description": "List of connections on this page",
+                      "x-go-type": "[]*Connection",
                       "items": {
-                        "x-go-type": "*Connection",
                         "$id": "https://schemas.meshery.io/connection.yaml",
                         "$schema": "http://json-schema.org/draft-07/schema#",
                         "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
@@ -2484,8 +2484,8 @@ const ConnectionSchema = {
           "connections": {
             "type": "array",
             "description": "List of connections on this page",
+            "x-go-type": "[]*Connection",
             "items": {
-              "x-go-type": "*Connection",
               "$id": "https://schemas.meshery.io/connection.yaml",
               "$schema": "http://json-schema.org/draft-07/schema#",
               "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
@@ -3290,6 +3290,6 @@ const ConnectionSchema = {
       }
     }
   }
-} as const satisfies Record<string, unknown>;
+};
 
 export default ConnectionSchema;

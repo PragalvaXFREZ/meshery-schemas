@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-const OrganizationSchema = {
+const OrganizationSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Organization",
@@ -1673,6 +1673,6 @@ const OrganizationSchema = {
       }
     }
   }
-} as const satisfies Record<string, unknown>;
+};
 
 export default OrganizationSchema;

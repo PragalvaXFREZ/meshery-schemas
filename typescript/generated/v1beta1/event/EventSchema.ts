@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-const EventSchema = {
+const EventSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Events",
@@ -384,6 +384,6 @@ const EventSchema = {
       }
     }
   }
-} as const satisfies Record<string, unknown>;
+};
 
 export default EventSchema;

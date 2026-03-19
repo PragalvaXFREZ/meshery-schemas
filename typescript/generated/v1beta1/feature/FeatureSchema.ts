@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-const FeatureSchema = {
+const FeatureSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Feature",
@@ -937,6 +937,6 @@ const FeatureSchema = {
       }
     }
   }
-} as const satisfies Record<string, unknown>;
+};
 
 export default FeatureSchema;

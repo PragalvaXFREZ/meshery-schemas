@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-const EnvironmentSchema = {
+const EnvironmentSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Environment",
@@ -1033,6 +1033,6 @@ const EnvironmentSchema = {
       }
     }
   }
-} as const satisfies Record<string, unknown>;
+};
 
 export default EnvironmentSchema;

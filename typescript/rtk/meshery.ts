@@ -971,7 +971,7 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
         };
       };
       /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-      modelId: string;
+      modelId?: string;
       /** Visualization styles for a component */
       styles?: {
         /** Primary color of the component used for UI representation. */
@@ -1942,7 +1942,7 @@ export type PostEvaluateApiArg = {
           };
         };
         /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-        modelId: string;
+        modelId?: string;
         /** Visualization styles for a component */
         styles?: {
           /** Primary color of the component used for UI representation. */

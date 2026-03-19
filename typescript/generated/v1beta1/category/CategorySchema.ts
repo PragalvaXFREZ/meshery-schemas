@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-const CategorySchema = {
+const CategorySchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Category",
@@ -86,6 +86,6 @@ const CategorySchema = {
       }
     }
   }
-} as const satisfies Record<string, unknown>;
+};
 
 export default CategorySchema;

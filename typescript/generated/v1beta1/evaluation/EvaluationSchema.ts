@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-const EvaluationSchema = {
+const EvaluationSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Evaluation",
@@ -2295,7 +2295,6 @@ const EvaluationSchema = {
                                 "configuration",
                                 "metadata",
                                 "model",
-                                "modelId",
                                 "modelReference",
                                 "component"
                               ]
@@ -6914,7 +6913,6 @@ const EvaluationSchema = {
                                   "configuration",
                                   "metadata",
                                   "model",
-                                  "modelId",
                                   "modelReference",
                                   "component"
                                 ]
@@ -11557,7 +11555,6 @@ const EvaluationSchema = {
                         "configuration",
                         "metadata",
                         "model",
-                        "modelId",
                         "modelReference",
                         "component"
                       ]
@@ -16168,7 +16165,6 @@ const EvaluationSchema = {
                         "configuration",
                         "metadata",
                         "model",
-                        "modelId",
                         "modelReference",
                         "component"
                       ]
@@ -18765,6 +18761,6 @@ const EvaluationSchema = {
       }
     }
   }
-} as const satisfies Record<string, unknown>;
+};
 
 export default EvaluationSchema;

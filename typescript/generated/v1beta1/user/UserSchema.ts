@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-const UserSchema = {
+const UserSchema: Record<string, unknown> = {
   "openapi": "3.0.3",
   "info": {
     "title": "User",
@@ -1218,6 +1218,6 @@ const UserSchema = {
       }
     }
   }
-} as const satisfies Record<string, unknown>;
+};
 
 export default UserSchema;

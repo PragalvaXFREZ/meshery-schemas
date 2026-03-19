@@ -500,7 +500,7 @@ export interface paths {
                    * Format: uuid
                    * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                    */
-                  modelId: string;
+                  modelId?: string;
                   /** @description Visualization styles for a component */
                   styles?: ({
                     /** @description Primary color of the component used for UI representation. */
@@ -2022,7 +2022,7 @@ export interface paths {
                  * Format: uuid
                  * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
-                modelId: string;
+                modelId?: string;
                 /** @description Visualization styles for a component */
                 styles?: ({
                   /** @description Primary color of the component used for UI representation. */
@@ -3538,7 +3538,7 @@ export interface components {
            * Format: uuid
            * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
            */
-          modelId: string;
+          modelId?: string;
           /** @description Visualization styles for a component */
           styles?: ({
             /** @description Primary color of the component used for UI representation. */
@@ -5039,7 +5039,7 @@ export interface components {
            * Format: uuid
            * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
            */
-          modelId: string;
+          modelId?: string;
           /** @description Visualization styles for a component */
           styles?: ({
             /** @description Primary color of the component used for UI representation. */

@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-const CatalogSchema = {
+const CatalogSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Catalog",
@@ -106,6 +106,6 @@ const CatalogSchema = {
       }
     }
   }
-} as const satisfies Record<string, unknown>;
+};
 
 export default CatalogSchema;

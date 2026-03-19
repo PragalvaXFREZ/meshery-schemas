@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-const ComponentSchema = {
+const ComponentSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Component",
@@ -2127,7 +2127,6 @@ const ComponentSchema = {
           "configuration",
           "metadata",
           "model",
-          "modelId",
           "modelReference",
           "component"
         ]
@@ -2160,6 +2159,6 @@ const ComponentSchema = {
       }
     }
   }
-} as const satisfies Record<string, unknown>;
+};
 
 export default ComponentSchema;

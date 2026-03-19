@@ -54,27 +54,6 @@ func (h *Connection) Create(db *database.Handler) (uuid.UUID, error) {
 	return connection.ID, nil
 }
 
-// Deprecated aliases for ConnectionStatusValue constants.
-// These preserve the older exported names for downstream callers.
-const (
-	// Deprecated: Use Connected instead.
-	ConnectionStatusValueConnected = Connected
-	// Deprecated: Use Deleted instead.
-	ConnectionStatusValueDeleted = Deleted
-	// Deprecated: Use Disconnected instead.
-	ConnectionStatusValueDisconnected = Disconnected
-	// Deprecated: Use Discovered instead.
-	ConnectionStatusValueDiscovered = Discovered
-	// Deprecated: Use Ignored instead.
-	ConnectionStatusValueIgnored = Ignored
-	// Deprecated: Use Maintenance instead.
-	ConnectionStatusValueMaintenance = Maintenance
-	// Deprecated: Use NotFound instead.
-	ConnectionStatusValueNotFound = NotFound
-	// Deprecated: Use Registered instead.
-	ConnectionStatusValueRegistered = Registered
-)
-
 type MeshsyncDeploymentMode string
 
 const MeshsyncDeploymentModeMetadataKey = "meshsync_deployment_mode"

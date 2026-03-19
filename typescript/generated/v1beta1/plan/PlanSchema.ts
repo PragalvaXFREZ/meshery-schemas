@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-const PlanSchema = {
+const PlanSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Plan",
@@ -418,6 +418,6 @@ const PlanSchema = {
       }
     }
   }
-} as const satisfies Record<string, unknown>;
+};
 
 export default PlanSchema;

@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-const BadgeSchema = {
+const BadgeSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Badge",
@@ -582,6 +582,6 @@ const BadgeSchema = {
       }
     }
   }
-} as const satisfies Record<string, unknown>;
+};
 
 export default BadgeSchema;

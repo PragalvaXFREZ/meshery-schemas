@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-const CoreSchema = {
+const CoreSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Core Schema Elements",
@@ -1914,6 +1914,6 @@ const CoreSchema = {
       }
     }
   }
-} as const satisfies Record<string, unknown>;
+};
 
 export default CoreSchema;
