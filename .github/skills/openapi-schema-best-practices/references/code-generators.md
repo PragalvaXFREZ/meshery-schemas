@@ -60,7 +60,7 @@ Detailed reference for how the build scripts consume OpenAPI schemas and produce
 
 ### Key behaviors
 
-- **YAML tag mirroring**: After `oapi-codegen` runs, `build/generate-golang.js` runs a regex-based `addYamlTags()` pass that scans for `json:"fieldName,omitempty"` struct tags and appends matching `yaml:"fieldName,omitempty"` tags. This is a text-only transform that mirrors the JSON tag value verbatim and may miss unconventional or hand-edited tag layouts.
+- **YAML tag mirroring**: After `oapi-codegen` runs, `build/generate-golang.js` runs a regex-based `addYamlTags()` pass that scans for `json:"..."` struct tags and appends corresponding `yaml:"..."` tags, mirroring the entire JSON tag value verbatim (including options like `omitempty`). This is a text-only transform and may miss unconventional or hand-edited tag layouts.
 - **Extra tags**: `x-oapi-codegen-extra-tags` values are injected as additional struct tags
 - **Import mappings**: External `$ref` targets are mapped to Go import paths so cross-package types compile
 - **Composed-schema inheritance**: Property metadata is collected through both direct `$ref` and `allOf`, so composed object schemas inherit field tags and overrides
