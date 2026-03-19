@@ -485,7 +485,7 @@ const WorkspaceSchema: Record<string, unknown> = {
     "securitySchemes": {
       "jwt": {
         "type": "http",
-        "scheme": "Bearer",
+        "scheme": "bearer",
         "bearerFormat": "JWT"
       }
     },

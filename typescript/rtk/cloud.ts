@@ -784,7 +784,98 @@ const injectedRtkApi = api
     overrideExisting: false,
   });
 export { injectedRtkApi as cloudApi };
-export type GetMyAcademyCurriculaApiResponse = unknown;
+export type GetMyAcademyCurriculaApiResponse = /** status 200 A list of content with total count */ {
+  /** Total number of Curricula */
+  total: number;
+  data: {
+    /** Id of the Curricula */
+    id: string;
+    type: "learning-path" | "challenge" | "certification";
+    /** Organization ID that owns this learning path */
+    orgId: string;
+    /** Visibility of the Curricula */
+    visibility: "public" | "private";
+    /** Status of the Curricula */
+    status: "ready" | "archived" | "not_ready";
+    /** slug of the Curricula */
+    slug: string;
+    /** Level of the Curricula */
+    level: "beginner" | "intermediate" | "advanced";
+    /** ID of the badge to be awarded on completion of this curricula */
+    badge_id?: string;
+    /** ID of the invite associated with this Curricula */
+    invite_id?: string;
+    /** ID of the workspace to which this Curricula belongs */
+    workspace_id?: string;
+    /** When the Curricula item was created */
+    createdAt: string;
+    /** When the Curricula was last updated */
+    updatedAt: string;
+    deletedAt: string;
+    /** Additional metadata about the Curricula */
+    metadata: {
+      /** Title of the learning path */
+      title: string;
+      /** Short description of the curricula */
+      description: string;
+      /** Detailed description of the curricula */
+      detailed_description?: string;
+      /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+      banner?: string | null;
+      /** Canonical URL for the learning path */
+      permalink: string;
+      certificate?: {
+        /** Unique identifier for the certificate */
+        id: string;
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        org_id: string;
+        /** ID of the recipient (user) who received the certificate */
+        recipient_id: string;
+        /** Name of the recipient (user) who received the certificate */
+        recipient_name: string;
+        /** Title of the certificate */
+        title: string;
+        /** Description of the certificate */
+        description: string;
+        /** List of issuing authorities for the certificate */
+        issuing_authorities: {
+          /** Name of the issuing authority */
+          name: string;
+          /** Role of the issuing authority */
+          role?: string;
+          /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+          signature_url?: string;
+        }[];
+        /** Date when the certificate was issued */
+        issued_date: string;
+        /** Date when the certificate expires (optional) */
+        expiration_date?: string;
+        /** Number of months after which the certificate expires */
+        expires_in?: number;
+      };
+      /** List of children items in the top-level curricula */
+      children?: {
+        /** Unique identifier for the course */
+        id: string;
+        /** Title of the course */
+        title: string;
+        /** URL to the course content */
+        permalink: string;
+        /** Course description */
+        description: string;
+        /** A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title. */
+        weight?: number;
+        /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+        banner?: string | null;
+        /** Type of the content (e.g., learning-path, challenge, certification) */
+        type?: "learning-path" | "challenge" | "certification";
+        /** List of child nodes (sub-courses or modules) */
+        children?: object[];
+      }[];
+      [key: string]: any;
+    };
+  }[];
+};
 export type GetMyAcademyCurriculaApiArg = {
   /** Filter content by content types */
   contentType?: string[];
@@ -961,7 +1052,100 @@ export type CreateAcademyCurriculaApiArg = {
     };
   };
 };
-export type GetAcademyCurriculaApiResponse = unknown;
+export type GetAcademyCurriculaApiResponse = /** status 200 A list of content with total count */ {
+  /** Total number of Curricula */
+  total: number;
+  data: ({
+    /** Id of the Curricula */
+    id: string;
+    type: "learning-path" | "challenge" | "certification";
+    /** Organization ID that owns this learning path */
+    orgId: string;
+    /** Visibility of the Curricula */
+    visibility: "public" | "private";
+    /** Status of the Curricula */
+    status: "ready" | "archived" | "not_ready";
+    /** slug of the Curricula */
+    slug: string;
+    /** Level of the Curricula */
+    level: "beginner" | "intermediate" | "advanced";
+    /** ID of the badge to be awarded on completion of this curricula */
+    badge_id?: string;
+    /** ID of the invite associated with this Curricula */
+    invite_id?: string;
+    /** ID of the workspace to which this Curricula belongs */
+    workspace_id?: string;
+    /** When the Curricula item was created */
+    createdAt: string;
+    /** When the Curricula was last updated */
+    updatedAt: string;
+    deletedAt: string;
+    /** Additional metadata about the Curricula */
+    metadata: {
+      /** Title of the learning path */
+      title: string;
+      /** Short description of the curricula */
+      description: string;
+      /** Detailed description of the curricula */
+      detailed_description?: string;
+      /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+      banner?: string | null;
+      /** Canonical URL for the learning path */
+      permalink: string;
+      certificate?: {
+        /** Unique identifier for the certificate */
+        id: string;
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        org_id: string;
+        /** ID of the recipient (user) who received the certificate */
+        recipient_id: string;
+        /** Name of the recipient (user) who received the certificate */
+        recipient_name: string;
+        /** Title of the certificate */
+        title: string;
+        /** Description of the certificate */
+        description: string;
+        /** List of issuing authorities for the certificate */
+        issuing_authorities: {
+          /** Name of the issuing authority */
+          name: string;
+          /** Role of the issuing authority */
+          role?: string;
+          /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+          signature_url?: string;
+        }[];
+        /** Date when the certificate was issued */
+        issued_date: string;
+        /** Date when the certificate expires (optional) */
+        expiration_date?: string;
+        /** Number of months after which the certificate expires */
+        expires_in?: number;
+      };
+      /** List of children items in the top-level curricula */
+      children?: {
+        /** Unique identifier for the course */
+        id: string;
+        /** Title of the course */
+        title: string;
+        /** URL to the course content */
+        permalink: string;
+        /** Course description */
+        description: string;
+        /** A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title. */
+        weight?: number;
+        /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+        banner?: string | null;
+        /** Type of the content (e.g., learning-path, challenge, certification) */
+        type?: "learning-path" | "challenge" | "certification";
+        /** List of child nodes (sub-courses or modules) */
+        children?: object[];
+      }[];
+      [key: string]: any;
+    };
+  } & {
+    RegistrationCount: number;
+  })[];
+};
 export type GetAcademyCurriculaApiArg = {
   /** Filter content by content types */
   contentType?: string[];
