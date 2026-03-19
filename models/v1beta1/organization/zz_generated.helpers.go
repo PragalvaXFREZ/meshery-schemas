@@ -3,7 +3,8 @@ package organization
 
 import (
 	"database/sql/driver"
-	core "github.com/meshery/schemas/models/core"
+	"encoding/json"
+	"github.com/meshery/meshkit/utils"
 )
 
 func (value *OrgMetadata) Scan(src interface{}) error {
@@ -12,21 +13,25 @@ func (value *OrgMetadata) Scan(src interface{}) error {
 		return nil
 	}
 
-	mapVal := core.Map{}
-	if err := mapVal.Scan(src); err != nil {
+	data, err := utils.Cast[[]byte](src)
+	if err != nil {
 		return err
 	}
 
-	return core.MapToStruct(mapVal, value)
+	if err := json.Unmarshal(data, value); err != nil {
+		return utils.ErrUnmarshal(err)
+	}
+
+	return nil
 }
 
 func (value OrgMetadata) Value() (driver.Value, error) {
-	mapVal, err := core.StructToMap(value)
+	marshaledValue, err := json.Marshal(value)
 	if err != nil {
-		return nil, err
+		return nil, utils.ErrMarshal(err)
 	}
 
-	return core.Map(mapVal).Value()
+	return marshaledValue, nil
 }
 
 func (*Organization) EventCategory() string {

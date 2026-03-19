@@ -6,9 +6,9 @@ import (
 	core "github.com/meshery/schemas/models/core"
 )
 
-func (value *QuizEvaluationResult) Scan(src interface{}) error {
+func (value *Quiz) Scan(src interface{}) error {
 	if src == nil {
-		*value = QuizEvaluationResult{}
+		*value = Quiz{}
 		return nil
 	}
 
@@ -20,7 +20,7 @@ func (value *QuizEvaluationResult) Scan(src interface{}) error {
 	return core.MapToStruct(mapVal, value)
 }
 
-func (value QuizEvaluationResult) Value() (driver.Value, error) {
+func (value Quiz) Value() (driver.Value, error) {
 	mapVal, err := core.StructToMap(value)
 	if err != nil {
 		return nil, err
@@ -44,6 +44,29 @@ func (value *QuizSubmission) Scan(src interface{}) error {
 }
 
 func (value QuizSubmission) Value() (driver.Value, error) {
+	mapVal, err := core.StructToMap(value)
+	if err != nil {
+		return nil, err
+	}
+
+	return core.Map(mapVal).Value()
+}
+
+func (value *QuizEvaluationResult) Scan(src interface{}) error {
+	if src == nil {
+		*value = QuizEvaluationResult{}
+		return nil
+	}
+
+	mapVal := core.Map{}
+	if err := mapVal.Scan(src); err != nil {
+		return err
+	}
+
+	return core.MapToStruct(mapVal, value)
+}
+
+func (value QuizEvaluationResult) Value() (driver.Value, error) {
 	mapVal, err := core.StructToMap(value)
 	if err != nil {
 		return nil, err

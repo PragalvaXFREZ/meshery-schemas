@@ -33,14 +33,14 @@ function normalizeGoTypeToken(typeToken) {
 }
 
 function collectGeneratedStructInfo(filePath) {
-  const lines = fs.readFileSync(filePath, "utf-8").split("\n");
+  const lines = fs.readFileSync(filePath, "utf-8").split(/\r?\n/);
   const localStructTypes = new Set();
   const dbReferencedLocalStructs = new Set();
   let currentStructName = null;
   let structDepth = 0;
 
   for (const line of lines) {
-    const structMatch = line.match(/^type\s+(\w+)\s+struct\s*\{$/);
+    const structMatch = line.match(/^type\s+(\w+)\s+struct\s*\{\s*$/);
     if (structMatch) {
       currentStructName = structMatch[1];
       localStructTypes.add(currentStructName);
@@ -65,7 +65,7 @@ function collectGeneratedStructInfo(filePath) {
     }
 
     const opens = (line.match(/\bstruct\s*\{/g) || []).length;
-    const closes = /^\s*}/.test(line) ? 1 : 0;
+    const closes = (line.match(/}/g) || []).length;
     structDepth += opens - closes;
 
     if (structDepth <= 0) {
@@ -199,7 +199,6 @@ function writeGeneratedHelperFile(pkg, outputDir) {
 
   const spec = inferHelperSpec(pkg, outputPath, outputDir);
   const content = renderGeneratedHelperFile(pkg, spec);
-
   if (!content) {
     if (fs.existsSync(filePath)) {
       fs.rmSync(filePath, { force: true });
