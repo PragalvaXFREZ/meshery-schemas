@@ -18,6 +18,8 @@ tags:
 paths:
   /events/{id}:
     delete:
+      tags:
+        - events
       summary: Delete a single event
       parameters:
         - in: path
@@ -51,6 +53,8 @@ paths:
 
   /events:
     post:
+      tags:
+        - events
       summary: Create a new event
       requestBody:
         required: true
@@ -70,6 +74,8 @@ paths:
         "500":
           description: Server error
     delete:
+      tags:
+        - events
       summary: Bulk delete events
       requestBody:
         required: true
@@ -101,6 +107,8 @@ paths:
 
   /events/status:
     put:
+      tags:
+        - events
       summary: Bulk update event status
       requestBody:
         required: true
@@ -132,6 +140,8 @@ paths:
 
   /events/{id}/status:
     put:
+      tags:
+        - events
       summary: Update status of a single event
       parameters:
         - in: path

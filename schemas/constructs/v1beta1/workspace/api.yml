@@ -29,7 +29,7 @@ paths:
       x-internal: ["cloud"]
       tags:
         - workspaces
-      operationId: GetWorkspaces
+      operationId: getWorkspaces
       summary: Get all workspaces
       description: Gets all workspaces accessible to the current user.
       parameters:
@@ -53,7 +53,7 @@ paths:
       x-internal: ["cloud"]
       tags:
         - workspaces
-      operationId: CreateWorkspace
+      operationId: createWorkspace
       summary: Create a workspace
       description: Creates a new workspace.
       requestBody:
@@ -75,7 +75,7 @@ paths:
       x-internal: ["cloud"]
       tags:
         - workspaces
-      operationId: GetWorkspaceByID
+      operationId: getWorkspaceById
       summary: Get a workspace by ID
       description: Gets a workspace by its ID.
       parameters:
@@ -99,7 +99,7 @@ paths:
       x-internal: ["cloud"]
       tags:
         - workspaces
-      operationId: UpdateWorkspace
+      operationId: updateWorkspace
       summary: Update a workspace
       description: Updates a workspace.
       parameters:
@@ -123,7 +123,7 @@ paths:
       x-internal: ["cloud"]
       tags:
         - workspaces
-      operationId: DeleteWorkspace
+      operationId: deleteWorkspace
       summary: Delete a workspace
       description: Deletes a workspace by its ID.
       parameters:
@@ -149,7 +149,7 @@ paths:
       x-internal: ["cloud"]
       tags:
         - workspaces
-      operationId: GetTeamsOfWorkspace
+      operationId: getTeamsOfWorkspace
       summary: Get teams assigned to a workspace
       description: Gets teams assigned to or available for a workspace depending on the filter.
       parameters:
@@ -180,7 +180,7 @@ paths:
       x-internal: ["cloud"]
       tags:
         - workspaces
-      operationId: AssignTeamToWorkspace
+      operationId: assignTeamToWorkspace
       summary: Assign a team to a workspace
       description: Assigns a team to a workspace.
       parameters:
@@ -203,7 +203,7 @@ paths:
       x-internal: ["cloud"]
       tags:
         - workspaces
-      operationId: UnassignTeamFromWorkspace
+      operationId: unassignTeamFromWorkspace
       summary: Unassign a team from a workspace
       description: Removes a team from a workspace.
       parameters:
@@ -230,7 +230,7 @@ paths:
       x-internal: ["cloud"]
       tags:
         - workspaces
-      operationId: GetEnvironmentsOfWorkspace
+      operationId: getEnvironmentsOfWorkspace
       summary: Get environments assigned to a workspace
       description: Gets environments assigned to or available for a workspace depending on the filter.
       parameters:
@@ -261,7 +261,7 @@ paths:
       x-internal: ["cloud"]
       tags:
         - workspaces
-      operationId: AssignEnvironmentToWorkspace
+      operationId: assignEnvironmentToWorkspace
       summary: Assign an environment to a workspace
       description: Assigns an environment to a workspace.
       parameters:
@@ -284,7 +284,7 @@ paths:
       x-internal: ["cloud"]
       tags:
         - workspaces
-      operationId: UnassignEnvironmentFromWorkspace
+      operationId: unassignEnvironmentFromWorkspace
       summary: Unassign an environment from a workspace
       description: Removes an environment from a workspace.
       parameters:
@@ -312,7 +312,7 @@ paths:
       tags:
         - workspaces
         - designs
-      operationId: GetDesignsOfWorkspace
+      operationId: getDesignsOfWorkspace
       summary: Get designs assigned to a workspace
       description: Gets designs assigned to or available for a workspace depending on the filter.
       parameters:
@@ -344,7 +344,7 @@ paths:
       tags:
         - workspaces
         - designs
-      operationId: AssignDesignToWorkspace
+      operationId: assignDesignToWorkspace
       summary: Assign a design to a workspace
       description: Assigns a design to a workspace.
       parameters:
@@ -368,7 +368,7 @@ paths:
       tags:
         - workspaces
         - designs
-      operationId: UnassignDesignFromWorkspace
+      operationId: unassignDesignFromWorkspace
       summary: Unassign a design from a workspace
       description: Removes a design from a workspace.
       parameters:
@@ -396,7 +396,7 @@ paths:
       tags:
         - workspaces
         - views
-      operationId: GetViewsOfWorkspace
+      operationId: getViewsOfWorkspace
       summary: Get views assigned to a workspace
       description: Gets views assigned to or available for a workspace depending on the filter.
       parameters:
@@ -428,7 +428,7 @@ paths:
       tags:
         - workspaces
         - views
-      operationId: AssignViewToWorkspace
+      operationId: assignViewToWorkspace
       summary: Assign a view to a workspace
       description: Assigns a view to a workspace.
       parameters:
@@ -452,7 +452,7 @@ paths:
       tags:
         - workspaces
         - views
-      operationId: UnassignViewFromWorkspace
+      operationId: unassignViewFromWorkspace
       summary: Unassign a view from a workspace
       description: Removes a view from a workspace.
       parameters:
@@ -568,11 +568,11 @@ components:
         metadata:
           $ref: "../../v1alpha1/core/api.yml#/components/schemas/MapObject"
         created_at:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/created_at"
         updated_at:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/updated_at"
         deleted_at:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/nullTime"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/deleted_at"
 
     workspacesTeamsMapping:
       type: object
@@ -584,11 +584,11 @@ components:
         workspace_id:
           $ref: "../../v1alpha1/core/api.yml#/components/schemas/workspace_id"
         created_at:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/created_at"
         updated_at:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/updated_at"
         deleted_at:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/nullTime"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/deleted_at"
 
     workspacesEnvironmentsMapping:
       type: object
@@ -600,11 +600,11 @@ components:
         workspace_id:
           $ref: "../../v1alpha1/core/api.yml#/components/schemas/workspace_id"
         created_at:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/created_at"
         updated_at:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/updated_at"
         deleted_at:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/nullTime"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/deleted_at"
 
     workspacesViewsMapping:
       type: object
@@ -616,11 +616,11 @@ components:
         workspace_id:
           $ref: "../../v1alpha1/core/api.yml#/components/schemas/workspace_id"
         created_at:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/created_at"
         updated_at:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/updated_at"
         deleted_at:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/nullTime"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/deleted_at"
 
     workspacesDesignsMapping:
       type: object
@@ -632,11 +632,11 @@ components:
         workspace_id:
           $ref: "../../v1alpha1/core/api.yml#/components/schemas/workspace_id"
         created_at:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/created_at"
         updated_at:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/updated_at"
         deleted_at:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/nullTime"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/deleted_at"
     workspacePayload:
       type: object
       required:
@@ -789,11 +789,11 @@ components:
         user_id:
           $ref: "../../v1alpha1/core/api.yml#/components/schemas/Text"
         created_at:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/created_at"
         updated_at:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/updated_at"
         deleted_at:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/nullTime"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/deleted_at"
 
     mesheryViewPage:
       type: object
