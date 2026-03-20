@@ -72,7 +72,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  /api/identity/orgs/{orgID}/roles:
+  /api/identity/orgs/{orgId}/roles:
     get:
       x-internal: ["cloud"]
       tags:
@@ -81,7 +81,7 @@ paths:
       operationId: getAllRoles
       description: Returns all roles defined for the specified organization.
       parameters:
-        - $ref: "#/components/parameters/orgID"
+        - $ref: "#/components/parameters/orgId"
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pagesize"
         - $ref: "#/components/parameters/search"
@@ -108,7 +108,7 @@ paths:
       operationId: upsertRole
       description: Creates or updates a role for the specified organization.
       parameters:
-        - $ref: "#/components/parameters/orgID"
+        - $ref: "#/components/parameters/orgId"
       requestBody:
         required: true
         content:
@@ -136,7 +136,7 @@ paths:
       operationId: bulkEditRoleHolder
       description: Updates role assignments for multiple users in the organization.
       parameters:
-        - $ref: "#/components/parameters/orgID"
+        - $ref: "#/components/parameters/orgId"
       requestBody:
         required: true
         content:
@@ -155,7 +155,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  /api/identity/orgs/{orgID}/roles/{roleID}/keychains:
+  /api/identity/orgs/{orgId}/roles/{roleId}/keychains:
     get:
       x-internal: ["cloud"]
       tags:
@@ -164,8 +164,8 @@ paths:
       operationId: getRoleKeychains
       description: Returns all keychains assigned to the specified role.
       parameters:
-        - $ref: "#/components/parameters/orgID"
-        - $ref: "#/components/parameters/roleID"
+        - $ref: "#/components/parameters/orgId"
+        - $ref: "#/components/parameters/roleId"
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pagesize"
         - $ref: "#/components/parameters/search"
@@ -184,7 +184,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  /api/identity/orgs/{orgID}/roles/{roleID}/keychains/{keychainID}:
+  /api/identity/orgs/{orgId}/roles/{roleId}/keychains/{keychainId}:
     post:
       x-internal: ["cloud"]
       tags:
@@ -193,9 +193,9 @@ paths:
       operationId: assignKeychainToRole
       description: Associates a keychain with the specified role.
       parameters:
-        - $ref: "#/components/parameters/orgID"
-        - $ref: "#/components/parameters/roleID"
-        - $ref: "#/components/parameters/keychainID"
+        - $ref: "#/components/parameters/orgId"
+        - $ref: "#/components/parameters/roleId"
+        - $ref: "#/components/parameters/keychainId"
       responses:
         "200":
           description: Keychain assigned to role successfully
@@ -213,9 +213,9 @@ paths:
       operationId: unassignKeychainFromRole
       description: Removes the association between a keychain and a role.
       parameters:
-        - $ref: "#/components/parameters/orgID"
-        - $ref: "#/components/parameters/roleID"
-        - $ref: "#/components/parameters/keychainID"
+        - $ref: "#/components/parameters/orgId"
+        - $ref: "#/components/parameters/roleId"
+        - $ref: "#/components/parameters/keychainId"
       responses:
         "204":
           description: Keychain unassigned from role successfully
@@ -253,22 +253,22 @@ components:
       required: true
       schema:
         $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
-    orgID:
-      name: orgID
+    orgId:
+      name: orgId
       in: path
       description: Organization ID
       required: true
       schema:
         $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
-    roleID:
-      name: roleID
+    roleId:
+      name: roleId
       in: path
       description: Role ID
       required: true
       schema:
         $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
-    keychainID:
-      name: keychainID
+    keychainId:
+      name: keychainId
       in: path
       description: Keychain ID
       required: true

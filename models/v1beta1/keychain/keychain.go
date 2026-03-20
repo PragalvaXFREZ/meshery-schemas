@@ -28,6 +28,15 @@ type Keychain struct {
 	DeletedAt corev1alpha1.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 }
 
+// KeychainInput Input payload for creating or updating a keychain.
+type KeychainInput struct {
+	// Name Name of the keychain.
+	Name string `json:"name" yaml:"name"`
+
+	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	Owner *corev1alpha1.Uuid `json:"owner,omitempty" yaml:"owner,omitempty"`
+}
+
 // KeychainPage defines model for KeychainPage.
 type KeychainPage struct {
 	Page       corev1alpha1.Number `json:"page" yaml:"page"`

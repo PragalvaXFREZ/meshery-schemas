@@ -6,31 +6,31 @@
 export interface paths {
   "/api/integrations/connections": {
     /** Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support */
-    get: operations["GetConnections"];
+    get: operations["getConnections"];
     /** Register a new connection with credentials */
-    post: operations["RegisterConnection"];
+    post: operations["registerConnection"];
   };
   "/api/integrations/connections/{connectionId}": {
     /** Returns a specific connection by its ID */
-    get: operations["GetConnectionById"];
+    get: operations["getConnectionById"];
     /** Update an existing connection */
-    put: operations["UpdateConnection"];
+    put: operations["updateConnection"];
     /** Delete a specific connection */
-    delete: operations["DeleteConnection"];
+    delete: operations["deleteConnection"];
   };
   "/api/integrations/connections/meshery/{mesheryServerId}": {
     /** Delete a Meshery server connection by server ID */
-    delete: operations["DeleteMesheryConnection"];
+    delete: operations["deleteMesheryConnection"];
   };
   "/api/integrations/connections/kubernetes/{connectionId}/context": {
     /** Get Kubernetes context for a specific connection */
-    get: operations["GetKubernetesContext"];
+    get: operations["getKubernetesContext"];
   };
   "/api/environments/{environmentId}/connections/{connectionId}": {
     /** Associate a connection with an environment */
-    post: operations["AddConnectionToEnvironment"];
+    post: operations["addConnectionToEnvironment"];
     /** Disassociate a connection from an environment */
-    delete: operations["RemoveConnectionFromEnvironment"];
+    delete: operations["removeConnectionFromEnvironment"];
   };
 }
 
@@ -407,7 +407,7 @@ export interface components {
 
 export interface operations {
   /** Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support */
-  GetConnections: {
+  getConnections: {
     parameters: {
       query: {
         /** Page number */
@@ -569,7 +569,7 @@ export interface operations {
     };
   };
   /** Register a new connection with credentials */
-  RegisterConnection: {
+  registerConnection: {
     responses: {
       /** Connection registered successfully */
       201: {
@@ -721,7 +721,7 @@ export interface operations {
     };
   };
   /** Returns a specific connection by its ID */
-  GetConnectionById: {
+  getConnectionById: {
     parameters: {
       path: {
         /** Connection ID */
@@ -849,7 +849,7 @@ export interface operations {
     };
   };
   /** Update an existing connection */
-  UpdateConnection: {
+  updateConnection: {
     parameters: {
       path: {
         /** Connection ID */
@@ -1007,7 +1007,7 @@ export interface operations {
     };
   };
   /** Delete a specific connection */
-  DeleteConnection: {
+  deleteConnection: {
     parameters: {
       path: {
         /** Connection ID */
@@ -1024,7 +1024,7 @@ export interface operations {
     };
   };
   /** Delete a Meshery server connection by server ID */
-  DeleteMesheryConnection: {
+  deleteMesheryConnection: {
     parameters: {
       path: {
         /** Meshery server ID */
@@ -1041,7 +1041,7 @@ export interface operations {
     };
   };
   /** Get Kubernetes context for a specific connection */
-  GetKubernetesContext: {
+  getKubernetesContext: {
     parameters: {
       path: {
         /** Connection ID */
@@ -1062,7 +1062,7 @@ export interface operations {
     };
   };
   /** Associate a connection with an environment */
-  AddConnectionToEnvironment: {
+  addConnectionToEnvironment: {
     parameters: {
       path: {
         /** Environment ID */
@@ -1081,7 +1081,7 @@ export interface operations {
     };
   };
   /** Disassociate a connection from an environment */
-  RemoveConnectionFromEnvironment: {
+  removeConnectionFromEnvironment: {
     parameters: {
       path: {
         /** Environment ID */

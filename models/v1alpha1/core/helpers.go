@@ -25,6 +25,7 @@ func (m *MapObject) Scan(src interface{}) error {
 	var b []byte
 	switch t := src.(type) {
 	case nil:
+		*m = nil
 		return nil
 	case []byte:
 		b = t

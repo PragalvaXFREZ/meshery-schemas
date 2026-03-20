@@ -69,8 +69,8 @@ type KeyId = corev1alpha1.Uuid
 // Order defines model for order.
 type Order = string
 
-// OrgID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-type OrgID = corev1alpha1.Uuid
+// OrgId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+type OrgId = corev1alpha1.Uuid
 
 // Page defines model for page.
 type Page = string

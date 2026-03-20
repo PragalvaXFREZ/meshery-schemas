@@ -9,8 +9,10 @@ export interface paths {
     get: operations["getPatterns"];
     /** Creates or updates an infrastructure design. */
     post: operations["upsertPattern"];
+  };
+  "/api/content/patterns/delete": {
     /** Deletes multiple designs by ID. */
-    delete: operations["deletePatterns"];
+    post: operations["deletePatterns"];
   };
   "/api/content/patterns/resource": {
     /** Returns pattern resource definitions. */
@@ -39,7 +41,7 @@ export interface paths {
     post: operations["upsertPatternSourceContent"];
   };
   "/api/pattern/import": {
-    post: operations["ImportDesign"];
+    post: operations["importDesign"];
   };
 }
 
@@ -14463,7 +14465,7 @@ export interface operations {
       };
     };
   };
-  ImportDesign: {
+  importDesign: {
     responses: {
       /** Successful Import */
       200: {

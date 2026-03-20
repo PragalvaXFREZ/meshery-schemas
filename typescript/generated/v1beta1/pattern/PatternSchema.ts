@@ -211,6 +211,7 @@ const PatternSchema: Record<string, unknown> = {
                             "title": "Design Schema",
                             "description": "Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.",
                             "type": "object",
+                            "additionalProperties": false,
                             "properties": {
                               "id": {
                                 "x-order": 1,
@@ -5006,6 +5007,7 @@ const PatternSchema: Record<string, unknown> = {
                         "title": "Design Schema",
                         "description": "Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.",
                         "type": "object",
+                        "additionalProperties": false,
                         "properties": {
                           "id": {
                             "x-order": 1,
@@ -9768,6 +9770,7 @@ const PatternSchema: Record<string, unknown> = {
                       "title": "Design Schema",
                       "description": "Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.",
                       "type": "object",
+                      "additionalProperties": false,
                       "properties": {
                         "id": {
                           "x-order": 1,
@@ -14420,8 +14423,10 @@ const PatternSchema: Record<string, unknown> = {
             }
           }
         }
-      },
-      "delete": {
+      }
+    },
+    "/api/content/patterns/delete": {
+      "post": {
         "x-internal": [
           "cloud"
         ],
@@ -14899,6 +14904,7 @@ const PatternSchema: Record<string, unknown> = {
                       "title": "Design Schema",
                       "description": "Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.",
                       "type": "object",
+                      "additionalProperties": false,
                       "properties": {
                         "id": {
                           "x-order": 1,
@@ -19769,6 +19775,7 @@ const PatternSchema: Record<string, unknown> = {
                       "title": "Design Schema",
                       "description": "Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.",
                       "type": "object",
+                      "additionalProperties": false,
                       "properties": {
                         "id": {
                           "x-order": 1,
@@ -24599,7 +24606,7 @@ const PatternSchema: Record<string, unknown> = {
     "/api/pattern/import": {
       "post": {
         "summary": "Import Design",
-        "operationId": "ImportDesign",
+        "operationId": "importDesign",
         "requestBody": {
           "required": true,
           "content": {
@@ -24785,6 +24792,7 @@ const PatternSchema: Record<string, unknown> = {
         "title": "Design Schema",
         "description": "Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.",
         "type": "object",
+        "additionalProperties": false,
         "properties": {
           "id": {
             "x-order": 1,
@@ -29504,6 +29512,7 @@ const PatternSchema: Record<string, unknown> = {
             "title": "Design Schema",
             "description": "Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.",
             "type": "object",
+            "additionalProperties": false,
             "properties": {
               "id": {
                 "x-order": 1,
@@ -34255,6 +34264,7 @@ const PatternSchema: Record<string, unknown> = {
                   "title": "Design Schema",
                   "description": "Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.",
                   "type": "object",
+                  "additionalProperties": false,
                   "properties": {
                     "id": {
                       "x-order": 1,
@@ -39038,6 +39048,7 @@ const PatternSchema: Record<string, unknown> = {
                 "title": "Design Schema",
                 "description": "Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.",
                 "type": "object",
+                "additionalProperties": false,
                 "properties": {
                   "id": {
                     "x-order": 1,

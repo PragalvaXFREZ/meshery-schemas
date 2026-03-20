@@ -5,7 +5,7 @@
 
 export interface paths {
   "/api/meshmodels/register": {
-    post: operations["RegisterMeshmodels"];
+    post: operations["registerMeshmodels"];
   };
 }
 
@@ -517,7 +517,7 @@ export interface components {
 }
 
 export interface operations {
-  RegisterMeshmodels: {
+  registerMeshmodels: {
     responses: {
       /** Successful registration */
       200: {

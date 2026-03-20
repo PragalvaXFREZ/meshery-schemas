@@ -2551,6 +2551,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "title": "Design Schema",
                             "description": "Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.",
                             "type": "object",
+                            "additionalProperties": false,
                             "properties": {
                               "id": {
                                 "x-order": 1,
@@ -9626,6 +9627,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "title": "Design Schema",
                   "description": "Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.",
                   "type": "object",
+                  "additionalProperties": false,
                   "properties": {
                     "id": {
                       "x-order": 1,

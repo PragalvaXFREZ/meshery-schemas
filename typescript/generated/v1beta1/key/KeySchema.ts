@@ -31,7 +31,7 @@ const KeySchema: Record<string, unknown> = {
     }
   ],
   "paths": {
-    "/api/identity/orgs/{orgID}/users/keys": {
+    "/api/identity/orgs/{orgId}/users/keys": {
       "get": {
         "tags": [
           "users"
@@ -41,7 +41,7 @@ const KeySchema: Record<string, unknown> = {
         "description": "Get all keys based on roles assigned to user",
         "parameters": [
           {
-            "name": "orgID",
+            "name": "orgId",
             "in": "path",
             "description": "Organization ID",
             "required": true,
@@ -89,6 +89,7 @@ const KeySchema: Record<string, unknown> = {
                       "type": "array",
                       "items": {
                         "type": "object",
+                        "additionalProperties": false,
                         "description": "Represents an authorization key used for access control.",
                         "required": [
                           "id",
@@ -306,6 +307,7 @@ const KeySchema: Record<string, unknown> = {
                       "type": "array",
                       "items": {
                         "type": "object",
+                        "additionalProperties": false,
                         "description": "Represents an authorization key used for access control.",
                         "required": [
                           "id",
@@ -514,6 +516,7 @@ const KeySchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "additionalProperties": false,
                   "description": "Represents an authorization key used for access control.",
                   "required": [
                     "id",
@@ -694,6 +697,7 @@ const KeySchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "additionalProperties": false,
                   "description": "Represents an authorization key used for access control.",
                   "required": [
                     "id",
@@ -967,8 +971,8 @@ const KeySchema: Record<string, unknown> = {
       }
     },
     "parameters": {
-      "orgID": {
-        "name": "orgID",
+      "orgId": {
+        "name": "orgId",
         "in": "path",
         "description": "Organization ID",
         "required": true,
@@ -1040,6 +1044,7 @@ const KeySchema: Record<string, unknown> = {
     "schemas": {
       "Key": {
         "type": "object",
+        "additionalProperties": false,
         "description": "Represents an authorization key used for access control.",
         "required": [
           "id",
@@ -1214,6 +1219,7 @@ const KeySchema: Record<string, unknown> = {
             "type": "array",
             "items": {
               "type": "object",
+              "additionalProperties": false,
               "description": "Represents an authorization key used for access control.",
               "required": [
                 "id",

@@ -23,7 +23,7 @@ const ModelSchema: Record<string, unknown> = {
     "/api/meshmodels/register": {
       "post": {
         "summary": "Register mesh models",
-        "operationId": "RegisterMeshmodels",
+        "operationId": "registerMeshmodels",
         "requestBody": {
           "required": true,
           "content": {

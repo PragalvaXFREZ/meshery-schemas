@@ -65,8 +65,9 @@ components:
       $ref: "./environment.yaml"
     environmentConnectionMapping:
       properties:
-        ID:
+        id:
           $ref: ../../v1alpha1/core/api.yml#/components/schemas/general_id
+          x-go-name: ID
         environment_id:
           type: string
           format: uuid
@@ -140,7 +141,7 @@ paths:
     post:
       tags:
         - environments
-      operationId: CreateEnvironment
+      operationId: createEnvironment
       summary: Create an environment
       description: Creates a new environment
       requestBody:
@@ -159,7 +160,7 @@ paths:
     get:
       tags:
         - environments
-      operationId: GetEnvironments
+      operationId: getEnvironments
       summary: Get all environments
       description: Gets all environments
       parameters:

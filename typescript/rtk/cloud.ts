@@ -16,13 +16,14 @@ export const addTagTypes = [
   "Keychain_Keychain",
   "Model_other",
   "Organization_other",
+  "Team_teams",
   "Plan_Plans",
   "role_roles",
   "schedule_scheduler",
   "Subscription_subscription",
   "Subscription_other",
-  "Team_teams",
   "token_tokens",
+  "User_users",
   "Workspace_workspaces",
   "Workspace_designs",
   "Workspace_views",
@@ -317,7 +318,7 @@ const injectedRtkApi = api
         invalidatesTags: ["Design_designs"],
       }),
       deletePatterns: build.mutation<DeletePatternsApiResponse, DeletePatternsApiArg>({
-        query: (queryArg) => ({ url: `/api/content/patterns`, method: "DELETE", body: queryArg.body }),
+        query: (queryArg) => ({ url: `/api/content/patterns/delete`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Design_designs"],
       }),
       getPatternResources: build.query<GetPatternResourcesApiResponse, GetPatternResourcesApiArg>({
@@ -400,8 +401,8 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/events`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Events_events"],
       }),
-      deleteEvents: build.mutation<DeleteEventsApiResponse, DeleteEventsApiArg>({
-        query: (queryArg) => ({ url: `/events`, method: "DELETE", body: queryArg.body }),
+      postEventsDelete: build.mutation<PostEventsDeleteApiResponse, PostEventsDeleteApiArg>({
+        query: (queryArg) => ({ url: `/events/delete`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Events_events"],
       }),
       putEventsStatus: build.mutation<PutEventsStatusApiResponse, PutEventsStatusApiArg>({
@@ -552,6 +553,23 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/meshmodels/register`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Model_other"],
       }),
+      getOrgs: build.query<GetOrgsApiResponse, GetOrgsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs`,
+          params: {
+            page: queryArg.page,
+            pagesize: queryArg.pagesize,
+            search: queryArg.search,
+            order: queryArg.order,
+            all: queryArg.all,
+          },
+        }),
+        providesTags: ["Organization_other"],
+      }),
+      createOrg: build.mutation<CreateOrgApiResponse, CreateOrgApiArg>({
+        query: (queryArg) => ({ url: `/api/identity/orgs`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Organization_other"],
+      }),
       getOrgByDomain: build.query<GetOrgByDomainApiResponse, GetOrgByDomainApiArg>({
         query: (queryArg) => ({
           url: `/api/identity/orgs/by-domain`,
@@ -559,6 +577,22 @@ const injectedRtkApi = api
             domain: queryArg.domain,
           },
         }),
+        providesTags: ["Organization_other"],
+      }),
+      getOrg: build.query<GetOrgApiResponse, GetOrgApiArg>({
+        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}` }),
+        providesTags: ["Organization_other"],
+      }),
+      deleteOrg: build.mutation<DeleteOrgApiResponse, DeleteOrgApiArg>({
+        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}`, method: "DELETE" }),
+        invalidatesTags: ["Organization_other"],
+      }),
+      handleUpdateOrg: build.mutation<HandleUpdateOrgApiResponse, HandleUpdateOrgApiArg>({
+        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["Organization_other"],
+      }),
+      getOrgPreferences: build.query<GetOrgPreferencesApiResponse, GetOrgPreferencesApiArg>({
+        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/preferences` }),
         providesTags: ["Organization_other"],
       }),
       addTeamToOrg: build.mutation<AddTeamToOrgApiResponse, AddTeamToOrgApiArg>({
@@ -569,10 +603,29 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Organization_other"],
       }),
-      removeTeamFromOrg: build.mutation<RemoveTeamFromOrgApiResponse, RemoveTeamFromOrgApiArg>({
+      getTeamById: build.query<GetTeamByIdApiResponse, GetTeamByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}` }),
+        providesTags: ["Team_teams"],
+      }),
+      updateTeam: build.mutation<UpdateTeamApiResponse, UpdateTeamApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Team_teams"],
+      }),
+      deleteTeam: build.mutation<DeleteTeamApiResponse, DeleteTeamApiArg>({
         query: (queryArg) => ({
           url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}`,
           method: "DELETE",
+        }),
+        invalidatesTags: ["Team_teams"],
+      }),
+      removeTeamFromOrg: build.mutation<RemoveTeamFromOrgApiResponse, RemoveTeamFromOrgApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}/remove`,
+          method: "POST",
         }),
         invalidatesTags: ["Organization_other"],
       }),
@@ -747,25 +800,6 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Team_teams"],
       }),
-      getTeamById: build.query<GetTeamByIdApiResponse, GetTeamByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}` }),
-        providesTags: ["Team_teams"],
-      }),
-      updateTeam: build.mutation<UpdateTeamApiResponse, UpdateTeamApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}`,
-          method: "PUT",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["Team_teams"],
-      }),
-      deleteTeam: build.mutation<DeleteTeamApiResponse, DeleteTeamApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}`,
-          method: "DELETE",
-        }),
-        invalidatesTags: ["Team_teams"],
-      }),
       getTeamUsers: build.query<GetTeamUsersApiResponse, GetTeamUsersApiArg>({
         query: (queryArg) => ({
           url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}/users`,
@@ -842,6 +876,41 @@ const injectedRtkApi = api
           },
         }),
         providesTags: ["token_tokens"],
+      }),
+      getUsersForOrg: build.query<GetUsersForOrgApiResponse, GetUsersForOrgApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/users`,
+          params: {
+            page: queryArg.page,
+            pagesize: queryArg.pagesize,
+            search: queryArg.search,
+            order: queryArg.order,
+            filter: queryArg.filter,
+            teamID: queryArg.teamId,
+          },
+        }),
+        providesTags: ["User_users"],
+      }),
+      getUsers: build.query<GetUsersApiResponse, GetUsersApiArg>({
+        query: (queryArg) => ({
+          url: `/api/users`,
+          params: {
+            page: queryArg.page,
+            pagesize: queryArg.pagesize,
+            search: queryArg.search,
+            order: queryArg.order,
+            filter: queryArg.filter,
+          },
+        }),
+        providesTags: ["User_users"],
+      }),
+      getUserProfileById: build.query<GetUserProfileByIdApiResponse, GetUserProfileByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/identity/users/profile/${queryArg.id}` }),
+        providesTags: ["User_users"],
+      }),
+      getUser: build.query<GetUserApiResponse, GetUserApiArg>({
+        query: () => ({ url: `/api/identity/users/profile` }),
+        providesTags: ["User_users"],
       }),
       getWorkspaces: build.query<GetWorkspacesApiResponse, GetWorkspacesApiArg>({
         query: (queryArg) => ({
@@ -2523,9 +2592,9 @@ export type CreateOrUpdateBadgeApiResponse = /** status 201 undefined */ {
 };
 export type CreateOrUpdateBadgeApiArg = {
   body: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    id: string;
-    /** The ID of the organization in which this badge is available . */
+    /** Existing badge ID for updates; omit on create. */
+    id?: string;
+    /** The ID of the organization in which this badge is available. */
     org_id: string;
     /** unique identifier for the badge ( auto generated ) */
     label: string;
@@ -2535,12 +2604,6 @@ export type CreateOrUpdateBadgeApiArg = {
     description: string;
     /** URL to the badge image */
     image_url: string;
-    /** Timestamp when the resource was created. */
-    created_at: string;
-    /** Timestamp when the resource was updated. */
-    updated_at: string;
-    /** Timestamp when the resource was deleted, if applicable */
-    deleted_at: string;
   };
 };
 export type GetConnectionsApiResponse = /** status 200 Paginated list of connections with summary information */ {
@@ -8232,10 +8295,10 @@ export type PostEventsApiResponse = unknown;
 export type PostEventsApiArg = {
   body: object;
 };
-export type DeleteEventsApiResponse = /** status 200 event deleted */ {
+export type PostEventsDeleteApiResponse = /** status 200 event deleted */ {
   deleted?: string[];
 };
-export type DeleteEventsApiArg = {
+export type PostEventsDeleteApiArg = {
   body: {
     ids: string[];
   };
@@ -8435,35 +8498,27 @@ export type UpdateInvitationApiArg = {
   /** The ID of the invitation */
   invitationId: string;
   body: {
-    /** Unique identifier for the invitation , is also used as the invitation code */
-    id: string;
-    /** ID of the user who created the invitation, this is used to track who created the invitation and can be used for auditing purposes */
-    owner_id: string;
-    /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
+    /** Existing invitation ID for updates; omit on create. */
+    id?: string;
+    /** ID of the user who created the invitation. */
+    owner_id?: string;
+    /** Indicates whether the invitation is a default invitation (open invite). */
     is_default?: boolean;
-    /** Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
+    /** Name of the invitation. */
     name: string;
-    /** Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
+    /** Description of the invitation. */
     description: string;
     emails: string[];
-    /** ID of the organization to which the user is invited */
+    /** ID of the organization to which the user is invited. */
     org_id: string;
-    /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
+    /** Timestamp when the invitation expires, if applicable. */
     expires_at?: string;
-    /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
+    /** Quota for the invitation. */
     quota?: number;
-    /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
-    accepted_by: string[];
     roles: string[];
     teams: string[];
     /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
     status: "enabled" | "disabled";
-    /** Timestamp when the invitation was created */
-    created_at: string;
-    /** Timestamp when the invitation was last updated */
-    updated_at: string;
-    /** Timestamp when the invitation was deleted, if applicable */
-    deleted_at: string;
   };
 };
 export type GetInvitationsApiResponse = /** status 200 undefined */ {
@@ -8536,35 +8591,27 @@ export type CreateInvitationApiResponse = /** status 201 undefined */ {
 };
 export type CreateInvitationApiArg = {
   body: {
-    /** Unique identifier for the invitation , is also used as the invitation code */
-    id: string;
-    /** ID of the user who created the invitation, this is used to track who created the invitation and can be used for auditing purposes */
-    owner_id: string;
-    /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
+    /** Existing invitation ID for updates; omit on create. */
+    id?: string;
+    /** ID of the user who created the invitation. */
+    owner_id?: string;
+    /** Indicates whether the invitation is a default invitation (open invite). */
     is_default?: boolean;
-    /** Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
+    /** Name of the invitation. */
     name: string;
-    /** Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
+    /** Description of the invitation. */
     description: string;
     emails: string[];
-    /** ID of the organization to which the user is invited */
+    /** ID of the organization to which the user is invited. */
     org_id: string;
-    /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
+    /** Timestamp when the invitation expires, if applicable. */
     expires_at?: string;
-    /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
+    /** Quota for the invitation. */
     quota?: number;
-    /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
-    accepted_by: string[];
     roles: string[];
     teams: string[];
     /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
     status: "enabled" | "disabled";
-    /** Timestamp when the invitation was created */
-    created_at: string;
-    /** Timestamp when the invitation was last updated */
-    updated_at: string;
-    /** Timestamp when the invitation was deleted, if applicable */
-    deleted_at: string;
   };
 };
 export type AcceptInvitationApiResponse = /** status 200 undefined */ {
@@ -8774,18 +8821,10 @@ export type CreateKeychainApiResponse = /** status 200 Keychain created */ {
 };
 export type CreateKeychainApiArg = {
   body: {
-    /** Unique identifier for the keychain. */
-    id: string;
     /** Name of the keychain. */
     name: string;
     /** Owner of the keychain. */
-    owner: string;
-    /** Timestamp when the resource was created. */
-    created_at: string;
-    /** Timestamp when the resource was updated. */
-    updated_at: string;
-    /** SQL null Timestamp to handle null values of time. */
-    deleted_at?: string;
+    owner?: string;
   };
 };
 export type GetKeychainByIdApiResponse = /** status 200 Keychain fetched */ {
@@ -8824,18 +8863,10 @@ export type UpdateKeychainApiArg = {
   /** Keychain ID */
   keychainId: string;
   body: {
-    /** Unique identifier for the keychain. */
-    id: string;
     /** Name of the keychain. */
     name: string;
     /** Owner of the keychain. */
-    owner: string;
-    /** Timestamp when the resource was created. */
-    created_at: string;
-    /** Timestamp when the resource was updated. */
-    updated_at: string;
-    /** SQL null Timestamp to handle null values of time. */
-    deleted_at?: string;
+    owner?: string;
   };
 };
 export type DeleteKeychainApiResponse = unknown;
@@ -8927,6 +8958,156 @@ export type RegisterMeshmodelsApiArg = {
     register: boolean;
   };
 };
+export type GetOrgsApiResponse = /** status 200 Organizations response */ {
+  page?: number;
+  page_size?: number;
+  total_count?: number;
+  organizations?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id?: string;
+    name?: string;
+    description?: string;
+    country?: string;
+    region?: string;
+    owner?: string;
+    metadata?: {
+      preferences: {
+        theme: {
+          id: string;
+          logo: {
+            desktop_view: {
+              svg: string;
+              location: string;
+            };
+            mobile_view: {
+              svg: string;
+              location: string;
+            };
+            dark_desktop_view: {
+              svg: string;
+              location: string;
+            };
+            dark_mobile_view: {
+              svg: string;
+              location: string;
+            };
+          };
+          vars?: {
+            [key: string]: any;
+          };
+        };
+        /** Preferences specific to dashboard behavior */
+        dashboard: {
+          [key: string]: any;
+        };
+      };
+    };
+    created_at?: string;
+    updated_at?: string;
+    deleted_at?: string;
+  }[];
+};
+export type GetOrgsApiArg = {
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get all possible entries */
+  all?: boolean;
+};
+export type CreateOrgApiResponse = /** status 201 Single-organization page response */ {
+  page?: number;
+  page_size?: number;
+  total_count?: number;
+  organizations?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id?: string;
+    name?: string;
+    description?: string;
+    country?: string;
+    region?: string;
+    owner?: string;
+    metadata?: {
+      preferences: {
+        theme: {
+          id: string;
+          logo: {
+            desktop_view: {
+              svg: string;
+              location: string;
+            };
+            mobile_view: {
+              svg: string;
+              location: string;
+            };
+            dark_desktop_view: {
+              svg: string;
+              location: string;
+            };
+            dark_mobile_view: {
+              svg: string;
+              location: string;
+            };
+          };
+          vars?: {
+            [key: string]: any;
+          };
+        };
+        /** Preferences specific to dashboard behavior */
+        dashboard: {
+          [key: string]: any;
+        };
+      };
+    };
+    created_at?: string;
+    updated_at?: string;
+    deleted_at?: string;
+  }[];
+};
+export type CreateOrgApiArg = {
+  /** Body for creating or updating an organization */
+  body: {
+    name?: string;
+    country?: string;
+    region?: string;
+    description?: string;
+    notify_org_update?: boolean;
+    preferences?: {
+      theme: {
+        id: string;
+        logo: {
+          desktop_view: {
+            svg: string;
+            location: string;
+          };
+          mobile_view: {
+            svg: string;
+            location: string;
+          };
+          dark_desktop_view: {
+            svg: string;
+            location: string;
+          };
+          dark_mobile_view: {
+            svg: string;
+            location: string;
+          };
+        };
+        vars?: {
+          [key: string]: any;
+        };
+      };
+      /** Preferences specific to dashboard behavior */
+      dashboard: {
+        [key: string]: any;
+      };
+    };
+  };
+};
 export type GetOrgByDomainApiResponse = /** status 200 Successful response */ {
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   id: string;
@@ -8976,6 +9157,236 @@ export type GetOrgByDomainApiResponse = /** status 200 Successful response */ {
 export type GetOrgByDomainApiArg = {
   domain: string;
 };
+export type GetOrgApiResponse = /** status 200 Single-organization page response */ {
+  page?: number;
+  page_size?: number;
+  total_count?: number;
+  organizations?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id?: string;
+    name?: string;
+    description?: string;
+    country?: string;
+    region?: string;
+    owner?: string;
+    metadata?: {
+      preferences: {
+        theme: {
+          id: string;
+          logo: {
+            desktop_view: {
+              svg: string;
+              location: string;
+            };
+            mobile_view: {
+              svg: string;
+              location: string;
+            };
+            dark_desktop_view: {
+              svg: string;
+              location: string;
+            };
+            dark_mobile_view: {
+              svg: string;
+              location: string;
+            };
+          };
+          vars?: {
+            [key: string]: any;
+          };
+        };
+        /** Preferences specific to dashboard behavior */
+        dashboard: {
+          [key: string]: any;
+        };
+      };
+    };
+    created_at?: string;
+    updated_at?: string;
+    deleted_at?: string;
+  }[];
+};
+export type GetOrgApiArg = {
+  orgId: string;
+};
+export type DeleteOrgApiResponse = /** status 200 Single-organization page response for the deleted organization */ {
+  page?: number;
+  page_size?: number;
+  total_count?: number;
+  organizations?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id?: string;
+    name?: string;
+    description?: string;
+    country?: string;
+    region?: string;
+    owner?: string;
+    metadata?: {
+      preferences: {
+        theme: {
+          id: string;
+          logo: {
+            desktop_view: {
+              svg: string;
+              location: string;
+            };
+            mobile_view: {
+              svg: string;
+              location: string;
+            };
+            dark_desktop_view: {
+              svg: string;
+              location: string;
+            };
+            dark_mobile_view: {
+              svg: string;
+              location: string;
+            };
+          };
+          vars?: {
+            [key: string]: any;
+          };
+        };
+        /** Preferences specific to dashboard behavior */
+        dashboard: {
+          [key: string]: any;
+        };
+      };
+    };
+    created_at?: string;
+    updated_at?: string;
+    deleted_at?: string;
+  }[];
+};
+export type DeleteOrgApiArg = {
+  orgId: string;
+};
+export type HandleUpdateOrgApiResponse =
+  /** status 200 Single-organization page response for the updated organization */ {
+    page?: number;
+    page_size?: number;
+    total_count?: number;
+    organizations?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id?: string;
+      name?: string;
+      description?: string;
+      country?: string;
+      region?: string;
+      owner?: string;
+      metadata?: {
+        preferences: {
+          theme: {
+            id: string;
+            logo: {
+              desktop_view: {
+                svg: string;
+                location: string;
+              };
+              mobile_view: {
+                svg: string;
+                location: string;
+              };
+              dark_desktop_view: {
+                svg: string;
+                location: string;
+              };
+              dark_mobile_view: {
+                svg: string;
+                location: string;
+              };
+            };
+            vars?: {
+              [key: string]: any;
+            };
+          };
+          /** Preferences specific to dashboard behavior */
+          dashboard: {
+            [key: string]: any;
+          };
+        };
+      };
+      created_at?: string;
+      updated_at?: string;
+      deleted_at?: string;
+    }[];
+  };
+export type HandleUpdateOrgApiArg = {
+  orgId: string;
+  /** Body for creating or updating an organization */
+  body: {
+    name?: string;
+    country?: string;
+    region?: string;
+    description?: string;
+    notify_org_update?: boolean;
+    preferences?: {
+      theme: {
+        id: string;
+        logo: {
+          desktop_view: {
+            svg: string;
+            location: string;
+          };
+          mobile_view: {
+            svg: string;
+            location: string;
+          };
+          dark_desktop_view: {
+            svg: string;
+            location: string;
+          };
+          dark_mobile_view: {
+            svg: string;
+            location: string;
+          };
+        };
+        vars?: {
+          [key: string]: any;
+        };
+      };
+      /** Preferences specific to dashboard behavior */
+      dashboard: {
+        [key: string]: any;
+      };
+    };
+  };
+};
+export type GetOrgPreferencesApiResponse = /** status 200 Organization metadata, including preferences */ {
+  preferences: {
+    theme: {
+      id: string;
+      logo: {
+        desktop_view: {
+          svg: string;
+          location: string;
+        };
+        mobile_view: {
+          svg: string;
+          location: string;
+        };
+        dark_desktop_view: {
+          svg: string;
+          location: string;
+        };
+        dark_mobile_view: {
+          svg: string;
+          location: string;
+        };
+      };
+      vars?: {
+        [key: string]: any;
+      };
+    };
+    /** Preferences specific to dashboard behavior */
+    dashboard: {
+      [key: string]: any;
+    };
+  };
+};
+export type GetOrgPreferencesApiArg = {
+  orgId: string;
+};
 export type AddTeamToOrgApiResponse = /** status 200 Team added to organization or team tombstoned */
   | {
       page?: number;
@@ -9014,6 +9425,64 @@ export type AddTeamToOrgApiArg = {
     /** Internal action to perform on the team resource. */
     action?: "delete";
   };
+};
+export type GetTeamByIdApiResponse = /** status 200 Team */ {
+  /** Team ID */
+  id: string;
+  /** Team name */
+  name: string;
+  /** Team description */
+  description?: string;
+  /** User ID of the owner of the team */
+  owner?: string;
+  /** Additional metadata for the team */
+  metadata?: object;
+  created_at?: string;
+  updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deleted_at?: string;
+};
+export type GetTeamByIdApiArg = {
+  /** Organization ID */
+  orgId: string;
+  /** Team ID */
+  teamId: string;
+};
+export type UpdateTeamApiResponse = /** status 200 Updated team */ {
+  /** Team ID */
+  id: string;
+  /** Team name */
+  name: string;
+  /** Team description */
+  description?: string;
+  /** User ID of the owner of the team */
+  owner?: string;
+  /** Additional metadata for the team */
+  metadata?: object;
+  created_at?: string;
+  updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deleted_at?: string;
+};
+export type UpdateTeamApiArg = {
+  /** Organization ID */
+  orgId: string;
+  /** Team ID */
+  teamId: string;
+  /** Body for updating a team */
+  body: {
+    /** Updated team name */
+    name?: string;
+    /** Updated team description */
+    description?: string;
+  };
+};
+export type DeleteTeamApiResponse = unknown;
+export type DeleteTeamApiArg = {
+  /** Organization ID */
+  orgId: string;
+  /** Team ID */
+  teamId: string;
 };
 export type RemoveTeamFromOrgApiResponse = /** status 200 Team removed from organization */ {
   page?: number;
@@ -9516,64 +9985,6 @@ export type CreateTeamApiArg = {
     description?: string;
   };
 };
-export type GetTeamByIdApiResponse = /** status 200 Team */ {
-  /** Team ID */
-  id: string;
-  /** Team name */
-  name: string;
-  /** Team description */
-  description?: string;
-  /** User ID of the owner of the team */
-  owner?: string;
-  /** Additional metadata for the team */
-  metadata?: object;
-  created_at?: string;
-  updated_at?: string;
-  /** SQL null Timestamp to handle null values of time. */
-  deleted_at?: string;
-};
-export type GetTeamByIdApiArg = {
-  /** Organization ID */
-  orgId: string;
-  /** Team ID */
-  teamId: string;
-};
-export type UpdateTeamApiResponse = /** status 200 Updated team */ {
-  /** Team ID */
-  id: string;
-  /** Team name */
-  name: string;
-  /** Team description */
-  description?: string;
-  /** User ID of the owner of the team */
-  owner?: string;
-  /** Additional metadata for the team */
-  metadata?: object;
-  created_at?: string;
-  updated_at?: string;
-  /** SQL null Timestamp to handle null values of time. */
-  deleted_at?: string;
-};
-export type UpdateTeamApiArg = {
-  /** Organization ID */
-  orgId: string;
-  /** Team ID */
-  teamId: string;
-  /** Body for updating a team */
-  body: {
-    /** Updated team name */
-    name?: string;
-    /** Updated team description */
-    description?: string;
-  };
-};
-export type DeleteTeamApiResponse = unknown;
-export type DeleteTeamApiArg = {
-  /** Organization ID */
-  orgId: string;
-  /** Team ID */
-  teamId: string;
-};
 export type GetTeamUsersApiResponse = /** status 200 Team users mapping */ {
   page?: number;
   page_size?: number;
@@ -9819,6 +10230,509 @@ export type IssueIndefiniteLifetimeTokenApiArg = {
   /** Remote provider. */
   provider: string;
 };
+export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organization users */ {
+  page?: number;
+  page_size?: number;
+  total_count?: number;
+  data?: {
+    /** Unique identifier for the user */
+    id: string;
+    /** User identifier (username or external ID) */
+    user_id: string;
+    /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
+    provider: string;
+    /** User's email address */
+    email: string;
+    /** User's first name */
+    first_name: string;
+    /** User's last name */
+    last_name: string;
+    /** URL to user's avatar image */
+    avatar_url?: string;
+    /** User account status */
+    status: "active" | "inactive" | "pending" | "anonymous";
+    /** User's biography or description */
+    bio?: string;
+    /** User's country information stored as JSONB */
+    country?: {
+      [key: string]: any;
+    };
+    /** User's region information stored as JSONB */
+    region?: {
+      [key: string]: any;
+    };
+    /** User preferences stored as JSONB */
+    preferences?: {
+      meshAdapters?: object[];
+      grafana?: {
+        grafanaURL?: string;
+        grafanaAPIKey?: string;
+        selectedBoardsConfigs?: {
+          /** Placeholder for GrafanaBoard definition (define fields as needed) */
+          board?: object;
+          panels?: object[];
+          templateVars?: string[];
+        }[];
+      };
+      prometheus?: {
+        prometheusURL?: string;
+        selectedPrometheusBoardsConfigs?: {
+          /** Placeholder for GrafanaBoard definition (define fields as needed) */
+          board?: object;
+          panels?: object[];
+          templateVars?: string[];
+        }[];
+      };
+      loadTestPrefs?: {
+        /** Concurrent requests */
+        c?: number;
+        /** Queries per second */
+        qps?: number;
+        /** Duration */
+        t?: string;
+        /** Load generator */
+        gen?: string;
+      };
+      anonymousUsageStats: boolean;
+      anonymousPerfResults: boolean;
+      updated_at: string;
+      dashboardPreferences: {
+        [key: string]: any;
+      };
+      selectedOrganizationID: string;
+      selectedWorkspaceForOrganizations: {
+        [key: string]: string;
+      };
+      usersExtensionPreferences: {
+        [key: string]: any;
+      };
+      remoteProviderPreferences: {
+        [key: string]: any;
+      };
+    };
+    /** Timestamp when user accepted terms and conditions */
+    accepted_terms_at?: string;
+    /** Timestamp of user's first login */
+    first_login_time?: string;
+    /** Timestamp of user's most recent login */
+    last_login_time: string;
+    /** Timestamp when the user record was created */
+    created_at: string;
+    /** Timestamp when the user record was last updated */
+    updated_at: string;
+    /** Various online profiles associated with the user account */
+    socials?: {
+      site: string;
+      link: string;
+    }[];
+    /** Timestamp when the user record was soft-deleted (null if not deleted) */
+    deleted_at: string | null;
+    /** List of global roles assigned to the user */
+    role_names?: (
+      | "admin"
+      | "meshmap"
+      | "curator"
+      | "team admin"
+      | "workspace admin"
+      | "workspace manager"
+      | "organization admin"
+      | "user"
+    )[];
+    /** Teams the user belongs to with role information */
+    teams?: {
+      teams_with_roles?: object[];
+      total_count?: number;
+    };
+    /** Organizations the user belongs to with role information */
+    organizations?: {
+      organizations_with_roles?: object[];
+      total_count?: number;
+    };
+  }[];
+};
+export type GetUsersForOrgApiArg = {
+  /** Organization ID */
+  orgId: string;
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get filtered reponses */
+  filter?: string;
+  /** Optional team filter when listing organization users */
+  teamId?: string;
+};
+export type GetUsersApiResponse = /** status 200 Paginated list of public users */ {
+  page?: number;
+  page_size?: number;
+  total_count?: number;
+  data?: {
+    /** Unique identifier for the user */
+    id: string;
+    /** User identifier (username or external ID) */
+    user_id: string;
+    /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
+    provider: string;
+    /** User's email address */
+    email: string;
+    /** User's first name */
+    first_name: string;
+    /** User's last name */
+    last_name: string;
+    /** URL to user's avatar image */
+    avatar_url?: string;
+    /** User account status */
+    status: "active" | "inactive" | "pending" | "anonymous";
+    /** User's biography or description */
+    bio?: string;
+    /** User's country information stored as JSONB */
+    country?: {
+      [key: string]: any;
+    };
+    /** User's region information stored as JSONB */
+    region?: {
+      [key: string]: any;
+    };
+    /** User preferences stored as JSONB */
+    preferences?: {
+      meshAdapters?: object[];
+      grafana?: {
+        grafanaURL?: string;
+        grafanaAPIKey?: string;
+        selectedBoardsConfigs?: {
+          /** Placeholder for GrafanaBoard definition (define fields as needed) */
+          board?: object;
+          panels?: object[];
+          templateVars?: string[];
+        }[];
+      };
+      prometheus?: {
+        prometheusURL?: string;
+        selectedPrometheusBoardsConfigs?: {
+          /** Placeholder for GrafanaBoard definition (define fields as needed) */
+          board?: object;
+          panels?: object[];
+          templateVars?: string[];
+        }[];
+      };
+      loadTestPrefs?: {
+        /** Concurrent requests */
+        c?: number;
+        /** Queries per second */
+        qps?: number;
+        /** Duration */
+        t?: string;
+        /** Load generator */
+        gen?: string;
+      };
+      anonymousUsageStats: boolean;
+      anonymousPerfResults: boolean;
+      updated_at: string;
+      dashboardPreferences: {
+        [key: string]: any;
+      };
+      selectedOrganizationID: string;
+      selectedWorkspaceForOrganizations: {
+        [key: string]: string;
+      };
+      usersExtensionPreferences: {
+        [key: string]: any;
+      };
+      remoteProviderPreferences: {
+        [key: string]: any;
+      };
+    };
+    /** Timestamp when user accepted terms and conditions */
+    accepted_terms_at?: string;
+    /** Timestamp of user's first login */
+    first_login_time?: string;
+    /** Timestamp of user's most recent login */
+    last_login_time: string;
+    /** Timestamp when the user record was created */
+    created_at: string;
+    /** Timestamp when the user record was last updated */
+    updated_at: string;
+    /** Various online profiles associated with the user account */
+    socials?: {
+      site: string;
+      link: string;
+    }[];
+    /** Timestamp when the user record was soft-deleted (null if not deleted) */
+    deleted_at: string | null;
+    /** List of global roles assigned to the user */
+    role_names?: (
+      | "admin"
+      | "meshmap"
+      | "curator"
+      | "team admin"
+      | "workspace admin"
+      | "workspace manager"
+      | "organization admin"
+      | "user"
+    )[];
+    /** Teams the user belongs to with role information */
+    teams?: {
+      teams_with_roles?: object[];
+      total_count?: number;
+    };
+    /** Organizations the user belongs to with role information */
+    organizations?: {
+      organizations_with_roles?: object[];
+      total_count?: number;
+    };
+  }[];
+};
+export type GetUsersApiArg = {
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get filtered reponses */
+  filter?: string;
+};
+export type GetUserProfileByIdApiResponse = /** status 200 User profile for the requested ID */ {
+  /** Unique identifier for the user */
+  id: string;
+  /** User identifier (username or external ID) */
+  user_id: string;
+  /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
+  provider: string;
+  /** User's email address */
+  email: string;
+  /** User's first name */
+  first_name: string;
+  /** User's last name */
+  last_name: string;
+  /** URL to user's avatar image */
+  avatar_url?: string;
+  /** User account status */
+  status: "active" | "inactive" | "pending" | "anonymous";
+  /** User's biography or description */
+  bio?: string;
+  /** User's country information stored as JSONB */
+  country?: {
+    [key: string]: any;
+  };
+  /** User's region information stored as JSONB */
+  region?: {
+    [key: string]: any;
+  };
+  /** User preferences stored as JSONB */
+  preferences?: {
+    meshAdapters?: object[];
+    grafana?: {
+      grafanaURL?: string;
+      grafanaAPIKey?: string;
+      selectedBoardsConfigs?: {
+        /** Placeholder for GrafanaBoard definition (define fields as needed) */
+        board?: object;
+        panels?: object[];
+        templateVars?: string[];
+      }[];
+    };
+    prometheus?: {
+      prometheusURL?: string;
+      selectedPrometheusBoardsConfigs?: {
+        /** Placeholder for GrafanaBoard definition (define fields as needed) */
+        board?: object;
+        panels?: object[];
+        templateVars?: string[];
+      }[];
+    };
+    loadTestPrefs?: {
+      /** Concurrent requests */
+      c?: number;
+      /** Queries per second */
+      qps?: number;
+      /** Duration */
+      t?: string;
+      /** Load generator */
+      gen?: string;
+    };
+    anonymousUsageStats: boolean;
+    anonymousPerfResults: boolean;
+    updated_at: string;
+    dashboardPreferences: {
+      [key: string]: any;
+    };
+    selectedOrganizationID: string;
+    selectedWorkspaceForOrganizations: {
+      [key: string]: string;
+    };
+    usersExtensionPreferences: {
+      [key: string]: any;
+    };
+    remoteProviderPreferences: {
+      [key: string]: any;
+    };
+  };
+  /** Timestamp when user accepted terms and conditions */
+  accepted_terms_at?: string;
+  /** Timestamp of user's first login */
+  first_login_time?: string;
+  /** Timestamp of user's most recent login */
+  last_login_time: string;
+  /** Timestamp when the user record was created */
+  created_at: string;
+  /** Timestamp when the user record was last updated */
+  updated_at: string;
+  /** Various online profiles associated with the user account */
+  socials?: {
+    site: string;
+    link: string;
+  }[];
+  /** Timestamp when the user record was soft-deleted (null if not deleted) */
+  deleted_at: string | null;
+  /** List of global roles assigned to the user */
+  role_names?: (
+    | "admin"
+    | "meshmap"
+    | "curator"
+    | "team admin"
+    | "workspace admin"
+    | "workspace manager"
+    | "organization admin"
+    | "user"
+  )[];
+  /** Teams the user belongs to with role information */
+  teams?: {
+    teams_with_roles?: object[];
+    total_count?: number;
+  };
+  /** Organizations the user belongs to with role information */
+  organizations?: {
+    organizations_with_roles?: object[];
+    total_count?: number;
+  };
+};
+export type GetUserProfileByIdApiArg = {
+  /** User ID */
+  id: string;
+};
+export type GetUserApiResponse = /** status 200 Current user profile and role context */ {
+  /** Unique identifier for the user */
+  id: string;
+  /** User identifier (username or external ID) */
+  user_id: string;
+  /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
+  provider: string;
+  /** User's email address */
+  email: string;
+  /** User's first name */
+  first_name: string;
+  /** User's last name */
+  last_name: string;
+  /** URL to user's avatar image */
+  avatar_url?: string;
+  /** User account status */
+  status: "active" | "inactive" | "pending" | "anonymous";
+  /** User's biography or description */
+  bio?: string;
+  /** User's country information stored as JSONB */
+  country?: {
+    [key: string]: any;
+  };
+  /** User's region information stored as JSONB */
+  region?: {
+    [key: string]: any;
+  };
+  /** User preferences stored as JSONB */
+  preferences?: {
+    meshAdapters?: object[];
+    grafana?: {
+      grafanaURL?: string;
+      grafanaAPIKey?: string;
+      selectedBoardsConfigs?: {
+        /** Placeholder for GrafanaBoard definition (define fields as needed) */
+        board?: object;
+        panels?: object[];
+        templateVars?: string[];
+      }[];
+    };
+    prometheus?: {
+      prometheusURL?: string;
+      selectedPrometheusBoardsConfigs?: {
+        /** Placeholder for GrafanaBoard definition (define fields as needed) */
+        board?: object;
+        panels?: object[];
+        templateVars?: string[];
+      }[];
+    };
+    loadTestPrefs?: {
+      /** Concurrent requests */
+      c?: number;
+      /** Queries per second */
+      qps?: number;
+      /** Duration */
+      t?: string;
+      /** Load generator */
+      gen?: string;
+    };
+    anonymousUsageStats: boolean;
+    anonymousPerfResults: boolean;
+    updated_at: string;
+    dashboardPreferences: {
+      [key: string]: any;
+    };
+    selectedOrganizationID: string;
+    selectedWorkspaceForOrganizations: {
+      [key: string]: string;
+    };
+    usersExtensionPreferences: {
+      [key: string]: any;
+    };
+    remoteProviderPreferences: {
+      [key: string]: any;
+    };
+  };
+  /** Timestamp when user accepted terms and conditions */
+  accepted_terms_at?: string;
+  /** Timestamp of user's first login */
+  first_login_time?: string;
+  /** Timestamp of user's most recent login */
+  last_login_time: string;
+  /** Timestamp when the user record was created */
+  created_at: string;
+  /** Timestamp when the user record was last updated */
+  updated_at: string;
+  /** Various online profiles associated with the user account */
+  socials?: {
+    site: string;
+    link: string;
+  }[];
+  /** Timestamp when the user record was soft-deleted (null if not deleted) */
+  deleted_at: string | null;
+  /** List of global roles assigned to the user */
+  role_names?: (
+    | "admin"
+    | "meshmap"
+    | "curator"
+    | "team admin"
+    | "workspace admin"
+    | "workspace manager"
+    | "organization admin"
+    | "user"
+  )[];
+  /** Teams the user belongs to with role information */
+  teams?: {
+    teams_with_roles?: object[];
+    total_count?: number;
+  };
+  /** Organizations the user belongs to with role information */
+  organizations?: {
+    organizations_with_roles?: object[];
+    total_count?: number;
+  };
+};
+export type GetUserApiArg = void;
 export type GetWorkspacesApiResponse = /** status 200 Workspaces */ {
   page?: number;
   page_size?: number;
@@ -11316,7 +12230,7 @@ export const {
   useGetEnvironmentsQuery,
   useDeleteEventsByIdMutation,
   usePostEventsMutation,
-  useDeleteEventsMutation,
+  usePostEventsDeleteMutation,
   usePutEventsStatusMutation,
   usePutEventsByIdStatusMutation,
   useGetEventsOfWorkspaceQuery,
@@ -11342,8 +12256,17 @@ export const {
   useRemoveKeyFromKeychainMutation,
   useGetKeysOfKeychainQuery,
   useRegisterMeshmodelsMutation,
+  useGetOrgsQuery,
+  useCreateOrgMutation,
   useGetOrgByDomainQuery,
+  useGetOrgQuery,
+  useDeleteOrgMutation,
+  useHandleUpdateOrgMutation,
+  useGetOrgPreferencesQuery,
   useAddTeamToOrgMutation,
+  useGetTeamByIdQuery,
+  useUpdateTeamMutation,
+  useDeleteTeamMutation,
   useRemoveTeamFromOrgMutation,
   useGetPlansQuery,
   useAddRoleHolderMutation,
@@ -11366,9 +12289,6 @@ export const {
   usePostApiEntitlementSubscriptionsWebhooksMutation,
   useGetTeamsQuery,
   useCreateTeamMutation,
-  useGetTeamByIdQuery,
-  useUpdateTeamMutation,
-  useDeleteTeamMutation,
   useGetTeamUsersQuery,
   useAddUserToTeamMutation,
   useRemoveUserFromTeamMutation,
@@ -11377,6 +12297,10 @@ export const {
   useDeleteUserTokenMutation,
   useGetUserTokensByIdQuery,
   useIssueIndefiniteLifetimeTokenQuery,
+  useGetUsersForOrgQuery,
+  useGetUsersQuery,
+  useGetUserProfileByIdQuery,
+  useGetUserQuery,
   useGetWorkspacesQuery,
   useCreateWorkspaceMutation,
   useGetWorkspaceByIdQuery,

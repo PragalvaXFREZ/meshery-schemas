@@ -108,6 +108,7 @@ const KeychainSchema: Record<string, unknown> = {
                       "type": "array",
                       "items": {
                         "type": "object",
+                        "additionalProperties": false,
                         "description": "Represents a collection of keys.",
                         "required": [
                           "id",
@@ -244,85 +245,25 @@ const KeychainSchema: Record<string, unknown> = {
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Represents a collection of keys.",
+                "description": "Input payload for creating or updating a keychain.",
                 "required": [
-                  "id",
-                  "name",
-                  "owner",
-                  "created_at",
-                  "updated_at"
+                  "name"
                 ],
                 "properties": {
-                  "id": {
-                    "description": "Unique identifier for the keychain.",
-                    "x-go-name": "ID",
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "id"
-                    },
-                    "x-order": 1,
-                    "type": "string",
-                    "format": "uuid",
-                    "x-go-type": "uuid.UUID",
-                    "x-go-type-import": {
-                      "path": "github.com/gofrs/uuid"
-                    }
-                  },
                   "name": {
                     "type": "string",
                     "description": "Name of the keychain.",
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "name"
-                    },
-                    "x-order": 2
+                    "x-order": 1
                   },
                   "owner": {
                     "description": "Owner of the keychain.",
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "owner"
-                    },
-                    "x-order": 3,
+                    "x-order": 2,
                     "type": "string",
                     "format": "uuid",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
                       "path": "github.com/gofrs/uuid"
                     }
-                  },
-                  "created_at": {
-                    "x-order": 4,
-                    "description": "Timestamp when the resource was created.",
-                    "x-go-type": "time.Time",
-                    "type": "string",
-                    "format": "date-time",
-                    "x-go-name": "CreatedAt",
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "created_at",
-                      "yaml": "created_at"
-                    },
-                    "x-go-type-skip-optional-pointer": true
-                  },
-                  "updated_at": {
-                    "x-order": 5,
-                    "description": "Timestamp when the resource was updated.",
-                    "x-go-type": "time.Time",
-                    "type": "string",
-                    "format": "date-time",
-                    "x-go-name": "UpdatedAt",
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "updated_at",
-                      "yaml": "updated_at"
-                    },
-                    "x-go-type-skip-optional-pointer": true
-                  },
-                  "deleted_at": {
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "deleted_at"
-                    },
-                    "x-order": 6,
-                    "description": "SQL null Timestamp to handle null values of time.",
-                    "x-go-type": "sql.NullTime",
-                    "type": "string",
-                    "x-go-type-skip-optional-pointer": true
                   }
                 }
               }
@@ -336,6 +277,7 @@ const KeychainSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "additionalProperties": false,
                   "description": "Represents a collection of keys.",
                   "required": [
                     "id",
@@ -488,6 +430,7 @@ const KeychainSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "additionalProperties": false,
                   "description": "Represents a collection of keys.",
                   "required": [
                     "id",
@@ -647,85 +590,25 @@ const KeychainSchema: Record<string, unknown> = {
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Represents a collection of keys.",
+                "description": "Input payload for creating or updating a keychain.",
                 "required": [
-                  "id",
-                  "name",
-                  "owner",
-                  "created_at",
-                  "updated_at"
+                  "name"
                 ],
                 "properties": {
-                  "id": {
-                    "description": "Unique identifier for the keychain.",
-                    "x-go-name": "ID",
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "id"
-                    },
-                    "x-order": 1,
-                    "type": "string",
-                    "format": "uuid",
-                    "x-go-type": "uuid.UUID",
-                    "x-go-type-import": {
-                      "path": "github.com/gofrs/uuid"
-                    }
-                  },
                   "name": {
                     "type": "string",
                     "description": "Name of the keychain.",
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "name"
-                    },
-                    "x-order": 2
+                    "x-order": 1
                   },
                   "owner": {
                     "description": "Owner of the keychain.",
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "owner"
-                    },
-                    "x-order": 3,
+                    "x-order": 2,
                     "type": "string",
                     "format": "uuid",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
                       "path": "github.com/gofrs/uuid"
                     }
-                  },
-                  "created_at": {
-                    "x-order": 4,
-                    "description": "Timestamp when the resource was created.",
-                    "x-go-type": "time.Time",
-                    "type": "string",
-                    "format": "date-time",
-                    "x-go-name": "CreatedAt",
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "created_at",
-                      "yaml": "created_at"
-                    },
-                    "x-go-type-skip-optional-pointer": true
-                  },
-                  "updated_at": {
-                    "x-order": 5,
-                    "description": "Timestamp when the resource was updated.",
-                    "x-go-type": "time.Time",
-                    "type": "string",
-                    "format": "date-time",
-                    "x-go-name": "UpdatedAt",
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "updated_at",
-                      "yaml": "updated_at"
-                    },
-                    "x-go-type-skip-optional-pointer": true
-                  },
-                  "deleted_at": {
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "deleted_at"
-                    },
-                    "x-order": 6,
-                    "description": "SQL null Timestamp to handle null values of time.",
-                    "x-go-type": "sql.NullTime",
-                    "type": "string",
-                    "x-go-type-skip-optional-pointer": true
                   }
                 }
               }
@@ -739,6 +622,7 @@ const KeychainSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "additionalProperties": false,
                   "description": "Represents a collection of keys.",
                   "required": [
                     "id",
@@ -1207,6 +1091,7 @@ const KeychainSchema: Record<string, unknown> = {
                       "type": "array",
                       "items": {
                         "type": "object",
+                        "additionalProperties": false,
                         "description": "Represents an authorization key used for access control.",
                         "required": [
                           "id",
@@ -1485,6 +1370,7 @@ const KeychainSchema: Record<string, unknown> = {
     "schemas": {
       "Keychain": {
         "type": "object",
+        "additionalProperties": false,
         "description": "Represents a collection of keys.",
         "required": [
           "id",
@@ -1567,6 +1453,30 @@ const KeychainSchema: Record<string, unknown> = {
           }
         }
       },
+      "KeychainInput": {
+        "type": "object",
+        "description": "Input payload for creating or updating a keychain.",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the keychain.",
+            "x-order": 1
+          },
+          "owner": {
+            "description": "Owner of the keychain.",
+            "x-order": 2,
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          }
+        }
+      },
       "KeychainPage": {
         "type": "object",
         "required": [
@@ -1595,6 +1505,7 @@ const KeychainSchema: Record<string, unknown> = {
             "type": "array",
             "items": {
               "type": "object",
+              "additionalProperties": false,
               "description": "Represents a collection of keys.",
               "required": [
                 "id",

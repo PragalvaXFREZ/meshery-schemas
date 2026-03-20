@@ -25,7 +25,7 @@ const ConnectionSchema: Record<string, unknown> = {
         "tags": [
           "Connections"
         ],
-        "operationId": "GetConnections",
+        "operationId": "getConnections",
         "summary": "Get all connections",
         "description": "Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support",
         "parameters": [
@@ -578,7 +578,7 @@ const ConnectionSchema: Record<string, unknown> = {
         "tags": [
           "Connections"
         ],
-        "operationId": "RegisterConnection",
+        "operationId": "registerConnection",
         "summary": "Register a new connection",
         "description": "Register a new connection with credentials",
         "requestBody": {
@@ -1066,7 +1066,7 @@ const ConnectionSchema: Record<string, unknown> = {
         "tags": [
           "Connections"
         ],
-        "operationId": "GetConnectionById",
+        "operationId": "getConnectionById",
         "summary": "Get connection by ID",
         "description": "Returns a specific connection by its ID",
         "parameters": [
@@ -1467,7 +1467,7 @@ const ConnectionSchema: Record<string, unknown> = {
         "tags": [
           "Connections"
         ],
-        "operationId": "UpdateConnection",
+        "operationId": "updateConnection",
         "summary": "Update a connection",
         "description": "Update an existing connection",
         "parameters": [
@@ -1965,7 +1965,7 @@ const ConnectionSchema: Record<string, unknown> = {
         "tags": [
           "Connections"
         ],
-        "operationId": "DeleteConnection",
+        "operationId": "deleteConnection",
         "summary": "Delete a connection",
         "description": "Delete a specific connection",
         "parameters": [
@@ -1998,7 +1998,7 @@ const ConnectionSchema: Record<string, unknown> = {
         "tags": [
           "Connections"
         ],
-        "operationId": "DeleteMesheryConnection",
+        "operationId": "deleteMesheryConnection",
         "summary": "Delete Meshery instance connection",
         "description": "Delete a Meshery server connection by server ID",
         "parameters": [
@@ -2031,7 +2031,7 @@ const ConnectionSchema: Record<string, unknown> = {
         "tags": [
           "Connections"
         ],
-        "operationId": "GetKubernetesContext",
+        "operationId": "getKubernetesContext",
         "summary": "Get Kubernetes context",
         "description": "Get Kubernetes context for a specific connection",
         "parameters": [
@@ -2071,7 +2071,7 @@ const ConnectionSchema: Record<string, unknown> = {
         "tags": [
           "Connections"
         ],
-        "operationId": "AddConnectionToEnvironment",
+        "operationId": "addConnectionToEnvironment",
         "summary": "Add connection to environment",
         "description": "Associate a connection with an environment",
         "parameters": [
@@ -2112,7 +2112,7 @@ const ConnectionSchema: Record<string, unknown> = {
         "tags": [
           "Connections"
         ],
-        "operationId": "RemoveConnectionFromEnvironment",
+        "operationId": "removeConnectionFromEnvironment",
         "summary": "Remove connection from environment",
         "description": "Disassociate a connection from an environment",
         "parameters": [

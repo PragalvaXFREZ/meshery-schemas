@@ -62,6 +62,39 @@ type Invitation struct {
 	UpdatedAt time.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
 }
 
+// InvitationPayload Payload for creating or updating an invitation.
+type InvitationPayload struct {
+	// Description Description of the invitation.
+	Description string         `json:"description" yaml:"description"`
+	Emails      pq.StringArray `json:"emails" yaml:"emails"`
+
+	// ExpiresAt Timestamp when the invitation expires, if applicable.
+	ExpiresAt *time.Time `db:"expires_at" json:"expires_at,omitempty" yaml:"expires_at,omitempty"`
+
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID *corev1alpha1.Uuid `json:"id,omitempty" yaml:"id,omitempty"`
+
+	// IsDefault Indicates whether the invitation is a default invitation (open invite).
+	IsDefault *bool `db:"is_default" json:"is_default,omitempty" yaml:"is_default,omitempty"`
+
+	// Name Name of the invitation.
+	Name string `json:"name" yaml:"name"`
+
+	// OrgId ID of the organization to which the user is invited.
+	OrgId string `db:"org_id" json:"org_id" yaml:"org_id"`
+
+	// OwnerId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OwnerId *corev1alpha1.Uuid `db:"owner_id" json:"owner_id,omitempty" yaml:"owner_id,omitempty"`
+
+	// Quota Quota for the invitation.
+	Quota *int           `json:"quota,omitempty" yaml:"quota,omitempty"`
+	Roles pq.StringArray `json:"roles" yaml:"roles"`
+
+	// Status Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
+	Status InvitationStatus `json:"status" yaml:"status"`
+	Teams  pq.StringArray   `json:"teams" yaml:"teams"`
+}
+
 // InvitationStatus Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
 type InvitationStatus string
 

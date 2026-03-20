@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-  "/api/identity/orgs/{orgID}/users/keys": {
+  "/api/identity/orgs/{orgId}/users/keys": {
     /** Get all keys based on roles assigned to user */
     get: operations["getUserKeys"];
   };
@@ -135,7 +135,7 @@ export interface components {
   };
   parameters: {
     /** @description Organization ID */
-    orgID: string;
+    orgId: string;
     /** @description Key ID */
     keyId: string;
     /** @description Get responses by page */
@@ -155,7 +155,7 @@ export interface operations {
     parameters: {
       path: {
         /** Organization ID */
-        orgID: string;
+        orgId: string;
       };
     };
     responses: {

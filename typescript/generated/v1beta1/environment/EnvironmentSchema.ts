@@ -312,7 +312,8 @@ const EnvironmentSchema: Record<string, unknown> = {
       },
       "environmentConnectionMapping": {
         "properties": {
-          "ID": {
+          "id": {
+            "x-go-name": "ID",
             "type": "string",
             "format": "uuid",
             "x-go-type": "uuid.UUID",
@@ -628,7 +629,7 @@ const EnvironmentSchema: Record<string, unknown> = {
         "tags": [
           "environments"
         ],
-        "operationId": "CreateEnvironment",
+        "operationId": "createEnvironment",
         "summary": "Create an environment",
         "description": "Creates a new environment",
         "requestBody": {
@@ -865,7 +866,7 @@ const EnvironmentSchema: Record<string, unknown> = {
         "tags": [
           "environments"
         ],
-        "operationId": "GetEnvironments",
+        "operationId": "getEnvironments",
         "summary": "Get all environments",
         "description": "Gets all environments",
         "parameters": [

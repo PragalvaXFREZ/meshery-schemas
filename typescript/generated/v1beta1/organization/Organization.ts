@@ -4,14 +4,34 @@
  */
 
 export interface paths {
+  "/api/identity/orgs": {
+    /** Returns organizations for the current user. */
+    get: operations["getOrgs"];
+    /** Creates a new organization. */
+    post: operations["createOrg"];
+  };
   "/api/identity/orgs/by-domain": {
     get: operations["getOrgByDomain"];
   };
-  "/api/identity/orgs/{orgID}/teams/{teamId}": {
+  "/api/identity/orgs/{orgId}": {
+    /** Returns the organization in the single-item page wrapper currently emitted by meshery-cloud. */
+    get: operations["getOrg"];
+    /** Updates the organization. */
+    put: operations["handleUpdateOrg"];
+    /** Deletes the organization. */
+    delete: operations["deleteOrg"];
+  };
+  "/api/identity/orgs/{orgId}/preferences": {
+    /** Returns preferences for the specified organization. */
+    get: operations["getOrgPreferences"];
+  };
+  "/api/identity/orgs/{orgId}/teams/{teamId}": {
     /** Adds a team to an organization. If request body contains action=delete, tombstones a team by setting its deleted_at timestamp. The team's organization mapping remains intact. */
-    post: operations["AddTeamToOrg"];
+    post: operations["addTeamToOrg"];
+  };
+  "/api/identity/orgs/{orgId}/teams/{teamId}/remove": {
     /** Removes (unassigns) a team from an organization. */
-    delete: operations["RemoveTeamFromOrg"];
+    post: operations["removeTeamFromOrg"];
   };
 }
 
@@ -28,7 +48,7 @@ export interface components {
     Time: string;
     Text: string;
     MapObject: { [key: string]: string };
-    /** @description Optional action payload for POST on /api/identity/orgs/{orgID}/teams/{teamId}. */
+    /** @description Optional action payload for POST on /api/identity/orgs/{orgId}/teams/{teamId}. */
     OrgTeamActionPayload: {
       /**
        * @description Internal action to perform on the team resource.
@@ -187,6 +207,188 @@ export interface components {
       deleted_at?: string;
       domain?: string | null;
     };
+    AvailableOrganization: {
+      /**
+       * Format: uuid
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+       */
+      id?: string;
+      name?: string;
+      description?: string;
+      country?: string;
+      region?: string;
+      owner?: string;
+      metadata?: {
+        preferences: {
+          theme: {
+            id: string;
+            logo: {
+              desktop_view: {
+                svg: string;
+                location: string;
+              };
+              mobile_view: {
+                svg: string;
+                location: string;
+              };
+              dark_desktop_view: {
+                svg: string;
+                location: string;
+              };
+              dark_mobile_view: {
+                svg: string;
+                location: string;
+              };
+            };
+            vars?: { [key: string]: unknown };
+          };
+          /** @description Preferences specific to dashboard behavior */
+          dashboard: { [key: string]: unknown };
+        };
+      };
+      /** Format: date-time */
+      created_at?: string;
+      /** Format: date-time */
+      updated_at?: string;
+      /** Format: date-time */
+      deleted_at?: string;
+    };
+    OrganizationsPage: {
+      page?: number;
+      page_size?: number;
+      total_count?: number;
+      organizations?: {
+        /**
+         * Format: uuid
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+         */
+        id?: string;
+        name?: string;
+        description?: string;
+        country?: string;
+        region?: string;
+        owner?: string;
+        metadata?: {
+          preferences: {
+            theme: {
+              id: string;
+              logo: {
+                desktop_view: {
+                  svg: string;
+                  location: string;
+                };
+                mobile_view: {
+                  svg: string;
+                  location: string;
+                };
+                dark_desktop_view: {
+                  svg: string;
+                  location: string;
+                };
+                dark_mobile_view: {
+                  svg: string;
+                  location: string;
+                };
+              };
+              vars?: { [key: string]: unknown };
+            };
+            /** @description Preferences specific to dashboard behavior */
+            dashboard: { [key: string]: unknown };
+          };
+        };
+        /** Format: date-time */
+        created_at?: string;
+        /** Format: date-time */
+        updated_at?: string;
+        /** Format: date-time */
+        deleted_at?: string;
+      }[];
+    };
+    /** @description Single-organization wrapper used by current meshery-cloud organization handlers. */
+    OrganizationPage: {
+      page?: number;
+      page_size?: number;
+      total_count?: number;
+      organizations?: {
+        /**
+         * Format: uuid
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+         */
+        id?: string;
+        name?: string;
+        description?: string;
+        country?: string;
+        region?: string;
+        owner?: string;
+        metadata?: {
+          preferences: {
+            theme: {
+              id: string;
+              logo: {
+                desktop_view: {
+                  svg: string;
+                  location: string;
+                };
+                mobile_view: {
+                  svg: string;
+                  location: string;
+                };
+                dark_desktop_view: {
+                  svg: string;
+                  location: string;
+                };
+                dark_mobile_view: {
+                  svg: string;
+                  location: string;
+                };
+              };
+              vars?: { [key: string]: unknown };
+            };
+            /** @description Preferences specific to dashboard behavior */
+            dashboard: { [key: string]: unknown };
+          };
+        };
+        /** Format: date-time */
+        created_at?: string;
+        /** Format: date-time */
+        updated_at?: string;
+        /** Format: date-time */
+        deleted_at?: string;
+      }[];
+    };
+    OrganizationPayload: {
+      name?: string;
+      country?: string;
+      region?: string;
+      description?: string;
+      notify_org_update?: boolean;
+      preferences?: {
+        theme: {
+          id: string;
+          logo: {
+            desktop_view: {
+              svg: string;
+              location: string;
+            };
+            mobile_view: {
+              svg: string;
+              location: string;
+            };
+            dark_desktop_view: {
+              svg: string;
+              location: string;
+            };
+            dark_mobile_view: {
+              svg: string;
+              location: string;
+            };
+          };
+          vars?: { [key: string]: unknown };
+        };
+        /** @description Preferences specific to dashboard behavior */
+        dashboard: { [key: string]: unknown };
+      };
+    };
     AvailableTeam: {
       /** Format: uuid */
       ID?: string;
@@ -254,13 +456,289 @@ export interface components {
       }[];
     };
   };
+  responses: {
+    /** Invalid request body or request param */
+    400: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Expired JWT token used or insufficient privilege */
+    401: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Result not found */
+    404: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Internal server error */
+    500: {
+      content: {
+        "text/plain": string;
+      };
+    };
+  };
   parameters: {
-    orgID: string;
+    orgId: string;
+    /** @description Get responses by page */
+    page: string;
+    /** @description Get responses by pagesize */
+    pagesize: string;
+    /** @description Get responses that match search param value */
+    search: string;
+    /** @description Get ordered responses */
+    order: string;
+    /** @description Get all possible entries */
+    all: boolean;
     teamId: string;
+  };
+  requestBodies: {
+    /** Body for creating or updating an organization */
+    organizationPayload: {
+      content: {
+        "application/json": {
+          name?: string;
+          country?: string;
+          region?: string;
+          description?: string;
+          notify_org_update?: boolean;
+          preferences?: {
+            theme: {
+              id: string;
+              logo: {
+                desktop_view: {
+                  svg: string;
+                  location: string;
+                };
+                mobile_view: {
+                  svg: string;
+                  location: string;
+                };
+                dark_desktop_view: {
+                  svg: string;
+                  location: string;
+                };
+                dark_mobile_view: {
+                  svg: string;
+                  location: string;
+                };
+              };
+              vars?: { [key: string]: unknown };
+            };
+            /** @description Preferences specific to dashboard behavior */
+            dashboard: { [key: string]: unknown };
+          };
+        };
+      };
+    };
   };
 }
 
 export interface operations {
+  /** Returns organizations for the current user. */
+  getOrgs: {
+    parameters: {
+      query: {
+        /** Get responses by page */
+        page?: string;
+        /** Get responses by pagesize */
+        pagesize?: string;
+        /** Get responses that match search param value */
+        search?: string;
+        /** Get ordered responses */
+        order?: string;
+        /** Get all possible entries */
+        all?: boolean;
+      };
+    };
+    responses: {
+      /** Organizations response */
+      200: {
+        content: {
+          "application/json": {
+            page?: number;
+            page_size?: number;
+            total_count?: number;
+            organizations?: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id?: string;
+              name?: string;
+              description?: string;
+              country?: string;
+              region?: string;
+              owner?: string;
+              metadata?: {
+                preferences: {
+                  theme: {
+                    id: string;
+                    logo: {
+                      desktop_view: {
+                        svg: string;
+                        location: string;
+                      };
+                      mobile_view: {
+                        svg: string;
+                        location: string;
+                      };
+                      dark_desktop_view: {
+                        svg: string;
+                        location: string;
+                      };
+                      dark_mobile_view: {
+                        svg: string;
+                        location: string;
+                      };
+                    };
+                    vars?: { [key: string]: unknown };
+                  };
+                  /** @description Preferences specific to dashboard behavior */
+                  dashboard: { [key: string]: unknown };
+                };
+              };
+              /** Format: date-time */
+              created_at?: string;
+              /** Format: date-time */
+              updated_at?: string;
+              /** Format: date-time */
+              deleted_at?: string;
+            }[];
+          };
+        };
+      };
+      /** No content */
+      204: never;
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  /** Creates a new organization. */
+  createOrg: {
+    responses: {
+      /** Single-organization page response */
+      201: {
+        content: {
+          "application/json": {
+            page?: number;
+            page_size?: number;
+            total_count?: number;
+            organizations?: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id?: string;
+              name?: string;
+              description?: string;
+              country?: string;
+              region?: string;
+              owner?: string;
+              metadata?: {
+                preferences: {
+                  theme: {
+                    id: string;
+                    logo: {
+                      desktop_view: {
+                        svg: string;
+                        location: string;
+                      };
+                      mobile_view: {
+                        svg: string;
+                        location: string;
+                      };
+                      dark_desktop_view: {
+                        svg: string;
+                        location: string;
+                      };
+                      dark_mobile_view: {
+                        svg: string;
+                        location: string;
+                      };
+                    };
+                    vars?: { [key: string]: unknown };
+                  };
+                  /** @description Preferences specific to dashboard behavior */
+                  dashboard: { [key: string]: unknown };
+                };
+              };
+              /** Format: date-time */
+              created_at?: string;
+              /** Format: date-time */
+              updated_at?: string;
+              /** Format: date-time */
+              deleted_at?: string;
+            }[];
+          };
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    /** Body for creating or updating an organization */
+    requestBody: {
+      content: {
+        "application/json": {
+          name?: string;
+          country?: string;
+          region?: string;
+          description?: string;
+          notify_org_update?: boolean;
+          preferences?: {
+            theme: {
+              id: string;
+              logo: {
+                desktop_view: {
+                  svg: string;
+                  location: string;
+                };
+                mobile_view: {
+                  svg: string;
+                  location: string;
+                };
+                dark_desktop_view: {
+                  svg: string;
+                  location: string;
+                };
+                dark_mobile_view: {
+                  svg: string;
+                  location: string;
+                };
+              };
+              vars?: { [key: string]: unknown };
+            };
+            /** @description Preferences specific to dashboard behavior */
+            dashboard: { [key: string]: unknown };
+          };
+        };
+      };
+    };
+  };
   getOrgByDomain: {
     parameters: {
       query: {
@@ -330,11 +808,356 @@ export interface operations {
       500: unknown;
     };
   };
-  /** Adds a team to an organization. If request body contains action=delete, tombstones a team by setting its deleted_at timestamp. The team's organization mapping remains intact. */
-  AddTeamToOrg: {
+  /** Returns the organization in the single-item page wrapper currently emitted by meshery-cloud. */
+  getOrg: {
     parameters: {
       path: {
-        orgID: string;
+        orgId: string;
+      };
+    };
+    responses: {
+      /** Single-organization page response */
+      200: {
+        content: {
+          "application/json": {
+            page?: number;
+            page_size?: number;
+            total_count?: number;
+            organizations?: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id?: string;
+              name?: string;
+              description?: string;
+              country?: string;
+              region?: string;
+              owner?: string;
+              metadata?: {
+                preferences: {
+                  theme: {
+                    id: string;
+                    logo: {
+                      desktop_view: {
+                        svg: string;
+                        location: string;
+                      };
+                      mobile_view: {
+                        svg: string;
+                        location: string;
+                      };
+                      dark_desktop_view: {
+                        svg: string;
+                        location: string;
+                      };
+                      dark_mobile_view: {
+                        svg: string;
+                        location: string;
+                      };
+                    };
+                    vars?: { [key: string]: unknown };
+                  };
+                  /** @description Preferences specific to dashboard behavior */
+                  dashboard: { [key: string]: unknown };
+                };
+              };
+              /** Format: date-time */
+              created_at?: string;
+              /** Format: date-time */
+              updated_at?: string;
+              /** Format: date-time */
+              deleted_at?: string;
+            }[];
+          };
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  /** Updates the organization. */
+  handleUpdateOrg: {
+    parameters: {
+      path: {
+        orgId: string;
+      };
+    };
+    responses: {
+      /** Single-organization page response for the updated organization */
+      200: {
+        content: {
+          "application/json": {
+            page?: number;
+            page_size?: number;
+            total_count?: number;
+            organizations?: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id?: string;
+              name?: string;
+              description?: string;
+              country?: string;
+              region?: string;
+              owner?: string;
+              metadata?: {
+                preferences: {
+                  theme: {
+                    id: string;
+                    logo: {
+                      desktop_view: {
+                        svg: string;
+                        location: string;
+                      };
+                      mobile_view: {
+                        svg: string;
+                        location: string;
+                      };
+                      dark_desktop_view: {
+                        svg: string;
+                        location: string;
+                      };
+                      dark_mobile_view: {
+                        svg: string;
+                        location: string;
+                      };
+                    };
+                    vars?: { [key: string]: unknown };
+                  };
+                  /** @description Preferences specific to dashboard behavior */
+                  dashboard: { [key: string]: unknown };
+                };
+              };
+              /** Format: date-time */
+              created_at?: string;
+              /** Format: date-time */
+              updated_at?: string;
+              /** Format: date-time */
+              deleted_at?: string;
+            }[];
+          };
+        };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    /** Body for creating or updating an organization */
+    requestBody: {
+      content: {
+        "application/json": {
+          name?: string;
+          country?: string;
+          region?: string;
+          description?: string;
+          notify_org_update?: boolean;
+          preferences?: {
+            theme: {
+              id: string;
+              logo: {
+                desktop_view: {
+                  svg: string;
+                  location: string;
+                };
+                mobile_view: {
+                  svg: string;
+                  location: string;
+                };
+                dark_desktop_view: {
+                  svg: string;
+                  location: string;
+                };
+                dark_mobile_view: {
+                  svg: string;
+                  location: string;
+                };
+              };
+              vars?: { [key: string]: unknown };
+            };
+            /** @description Preferences specific to dashboard behavior */
+            dashboard: { [key: string]: unknown };
+          };
+        };
+      };
+    };
+  };
+  /** Deletes the organization. */
+  deleteOrg: {
+    parameters: {
+      path: {
+        orgId: string;
+      };
+    };
+    responses: {
+      /** Single-organization page response for the deleted organization */
+      200: {
+        content: {
+          "application/json": {
+            page?: number;
+            page_size?: number;
+            total_count?: number;
+            organizations?: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id?: string;
+              name?: string;
+              description?: string;
+              country?: string;
+              region?: string;
+              owner?: string;
+              metadata?: {
+                preferences: {
+                  theme: {
+                    id: string;
+                    logo: {
+                      desktop_view: {
+                        svg: string;
+                        location: string;
+                      };
+                      mobile_view: {
+                        svg: string;
+                        location: string;
+                      };
+                      dark_desktop_view: {
+                        svg: string;
+                        location: string;
+                      };
+                      dark_mobile_view: {
+                        svg: string;
+                        location: string;
+                      };
+                    };
+                    vars?: { [key: string]: unknown };
+                  };
+                  /** @description Preferences specific to dashboard behavior */
+                  dashboard: { [key: string]: unknown };
+                };
+              };
+              /** Format: date-time */
+              created_at?: string;
+              /** Format: date-time */
+              updated_at?: string;
+              /** Format: date-time */
+              deleted_at?: string;
+            }[];
+          };
+        };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  /** Returns preferences for the specified organization. */
+  getOrgPreferences: {
+    parameters: {
+      path: {
+        orgId: string;
+      };
+    };
+    responses: {
+      /** Organization metadata, including preferences */
+      200: {
+        content: {
+          "application/json": {
+            preferences: {
+              theme: {
+                id: string;
+                logo: {
+                  desktop_view: {
+                    svg: string;
+                    location: string;
+                  };
+                  mobile_view: {
+                    svg: string;
+                    location: string;
+                  };
+                  dark_desktop_view: {
+                    svg: string;
+                    location: string;
+                  };
+                  dark_mobile_view: {
+                    svg: string;
+                    location: string;
+                  };
+                };
+                vars?: { [key: string]: unknown };
+              };
+              /** @description Preferences specific to dashboard behavior */
+              dashboard: { [key: string]: unknown };
+            };
+          };
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  /** Adds a team to an organization. If request body contains action=delete, tombstones a team by setting its deleted_at timestamp. The team's organization mapping remains intact. */
+  addTeamToOrg: {
+    parameters: {
+      path: {
+        orgId: string;
         teamId: string;
       };
     };
@@ -405,10 +1228,10 @@ export interface operations {
     };
   };
   /** Removes (unassigns) a team from an organization. */
-  RemoveTeamFromOrg: {
+  removeTeamFromOrg: {
     parameters: {
       path: {
-        orgID: string;
+        orgId: string;
         teamId: string;
       };
     };

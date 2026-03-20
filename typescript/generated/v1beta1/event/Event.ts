@@ -58,7 +58,9 @@ export interface paths {
         };
       };
     };
-    delete: {
+  };
+  "/events/delete": {
+    post: {
       responses: {
         /** event deleted */
         200: {
@@ -164,7 +166,7 @@ export interface paths {
   };
   "/api/workspaces/{workspaceId}/events": {
     /** Gets events for a workspace. */
-    get: operations["GetEventsOfWorkspace"];
+    get: operations["getEventsOfWorkspace"];
   };
 }
 
@@ -253,7 +255,7 @@ export interface components {
 
 export interface operations {
   /** Gets events for a workspace. */
-  GetEventsOfWorkspace: {
+  getEventsOfWorkspace: {
     parameters: {
       path: {
         /** Workspace ID */

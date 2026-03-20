@@ -20,6 +20,651 @@ const OrganizationSchema: Record<string, unknown> = {
     }
   },
   "paths": {
+    "/api/identity/orgs": {
+      "get": {
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "summary": "Read organizations",
+        "description": "Returns organizations for the current user.",
+        "operationId": "getOrgs",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Get responses by page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pagesize",
+            "in": "query",
+            "description": "Get responses by pagesize",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Get responses that match search param value",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Get ordered responses",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "all",
+            "in": "query",
+            "description": "Get all possible entries",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Organizations response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "page": {
+                      "type": "integer"
+                    },
+                    "page_size": {
+                      "type": "integer"
+                    },
+                    "total_count": {
+                      "type": "integer"
+                    },
+                    "organizations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "x-go-name": "ID",
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "name": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "description": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "country": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "region": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "owner": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "metadata": {
+                            "x-go-type": "OrgMetadata",
+                            "type": "object",
+                            "required": [
+                              "preferences"
+                            ],
+                            "properties": {
+                              "preferences": {
+                                "x-go-type": "Preferences",
+                                "type": "object",
+                                "required": [
+                                  "theme",
+                                  "dashboard"
+                                ],
+                                "properties": {
+                                  "theme": {
+                                    "x-go-type": "Theme",
+                                    "type": "object",
+                                    "required": [
+                                      "id",
+                                      "logo"
+                                    ],
+                                    "properties": {
+                                      "id": {
+                                        "type": "string"
+                                      },
+                                      "logo": {
+                                        "x-go-type": "Logo",
+                                        "type": "object",
+                                        "required": [
+                                          "desktop_view",
+                                          "mobile_view",
+                                          "dark_desktop_view",
+                                          "dark_mobile_view"
+                                        ],
+                                        "properties": {
+                                          "desktop_view": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string"
+                                              },
+                                              "location": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          },
+                                          "mobile_view": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string"
+                                              },
+                                              "location": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          },
+                                          "dark_desktop_view": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string"
+                                              },
+                                              "location": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          },
+                                          "dark_mobile_view": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string"
+                                              },
+                                              "location": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "vars": {
+                                        "type": "object",
+                                        "additionalProperties": true
+                                      }
+                                    }
+                                  },
+                                  "dashboard": {
+                                    "x-go-type": "DashboardPrefs",
+                                    "type": "object",
+                                    "description": "Preferences specific to dashboard behavior",
+                                    "additionalProperties": true
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "deleted_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type": "sql.NullTime",
+                            "x-go-type-import": {
+                              "path": "database/sql"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "No content"
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "summary": "Create an organization",
+        "description": "Creates a new organization.",
+        "operationId": "createOrg",
+        "requestBody": {
+          "description": "Body for creating or updating an organization",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "x-go-type-skip-optional-pointer": true
+                  },
+                  "country": {
+                    "type": "string",
+                    "x-go-type-skip-optional-pointer": true
+                  },
+                  "region": {
+                    "type": "string",
+                    "x-go-type-skip-optional-pointer": true
+                  },
+                  "description": {
+                    "type": "string",
+                    "x-go-type-skip-optional-pointer": true
+                  },
+                  "notify_org_update": {
+                    "type": "boolean"
+                  },
+                  "preferences": {
+                    "type": "object",
+                    "required": [
+                      "theme",
+                      "dashboard"
+                    ],
+                    "properties": {
+                      "theme": {
+                        "x-go-type": "Theme",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "logo"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "logo": {
+                            "x-go-type": "Logo",
+                            "type": "object",
+                            "required": [
+                              "desktop_view",
+                              "mobile_view",
+                              "dark_desktop_view",
+                              "dark_mobile_view"
+                            ],
+                            "properties": {
+                              "desktop_view": {
+                                "x-go-type": "Location",
+                                "type": "object",
+                                "required": [
+                                  "svg",
+                                  "location"
+                                ],
+                                "properties": {
+                                  "svg": {
+                                    "type": "string"
+                                  },
+                                  "location": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              "mobile_view": {
+                                "x-go-type": "Location",
+                                "type": "object",
+                                "required": [
+                                  "svg",
+                                  "location"
+                                ],
+                                "properties": {
+                                  "svg": {
+                                    "type": "string"
+                                  },
+                                  "location": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              "dark_desktop_view": {
+                                "x-go-type": "Location",
+                                "type": "object",
+                                "required": [
+                                  "svg",
+                                  "location"
+                                ],
+                                "properties": {
+                                  "svg": {
+                                    "type": "string"
+                                  },
+                                  "location": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              "dark_mobile_view": {
+                                "x-go-type": "Location",
+                                "type": "object",
+                                "required": [
+                                  "svg",
+                                  "location"
+                                ],
+                                "properties": {
+                                  "svg": {
+                                    "type": "string"
+                                  },
+                                  "location": {
+                                    "type": "string"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "vars": {
+                            "type": "object",
+                            "additionalProperties": true
+                          }
+                        }
+                      },
+                      "dashboard": {
+                        "x-go-type": "DashboardPrefs",
+                        "type": "object",
+                        "description": "Preferences specific to dashboard behavior",
+                        "additionalProperties": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Single-organization page response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Single-organization wrapper used by current meshery-cloud organization handlers.",
+                  "properties": {
+                    "page": {
+                      "type": "integer"
+                    },
+                    "page_size": {
+                      "type": "integer"
+                    },
+                    "total_count": {
+                      "type": "integer"
+                    },
+                    "organizations": {
+                      "type": "array",
+                      "maxItems": 1,
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "x-go-name": "ID",
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "name": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "description": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "country": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "region": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "owner": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "metadata": {
+                            "x-go-type": "OrgMetadata",
+                            "type": "object",
+                            "required": [
+                              "preferences"
+                            ],
+                            "properties": {
+                              "preferences": {
+                                "x-go-type": "Preferences",
+                                "type": "object",
+                                "required": [
+                                  "theme",
+                                  "dashboard"
+                                ],
+                                "properties": {
+                                  "theme": {
+                                    "x-go-type": "Theme",
+                                    "type": "object",
+                                    "required": [
+                                      "id",
+                                      "logo"
+                                    ],
+                                    "properties": {
+                                      "id": {
+                                        "type": "string"
+                                      },
+                                      "logo": {
+                                        "x-go-type": "Logo",
+                                        "type": "object",
+                                        "required": [
+                                          "desktop_view",
+                                          "mobile_view",
+                                          "dark_desktop_view",
+                                          "dark_mobile_view"
+                                        ],
+                                        "properties": {
+                                          "desktop_view": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string"
+                                              },
+                                              "location": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          },
+                                          "mobile_view": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string"
+                                              },
+                                              "location": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          },
+                                          "dark_desktop_view": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string"
+                                              },
+                                              "location": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          },
+                                          "dark_mobile_view": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string"
+                                              },
+                                              "location": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "vars": {
+                                        "type": "object",
+                                        "additionalProperties": true
+                                      }
+                                    }
+                                  },
+                                  "dashboard": {
+                                    "x-go-type": "DashboardPrefs",
+                                    "type": "object",
+                                    "description": "Preferences specific to dashboard behavior",
+                                    "additionalProperties": true
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "deleted_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type": "sql.NullTime",
+                            "x-go-type-import": {
+                              "path": "database/sql"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/identity/orgs/by-domain": {
       "get": {
         "summary": "Get organization by domain",
@@ -223,32 +868,32 @@ const OrganizationSchema: Record<string, unknown> = {
                       }
                     },
                     "created_at": {
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "created_at"
-                      },
-                      "type": "string",
-                      "format": "date-time",
-                      "x-go-type-skip-optional-pointer": true
+                      }
                     },
                     "updated_at": {
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "updated_at"
-                      },
                       "type": "string",
                       "format": "date-time",
-                      "x-go-type-skip-optional-pointer": true
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at"
+                      }
                     },
                     "deleted_at": {
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "deleted_at"
-                      },
                       "type": "string",
                       "format": "date-time",
                       "x-go-type": "sql.NullTime",
                       "x-go-type-import": {
                         "path": "database/sql"
                       },
-                      "x-go-type-skip-optional-pointer": true
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deleted_at"
+                      }
                     },
                     "domain": {
                       "type": "string",
@@ -271,14 +916,1123 @@ const OrganizationSchema: Record<string, unknown> = {
         }
       }
     },
-    "/api/identity/orgs/{orgID}/teams/{teamId}": {
-      "post": {
-        "summary": "Add team to organization or soft delete team",
-        "description": "Adds a team to an organization. If request body contains action=delete, tombstones a team by setting its deleted_at timestamp. The team's organization mapping remains intact.",
-        "operationId": "AddTeamToOrg",
+    "/api/identity/orgs/{orgId}": {
+      "get": {
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "summary": "Read an organization",
+        "description": "Returns the organization in the single-item page wrapper currently emitted by meshery-cloud.",
+        "operationId": "getOrg",
         "parameters": [
           {
-            "name": "orgID",
+            "name": "orgId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              },
+              "x-oapi-codegen-extra-tags": {
+                "db": "org_id",
+                "json": "org_id"
+              },
+              "x-go-type-name": "OrganizationId",
+              "x-go-type-skip-optional-pointer": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Single-organization page response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Single-organization wrapper used by current meshery-cloud organization handlers.",
+                  "properties": {
+                    "page": {
+                      "type": "integer"
+                    },
+                    "page_size": {
+                      "type": "integer"
+                    },
+                    "total_count": {
+                      "type": "integer"
+                    },
+                    "organizations": {
+                      "type": "array",
+                      "maxItems": 1,
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "x-go-name": "ID",
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "name": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "description": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "country": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "region": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "owner": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "metadata": {
+                            "x-go-type": "OrgMetadata",
+                            "type": "object",
+                            "required": [
+                              "preferences"
+                            ],
+                            "properties": {
+                              "preferences": {
+                                "x-go-type": "Preferences",
+                                "type": "object",
+                                "required": [
+                                  "theme",
+                                  "dashboard"
+                                ],
+                                "properties": {
+                                  "theme": {
+                                    "x-go-type": "Theme",
+                                    "type": "object",
+                                    "required": [
+                                      "id",
+                                      "logo"
+                                    ],
+                                    "properties": {
+                                      "id": {
+                                        "type": "string"
+                                      },
+                                      "logo": {
+                                        "x-go-type": "Logo",
+                                        "type": "object",
+                                        "required": [
+                                          "desktop_view",
+                                          "mobile_view",
+                                          "dark_desktop_view",
+                                          "dark_mobile_view"
+                                        ],
+                                        "properties": {
+                                          "desktop_view": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string"
+                                              },
+                                              "location": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          },
+                                          "mobile_view": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string"
+                                              },
+                                              "location": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          },
+                                          "dark_desktop_view": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string"
+                                              },
+                                              "location": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          },
+                                          "dark_mobile_view": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string"
+                                              },
+                                              "location": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "vars": {
+                                        "type": "object",
+                                        "additionalProperties": true
+                                      }
+                                    }
+                                  },
+                                  "dashboard": {
+                                    "x-go-type": "DashboardPrefs",
+                                    "type": "object",
+                                    "description": "Preferences specific to dashboard behavior",
+                                    "additionalProperties": true
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "deleted_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type": "sql.NullTime",
+                            "x-go-type-import": {
+                              "path": "database/sql"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "summary": "Delete an organization",
+        "description": "Deletes the organization.",
+        "operationId": "deleteOrg",
+        "parameters": [
+          {
+            "name": "orgId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              },
+              "x-oapi-codegen-extra-tags": {
+                "db": "org_id",
+                "json": "org_id"
+              },
+              "x-go-type-name": "OrganizationId",
+              "x-go-type-skip-optional-pointer": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Single-organization page response for the deleted organization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Single-organization wrapper used by current meshery-cloud organization handlers.",
+                  "properties": {
+                    "page": {
+                      "type": "integer"
+                    },
+                    "page_size": {
+                      "type": "integer"
+                    },
+                    "total_count": {
+                      "type": "integer"
+                    },
+                    "organizations": {
+                      "type": "array",
+                      "maxItems": 1,
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "x-go-name": "ID",
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "name": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "description": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "country": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "region": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "owner": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "metadata": {
+                            "x-go-type": "OrgMetadata",
+                            "type": "object",
+                            "required": [
+                              "preferences"
+                            ],
+                            "properties": {
+                              "preferences": {
+                                "x-go-type": "Preferences",
+                                "type": "object",
+                                "required": [
+                                  "theme",
+                                  "dashboard"
+                                ],
+                                "properties": {
+                                  "theme": {
+                                    "x-go-type": "Theme",
+                                    "type": "object",
+                                    "required": [
+                                      "id",
+                                      "logo"
+                                    ],
+                                    "properties": {
+                                      "id": {
+                                        "type": "string"
+                                      },
+                                      "logo": {
+                                        "x-go-type": "Logo",
+                                        "type": "object",
+                                        "required": [
+                                          "desktop_view",
+                                          "mobile_view",
+                                          "dark_desktop_view",
+                                          "dark_mobile_view"
+                                        ],
+                                        "properties": {
+                                          "desktop_view": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string"
+                                              },
+                                              "location": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          },
+                                          "mobile_view": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string"
+                                              },
+                                              "location": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          },
+                                          "dark_desktop_view": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string"
+                                              },
+                                              "location": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          },
+                                          "dark_mobile_view": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string"
+                                              },
+                                              "location": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "vars": {
+                                        "type": "object",
+                                        "additionalProperties": true
+                                      }
+                                    }
+                                  },
+                                  "dashboard": {
+                                    "x-go-type": "DashboardPrefs",
+                                    "type": "object",
+                                    "description": "Preferences specific to dashboard behavior",
+                                    "additionalProperties": true
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "deleted_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type": "sql.NullTime",
+                            "x-go-type-import": {
+                              "path": "database/sql"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "summary": "Update an organization",
+        "description": "Updates the organization.",
+        "operationId": "handleUpdateOrg",
+        "parameters": [
+          {
+            "name": "orgId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              },
+              "x-oapi-codegen-extra-tags": {
+                "db": "org_id",
+                "json": "org_id"
+              },
+              "x-go-type-name": "OrganizationId",
+              "x-go-type-skip-optional-pointer": true
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Body for creating or updating an organization",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "x-go-type-skip-optional-pointer": true
+                  },
+                  "country": {
+                    "type": "string",
+                    "x-go-type-skip-optional-pointer": true
+                  },
+                  "region": {
+                    "type": "string",
+                    "x-go-type-skip-optional-pointer": true
+                  },
+                  "description": {
+                    "type": "string",
+                    "x-go-type-skip-optional-pointer": true
+                  },
+                  "notify_org_update": {
+                    "type": "boolean"
+                  },
+                  "preferences": {
+                    "type": "object",
+                    "required": [
+                      "theme",
+                      "dashboard"
+                    ],
+                    "properties": {
+                      "theme": {
+                        "x-go-type": "Theme",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "logo"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "logo": {
+                            "x-go-type": "Logo",
+                            "type": "object",
+                            "required": [
+                              "desktop_view",
+                              "mobile_view",
+                              "dark_desktop_view",
+                              "dark_mobile_view"
+                            ],
+                            "properties": {
+                              "desktop_view": {
+                                "x-go-type": "Location",
+                                "type": "object",
+                                "required": [
+                                  "svg",
+                                  "location"
+                                ],
+                                "properties": {
+                                  "svg": {
+                                    "type": "string"
+                                  },
+                                  "location": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              "mobile_view": {
+                                "x-go-type": "Location",
+                                "type": "object",
+                                "required": [
+                                  "svg",
+                                  "location"
+                                ],
+                                "properties": {
+                                  "svg": {
+                                    "type": "string"
+                                  },
+                                  "location": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              "dark_desktop_view": {
+                                "x-go-type": "Location",
+                                "type": "object",
+                                "required": [
+                                  "svg",
+                                  "location"
+                                ],
+                                "properties": {
+                                  "svg": {
+                                    "type": "string"
+                                  },
+                                  "location": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              "dark_mobile_view": {
+                                "x-go-type": "Location",
+                                "type": "object",
+                                "required": [
+                                  "svg",
+                                  "location"
+                                ],
+                                "properties": {
+                                  "svg": {
+                                    "type": "string"
+                                  },
+                                  "location": {
+                                    "type": "string"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "vars": {
+                            "type": "object",
+                            "additionalProperties": true
+                          }
+                        }
+                      },
+                      "dashboard": {
+                        "x-go-type": "DashboardPrefs",
+                        "type": "object",
+                        "description": "Preferences specific to dashboard behavior",
+                        "additionalProperties": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Single-organization page response for the updated organization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Single-organization wrapper used by current meshery-cloud organization handlers.",
+                  "properties": {
+                    "page": {
+                      "type": "integer"
+                    },
+                    "page_size": {
+                      "type": "integer"
+                    },
+                    "total_count": {
+                      "type": "integer"
+                    },
+                    "organizations": {
+                      "type": "array",
+                      "maxItems": 1,
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "x-go-name": "ID",
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "name": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "description": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "country": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "region": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "owner": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "metadata": {
+                            "x-go-type": "OrgMetadata",
+                            "type": "object",
+                            "required": [
+                              "preferences"
+                            ],
+                            "properties": {
+                              "preferences": {
+                                "x-go-type": "Preferences",
+                                "type": "object",
+                                "required": [
+                                  "theme",
+                                  "dashboard"
+                                ],
+                                "properties": {
+                                  "theme": {
+                                    "x-go-type": "Theme",
+                                    "type": "object",
+                                    "required": [
+                                      "id",
+                                      "logo"
+                                    ],
+                                    "properties": {
+                                      "id": {
+                                        "type": "string"
+                                      },
+                                      "logo": {
+                                        "x-go-type": "Logo",
+                                        "type": "object",
+                                        "required": [
+                                          "desktop_view",
+                                          "mobile_view",
+                                          "dark_desktop_view",
+                                          "dark_mobile_view"
+                                        ],
+                                        "properties": {
+                                          "desktop_view": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string"
+                                              },
+                                              "location": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          },
+                                          "mobile_view": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string"
+                                              },
+                                              "location": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          },
+                                          "dark_desktop_view": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string"
+                                              },
+                                              "location": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          },
+                                          "dark_mobile_view": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string"
+                                              },
+                                              "location": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "vars": {
+                                        "type": "object",
+                                        "additionalProperties": true
+                                      }
+                                    }
+                                  },
+                                  "dashboard": {
+                                    "x-go-type": "DashboardPrefs",
+                                    "type": "object",
+                                    "description": "Preferences specific to dashboard behavior",
+                                    "additionalProperties": true
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "deleted_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type": "sql.NullTime",
+                            "x-go-type-import": {
+                              "path": "database/sql"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/identity/orgs/{orgId}/preferences": {
+      "get": {
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "summary": "Get organization preferences",
+        "description": "Returns preferences for the specified organization.",
+        "operationId": "getOrgPreferences",
+        "parameters": [
+          {
+            "name": "orgId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              },
+              "x-oapi-codegen-extra-tags": {
+                "db": "org_id",
+                "json": "org_id"
+              },
+              "x-go-type-name": "OrganizationId",
+              "x-go-type-skip-optional-pointer": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Organization metadata, including preferences",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "preferences"
+                  ],
+                  "properties": {
+                    "preferences": {
+                      "x-go-type": "Preferences",
+                      "type": "object",
+                      "required": [
+                        "theme",
+                        "dashboard"
+                      ],
+                      "properties": {
+                        "theme": {
+                          "x-go-type": "Theme",
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "logo"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "logo": {
+                              "x-go-type": "Logo",
+                              "type": "object",
+                              "required": [
+                                "desktop_view",
+                                "mobile_view",
+                                "dark_desktop_view",
+                                "dark_mobile_view"
+                              ],
+                              "properties": {
+                                "desktop_view": {
+                                  "x-go-type": "Location",
+                                  "type": "object",
+                                  "required": [
+                                    "svg",
+                                    "location"
+                                  ],
+                                  "properties": {
+                                    "svg": {
+                                      "type": "string"
+                                    },
+                                    "location": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "mobile_view": {
+                                  "x-go-type": "Location",
+                                  "type": "object",
+                                  "required": [
+                                    "svg",
+                                    "location"
+                                  ],
+                                  "properties": {
+                                    "svg": {
+                                      "type": "string"
+                                    },
+                                    "location": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "dark_desktop_view": {
+                                  "x-go-type": "Location",
+                                  "type": "object",
+                                  "required": [
+                                    "svg",
+                                    "location"
+                                  ],
+                                  "properties": {
+                                    "svg": {
+                                      "type": "string"
+                                    },
+                                    "location": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "dark_mobile_view": {
+                                  "x-go-type": "Location",
+                                  "type": "object",
+                                  "required": [
+                                    "svg",
+                                    "location"
+                                  ],
+                                  "properties": {
+                                    "svg": {
+                                      "type": "string"
+                                    },
+                                    "location": {
+                                      "type": "string"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "vars": {
+                              "type": "object",
+                              "additionalProperties": true
+                            }
+                          }
+                        },
+                        "dashboard": {
+                          "x-go-type": "DashboardPrefs",
+                          "type": "object",
+                          "description": "Preferences specific to dashboard behavior",
+                          "additionalProperties": true
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/identity/orgs/{orgId}/teams/{teamId}": {
+      "post": {
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "summary": "Add team to organization or soft delete team",
+        "description": "Adds a team to an organization. If request body contains action=delete, tombstones a team by setting its deleted_at timestamp. The team's organization mapping remains intact.",
+        "operationId": "addTeamToOrg",
+        "parameters": [
+          {
+            "name": "orgId",
             "in": "path",
             "required": true,
             "schema": {
@@ -322,7 +2076,7 @@ const OrganizationSchema: Record<string, unknown> = {
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Optional action payload for POST on /api/identity/orgs/{orgID}/teams/{teamId}.",
+                "description": "Optional action payload for POST on /api/identity/orgs/{orgId}/teams/{teamId}.",
                 "properties": {
                   "action": {
                     "type": "string",
@@ -518,14 +2272,21 @@ const OrganizationSchema: Record<string, unknown> = {
             "description": "Internal server error"
           }
         }
-      },
-      "delete": {
+      }
+    },
+    "/api/identity/orgs/{orgId}/teams/{teamId}/remove": {
+      "post": {
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
         "summary": "Remove team from organization",
         "description": "Removes (unassigns) a team from an organization.",
-        "operationId": "RemoveTeamFromOrg",
+        "operationId": "removeTeamFromOrg",
         "parameters": [
           {
-            "name": "orgID",
+            "name": "orgId",
             "in": "path",
             "required": true,
             "schema": {
@@ -671,9 +2432,58 @@ const OrganizationSchema: Record<string, unknown> = {
     }
   },
   "components": {
+    "securitySchemes": {
+      "jwt": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "responses": {
+      "400": {
+        "description": "Invalid request body or request param",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Expired JWT token used or insufficient privilege",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Result not found",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal server error",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
     "parameters": {
-      "orgID": {
-        "name": "orgID",
+      "orgId": {
+        "name": "orgId",
         "in": "path",
         "required": true,
         "schema": {
@@ -689,6 +2499,46 @@ const OrganizationSchema: Record<string, unknown> = {
           },
           "x-go-type-name": "OrganizationId",
           "x-go-type-skip-optional-pointer": true
+        }
+      },
+      "page": {
+        "name": "page",
+        "in": "query",
+        "description": "Get responses by page",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "pagesize": {
+        "name": "pagesize",
+        "in": "query",
+        "description": "Get responses by pagesize",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "search": {
+        "name": "search",
+        "in": "query",
+        "description": "Get responses that match search param value",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "order": {
+        "name": "order",
+        "in": "query",
+        "description": "Get ordered responses",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "all": {
+        "name": "all",
+        "in": "query",
+        "description": "Get all possible entries",
+        "schema": {
+          "type": "boolean"
         }
       },
       "teamId": {
@@ -708,6 +2558,148 @@ const OrganizationSchema: Record<string, unknown> = {
           },
           "x-go-type-name": "TeamId",
           "x-go-type-skip-optional-pointer": true
+        }
+      }
+    },
+    "requestBodies": {
+      "organizationPayload": {
+        "description": "Body for creating or updating an organization",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "country": {
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "region": {
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "description": {
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "notify_org_update": {
+                  "type": "boolean"
+                },
+                "preferences": {
+                  "type": "object",
+                  "required": [
+                    "theme",
+                    "dashboard"
+                  ],
+                  "properties": {
+                    "theme": {
+                      "x-go-type": "Theme",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "logo"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "logo": {
+                          "x-go-type": "Logo",
+                          "type": "object",
+                          "required": [
+                            "desktop_view",
+                            "mobile_view",
+                            "dark_desktop_view",
+                            "dark_mobile_view"
+                          ],
+                          "properties": {
+                            "desktop_view": {
+                              "x-go-type": "Location",
+                              "type": "object",
+                              "required": [
+                                "svg",
+                                "location"
+                              ],
+                              "properties": {
+                                "svg": {
+                                  "type": "string"
+                                },
+                                "location": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "mobile_view": {
+                              "x-go-type": "Location",
+                              "type": "object",
+                              "required": [
+                                "svg",
+                                "location"
+                              ],
+                              "properties": {
+                                "svg": {
+                                  "type": "string"
+                                },
+                                "location": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "dark_desktop_view": {
+                              "x-go-type": "Location",
+                              "type": "object",
+                              "required": [
+                                "svg",
+                                "location"
+                              ],
+                              "properties": {
+                                "svg": {
+                                  "type": "string"
+                                },
+                                "location": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "dark_mobile_view": {
+                              "x-go-type": "Location",
+                              "type": "object",
+                              "required": [
+                                "svg",
+                                "location"
+                              ],
+                              "properties": {
+                                "svg": {
+                                  "type": "string"
+                                },
+                                "location": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "vars": {
+                          "type": "object",
+                          "additionalProperties": true
+                        }
+                      }
+                    },
+                    "dashboard": {
+                      "x-go-type": "DashboardPrefs",
+                      "type": "object",
+                      "description": "Preferences specific to dashboard behavior",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -748,7 +2740,7 @@ const OrganizationSchema: Record<string, unknown> = {
       },
       "OrgTeamActionPayload": {
         "type": "object",
-        "description": "Optional action payload for POST on /api/identity/orgs/{orgID}/teams/{teamId}.",
+        "description": "Optional action payload for POST on /api/identity/orgs/{orgId}/teams/{teamId}.",
         "properties": {
           "action": {
             "type": "string",
@@ -1355,25 +3347,204 @@ const OrganizationSchema: Record<string, unknown> = {
             }
           },
           "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "created_at"
+            }
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at"
+            }
+          },
+          "deleted_at": {
+            "type": "string",
+            "format": "date-time",
+            "x-go-type": "sql.NullTime",
+            "x-go-type-import": {
+              "path": "database/sql"
             },
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "deleted_at"
+            }
+          },
+          "domain": {
+            "type": "string",
+            "nullable": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "domain"
+            }
+          }
+        }
+      },
+      "AvailableOrganization": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "x-go-name": "ID",
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "name": {
+            "type": "string",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "description": {
+            "type": "string",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "country": {
+            "type": "string",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "region": {
+            "type": "string",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "owner": {
+            "type": "string",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "metadata": {
+            "x-go-type": "OrgMetadata",
+            "type": "object",
+            "required": [
+              "preferences"
+            ],
+            "properties": {
+              "preferences": {
+                "x-go-type": "Preferences",
+                "type": "object",
+                "required": [
+                  "theme",
+                  "dashboard"
+                ],
+                "properties": {
+                  "theme": {
+                    "x-go-type": "Theme",
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "logo"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "logo": {
+                        "x-go-type": "Logo",
+                        "type": "object",
+                        "required": [
+                          "desktop_view",
+                          "mobile_view",
+                          "dark_desktop_view",
+                          "dark_mobile_view"
+                        ],
+                        "properties": {
+                          "desktop_view": {
+                            "x-go-type": "Location",
+                            "type": "object",
+                            "required": [
+                              "svg",
+                              "location"
+                            ],
+                            "properties": {
+                              "svg": {
+                                "type": "string"
+                              },
+                              "location": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "mobile_view": {
+                            "x-go-type": "Location",
+                            "type": "object",
+                            "required": [
+                              "svg",
+                              "location"
+                            ],
+                            "properties": {
+                              "svg": {
+                                "type": "string"
+                              },
+                              "location": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "dark_desktop_view": {
+                            "x-go-type": "Location",
+                            "type": "object",
+                            "required": [
+                              "svg",
+                              "location"
+                            ],
+                            "properties": {
+                              "svg": {
+                                "type": "string"
+                              },
+                              "location": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "dark_mobile_view": {
+                            "x-go-type": "Location",
+                            "type": "object",
+                            "required": [
+                              "svg",
+                              "location"
+                            ],
+                            "properties": {
+                              "svg": {
+                                "type": "string"
+                              },
+                              "location": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "vars": {
+                        "type": "object",
+                        "additionalProperties": true
+                      }
+                    }
+                  },
+                  "dashboard": {
+                    "x-go-type": "DashboardPrefs",
+                    "type": "object",
+                    "description": "Preferences specific to dashboard behavior",
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          },
+          "created_at": {
             "type": "string",
             "format": "date-time",
             "x-go-type-skip-optional-pointer": true
           },
           "updated_at": {
-            "x-oapi-codegen-extra-tags": {
-              "db": "updated_at"
-            },
             "type": "string",
             "format": "date-time",
             "x-go-type-skip-optional-pointer": true
           },
           "deleted_at": {
-            "x-oapi-codegen-extra-tags": {
-              "db": "deleted_at"
-            },
             "type": "string",
             "format": "date-time",
             "x-go-type": "sql.NullTime",
@@ -1381,12 +3552,517 @@ const OrganizationSchema: Record<string, unknown> = {
               "path": "database/sql"
             },
             "x-go-type-skip-optional-pointer": true
+          }
+        }
+      },
+      "OrganizationsPage": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer"
           },
-          "domain": {
+          "page_size": {
+            "type": "integer"
+          },
+          "total_count": {
+            "type": "integer"
+          },
+          "organizations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "x-go-name": "ID",
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "name": {
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "description": {
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "country": {
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "region": {
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "owner": {
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "metadata": {
+                  "x-go-type": "OrgMetadata",
+                  "type": "object",
+                  "required": [
+                    "preferences"
+                  ],
+                  "properties": {
+                    "preferences": {
+                      "x-go-type": "Preferences",
+                      "type": "object",
+                      "required": [
+                        "theme",
+                        "dashboard"
+                      ],
+                      "properties": {
+                        "theme": {
+                          "x-go-type": "Theme",
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "logo"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "logo": {
+                              "x-go-type": "Logo",
+                              "type": "object",
+                              "required": [
+                                "desktop_view",
+                                "mobile_view",
+                                "dark_desktop_view",
+                                "dark_mobile_view"
+                              ],
+                              "properties": {
+                                "desktop_view": {
+                                  "x-go-type": "Location",
+                                  "type": "object",
+                                  "required": [
+                                    "svg",
+                                    "location"
+                                  ],
+                                  "properties": {
+                                    "svg": {
+                                      "type": "string"
+                                    },
+                                    "location": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "mobile_view": {
+                                  "x-go-type": "Location",
+                                  "type": "object",
+                                  "required": [
+                                    "svg",
+                                    "location"
+                                  ],
+                                  "properties": {
+                                    "svg": {
+                                      "type": "string"
+                                    },
+                                    "location": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "dark_desktop_view": {
+                                  "x-go-type": "Location",
+                                  "type": "object",
+                                  "required": [
+                                    "svg",
+                                    "location"
+                                  ],
+                                  "properties": {
+                                    "svg": {
+                                      "type": "string"
+                                    },
+                                    "location": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "dark_mobile_view": {
+                                  "x-go-type": "Location",
+                                  "type": "object",
+                                  "required": [
+                                    "svg",
+                                    "location"
+                                  ],
+                                  "properties": {
+                                    "svg": {
+                                      "type": "string"
+                                    },
+                                    "location": {
+                                      "type": "string"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "vars": {
+                              "type": "object",
+                              "additionalProperties": true
+                            }
+                          }
+                        },
+                        "dashboard": {
+                          "x-go-type": "DashboardPrefs",
+                          "type": "object",
+                          "description": "Preferences specific to dashboard behavior",
+                          "additionalProperties": true
+                        }
+                      }
+                    }
+                  }
+                },
+                "created_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "updated_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "deleted_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type": "sql.NullTime",
+                  "x-go-type-import": {
+                    "path": "database/sql"
+                  },
+                  "x-go-type-skip-optional-pointer": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "OrganizationPage": {
+        "type": "object",
+        "description": "Single-organization wrapper used by current meshery-cloud organization handlers.",
+        "properties": {
+          "page": {
+            "type": "integer"
+          },
+          "page_size": {
+            "type": "integer"
+          },
+          "total_count": {
+            "type": "integer"
+          },
+          "organizations": {
+            "type": "array",
+            "maxItems": 1,
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "x-go-name": "ID",
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "name": {
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "description": {
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "country": {
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "region": {
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "owner": {
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "metadata": {
+                  "x-go-type": "OrgMetadata",
+                  "type": "object",
+                  "required": [
+                    "preferences"
+                  ],
+                  "properties": {
+                    "preferences": {
+                      "x-go-type": "Preferences",
+                      "type": "object",
+                      "required": [
+                        "theme",
+                        "dashboard"
+                      ],
+                      "properties": {
+                        "theme": {
+                          "x-go-type": "Theme",
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "logo"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "logo": {
+                              "x-go-type": "Logo",
+                              "type": "object",
+                              "required": [
+                                "desktop_view",
+                                "mobile_view",
+                                "dark_desktop_view",
+                                "dark_mobile_view"
+                              ],
+                              "properties": {
+                                "desktop_view": {
+                                  "x-go-type": "Location",
+                                  "type": "object",
+                                  "required": [
+                                    "svg",
+                                    "location"
+                                  ],
+                                  "properties": {
+                                    "svg": {
+                                      "type": "string"
+                                    },
+                                    "location": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "mobile_view": {
+                                  "x-go-type": "Location",
+                                  "type": "object",
+                                  "required": [
+                                    "svg",
+                                    "location"
+                                  ],
+                                  "properties": {
+                                    "svg": {
+                                      "type": "string"
+                                    },
+                                    "location": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "dark_desktop_view": {
+                                  "x-go-type": "Location",
+                                  "type": "object",
+                                  "required": [
+                                    "svg",
+                                    "location"
+                                  ],
+                                  "properties": {
+                                    "svg": {
+                                      "type": "string"
+                                    },
+                                    "location": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "dark_mobile_view": {
+                                  "x-go-type": "Location",
+                                  "type": "object",
+                                  "required": [
+                                    "svg",
+                                    "location"
+                                  ],
+                                  "properties": {
+                                    "svg": {
+                                      "type": "string"
+                                    },
+                                    "location": {
+                                      "type": "string"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "vars": {
+                              "type": "object",
+                              "additionalProperties": true
+                            }
+                          }
+                        },
+                        "dashboard": {
+                          "x-go-type": "DashboardPrefs",
+                          "type": "object",
+                          "description": "Preferences specific to dashboard behavior",
+                          "additionalProperties": true
+                        }
+                      }
+                    }
+                  }
+                },
+                "created_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "updated_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "deleted_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type": "sql.NullTime",
+                  "x-go-type-import": {
+                    "path": "database/sql"
+                  },
+                  "x-go-type-skip-optional-pointer": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "OrganizationPayload": {
+        "type": "object",
+        "properties": {
+          "name": {
             "type": "string",
-            "nullable": true,
-            "x-oapi-codegen-extra-tags": {
-              "db": "domain"
+            "x-go-type-skip-optional-pointer": true
+          },
+          "country": {
+            "type": "string",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "region": {
+            "type": "string",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "description": {
+            "type": "string",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "notify_org_update": {
+            "type": "boolean"
+          },
+          "preferences": {
+            "type": "object",
+            "required": [
+              "theme",
+              "dashboard"
+            ],
+            "properties": {
+              "theme": {
+                "x-go-type": "Theme",
+                "type": "object",
+                "required": [
+                  "id",
+                  "logo"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "logo": {
+                    "x-go-type": "Logo",
+                    "type": "object",
+                    "required": [
+                      "desktop_view",
+                      "mobile_view",
+                      "dark_desktop_view",
+                      "dark_mobile_view"
+                    ],
+                    "properties": {
+                      "desktop_view": {
+                        "x-go-type": "Location",
+                        "type": "object",
+                        "required": [
+                          "svg",
+                          "location"
+                        ],
+                        "properties": {
+                          "svg": {
+                            "type": "string"
+                          },
+                          "location": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "mobile_view": {
+                        "x-go-type": "Location",
+                        "type": "object",
+                        "required": [
+                          "svg",
+                          "location"
+                        ],
+                        "properties": {
+                          "svg": {
+                            "type": "string"
+                          },
+                          "location": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "dark_desktop_view": {
+                        "x-go-type": "Location",
+                        "type": "object",
+                        "required": [
+                          "svg",
+                          "location"
+                        ],
+                        "properties": {
+                          "svg": {
+                            "type": "string"
+                          },
+                          "location": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "dark_mobile_view": {
+                        "x-go-type": "Location",
+                        "type": "object",
+                        "required": [
+                          "svg",
+                          "location"
+                        ],
+                        "properties": {
+                          "svg": {
+                            "type": "string"
+                          },
+                          "location": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "vars": {
+                    "type": "object",
+                    "additionalProperties": true
+                  }
+                }
+              },
+              "dashboard": {
+                "x-go-type": "DashboardPrefs",
+                "type": "object",
+                "description": "Preferences specific to dashboard behavior",
+                "additionalProperties": true
+              }
             }
           }
         }

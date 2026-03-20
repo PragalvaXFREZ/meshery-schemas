@@ -37,3 +37,24 @@ type Badge struct {
 	// UpdatedAt Timestamp when the resource was updated.
 	UpdatedAt corev1alpha1.UpdatedAt `db:"updated_at" json:"updated_at" yaml:"updated_at"`
 }
+
+// BadgePayload Payload for creating or updating a badge.
+type BadgePayload struct {
+	// Description A description of the milestone achieved, often including criteria for receiving this recognition.
+	Description string `db:"description" json:"description" yaml:"description"`
+
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID *corev1alpha1.Uuid `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
+
+	// ImageUrl URL to the badge image
+	ImageUrl string `db:"image_url" json:"image_url" yaml:"image_url"`
+
+	// Label unique identifier for the badge ( auto generated )
+	Label string `db:"label" json:"label" yaml:"label"`
+
+	// Name Concise descriptor for the badge or certificate.
+	Name string `db:"name" json:"name" yaml:"name"`
+
+	// OrgId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OrgId corev1alpha1.Uuid `db:"org_id" json:"org_id" yaml:"org_id"`
+}

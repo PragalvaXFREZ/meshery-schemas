@@ -44,14 +44,14 @@ type Environment struct {
 
 // EnvironmentConnectionMapping defines model for environmentConnectionMapping.
 type EnvironmentConnectionMapping struct {
-	ID           corev1alpha1.GeneralId `db:"id" json:"id" yaml:"id"`
-	ConnectionId uuid.UUID              `db:"connection_id" json:"connection_id" yaml:"connection_id"`
-	CreatedAt    corev1alpha1.Time      `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	ConnectionId uuid.UUID         `db:"connection_id" json:"connection_id" yaml:"connection_id"`
+	CreatedAt    corev1alpha1.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt     corev1alpha1.NullTime `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
-	EnvironmentId uuid.UUID             `db:"environment_id" json:"environment_id" yaml:"environment_id"`
-	UpdatedAt     corev1alpha1.Time     `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	DeletedAt     corev1alpha1.NullTime  `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	EnvironmentId uuid.UUID              `db:"environment_id" json:"environment_id" yaml:"environment_id"`
+	ID            corev1alpha1.GeneralId `db:"id" json:"id" yaml:"id"`
+	UpdatedAt     corev1alpha1.Time      `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 }
 
 // EnvironmentPage defines model for environmentPage.

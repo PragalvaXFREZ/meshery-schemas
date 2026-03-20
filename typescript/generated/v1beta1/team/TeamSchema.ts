@@ -677,7 +677,7 @@ const TeamSchema: Record<string, unknown> = {
         "tags": [
           "teams"
         ],
-        "operationId": "GetTeams",
+        "operationId": "getTeams",
         "summary": "Get all teams for an organization",
         "description": "Gets all teams within an organization",
         "parameters": [
@@ -893,7 +893,7 @@ const TeamSchema: Record<string, unknown> = {
         "tags": [
           "teams"
         ],
-        "operationId": "CreateTeam",
+        "operationId": "createTeam",
         "summary": "Create a team",
         "description": "Creates a new team within an organization",
         "parameters": [
@@ -1083,7 +1083,7 @@ const TeamSchema: Record<string, unknown> = {
         "tags": [
           "teams"
         ],
-        "operationId": "GetTeamByID",
+        "operationId": "getTeamById",
         "summary": "Get a team by ID",
         "description": "Gets a team by its ID",
         "parameters": [
@@ -1284,7 +1284,7 @@ const TeamSchema: Record<string, unknown> = {
         "tags": [
           "teams"
         ],
-        "operationId": "UpdateTeam",
+        "operationId": "updateTeam",
         "summary": "Update a team",
         "description": "Updates a team's information",
         "parameters": [
@@ -1509,7 +1509,7 @@ const TeamSchema: Record<string, unknown> = {
         "tags": [
           "teams"
         ],
-        "operationId": "DeleteTeam",
+        "operationId": "deleteTeam",
         "summary": "Delete a team",
         "description": "Deletes a team by its ID",
         "parameters": [
@@ -1606,7 +1606,7 @@ const TeamSchema: Record<string, unknown> = {
         "tags": [
           "teams"
         ],
-        "operationId": "GetTeamUsers",
+        "operationId": "getTeamUsers",
         "summary": "Get all users in a team",
         "description": "Gets all users that belong to a team",
         "parameters": [
@@ -1838,7 +1838,7 @@ const TeamSchema: Record<string, unknown> = {
         "tags": [
           "teams"
         ],
-        "operationId": "AddUserToTeam",
+        "operationId": "addUserToTeam",
         "summary": "Add a user to a team",
         "description": "Assigns a user to a team",
         "parameters": [
@@ -2014,7 +2014,7 @@ const TeamSchema: Record<string, unknown> = {
         "tags": [
           "teams"
         ],
-        "operationId": "RemoveUserFromTeam",
+        "operationId": "removeUserFromTeam",
         "summary": "Remove a user from a team",
         "description": "Unassigns a user from a team",
         "parameters": [

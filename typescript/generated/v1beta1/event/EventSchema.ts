@@ -124,8 +124,10 @@ const EventSchema: Record<string, unknown> = {
             "description": "Server error"
           }
         }
-      },
-      "delete": {
+      }
+    },
+    "/events/delete": {
+      "post": {
         "tags": [
           "events"
         ],
@@ -371,7 +373,7 @@ const EventSchema: Record<string, unknown> = {
             "jwt": []
           }
         ],
-        "operationId": "GetEventsOfWorkspace",
+        "operationId": "getEventsOfWorkspace",
         "summary": "Get workspace events",
         "description": "Gets events for a workspace.",
         "parameters": [

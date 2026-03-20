@@ -105,16 +105,14 @@ type UserRoleUpdateRequest struct {
 type All = bool
 
 // Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+// Id defines model for id.
 type Id = corev1alpha1.Uuid
-
-// KeychainID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-type KeychainID = corev1alpha1.Uuid
 
 // Order defines model for order.
 type Order = string
 
-// OrgID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-type OrgID = corev1alpha1.Uuid
+// OrgId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+type OrgId = corev1alpha1.Uuid
 
 // Page defines model for page.
 type Page = string
@@ -122,8 +120,8 @@ type Page = string
 // Pagesize defines model for pagesize.
 type Pagesize = string
 
-// RoleID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-type RoleID = corev1alpha1.Uuid
+// RoleId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+type RoleId = corev1alpha1.Uuid
 
 // Search defines model for search.
 type Search = string

@@ -51,6 +51,16 @@ export interface components {
       /** @description SQL null Timestamp to handle null values of time. */
       deleted_at?: string;
     };
+    /** @description Input payload for creating or updating a keychain. */
+    KeychainInput: {
+      /** @description Name of the keychain. */
+      name: string;
+      /**
+       * Format: uuid
+       * @description Owner of the keychain.
+       */
+      owner?: string;
+    };
     KeychainPage: {
       page: number;
       page_size: number;
@@ -251,30 +261,13 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": {
-          /**
-           * Format: uuid
-           * @description Unique identifier for the keychain.
-           */
-          id: string;
           /** @description Name of the keychain. */
           name: string;
           /**
            * Format: uuid
            * @description Owner of the keychain.
            */
-          owner: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the resource was created.
-           */
-          created_at: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the resource was updated.
-           */
-          updated_at: string;
-          /** @description SQL null Timestamp to handle null values of time. */
-          deleted_at?: string;
+          owner?: string;
         };
       };
     };
@@ -411,30 +404,13 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": {
-          /**
-           * Format: uuid
-           * @description Unique identifier for the keychain.
-           */
-          id: string;
           /** @description Name of the keychain. */
           name: string;
           /**
            * Format: uuid
            * @description Owner of the keychain.
            */
-          owner: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the resource was created.
-           */
-          created_at: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the resource was updated.
-           */
-          updated_at: string;
-          /** @description SQL null Timestamp to handle null values of time. */
-          deleted_at?: string;
+          owner?: string;
         };
       };
     };

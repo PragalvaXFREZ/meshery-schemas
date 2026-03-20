@@ -15,6 +15,40 @@ export interface paths {
 
 export interface components {
   schemas: {
+    /** @description Payload for creating or updating a badge. */
+    BadgePayload: {
+      /**
+       * Format: uuid
+       * @description Existing badge ID for updates; omit on create.
+       */
+      id?: string;
+      /**
+       * Format: uuid
+       * @description The ID of the organization in which this badge is available.
+       */
+      org_id: string;
+      /**
+       * @description unique identifier for the badge ( auto generated )
+       * @example Kubernetes-Expert
+       */
+      label: string;
+      /**
+       * @description Concise descriptor for the badge or certificate.
+       * @example Kubernetes Expert
+       */
+      name: string;
+      /**
+       * @description A description of the milestone achieved, often including criteria for receiving this recognition.
+       * @example Awarded for mastering Kubernetes concepts and practices.
+       */
+      description: string;
+      /**
+       * Format: uri
+       * @description URL to the badge image
+       * @example https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp
+       */
+      image_url: string;
+    };
     Badge: {
       /**
        * Format: uuid
@@ -201,12 +235,12 @@ export interface operations {
         "application/json": {
           /**
            * Format: uuid
-           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+           * @description Existing badge ID for updates; omit on create.
            */
-          id: string;
+          id?: string;
           /**
            * Format: uuid
-           * @description The ID of the organization in which this badge is available .
+           * @description The ID of the organization in which this badge is available.
            */
           org_id: string;
           /**
@@ -230,21 +264,6 @@ export interface operations {
            * @example https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp
            */
           image_url: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the resource was created.
-           */
-          created_at: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the resource was updated.
-           */
-          updated_at: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the resource was deleted, if applicable
-           */
-          deleted_at: string;
         };
       };
     };

@@ -12,7 +12,7 @@ export interface paths {
     /** Removes a role assignment by ID. */
     delete: operations["deleteRole"];
   };
-  "/api/identity/orgs/{orgID}/roles": {
+  "/api/identity/orgs/{orgId}/roles": {
     /** Returns all roles defined for the specified organization. */
     get: operations["getAllRoles"];
     /** Updates role assignments for multiple users in the organization. */
@@ -20,11 +20,11 @@ export interface paths {
     /** Creates or updates a role for the specified organization. */
     post: operations["upsertRole"];
   };
-  "/api/identity/orgs/{orgID}/roles/{roleID}/keychains": {
+  "/api/identity/orgs/{orgId}/roles/{roleId}/keychains": {
     /** Returns all keychains assigned to the specified role. */
     get: operations["getRoleKeychains"];
   };
-  "/api/identity/orgs/{orgID}/roles/{roleID}/keychains/{keychainID}": {
+  "/api/identity/orgs/{orgId}/roles/{roleId}/keychains/{keychainId}": {
     /** Associates a keychain with the specified role. */
     post: operations["assignKeychainToRole"];
     /** Removes the association between a keychain and a role. */
@@ -194,11 +194,11 @@ export interface components {
     /** @description Role ID */
     id: string;
     /** @description Organization ID */
-    orgID: string;
+    orgId: string;
     /** @description Role ID */
-    roleID: string;
+    roleId: string;
     /** @description Keychain ID */
-    keychainID: string;
+    keychainId: string;
     /** @description Get responses by page */
     page: string;
     /** @description Get responses by pagesize */
@@ -297,7 +297,7 @@ export interface operations {
     parameters: {
       path: {
         /** Organization ID */
-        orgID: string;
+        orgId: string;
       };
       query: {
         /** Get responses by page */
@@ -372,7 +372,7 @@ export interface operations {
     parameters: {
       path: {
         /** Organization ID */
-        orgID: string;
+        orgId: string;
       };
     };
     responses: {
@@ -432,7 +432,7 @@ export interface operations {
     parameters: {
       path: {
         /** Organization ID */
-        orgID: string;
+        orgId: string;
       };
     };
     responses: {
@@ -516,9 +516,9 @@ export interface operations {
     parameters: {
       path: {
         /** Organization ID */
-        orgID: string;
+        orgId: string;
         /** Role ID */
-        roleID: string;
+        roleId: string;
       };
       query: {
         /** Get responses by page */
@@ -593,11 +593,11 @@ export interface operations {
     parameters: {
       path: {
         /** Organization ID */
-        orgID: string;
+        orgId: string;
         /** Role ID */
-        roleID: string;
+        roleId: string;
         /** Keychain ID */
-        keychainID: string;
+        keychainId: string;
       };
     };
     responses: {
@@ -628,11 +628,11 @@ export interface operations {
     parameters: {
       path: {
         /** Organization ID */
-        orgID: string;
+        orgId: string;
         /** Role ID */
-        roleID: string;
+        roleId: string;
         /** Keychain ID */
-        keychainID: string;
+        keychainId: string;
       };
     };
     responses: {

@@ -73,7 +73,9 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "500":
           description: Server error
-    delete:
+
+  /events/delete:
+    post:
       tags:
         - events
       summary: Bulk delete events
@@ -188,7 +190,7 @@ paths:
         - events
       security:
         - jwt: []
-      operationId: GetEventsOfWorkspace
+      operationId: getEventsOfWorkspace
       summary: Get workspace events
       description: Gets events for a workspace.
       parameters:

@@ -6,27 +6,27 @@
 export interface paths {
   "/api/identity/orgs/{orgId}/teams": {
     /** Gets all teams within an organization */
-    get: operations["GetTeams"];
+    get: operations["getTeams"];
     /** Creates a new team within an organization */
-    post: operations["CreateTeam"];
+    post: operations["createTeam"];
   };
   "/api/identity/orgs/{orgId}/teams/{teamId}": {
     /** Gets a team by its ID */
-    get: operations["GetTeamByID"];
+    get: operations["getTeamById"];
     /** Updates a team's information */
-    put: operations["UpdateTeam"];
+    put: operations["updateTeam"];
     /** Deletes a team by its ID */
-    delete: operations["DeleteTeam"];
+    delete: operations["deleteTeam"];
   };
   "/api/identity/orgs/{orgId}/teams/{teamId}/users": {
     /** Gets all users that belong to a team */
-    get: operations["GetTeamUsers"];
+    get: operations["getTeamUsers"];
   };
   "/api/identity/orgs/{orgId}/teams/{teamId}/users/{userId}": {
     /** Assigns a user to a team */
-    post: operations["AddUserToTeam"];
+    post: operations["addUserToTeam"];
     /** Unassigns a user from a team */
-    delete: operations["RemoveUserFromTeam"];
+    delete: operations["removeUserFromTeam"];
   };
 }
 
@@ -223,7 +223,7 @@ export interface components {
 
 export interface operations {
   /** Gets all teams within an organization */
-  GetTeams: {
+  getTeams: {
     parameters: {
       path: {
         /** Organization ID */
@@ -290,7 +290,7 @@ export interface operations {
     };
   };
   /** Creates a new team within an organization */
-  CreateTeam: {
+  createTeam: {
     parameters: {
       path: {
         /** Organization ID */
@@ -353,7 +353,7 @@ export interface operations {
     };
   };
   /** Gets a team by its ID */
-  GetTeamByID: {
+  getTeamById: {
     parameters: {
       path: {
         /** Organization ID */
@@ -419,7 +419,7 @@ export interface operations {
     };
   };
   /** Updates a team's information */
-  UpdateTeam: {
+  updateTeam: {
     parameters: {
       path: {
         /** Organization ID */
@@ -496,7 +496,7 @@ export interface operations {
     };
   };
   /** Deletes a team by its ID */
-  DeleteTeam: {
+  deleteTeam: {
     parameters: {
       path: {
         /** Organization ID */
@@ -535,7 +535,7 @@ export interface operations {
     };
   };
   /** Gets all users that belong to a team */
-  GetTeamUsers: {
+  getTeamUsers: {
     parameters: {
       path: {
         /** Organization ID */
@@ -612,7 +612,7 @@ export interface operations {
     };
   };
   /** Assigns a user to a team */
-  AddUserToTeam: {
+  addUserToTeam: {
     parameters: {
       path: {
         /** Organization ID */
@@ -670,7 +670,7 @@ export interface operations {
     };
   };
   /** Unassigns a user from a team */
-  RemoveUserFromTeam: {
+  removeUserFromTeam: {
     parameters: {
       path: {
         /** Organization ID */

@@ -11,106 +11,28 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
-// Defines values for GetUserResponseRoleNames.
+// Defines values for UserRoleNames.
 const (
-	GetUserResponseRoleNamesAdmin             GetUserResponseRoleNames = "admin"
-	GetUserResponseRoleNamesCurator           GetUserResponseRoleNames = "curator"
-	GetUserResponseRoleNamesMeshmap           GetUserResponseRoleNames = "meshmap"
-	GetUserResponseRoleNamesOrganizationAdmin GetUserResponseRoleNames = "organization admin"
-	GetUserResponseRoleNamesTeamAdmin         GetUserResponseRoleNames = "team admin"
-	GetUserResponseRoleNamesUser              GetUserResponseRoleNames = "user"
-	GetUserResponseRoleNamesWorkspaceAdmin    GetUserResponseRoleNames = "workspace admin"
-	GetUserResponseRoleNamesWorkspaceManager  GetUserResponseRoleNames = "workspace manager"
-)
-
-// Defines values for GetUserResponseStatus.
-const (
-	GetUserResponseStatusActive    GetUserResponseStatus = "active"
-	GetUserResponseStatusAnonymous GetUserResponseStatus = "anonymous"
-	GetUserResponseStatusInactive  GetUserResponseStatus = "inactive"
-	GetUserResponseStatusPending   GetUserResponseStatus = "pending"
+	UserRoleNamesAdmin             UserRoleNames = "admin"
+	UserRoleNamesCurator           UserRoleNames = "curator"
+	UserRoleNamesMeshmap           UserRoleNames = "meshmap"
+	UserRoleNamesOrganizationAdmin UserRoleNames = "organization admin"
+	UserRoleNamesTeamAdmin         UserRoleNames = "team admin"
+	UserRoleNamesUser              UserRoleNames = "user"
+	UserRoleNamesWorkspaceAdmin    UserRoleNames = "workspace admin"
+	UserRoleNamesWorkspaceManager  UserRoleNames = "workspace manager"
 )
 
 // Defines values for UserStatus.
 const (
-	UserStatusActive    UserStatus = "active"
-	UserStatusAnonymous UserStatus = "anonymous"
-	UserStatusInactive  UserStatus = "inactive"
-	UserStatusPending   UserStatus = "pending"
+	Active    UserStatus = "active"
+	Anonymous UserStatus = "anonymous"
+	Inactive  UserStatus = "inactive"
+	Pending   UserStatus = "pending"
 )
 
 // Adapter Placeholder for Adapter struct definition.
 type Adapter = map[string]interface{}
-
-// GetUserResponse defines model for GetUserResponse.
-type GetUserResponse struct {
-	AcceptedTermsAt corev1alpha1.Time `db:"accepted_terms_at" json:"accepted_terms_at" yaml:"accepted_terms_at"`
-
-	// AvatarUrl URL to user's avatar image
-	AvatarUrl *string `db:"avatar_url" json:"avatar_url" yaml:"avatar_url"`
-
-	// Bio User's biography or description
-	Bio *string `db:"bio" json:"bio" yaml:"bio"`
-
-	// Country User's country information stored as JSONB
-	Country   *core.Map         `db:"country" json:"country" yaml:"country"`
-	CreatedAt corev1alpha1.Time `db:"created_at" json:"created_at" yaml:"created_at"`
-
-	// DeletedAt Timestamp when the user record was soft-deleted (null if not deleted)
-	DeletedAt *core.NullTime `db:"deleted_at" json:"deleted_at" yaml:"deleted_at"`
-
-	// Email User's email address
-	Email          openapi_types.Email `db:"email" json:"email" yaml:"email"`
-	FirstLoginTime corev1alpha1.Time   `db:"first_login_time" json:"first_login_time" yaml:"first_login_time"`
-
-	// FirstName User's first name
-	FirstName string `db:"first_name" json:"first_name" yaml:"first_name"`
-
-	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID            corev1alpha1.Uuid `db:"id" json:"id" yaml:"id"`
-	LastLoginTime corev1alpha1.Time `db:"last_login_time" json:"last_login_time" yaml:"last_login_time"`
-
-	// LastName User's last name
-	LastName string `db:"last_name" json:"last_name" yaml:"last_name"`
-
-	// Organizations Organizations the user belongs to with role information
-	Organizations *struct {
-		OrganizationsWithRoles *[]map[string]interface{} `db:"organizations_with_roles" json:"organizations_with_roles" yaml:"organizations_with_roles"`
-		TotalCount             *int                      `db:"total_count" json:"total_count" yaml:"total_count"`
-	} `db:"organizations" json:"organizations" yaml:"organizations"`
-	Preferences *Preference `db:"preferences" json:"preferences" yaml:"preferences"`
-
-	// Provider Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
-	Provider string `db:"provider" json:"provider" yaml:"provider"`
-
-	// Region User's region information stored as JSONB
-	Region *core.Map `db:"region" json:"region" yaml:"region"`
-
-	// RoleNames List of global roles assigned to the user
-	RoleNames *[]GetUserResponseRoleNames `db:"role_names" json:"role_names" yaml:"role_names"`
-
-	// Socials Various online profiles associated with the user account
-	Socials *UserSocials `db:"socials" json:"socials" yaml:"socials"`
-
-	// Status User account status
-	Status GetUserResponseStatus `db:"status" json:"status" yaml:"status"`
-
-	// Teams Teams the user belongs to with role information
-	Teams *struct {
-		TeamsWithRoles *[]map[string]interface{} `db:"teams_with_roles" json:"teams_with_roles" yaml:"teams_with_roles"`
-		TotalCount     *int                      `db:"total_count" json:"total_count" yaml:"total_count"`
-	} `db:"teams" json:"teams" yaml:"teams"`
-	UpdatedAt corev1alpha1.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
-
-	// UserId User identifier (username or external ID)
-	UserId string `db:"user_id" json:"user_id" yaml:"user_id"`
-}
-
-// GetUserResponseRoleNames defines model for GetUserResponse.RoleNames.
-type GetUserResponseRoleNames string
-
-// GetUserResponseStatus User account status
-type GetUserResponseStatus string
 
 // Grafana defines model for Grafana.
 type Grafana struct {
@@ -142,18 +64,18 @@ type Panel = map[string]interface{}
 
 // Preference defines model for Preference.
 type Preference struct {
-	AnonymousPerfResults              bool                    `json:"anonymousPerfResults" yaml:"anonymousPerfResults"`
-	AnonymousUsageStats               bool                    `json:"anonymousUsageStats" yaml:"anonymousUsageStats"`
-	DashboardPreferences              map[string]interface{}  `json:"dashboardPreferences" yaml:"dashboardPreferences"`
-	Grafana                           *Grafana                `json:"grafana,omitempty" yaml:"grafana,omitempty"`
-	LoadTestPrefs                     *LoadTestPreferences    `json:"loadTestPrefs,omitempty" yaml:"loadTestPrefs,omitempty"`
-	MeshAdapters                      *[]Adapter              `json:"meshAdapters,omitempty" yaml:"meshAdapters,omitempty"`
-	Prometheus                        *Prometheus             `json:"prometheus,omitempty" yaml:"prometheus,omitempty"`
-	RemoteProviderPreferences         *map[string]interface{} `json:"remoteProviderPreferences,omitempty" yaml:"remoteProviderPreferences,omitempty"`
-	SelectedOrganizationID            string                  `json:"selectedOrganizationID" yaml:"selectedOrganizationID"`
-	SelectedWorkspaceForOrganizations map[string]string       `json:"selectedWorkspaceForOrganizations" yaml:"selectedWorkspaceForOrganizations"`
-	UpdatedAt                         *time.Time              `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
-	UsersExtensionPreferences         map[string]interface{}  `json:"usersExtensionPreferences" yaml:"usersExtensionPreferences"`
+	AnonymousPerfResults              bool                   `json:"anonymousPerfResults" yaml:"anonymousPerfResults"`
+	AnonymousUsageStats               bool                   `json:"anonymousUsageStats" yaml:"anonymousUsageStats"`
+	DashboardPreferences              map[string]interface{} `json:"dashboardPreferences" yaml:"dashboardPreferences"`
+	Grafana                           *Grafana               `json:"grafana,omitempty" yaml:"grafana,omitempty"`
+	LoadTestPrefs                     *LoadTestPreferences   `json:"loadTestPrefs,omitempty" yaml:"loadTestPrefs,omitempty"`
+	MeshAdapters                      *[]Adapter             `json:"meshAdapters,omitempty" yaml:"meshAdapters,omitempty"`
+	Prometheus                        *Prometheus            `json:"prometheus,omitempty" yaml:"prometheus,omitempty"`
+	RemoteProviderPreferences         map[string]interface{} `json:"remoteProviderPreferences" yaml:"remoteProviderPreferences"`
+	SelectedOrganizationID            string                 `json:"selectedOrganizationID" yaml:"selectedOrganizationID"`
+	SelectedWorkspaceForOrganizations map[string]string      `json:"selectedWorkspaceForOrganizations" yaml:"selectedWorkspaceForOrganizations"`
+	UpdatedAt                         time.Time              `json:"updated_at" yaml:"updated_at"`
+	UsersExtensionPreferences         map[string]interface{} `json:"usersExtensionPreferences" yaml:"usersExtensionPreferences"`
 }
 
 // Prometheus defines model for Prometheus.
@@ -205,7 +127,13 @@ type User struct {
 	LastLoginTime corev1alpha1.Time `db:"last_login_time" json:"last_login_time" yaml:"last_login_time"`
 
 	// LastName User's last name
-	LastName    string      `db:"last_name" json:"last_name" yaml:"last_name"`
+	LastName string `db:"last_name" json:"last_name" yaml:"last_name"`
+
+	// Organizations Organizations the user belongs to with role information
+	Organizations *struct {
+		OrganizationsWithRoles *[]map[string]interface{} `db:"organizations_with_roles" json:"organizations_with_roles" yaml:"organizations_with_roles"`
+		TotalCount             *int                      `db:"total_count" json:"total_count" yaml:"total_count"`
+	} `db:"organizations" json:"organizations" yaml:"organizations"`
 	Preferences *Preference `db:"preferences" json:"preferences" yaml:"preferences"`
 
 	// Provider Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
@@ -214,16 +142,66 @@ type User struct {
 	// Region User's region information stored as JSONB
 	Region *core.Map `db:"region" json:"region" yaml:"region"`
 
+	// RoleNames List of global roles assigned to the user
+	RoleNames *[]UserRoleNames `db:"role_names" json:"role_names" yaml:"role_names"`
+
 	// Socials Various online profiles associated with the user account
 	Socials *UserSocials `db:"socials" json:"socials" yaml:"socials"`
 
 	// Status User account status
-	Status    UserStatus        `db:"status" json:"status" yaml:"status"`
+	Status UserStatus `db:"status" json:"status" yaml:"status"`
+
+	// Teams Teams the user belongs to with role information
+	Teams *struct {
+		TeamsWithRoles *[]map[string]interface{} `db:"teams_with_roles" json:"teams_with_roles" yaml:"teams_with_roles"`
+		TotalCount     *int                      `db:"total_count" json:"total_count" yaml:"total_count"`
+	} `db:"teams" json:"teams" yaml:"teams"`
 	UpdatedAt corev1alpha1.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
 
 	// UserId User identifier (username or external ID)
 	UserId string `db:"user_id" json:"user_id" yaml:"user_id"`
 }
 
+// UserRoleNames defines model for User.RoleNames.
+type UserRoleNames string
+
 // UserStatus User account status
 type UserStatus string
+
+// UsersPageForAdmin Paginated list of users with organization and team role context
+type UsersPageForAdmin struct {
+	Data       *[]User `json:"data,omitempty" yaml:"data,omitempty"`
+	Page       *int    `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize   *int    `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	TotalCount *int    `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+}
+
+// UsersPageForNonAdmin Paginated list of public user records
+type UsersPageForNonAdmin struct {
+	Data       *[]User `json:"data,omitempty" yaml:"data,omitempty"`
+	Page       *int    `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize   *int    `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	TotalCount *int    `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+}
+
+// Filter defines model for filter.
+type Filter = string
+
+// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+// Id defines model for id.
+type Id = corev1alpha1.OrganizationId
+
+// Order defines model for order.
+type Order = string
+
+// Page defines model for page.
+type Page = string
+
+// Pagesize defines model for pagesize.
+type Pagesize = string
+
+// Search defines model for search.
+type Search = string
+
+// TeamID defines model for teamID.
+type TeamID = corev1alpha1.TeamId

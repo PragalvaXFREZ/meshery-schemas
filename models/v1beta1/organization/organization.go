@@ -12,6 +12,22 @@ const (
 	Delete OrgTeamActionPayloadAction = "delete"
 )
 
+// AvailableOrganization defines model for AvailableOrganization.
+type AvailableOrganization struct {
+	Country     Text         `json:"country,omitempty" yaml:"country,omitempty"`
+	CreatedAt   Time         `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	DeletedAt   NullableTime `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	Description Text         `json:"description,omitempty" yaml:"description,omitempty"`
+
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID        *UUID        `json:"id,omitempty" yaml:"id,omitempty"`
+	Metadata  *OrgMetadata `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Name      Text         `json:"name,omitempty" yaml:"name,omitempty"`
+	Owner     Text         `json:"owner,omitempty" yaml:"owner,omitempty"`
+	Region    Text         `json:"region,omitempty" yaml:"region,omitempty"`
+	UpdatedAt Time         `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+}
+
 // AvailableTeam defines model for AvailableTeam.
 type AvailableTeam struct {
 	ID          corev1alpha1.GeneralId `db:"id" json:"id" yaml:"id"`
@@ -52,7 +68,7 @@ type OrgMetadata struct {
 	Preferences Preferences `json:"preferences" yaml:"preferences"`
 }
 
-// OrgTeamActionPayload Optional action payload for POST on /api/identity/orgs/{orgID}/teams/{teamId}.
+// OrgTeamActionPayload Optional action payload for POST on /api/identity/orgs/{orgId}/teams/{teamId}.
 type OrgTeamActionPayload struct {
 	// Action Internal action to perform on the team resource.
 	Action *OrgTeamActionPayloadAction `json:"action,omitempty" yaml:"action,omitempty"`
@@ -78,6 +94,32 @@ type Organization struct {
 	Owner     UUID   `db:"owner" json:"owner" yaml:"owner"`
 	Region    string `db:"region" json:"region" yaml:"region"`
 	UpdatedAt Time   `db:"updated_at" json:"updated_at" yaml:"updated_at"`
+}
+
+// OrganizationPage Single-organization wrapper used by current meshery-cloud organization handlers.
+type OrganizationPage struct {
+	Organizations *[]AvailableOrganization `json:"organizations,omitempty" yaml:"organizations,omitempty"`
+	Page          *int                     `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize      *int                     `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	TotalCount    *int                     `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+}
+
+// OrganizationPayload defines model for OrganizationPayload.
+type OrganizationPayload struct {
+	Country         Text         `json:"country,omitempty" yaml:"country,omitempty"`
+	Description     Text         `json:"description,omitempty" yaml:"description,omitempty"`
+	Name            Text         `json:"name,omitempty" yaml:"name,omitempty"`
+	NotifyOrgUpdate *bool        `json:"notify_org_update,omitempty" yaml:"notify_org_update,omitempty"`
+	Preferences     *Preferences `json:"preferences,omitempty" yaml:"preferences,omitempty"`
+	Region          Text         `json:"region,omitempty" yaml:"region,omitempty"`
+}
+
+// OrganizationsPage defines model for OrganizationsPage.
+type OrganizationsPage struct {
+	Organizations *[]AvailableOrganization `json:"organizations,omitempty" yaml:"organizations,omitempty"`
+	Page          *int                     `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize      *int                     `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	TotalCount    *int                     `json:"total_count,omitempty" yaml:"total_count,omitempty"`
 }
 
 // Preferences defines model for Preferences.
@@ -129,8 +171,23 @@ type Time = corev1alpha1.Time
 // UUID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type UUID = corev1alpha1.Uuid
 
-// OrgID defines model for orgID.
-type OrgID = corev1alpha1.OrganizationId
+// All defines model for all.
+type All = bool
+
+// Order defines model for order.
+type Order = string
+
+// OrgId defines model for orgId.
+type OrgId = corev1alpha1.OrganizationId
+
+// Page defines model for page.
+type Page = string
+
+// Pagesize defines model for pagesize.
+type Pagesize = string
+
+// Search defines model for search.
+type Search = string
 
 // TeamId defines model for teamId.
 type TeamId = corev1alpha1.TeamId

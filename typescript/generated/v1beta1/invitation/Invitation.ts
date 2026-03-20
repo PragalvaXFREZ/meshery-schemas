@@ -82,6 +82,42 @@ export interface components {
       /** @description Total number of invitations available */
       total: number;
     };
+    /** @description Payload for creating or updating an invitation. */
+    InvitationPayload: {
+      /**
+       * Format: uuid
+       * @description Existing invitation ID for updates; omit on create.
+       */
+      id?: string;
+      /**
+       * Format: uuid
+       * @description ID of the user who created the invitation.
+       */
+      owner_id?: string;
+      /** @description Indicates whether the invitation is a default invitation (open invite). */
+      is_default?: boolean;
+      /** @description Name of the invitation. */
+      name: string;
+      /** @description Description of the invitation. */
+      description: string;
+      emails: string[];
+      /** @description ID of the organization to which the user is invited. */
+      org_id: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the invitation expires, if applicable.
+       */
+      expires_at?: string;
+      /** @description Quota for the invitation. */
+      quota?: number;
+      roles: string[];
+      teams: string[];
+      /**
+       * @description Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
+       * @enum {string}
+       */
+      status: "enabled" | "disabled";
+    };
     /**
      * @description Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
      * @enum {string}
@@ -305,32 +341,30 @@ export interface operations {
         "application/json": {
           /**
            * Format: uuid
-           * @description Unique identifier for the invitation , is also used as the invitation code
+           * @description Existing invitation ID for updates; omit on create.
            */
-          id: string;
+          id?: string;
           /**
            * Format: uuid
-           * @description ID of the user who created the invitation, this is used to track who created the invitation and can be used for auditing purposes
+           * @description ID of the user who created the invitation.
            */
-          owner_id: string;
-          /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
+          owner_id?: string;
+          /** @description Indicates whether the invitation is a default invitation (open invite). */
           is_default?: boolean;
-          /** @description Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
+          /** @description Name of the invitation. */
           name: string;
-          /** @description Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
+          /** @description Description of the invitation. */
           description: string;
           emails: string[];
-          /** @description ID of the organization to which the user is invited */
+          /** @description ID of the organization to which the user is invited. */
           org_id: string;
           /**
            * Format: date-time
-           * @description Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire
+           * @description Timestamp when the invitation expires, if applicable.
            */
           expires_at?: string;
-          /** @description Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
+          /** @description Quota for the invitation. */
           quota?: number;
-          /** @description List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
-          accepted_by: string[];
           roles: string[];
           teams: string[];
           /**
@@ -338,21 +372,6 @@ export interface operations {
            * @enum {string}
            */
           status: "enabled" | "disabled";
-          /**
-           * Format: date-time
-           * @description Timestamp when the invitation was created
-           */
-          created_at: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the invitation was last updated
-           */
-          updated_at: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the invitation was deleted, if applicable
-           */
-          deleted_at: string;
         };
       };
     };
@@ -516,32 +535,30 @@ export interface operations {
         "application/json": {
           /**
            * Format: uuid
-           * @description Unique identifier for the invitation , is also used as the invitation code
+           * @description Existing invitation ID for updates; omit on create.
            */
-          id: string;
+          id?: string;
           /**
            * Format: uuid
-           * @description ID of the user who created the invitation, this is used to track who created the invitation and can be used for auditing purposes
+           * @description ID of the user who created the invitation.
            */
-          owner_id: string;
-          /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
+          owner_id?: string;
+          /** @description Indicates whether the invitation is a default invitation (open invite). */
           is_default?: boolean;
-          /** @description Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
+          /** @description Name of the invitation. */
           name: string;
-          /** @description Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
+          /** @description Description of the invitation. */
           description: string;
           emails: string[];
-          /** @description ID of the organization to which the user is invited */
+          /** @description ID of the organization to which the user is invited. */
           org_id: string;
           /**
            * Format: date-time
-           * @description Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire
+           * @description Timestamp when the invitation expires, if applicable.
            */
           expires_at?: string;
-          /** @description Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
+          /** @description Quota for the invitation. */
           quota?: number;
-          /** @description List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
-          accepted_by: string[];
           roles: string[];
           teams: string[];
           /**
@@ -549,21 +566,6 @@ export interface operations {
            * @enum {string}
            */
           status: "enabled" | "disabled";
-          /**
-           * Format: date-time
-           * @description Timestamp when the invitation was created
-           */
-          created_at: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the invitation was last updated
-           */
-          updated_at: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the invitation was deleted, if applicable
-           */
-          deleted_at: string;
         };
       };
     };

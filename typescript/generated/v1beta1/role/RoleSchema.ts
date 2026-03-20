@@ -199,7 +199,7 @@ const RoleSchema: Record<string, unknown> = {
         }
       }
     },
-    "/api/identity/orgs/{orgID}/roles": {
+    "/api/identity/orgs/{orgId}/roles": {
       "get": {
         "x-internal": [
           "cloud"
@@ -212,7 +212,7 @@ const RoleSchema: Record<string, unknown> = {
         "description": "Returns all roles defined for the specified organization.",
         "parameters": [
           {
-            "name": "orgID",
+            "name": "orgId",
             "in": "path",
             "description": "Organization ID",
             "required": true,
@@ -438,7 +438,7 @@ const RoleSchema: Record<string, unknown> = {
         "description": "Creates or updates a role for the specified organization.",
         "parameters": [
           {
-            "name": "orgID",
+            "name": "orgId",
             "in": "path",
             "description": "Organization ID",
             "required": true,
@@ -662,7 +662,7 @@ const RoleSchema: Record<string, unknown> = {
         "description": "Updates role assignments for multiple users in the organization.",
         "parameters": [
           {
-            "name": "orgID",
+            "name": "orgId",
             "in": "path",
             "description": "Organization ID",
             "required": true,
@@ -797,7 +797,7 @@ const RoleSchema: Record<string, unknown> = {
         }
       }
     },
-    "/api/identity/orgs/{orgID}/roles/{roleID}/keychains": {
+    "/api/identity/orgs/{orgId}/roles/{roleId}/keychains": {
       "get": {
         "x-internal": [
           "cloud"
@@ -810,7 +810,7 @@ const RoleSchema: Record<string, unknown> = {
         "description": "Returns all keychains assigned to the specified role.",
         "parameters": [
           {
-            "name": "orgID",
+            "name": "orgId",
             "in": "path",
             "description": "Organization ID",
             "required": true,
@@ -825,7 +825,7 @@ const RoleSchema: Record<string, unknown> = {
             }
           },
           {
-            "name": "roleID",
+            "name": "roleId",
             "in": "path",
             "description": "Role ID",
             "required": true,
@@ -905,6 +905,7 @@ const RoleSchema: Record<string, unknown> = {
                       "type": "array",
                       "items": {
                         "type": "object",
+                        "additionalProperties": false,
                         "description": "Represents a collection of keys.",
                         "required": [
                           "id",
@@ -1027,7 +1028,7 @@ const RoleSchema: Record<string, unknown> = {
         }
       }
     },
-    "/api/identity/orgs/{orgID}/roles/{roleID}/keychains/{keychainID}": {
+    "/api/identity/orgs/{orgId}/roles/{roleId}/keychains/{keychainId}": {
       "post": {
         "x-internal": [
           "cloud"
@@ -1040,7 +1041,7 @@ const RoleSchema: Record<string, unknown> = {
         "description": "Associates a keychain with the specified role.",
         "parameters": [
           {
-            "name": "orgID",
+            "name": "orgId",
             "in": "path",
             "description": "Organization ID",
             "required": true,
@@ -1055,7 +1056,7 @@ const RoleSchema: Record<string, unknown> = {
             }
           },
           {
-            "name": "roleID",
+            "name": "roleId",
             "in": "path",
             "description": "Role ID",
             "required": true,
@@ -1070,7 +1071,7 @@ const RoleSchema: Record<string, unknown> = {
             }
           },
           {
-            "name": "keychainID",
+            "name": "keychainId",
             "in": "path",
             "description": "Keychain ID",
             "required": true,
@@ -1133,7 +1134,7 @@ const RoleSchema: Record<string, unknown> = {
         "description": "Removes the association between a keychain and a role.",
         "parameters": [
           {
-            "name": "orgID",
+            "name": "orgId",
             "in": "path",
             "description": "Organization ID",
             "required": true,
@@ -1148,7 +1149,7 @@ const RoleSchema: Record<string, unknown> = {
             }
           },
           {
-            "name": "roleID",
+            "name": "roleId",
             "in": "path",
             "description": "Role ID",
             "required": true,
@@ -1163,7 +1164,7 @@ const RoleSchema: Record<string, unknown> = {
             }
           },
           {
-            "name": "keychainID",
+            "name": "keychainId",
             "in": "path",
             "description": "Keychain ID",
             "required": true,
@@ -1292,8 +1293,8 @@ const RoleSchema: Record<string, unknown> = {
           }
         }
       },
-      "orgID": {
-        "name": "orgID",
+      "orgId": {
+        "name": "orgId",
         "in": "path",
         "description": "Organization ID",
         "required": true,
@@ -1307,8 +1308,8 @@ const RoleSchema: Record<string, unknown> = {
           }
         }
       },
-      "roleID": {
-        "name": "roleID",
+      "roleId": {
+        "name": "roleId",
         "in": "path",
         "description": "Role ID",
         "required": true,
@@ -1322,8 +1323,8 @@ const RoleSchema: Record<string, unknown> = {
           }
         }
       },
-      "keychainID": {
-        "name": "keychainID",
+      "keychainId": {
+        "name": "keychainId",
         "in": "path",
         "description": "Keychain ID",
         "required": true,

@@ -6,9 +6,9 @@
 export interface paths {
   "/api/environments": {
     /** Gets all environments */
-    get: operations["GetEnvironments"];
+    get: operations["getEnvironments"];
     /** Creates a new environment */
-    post: operations["CreateEnvironment"];
+    post: operations["createEnvironment"];
   };
 }
 
@@ -80,7 +80,7 @@ export interface components {
     };
     environmentConnectionMapping: {
       /** Format: uuid */
-      ID?: string;
+      id?: string;
       /** Format: uuid */
       environment_id?: string;
       /** Format: uuid */
@@ -217,7 +217,7 @@ export interface components {
 
 export interface operations {
   /** Gets all environments */
-  GetEnvironments: {
+  getEnvironments: {
     parameters: {
       query: {
         /** Get responses that match search param value */
@@ -306,7 +306,7 @@ export interface operations {
     };
   };
   /** Creates a new environment */
-  CreateEnvironment: {
+  createEnvironment: {
     responses: {
       /** Created environment */
       201: {

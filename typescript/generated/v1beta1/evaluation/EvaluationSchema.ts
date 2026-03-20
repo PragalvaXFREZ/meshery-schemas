@@ -47,6 +47,7 @@ const EvaluationSchema: Record<string, unknown> = {
                     "title": "Design Schema",
                     "description": "Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.",
                     "type": "object",
+                    "additionalProperties": false,
                     "properties": {
                       "id": {
                         "x-order": 1,
@@ -4691,6 +4692,7 @@ const EvaluationSchema: Record<string, unknown> = {
                       "$schema": "http://json-schema.org/draft-07/schema#",
                       "title": "Design Schema",
                       "type": "object",
+                      "additionalProperties": false,
                       "properties": {
                         "id": {
                           "x-order": 1,
@@ -9359,6 +9361,7 @@ const EvaluationSchema: Record<string, unknown> = {
             "title": "Design Schema",
             "description": "Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.",
             "type": "object",
+            "additionalProperties": false,
             "properties": {
               "id": {
                 "x-order": 1,
@@ -13995,6 +13998,7 @@ const EvaluationSchema: Record<string, unknown> = {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "title": "Design Schema",
             "type": "object",
+            "additionalProperties": false,
             "properties": {
               "id": {
                 "x-order": 1,
