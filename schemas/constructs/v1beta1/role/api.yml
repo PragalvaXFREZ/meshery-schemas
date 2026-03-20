@@ -104,9 +104,9 @@ paths:
       x-internal: ["cloud"]
       tags:
         - roles
-      summary: Upsert organization roles
-      operationId: upsertRoles
-      description: Creates or updates roles for the specified organization.
+      summary: Upsert organization role
+      operationId: upsertRole
+      description: Creates or updates a role for the specified organization.
       parameters:
         - $ref: "#/components/parameters/orgID"
       requestBody:

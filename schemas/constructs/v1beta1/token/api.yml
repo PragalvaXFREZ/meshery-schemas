@@ -67,7 +67,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TokenPage"
+                $ref: "#/components/schemas/UserToken"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -246,12 +246,14 @@ components:
         access_token:
           type: string
           description: Access token value.
+          writeOnly: true
           x-order: 4
           x-oapi-codegen-extra-tags:
             db: "access_token"
         refresh_token:
           type: string
           description: Refresh token value when applicable.
+          writeOnly: true
           x-order: 5
           x-oapi-codegen-extra-tags:
             db: "refresh_token"
