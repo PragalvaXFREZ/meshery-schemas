@@ -55,9 +55,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Keychain"
+              $ref: "#/components/schemas/KeychainPayload"
       responses:
-        "200":
+        "201":
           description: Keychain created
           content:
             application/json:
@@ -107,7 +107,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Keychain"
+              $ref: "#/components/schemas/KeychainPayload"
       responses:
         "200":
           description: Keychain updated
@@ -258,6 +258,28 @@ components:
   schemas:
     Keychain:
       $ref: "./keychain.yaml"
+    KeychainPayload:
+      type: object
+      description: Payload for creating or updating a keychain.
+      required:
+        - name
+      properties:
+        id:
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+          description: Existing keychain ID for updates; omit on create.
+          x-oapi-codegen-extra-tags:
+            json: "id,omitempty"
+          x-order: 1
+        name:
+          type: string
+          description: Name of the keychain.
+          x-order: 2
+        owner:
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+          description: Owner of the keychain.
+          x-oapi-codegen-extra-tags:
+            json: "owner,omitempty"
+          x-order: 3
     KeychainPage:
       type: object
       required:
