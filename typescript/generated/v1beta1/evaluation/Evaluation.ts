@@ -299,6 +299,7 @@ export interface paths {
                         | "Serverless"
                         | "Tools"
                         | "Uncategorized";
+                      /** @description Additional metadata associated with the category. */
                       metadata: { [key: string]: unknown };
                     };
                     /**
@@ -1828,6 +1829,7 @@ export interface paths {
                       | "Serverless"
                       | "Tools"
                       | "Uncategorized";
+                    /** @description Additional metadata associated with the category. */
                     metadata: { [key: string]: unknown };
                   };
                   /**
@@ -3351,6 +3353,7 @@ export interface components {
                 | "Serverless"
                 | "Tools"
                 | "Uncategorized";
+              /** @description Additional metadata associated with the category. */
               metadata: { [key: string]: unknown };
             };
             /**
@@ -4859,6 +4862,7 @@ export interface components {
                 | "Serverless"
                 | "Tools"
                 | "Uncategorized";
+              /** @description Additional metadata associated with the category. */
               metadata: { [key: string]: unknown };
             };
             /**

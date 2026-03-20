@@ -747,6 +747,7 @@ const ModelSchema: Record<string, unknown> = {
             "$id": "https://schemas.meshery.io/category.yaml",
             "$schema": "http://json-schema.org/draft-07/schema#",
             "type": "object",
+            "additionalProperties": false,
             "description": "Category of the model.",
             "required": [
               "id",
@@ -795,6 +796,7 @@ const ModelSchema: Record<string, unknown> = {
                 "x-order": 2
               },
               "metadata": {
+                "description": "Additional metadata associated with the category.",
                 "type": "object",
                 "x-oapi-codegen-extra-tags": {
                   "yaml": "metadata,omitempty",

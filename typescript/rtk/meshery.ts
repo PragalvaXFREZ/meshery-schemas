@@ -815,6 +815,7 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
             | "Serverless"
             | "Tools"
             | "Uncategorized";
+          /** Additional metadata associated with the category. */
           metadata: object;
         };
         /** Sub category of the model determines the secondary grouping. */
@@ -1789,6 +1790,7 @@ export type PostEvaluateApiArg = {
               | "Serverless"
               | "Tools"
               | "Uncategorized";
+            /** Additional metadata associated with the category. */
             metadata: object;
           };
           /** Sub category of the model determines the secondary grouping. */

@@ -140,7 +140,7 @@ paths:
     post:
       tags:
         - environments
-      operationId: CreateEnvironment
+      operationId: createEnvironment
       summary: Create an environment
       description: Creates a new environment
       requestBody:
@@ -159,7 +159,7 @@ paths:
     get:
       tags:
         - environments
-      operationId: GetEnvironments
+      operationId: getEnvironments
       summary: Get all environments
       description: Gets all environments
       parameters:

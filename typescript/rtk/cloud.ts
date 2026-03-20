@@ -3211,6 +3211,7 @@ export type GetPatternsApiResponse = /** status 200 Designs fetched successfully
               | "Serverless"
               | "Tools"
               | "Uncategorized";
+            /** Additional metadata associated with the category. */
             metadata: object;
           };
           /** Sub category of the model determines the secondary grouping. */
@@ -4227,6 +4228,7 @@ export type UpsertPatternApiResponse = /** status 200 Design saved successfully 
             | "Serverless"
             | "Tools"
             | "Uncategorized";
+          /** Additional metadata associated with the category. */
           metadata: object;
         };
         /** Sub category of the model determines the secondary grouping. */
@@ -5231,6 +5233,7 @@ export type UpsertPatternApiArg = {
                 | "Serverless"
                 | "Tools"
                 | "Uncategorized";
+              /** Additional metadata associated with the category. */
               metadata: object;
             };
             /** Sub category of the model determines the secondary grouping. */
@@ -6270,6 +6273,7 @@ export type GetPatternApiResponse = /** status 200 Design fetched successfully *
             | "Serverless"
             | "Tools"
             | "Uncategorized";
+          /** Additional metadata associated with the category. */
           metadata: object;
         };
         /** Sub category of the model determines the secondary grouping. */
@@ -7280,6 +7284,7 @@ export type ClonePatternApiResponse = /** status 200 Design cloned successfully 
             | "Serverless"
             | "Tools"
             | "Uncategorized";
+          /** Additional metadata associated with the category. */
           metadata: object;
         };
         /** Sub category of the model determines the secondary grouping. */
@@ -10293,6 +10298,7 @@ export type GetDesignsOfWorkspaceApiResponse = /** status 200 Designs */ {
               | "Serverless"
               | "Tools"
               | "Uncategorized";
+            /** Additional metadata associated with the category. */
             metadata: object;
           };
           /** Sub category of the model determines the secondary grouping. */

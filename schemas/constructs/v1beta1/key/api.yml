@@ -19,7 +19,7 @@ tags:
     description: Operations related to authorization keys
 
 paths:
-  /api/identity/orgs/{orgID}/users/keys:
+  /api/identity/orgs/{orgId}/users/keys:
     get:
       tags:
         - users
@@ -27,7 +27,7 @@ paths:
       summary: Get User Keys
       description: Get all keys based on roles assigned to user
       parameters:
-        - $ref: "#/components/parameters/orgID"
+        - $ref: "#/components/parameters/orgId"
       responses:
         "200":
           description: Returns user keys based on roles assigned to user
@@ -146,8 +146,8 @@ components:
       $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
 
   parameters:
-    orgID:
-      name: orgID
+    orgId:
+      name: orgId
       in: path
       description: Organization ID
       required: true
