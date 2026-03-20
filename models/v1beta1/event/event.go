@@ -27,3 +27,46 @@ type ErrorResponse struct {
 type UpdateEventStatusRequest struct {
 	Status string `json:"status" yaml:"status"`
 }
+
+// EventResult defines model for eventResult.
+type EventResult struct {
+	Action   *string `json:"action,omitempty" yaml:"action,omitempty"`
+	Category *string `json:"category,omitempty" yaml:"category,omitempty"`
+
+	// CreatedAt Timestamp when the resource was created.
+	CreatedAt   corev1alpha1.CreatedAt `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	Description *string                `json:"description,omitempty" yaml:"description,omitempty"`
+
+	// Email email
+	Email     corev1alpha1.Email `json:"email,omitempty" yaml:"email,omitempty"`
+	FirstName *string            `json:"first_name,omitempty" yaml:"first_name,omitempty"`
+	LastName  *string            `json:"last_name,omitempty" yaml:"last_name,omitempty"`
+
+	// Provider One of (x-oapi-codegen-extra-tags-cloud, github, google)
+	Provider corev1alpha1.Provider `json:"provider,omitempty" yaml:"provider,omitempty"`
+	SystemID corev1alpha1.SystemId `db:"system_id" json:"system_id,omitempty" yaml:"system_id,omitempty"`
+	UserID   corev1alpha1.UserUuid `db:"user_id" json:"user_id" yaml:"user_id"`
+}
+
+// EventsPage defines model for eventsPage.
+type EventsPage struct {
+	Data       *[]EventResult      `json:"data,omitempty" yaml:"data,omitempty"`
+	Page       corev1alpha1.Number `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize   corev1alpha1.Number `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	TotalCount corev1alpha1.Number `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+}
+
+// Order defines model for order.
+type Order = string
+
+// Page defines model for page.
+type Page = string
+
+// Pagesize defines model for pagesize.
+type Pagesize = string
+
+// Search defines model for search.
+type Search = string
+
+// WorkspaceId defines model for workspaceId.
+type WorkspaceId = corev1alpha1.WorkspaceId

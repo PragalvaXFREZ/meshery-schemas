@@ -279,7 +279,7 @@ paths:
   /api/pattern/import:
     post:
       summary: Import Design
-      operationId: ImportDesign
+      operationId: importDesign
       requestBody:
         required: true
         content:

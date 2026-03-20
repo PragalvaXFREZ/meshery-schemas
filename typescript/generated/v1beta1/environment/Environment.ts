@@ -14,7 +14,22 @@ export interface paths {
 
 export interface components {
   schemas: {
-    /** @description Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments */
+    /**
+     * Environment
+     * @description Environments allow you to logically group related Connections and their associated Credentials. Learn more at https://docs.meshery.io/concepts/logical/environments
+     * @example {
+     *   "id": "00000000-0000-0000-0000-000000000000",
+     *   "schemaVersion": "environments.meshery.io/v1beta1",
+     *   "name": "Production Environment",
+     *   "description": "Connections and credentials for the production cluster.",
+     *   "organization_id": "00000000-0000-0000-0000-000000000000",
+     *   "owner": "00000000-0000-0000-0000-000000000000",
+     *   "created_at": "0001-01-01T00:00:00Z",
+     *   "metadata": {},
+     *   "updated_at": "0001-01-01T00:00:00Z",
+     *   "deleted_at": null
+     * }
+     */
     environment: {
       /**
        * Format: uuid
@@ -48,13 +63,20 @@ export interface components {
        * @description Environment owner
        */
       owner?: string;
-      /** Format: date-time */
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was created.
+       */
       created_at?: string;
+      /** @description Additional metadata associated with the environment. */
       metadata?: { [key: string]: unknown };
-      /** Format: date-time */
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was updated.
+       */
       updated_at?: string;
-      /** @description SQL null Timestamp to handle null values of time. */
-      deleted_at?: string;
+      /** @description Timestamp when the environment was soft deleted. Null while the environment remains active. */
+      deleted_at?: string | null;
     };
     environmentConnectionMapping: {
       /** Format: uuid */
@@ -117,13 +139,20 @@ export interface components {
          * @description Environment owner
          */
         owner?: string;
-        /** Format: date-time */
+        /**
+         * Format: date-time
+         * @description Timestamp when the resource was created.
+         */
         created_at?: string;
+        /** @description Additional metadata associated with the environment. */
         metadata?: { [key: string]: unknown };
-        /** Format: date-time */
+        /**
+         * Format: date-time
+         * @description Timestamp when the resource was updated.
+         */
         updated_at?: string;
-        /** @description SQL null Timestamp to handle null values of time. */
-        deleted_at?: string;
+        /** @description Timestamp when the environment was soft deleted. Null while the environment remains active. */
+        deleted_at?: string | null;
       }[];
     };
   };
@@ -244,13 +273,20 @@ export interface operations {
                * @description Environment owner
                */
               owner?: string;
-              /** Format: date-time */
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was created.
+               */
               created_at?: string;
+              /** @description Additional metadata associated with the environment. */
               metadata?: { [key: string]: unknown };
-              /** Format: date-time */
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was updated.
+               */
               updated_at?: string;
-              /** @description SQL null Timestamp to handle null values of time. */
-              deleted_at?: string;
+              /** @description Timestamp when the environment was soft deleted. Null while the environment remains active. */
+              deleted_at?: string | null;
             }[];
           };
         };
@@ -308,13 +344,20 @@ export interface operations {
              * @description Environment owner
              */
             owner?: string;
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description Timestamp when the resource was created.
+             */
             created_at?: string;
+            /** @description Additional metadata associated with the environment. */
             metadata?: { [key: string]: unknown };
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description Timestamp when the resource was updated.
+             */
             updated_at?: string;
-            /** @description SQL null Timestamp to handle null values of time. */
-            deleted_at?: string;
+            /** @description Timestamp when the environment was soft deleted. Null while the environment remains active. */
+            deleted_at?: string | null;
           };
         };
       };

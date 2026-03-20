@@ -188,7 +188,7 @@ paths:
         - events
       security:
         - jwt: []
-      operationId: GetEventsOfWorkspace
+      operationId: getEventsOfWorkspace
       summary: Get workspace events
       description: Gets events for a workspace.
       parameters:

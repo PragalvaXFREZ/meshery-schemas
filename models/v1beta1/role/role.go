@@ -101,6 +101,9 @@ type UserRoleUpdateRequest struct {
 	DeletedAt corev1alpha1.NullTime `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 }
 
+// All defines model for all.
+type All = bool
+
 // Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type Id = corev1alpha1.Uuid
 
@@ -124,3 +127,9 @@ type RoleID = corev1alpha1.Uuid
 
 // Search defines model for search.
 type Search = string
+
+// Selector defines model for selector.
+type Selector = string
+
+// TeamID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+type TeamID = corev1alpha1.Uuid

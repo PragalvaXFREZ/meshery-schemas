@@ -32,7 +32,9 @@ type CategoryDefinition struct {
 	ID corev1alpha1.Uuid `json:"id" yaml:"id"`
 
 	// Name The category of the model that determines the main grouping.
-	Name     CategoryDefinitionName `gorm:"name" json:"name" yaml:"name"`
+	Name CategoryDefinitionName `gorm:"name" json:"name" yaml:"name"`
+
+	// Metadata Additional metadata associated with the category.
 	Metadata map[string]interface{} `gorm:"type:bytes;serializer:json" json:"metadata,omitempty" yaml:"metadata,omitempty"`
 }
 

@@ -508,9 +508,22 @@ const ModelSchema: Record<string, unknown> = {
                   },
                   "$id": "https://schemas.meshery.io/environment.yaml",
                   "$schema": "http://json-schema.org/draft-07/schema#",
-                  "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
+                  "title": "Environment",
+                  "description": "Environments allow you to logically group related Connections and their associated Credentials. Learn more at https://docs.meshery.io/concepts/logical/environments",
                   "additionalProperties": false,
                   "type": "object",
+                  "example": {
+                    "id": "00000000-0000-0000-0000-000000000000",
+                    "schemaVersion": "environments.meshery.io/v1beta1",
+                    "name": "Production Environment",
+                    "description": "Connections and credentials for the production cluster.",
+                    "organization_id": "00000000-0000-0000-0000-000000000000",
+                    "owner": "00000000-0000-0000-0000-000000000000",
+                    "created_at": "0001-01-01T00:00:00Z",
+                    "metadata": {},
+                    "updated_at": "0001-01-01T00:00:00Z",
+                    "deleted_at": null
+                  },
                   "required": [
                     "id",
                     "schemaVersion",
@@ -563,6 +576,7 @@ const ModelSchema: Record<string, unknown> = {
                       },
                       "x-order": 3,
                       "type": "string",
+                      "maxLength": 100,
                       "description": "Environment name"
                     },
                     "description": {
@@ -572,6 +586,7 @@ const ModelSchema: Record<string, unknown> = {
                       },
                       "x-order": 4,
                       "type": "string",
+                      "maxLength": 1000,
                       "description": "Environment description"
                     },
                     "organization_id": {
@@ -604,16 +619,20 @@ const ModelSchema: Record<string, unknown> = {
                       }
                     },
                     "created_at": {
+                      "x-order": 7,
+                      "description": "Timestamp when the resource was created.",
+                      "x-go-type": "time.Time",
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-name": "CreatedAt",
                       "x-oapi-codegen-extra-tags": {
                         "db": "created_at",
                         "yaml": "created_at"
                       },
-                      "x-order": 7,
-                      "type": "string",
-                      "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     },
                     "metadata": {
+                      "description": "Additional metadata associated with the environment.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "metadata",
                         "yaml": "metadata"
@@ -624,23 +643,28 @@ const ModelSchema: Record<string, unknown> = {
                       "type": "object"
                     },
                     "updated_at": {
+                      "x-order": 9,
+                      "description": "Timestamp when the resource was updated.",
+                      "x-go-type": "time.Time",
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-name": "UpdatedAt",
                       "x-oapi-codegen-extra-tags": {
                         "db": "updated_at",
                         "yaml": "updated_at"
                       },
-                      "x-order": 9,
-                      "type": "string",
-                      "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     },
                     "deleted_at": {
+                      "description": "Timestamp when the environment was soft deleted. Null while the environment remains active.",
+                      "nullable": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "deleted_at",
                         "yaml": "deleted_at"
                       },
+                      "x-go-type": "core.NullTime",
+                      "x-go-import": "database/sql",
                       "x-order": 10,
-                      "description": "SQL null Timestamp to handle null values of time.",
-                      "x-go-type": "sql.NullTime",
                       "type": "string",
                       "x-go-type-skip-optional-pointer": true
                     }
@@ -723,6 +747,7 @@ const ModelSchema: Record<string, unknown> = {
             "$id": "https://schemas.meshery.io/category.yaml",
             "$schema": "http://json-schema.org/draft-07/schema#",
             "type": "object",
+            "additionalProperties": false,
             "description": "Category of the model.",
             "required": [
               "id",
@@ -771,6 +796,7 @@ const ModelSchema: Record<string, unknown> = {
                 "x-order": 2
               },
               "metadata": {
+                "description": "Additional metadata associated with the category.",
                 "type": "object",
                 "x-oapi-codegen-extra-tags": {
                   "yaml": "metadata,omitempty",

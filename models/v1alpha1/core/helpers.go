@@ -1,6 +1,12 @@
 package core
 
-import "github.com/gofrs/uuid"
+import (
+	"database/sql/driver"
+	"encoding/json"
+	"fmt"
+
+	"github.com/gofrs/uuid"
+)
 
 func ResolvedAliasFromNonResolved(nonResolved NonResolvedAlias, resolvedParentId uuid.UUID, resolvedField []string) ResolvedAlias {
 
@@ -12,4 +18,33 @@ func ResolvedAliasFromNonResolved(nonResolved NonResolvedAlias, resolvedParentId
 		ResolvedParentId:      resolvedParentId,
 		ResolvedRefFieldPath:  resolvedField,
 	}
+}
+
+// Scan implements the sql.Scanner interface for MapObject.
+func (m *MapObject) Scan(src interface{}) error {
+	var b []byte
+	switch t := src.(type) {
+	case nil:
+		*m = nil
+		return nil
+	case []byte:
+		b = t
+	case string:
+		b = []byte(t)
+	default:
+		return fmt.Errorf("scan source was not []byte nor string but %T", src)
+	}
+	return json.Unmarshal(b, m)
+}
+
+// Value implements the driver.Valuer interface for MapObject.
+func (m MapObject) Value() (driver.Value, error) {
+	if m == nil {
+		return nil, nil
+	}
+	b, err := json.Marshal(m)
+	if err != nil {
+		return nil, err
+	}
+	return string(b), nil
 }

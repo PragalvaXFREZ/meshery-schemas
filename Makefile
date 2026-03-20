@@ -29,7 +29,7 @@ site:
 #-----------------------------------------------------------------------------
 # OpenAPI spec
 #-----------------------------------------------------------------------------
-.PHONY: setup docs-build generate-ts publish-ts bundle-openapi generate-golang generate-rtk golangci
+.PHONY: setup docs-build generate-ts publish-ts bundle-openapi generate-golang generate-rtk golangci validate-schemas
 
 ## (Re)Initialize Golang (go.mod) and Node (package.json) manifests
 setup:
@@ -94,8 +94,12 @@ test-golang:
 golangci: dep-check
 	golangci-lint run
 
+## Validate schema design rules (Dual-Schema Pattern, additionalProperties)
+validate-schemas:
+	node build/validate-schemas.js
+
 ## Generate and bundle schema package (bundles OpenAPI, generates Go, RTK, TypeScript, and permissions)
-build: bundle-openapi generate-golang  generate-rtk generate-ts generate-permissions build-ts test-golang
+build: validate-schemas bundle-openapi generate-golang  generate-rtk generate-ts generate-permissions build-ts test-golang
 
 #-----------------------------------------------------------------------------
 # Dependencies

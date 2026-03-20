@@ -12,6 +12,52 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0.html
 
 paths:
+  /api/identity/orgs:
+    get:
+      security:
+        - jwt: []
+      summary: Read organizations
+      description: Returns organizations for the current user.
+      operationId: getOrgs
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/all"
+      responses:
+        "200":
+          description: Organizations response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationsPage"
+        "204":
+          description: No content
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      security:
+        - jwt: []
+      summary: Create an organization
+      description: Creates a new organization.
+      operationId: createOrg
+      requestBody:
+        $ref: "#/components/requestBodies/organizationPayload"
+      responses:
+        "201":
+          description: Single-organization page response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
   /api/identity/orgs/by-domain:
     get:
       summary: Get organization by domain
@@ -35,14 +81,102 @@ paths:
 
         "500":
           description: Internal server error
+  /api/identity/orgs/{orgId}:
+    get:
+      security:
+        - jwt: []
+      summary: Read an organization
+      description: Returns the organization in the single-item page wrapper currently emitted by meshery-cloud.
+      operationId: getOrg
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+      responses:
+        "200":
+          description: Single-organization page response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      security:
+        - jwt: []
+      summary: Delete an organization
+      description: Deletes the organization.
+      operationId: deleteOrg
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+      responses:
+        "200":
+          description: Single-organization page response for the deleted organization
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      security:
+        - jwt: []
+      summary: Update an organization
+      description: Updates the organization.
+      operationId: handleUpdateOrg
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+      requestBody:
+        $ref: "#/components/requestBodies/organizationPayload"
+      responses:
+        "200":
+          description: Single-organization page response for the updated organization
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+  /api/identity/orgs/{orgId}/preferences:
+    get:
+      security:
+        - jwt: []
+      summary: Get organization preferences
+      description: Returns preferences for the specified organization.
+      operationId: getOrgPreferences
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+      responses:
+        "200":
+          description: Organization metadata, including preferences
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrgMetadata"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
 
-  /api/identity/orgs/{orgID}/teams/{teamId}:
+  /api/identity/orgs/{orgId}/teams/{teamId}:
     post:
+      security:
+        - jwt: []
       summary: Add team to organization or soft delete team
       description: Adds a team to an organization. If request body contains action=delete, tombstones a team by setting its deleted_at timestamp. The team's organization mapping remains intact.
-      operationId: AddTeamToOrg
+      operationId: addTeamToOrg
       parameters:
-        - $ref: "#/components/parameters/orgID"
+        - $ref: "#/components/parameters/orgId"
         - $ref: "#/components/parameters/teamId"
       requestBody:
         required: false
@@ -69,11 +203,13 @@ paths:
           description: Internal server error
 
     delete:
+      security:
+        - jwt: []
       summary: Remove team from organization
       description: Removes (unassigns) a team from an organization.
-      operationId: RemoveTeamFromOrg
+      operationId: removeTeamFromOrg
       parameters:
-        - $ref: "#/components/parameters/orgID"
+        - $ref: "#/components/parameters/orgId"
         - $ref: "#/components/parameters/teamId"
       responses:
         "200":
@@ -92,13 +228,44 @@ paths:
           description: Internal server error
 
 components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    400:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
+    401:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
+    404:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/404"
+    500:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
+
   parameters:
-    orgID:
-      name: orgID
+    orgId:
+      name: orgId
       in: path
       required: true
       schema:
         $ref: "../../v1alpha1/core/api.yml#/components/schemas/organization_id"
+
+    page:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/page"
+
+    pagesize:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/pagesize"
+
+    search:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/search"
+
+    order:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/order"
+
+    all:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/all"
 
     teamId:
       name: teamId
@@ -106,6 +273,14 @@ components:
       required: true
       schema:
         $ref: "../../v1alpha1/core/api.yml#/components/schemas/team_id"
+  requestBodies:
+    organizationPayload:
+      description: Body for creating or updating an organization
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OrganizationPayload"
 
   schemas:
     UUID:
@@ -125,7 +300,7 @@ components:
 
     OrgTeamActionPayload:
       type: object
-      description: Optional action payload for POST on /api/identity/orgs/{orgID}/teams/{teamId}.
+      description: Optional action payload for POST on /api/identity/orgs/{orgId}/teams/{teamId}.
       properties:
         action:
           type: string
@@ -266,6 +441,78 @@ components:
           nullable: true
           x-oapi-codegen-extra-tags:
             db: "domain"
+
+    AvailableOrganization:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+          x-go-name: ID
+        name:
+          $ref: "#/components/schemas/Text"
+        description:
+          $ref: "#/components/schemas/Text"
+        country:
+          $ref: "#/components/schemas/Text"
+        region:
+          $ref: "#/components/schemas/Text"
+        owner:
+          $ref: "#/components/schemas/Text"
+        metadata:
+          x-go-type: "OrgMetadata"
+          $ref: "#/components/schemas/OrgMetadata"
+        created_at:
+          $ref: "#/components/schemas/Time"
+        updated_at:
+          $ref: "#/components/schemas/Time"
+        deleted_at:
+          $ref: "#/components/schemas/NullableTime"
+
+    OrganizationsPage:
+      type: object
+      properties:
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_count:
+          type: integer
+        organizations:
+          type: array
+          items:
+            $ref: "#/components/schemas/AvailableOrganization"
+
+    OrganizationPage:
+      type: object
+      description: Single-organization wrapper used by current meshery-cloud organization handlers.
+      properties:
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_count:
+          type: integer
+        organizations:
+          type: array
+          maxItems: 1
+          items:
+            $ref: "#/components/schemas/AvailableOrganization"
+
+    OrganizationPayload:
+      type: object
+      properties:
+        name:
+          $ref: "#/components/schemas/Text"
+        country:
+          $ref: "#/components/schemas/Text"
+        region:
+          $ref: "#/components/schemas/Text"
+        description:
+          $ref: "#/components/schemas/Text"
+        notify_org_update:
+          type: boolean
+        preferences:
+          $ref: "#/components/schemas/Preferences"
 
     AvailableTeam:
       type: object

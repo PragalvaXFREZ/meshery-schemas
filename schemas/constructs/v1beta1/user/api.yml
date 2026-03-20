@@ -10,8 +10,150 @@ info:
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-paths: {}
+paths:
+  /api/identity/orgs/{orgId}/users:
+    get:
+      tags:
+        - users
+      operationId: getUsersForOrg
+      summary: Get organization users
+      description: Returns organization users, optionally filtered by team membership.
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/filter"
+        - $ref: "#/components/parameters/teamID"
+      responses:
+        "200":
+          description: Paginated list of organization users
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsersPageForAdmin"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/users:
+    get:
+      tags:
+        - users
+      operationId: getUsers
+      summary: Get public users
+      description: Returns publicly viewable user records.
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/filter"
+      responses:
+        "200":
+          description: Paginated list of public users
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsersPageForNonAdmin"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/profile/{id}:
+    get:
+      tags:
+        - users
+      operationId: getUserProfileById
+      summary: Get user profile by ID
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200":
+          description: User profile for the requested ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/400"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/profile:
+    get:
+      tags:
+        - users
+      operationId: getUser
+      summary: Get current user profile
+      responses:
+        "200":
+          description: Current user profile and role context
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
 components:
+  responses:
+    400:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
+    401:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
+    404:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/404"
+    500:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
+
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      description: User ID
+      schema:
+        $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+    orgId:
+      name: orgId
+      in: path
+      required: true
+      description: Organization ID
+      schema:
+        $ref: "../../v1alpha1/core/api.yml#/components/schemas/organization_id"
+    page:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/page"
+    pagesize:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/pagesize"
+    search:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/search"
+    order:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/order"
+    filter:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/filter"
+    teamID:
+      name: teamID
+      in: query
+      required: false
+      description: Optional team filter when listing organization users
+      schema:
+        $ref: "../../v1alpha1/core/api.yml#/components/schemas/team_id"
+
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     User:
       type: object
@@ -198,91 +340,112 @@ components:
             db: "deleted_at"
             json: "deleted_at"
             yaml: "deleted_at"
-      additionalProperties: false
-
-    GetUserResponse:
-      description: Response schema for getting user information, includes user data with roles, teams, and organizations
-      allOf:
-        - $ref: "#/components/schemas/User"
-        - type: object
+        role_names:
+          type: array
+          items:
+            type: string
+            enum:
+              - admin
+              - meshmap
+              - curator
+              - team admin
+              - workspace admin
+              - workspace manager
+              - organization admin
+              - user
+          description: List of global roles assigned to the user
+          example: ["admin", "meshmap"]
+          x-oapi-codegen-extra-tags:
+            db: "role_names"
+            json: "role_names"
+            yaml: "role_names"
+        teams:
+          type: object
+          description: Teams the user belongs to with role information
+          x-oapi-codegen-extra-tags:
+            db: "teams"
+            json: "teams"
+            yaml: "teams"
           properties:
-            role_names:
+            teams_with_roles:
               type: array
               items:
-                type: string
-                enum:
-                  - admin
-                  - meshmap
-                  - curator
-                  - team admin
-                  - workspace admin
-                  - workspace manager
-                  - organization admin
-                  - user
-              description: List of global roles assigned to the user
-              example:
-                - ["admin", "meshmap"]
-                - ["user"]
+                type: object
               x-oapi-codegen-extra-tags:
-                db: "role_names"
-                json: "role_names"
-                yaml: "role_names"
-            teams:
-              type: object
-              description: Teams the user belongs to with role information
+                db: "teams_with_roles"
+                json: "teams_with_roles"
+                yaml: "teams_with_roles"
+            total_count:
+              type: integer
               x-oapi-codegen-extra-tags:
-                db: "teams"
-                json: "teams"
-                yaml: "teams"
-              properties:
-                teams_with_roles:
-                  type: array
-                  items:
-                    type: object
-                  x-oapi-codegen-extra-tags:
-                    db: "teams_with_roles"
-                    json: "teams_with_roles"
-                    yaml: "teams_with_roles"
-                total_count:
-                  type: integer
-                  x-oapi-codegen-extra-tags:
-                    db: "total_count"
-                    json: "total_count"
-                    yaml: "total_count"
-            organizations:
-              type: object
-              description: Organizations the user belongs to with role information
+                db: "total_count"
+                json: "total_count"
+                yaml: "total_count"
+        organizations:
+          type: object
+          description: Organizations the user belongs to with role information
+          x-oapi-codegen-extra-tags:
+            db: "organizations"
+            json: "organizations"
+            yaml: "organizations"
+          properties:
+            organizations_with_roles:
+              type: array
+              items:
+                type: object
               x-oapi-codegen-extra-tags:
-                db: "organizations"
-                json: "organizations"
-                yaml: "organizations"
-              properties:
-                organizations_with_roles:
-                  type: array
-                  items:
-                    type: object
-                  x-oapi-codegen-extra-tags:
-                    db: "organizations_with_roles"
-                    json: "organizations_with_roles"
-                    yaml: "organizations_with_roles"
-                total_count:
-                  type: integer
-                  x-oapi-codegen-extra-tags:
-                    db: "total_count"
-                    json: "total_count"
-                    yaml: "total_count"
+                db: "organizations_with_roles"
+                json: "organizations_with_roles"
+                yaml: "organizations_with_roles"
+            total_count:
+              type: integer
+              x-oapi-codegen-extra-tags:
+                db: "total_count"
+                json: "total_count"
+                yaml: "total_count"
+      additionalProperties: false
+
+    UsersPageForAdmin:
+      type: object
+      description: Paginated list of users with organization and team role context
+      properties:
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_count:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+
+    UsersPageForNonAdmin:
+      type: object
+      description: Paginated list of public user records
+      properties:
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_count:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
 
     Preference:
       type: object
       required:
         - anonymousUsageStats
         - anonymousPerfResults
-        - updatedAt
+        - updated_at
         - dashboardPreferences
         - selectedOrganizationID
         - selectedWorkspaceForOrganizations
         - usersExtensionPreferences
-        - RemoteProviderPreferences
+        - remoteProviderPreferences
 
       properties:
         meshAdapters:

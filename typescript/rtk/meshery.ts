@@ -4,12 +4,11 @@ export const addTagTypes = [
   "Design_other",
   "Environment_environments",
   "Evaluation_other",
-  "Events_other",
+  "Events_events",
   "Key_users",
   "Model_other",
   "Organization_other",
   "Team_teams",
-  "Workspace_workspaces",
 ] as const;
 const injectedRtkApi = api
   .enhanceEndpoints({
@@ -112,23 +111,23 @@ const injectedRtkApi = api
       }),
       deleteEventsById: build.mutation<DeleteEventsByIdApiResponse, DeleteEventsByIdApiArg>({
         query: (queryArg) => ({ url: `/events/${queryArg.id}`, method: "DELETE" }),
-        invalidatesTags: ["Events_other"],
+        invalidatesTags: ["Events_events"],
       }),
       postEvents: build.mutation<PostEventsApiResponse, PostEventsApiArg>({
         query: (queryArg) => ({ url: `/events`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["Events_other"],
+        invalidatesTags: ["Events_events"],
       }),
       deleteEvents: build.mutation<DeleteEventsApiResponse, DeleteEventsApiArg>({
         query: (queryArg) => ({ url: `/events`, method: "DELETE", body: queryArg.body }),
-        invalidatesTags: ["Events_other"],
+        invalidatesTags: ["Events_events"],
       }),
       putEventsStatus: build.mutation<PutEventsStatusApiResponse, PutEventsStatusApiArg>({
         query: (queryArg) => ({ url: `/events/status`, method: "PUT", body: queryArg.body }),
-        invalidatesTags: ["Events_other"],
+        invalidatesTags: ["Events_events"],
       }),
       putEventsByIdStatus: build.mutation<PutEventsByIdStatusApiResponse, PutEventsByIdStatusApiArg>({
         query: (queryArg) => ({ url: `/events/${queryArg.id}/status`, method: "PUT", body: queryArg.body }),
-        invalidatesTags: ["Events_other"],
+        invalidatesTags: ["Events_events"],
       }),
       getUserKeys: build.query<GetUserKeysApiResponse, GetUserKeysApiArg>({
         query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/users/keys` }),
@@ -227,26 +226,6 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Team_teams"],
       }),
-      getApiWorkspaces: build.query<GetApiWorkspacesApiResponse, GetApiWorkspacesApiArg>({
-        query: () => ({ url: `/api/workspaces` }),
-        providesTags: ["Workspace_workspaces"],
-      }),
-      postApiWorkspaces: build.mutation<PostApiWorkspacesApiResponse, PostApiWorkspacesApiArg>({
-        query: (queryArg) => ({ url: `/api/workspaces`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["Workspace_workspaces"],
-      }),
-      getApiWorkspacesById: build.query<GetApiWorkspacesByIdApiResponse, GetApiWorkspacesByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}` }),
-        providesTags: ["Workspace_workspaces"],
-      }),
-      putApiWorkspacesById: build.mutation<PutApiWorkspacesByIdApiResponse, PutApiWorkspacesByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}`, method: "PUT", body: queryArg.body }),
-        invalidatesTags: ["Workspace_workspaces"],
-      }),
-      deleteApiWorkspacesById: build.mutation<DeleteApiWorkspacesByIdApiResponse, DeleteApiWorkspacesByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}`, method: "DELETE" }),
-        invalidatesTags: ["Workspace_workspaces"],
-      }),
     }),
     overrideExisting: false,
   });
@@ -298,11 +277,14 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
       organization_id: string;
       /** Environment owner */
       owner?: string;
+      /** Timestamp when the resource was created. */
       created_at?: string;
+      /** Additional metadata associated with the environment. */
       metadata?: object;
+      /** Timestamp when the resource was updated. */
       updated_at?: string;
-      /** SQL null Timestamp to handle null values of time. */
-      deleted_at?: string;
+      /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+      deleted_at?: string | null;
     }[];
     /** Specifies the version of the schema used for the definition. */
     schemaVersion: string;
@@ -392,11 +374,14 @@ export type RegisterConnectionApiResponse = /** status 201 Connection registered
     organization_id: string;
     /** Environment owner */
     owner?: string;
+    /** Timestamp when the resource was created. */
     created_at?: string;
+    /** Additional metadata associated with the environment. */
     metadata?: object;
+    /** Timestamp when the resource was updated. */
     updated_at?: string;
-    /** SQL null Timestamp to handle null values of time. */
-    deleted_at?: string;
+    /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+    deleted_at?: string | null;
   }[];
   /** Specifies the version of the schema used for the definition. */
   schemaVersion: string;
@@ -468,11 +453,14 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
     organization_id: string;
     /** Environment owner */
     owner?: string;
+    /** Timestamp when the resource was created. */
     created_at?: string;
+    /** Additional metadata associated with the environment. */
     metadata?: object;
+    /** Timestamp when the resource was updated. */
     updated_at?: string;
-    /** SQL null Timestamp to handle null values of time. */
-    deleted_at?: string;
+    /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+    deleted_at?: string | null;
   }[];
   /** Specifies the version of the schema used for the definition. */
   schemaVersion: string;
@@ -526,11 +514,14 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated succ
     organization_id: string;
     /** Environment owner */
     owner?: string;
+    /** Timestamp when the resource was created. */
     created_at?: string;
+    /** Additional metadata associated with the environment. */
     metadata?: object;
+    /** Timestamp when the resource was updated. */
     updated_at?: string;
-    /** SQL null Timestamp to handle null values of time. */
-    deleted_at?: string;
+    /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+    deleted_at?: string | null;
   }[];
   /** Specifies the version of the schema used for the definition. */
   schemaVersion: string;
@@ -616,11 +607,14 @@ export type CreateEnvironmentApiResponse = /** status 201 Created environment */
   organization_id: string;
   /** Environment owner */
   owner?: string;
+  /** Timestamp when the resource was created. */
   created_at?: string;
+  /** Additional metadata associated with the environment. */
   metadata?: object;
+  /** Timestamp when the resource was updated. */
   updated_at?: string;
-  /** SQL null Timestamp to handle null values of time. */
-  deleted_at?: string;
+  /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+  deleted_at?: string | null;
 };
 export type CreateEnvironmentApiArg = {
   /** Body for creating environment */
@@ -650,11 +644,14 @@ export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
     organization_id: string;
     /** Environment owner */
     owner?: string;
+    /** Timestamp when the resource was created. */
     created_at?: string;
+    /** Additional metadata associated with the environment. */
     metadata?: object;
+    /** Timestamp when the resource was updated. */
     updated_at?: string;
-    /** SQL null Timestamp to handle null values of time. */
-    deleted_at?: string;
+    /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+    deleted_at?: string | null;
   }[];
 };
 export type GetEnvironmentsApiArg = {
@@ -781,11 +778,14 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
             organization_id: string;
             /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
             owner?: string;
+            /** Timestamp when the resource was created. */
             created_at?: string;
+            /** Additional metadata associated with the environment. */
             metadata?: object;
+            /** Timestamp when the resource was updated. */
             updated_at?: string;
-            /** SQL null Timestamp to handle null values of time. */
-            deleted_at?: string;
+            /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+            deleted_at?: string | null;
           }[];
           /** Specifies the version of the schema used for the definition. */
           schemaVersion: string;
@@ -815,6 +815,7 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
             | "Serverless"
             | "Tools"
             | "Uncategorized";
+          /** Additional metadata associated with the category. */
           metadata: object;
         };
         /** Sub category of the model determines the secondary grouping. */
@@ -1752,11 +1753,14 @@ export type PostEvaluateApiArg = {
               organization_id: string;
               /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
               owner?: string;
+              /** Timestamp when the resource was created. */
               created_at?: string;
+              /** Additional metadata associated with the environment. */
               metadata?: object;
+              /** Timestamp when the resource was updated. */
               updated_at?: string;
-              /** SQL null Timestamp to handle null values of time. */
-              deleted_at?: string;
+              /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+              deleted_at?: string | null;
             }[];
             /** Specifies the version of the schema used for the definition. */
             schemaVersion: string;
@@ -1786,6 +1790,7 @@ export type PostEvaluateApiArg = {
               | "Serverless"
               | "Tools"
               | "Uncategorized";
+            /** Additional metadata associated with the category. */
             metadata: object;
           };
           /** Sub category of the model determines the secondary grouping. */
@@ -3011,86 +3016,6 @@ export type RemoveUserFromTeamApiArg = {
   /** User ID */
   userId: string;
 };
-export type GetApiWorkspacesApiResponse = /** status 200 List of workspaces */ {
-  page?: number;
-  page_size?: number;
-  total_count?: number;
-  workspaces?: {
-    ID?: string;
-    name?: string;
-    description?: string;
-    organization_id?: string;
-    owner?: string;
-    created_at?: string;
-    updated_at?: string;
-    /** SQL null Timestamp to handle null values of time. */
-    deleted_at?: string;
-  }[];
-};
-export type GetApiWorkspacesApiArg = void;
-export type PostApiWorkspacesApiResponse = /** status 201 Workspace created successfully */ {
-  ID?: string;
-  name?: string;
-  description?: string;
-  organization_id?: string;
-  owner?: string;
-  created_at?: string;
-  updated_at?: string;
-  /** SQL null Timestamp to handle null values of time. */
-  deleted_at?: string;
-};
-export type PostApiWorkspacesApiArg = {
-  /** Body for creating workspace */
-  body: {
-    /** Provide a name that meaningfully represents this workspace. You can change the name of the workspace even after its creation. */
-    name: string;
-    /** Workspaces serve as a virtual space for your team-based work, allows you to control access and more, Provide a detailed description to clarify the purpose of this workspace. Remember you can changes description of workspace after it's creations too. Learn more about workspaces [here](https://docs.meshery.io/concepts/logical/workspaces) */
-    description?: string;
-    /** Select an organization in which you want to create this new workspace. Keep in mind that the organization cannot be changed after creation. */
-    organization_id: string;
-  };
-};
-export type GetApiWorkspacesByIdApiResponse = /** status 200 Workspace details */ {
-  ID?: string;
-  name?: string;
-  description?: string;
-  organization_id?: string;
-  owner?: string;
-  created_at?: string;
-  updated_at?: string;
-  /** SQL null Timestamp to handle null values of time. */
-  deleted_at?: string;
-};
-export type GetApiWorkspacesByIdApiArg = {
-  id: string;
-};
-export type PutApiWorkspacesByIdApiResponse = /** status 200 Workspace updated successfully */ {
-  ID?: string;
-  name?: string;
-  description?: string;
-  organization_id?: string;
-  owner?: string;
-  created_at?: string;
-  updated_at?: string;
-  /** SQL null Timestamp to handle null values of time. */
-  deleted_at?: string;
-};
-export type PutApiWorkspacesByIdApiArg = {
-  id: string;
-  /** Body for updating workspace */
-  body: {
-    /** Name of workspace */
-    name?: string;
-    /** Environment description */
-    description?: string;
-    /** Organization ID */
-    organization_id: string;
-  };
-};
-export type DeleteApiWorkspacesByIdApiResponse = unknown;
-export type DeleteApiWorkspacesByIdApiArg = {
-  id: string;
-};
 export const {
   useGetConnectionsQuery,
   useRegisterConnectionMutation,
@@ -3123,9 +3048,4 @@ export const {
   useGetTeamUsersQuery,
   useAddUserToTeamMutation,
   useRemoveUserFromTeamMutation,
-  useGetApiWorkspacesQuery,
-  usePostApiWorkspacesMutation,
-  useGetApiWorkspacesByIdQuery,
-  usePutApiWorkspacesByIdMutation,
-  useDeleteApiWorkspacesByIdMutation,
 } = injectedRtkApi;

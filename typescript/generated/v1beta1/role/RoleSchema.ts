@@ -257,6 +257,36 @@ const RoleSchema: Record<string, unknown> = {
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "all",
+            "in": "query",
+            "description": "Get all possible entries",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "selector",
+            "in": "query",
+            "description": "Role grouping selector such as provider, organization, or team.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "teamID",
+            "in": "query",
+            "description": "Team ID used when selector is team.",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
+            }
           }
         ],
         "responses": {
@@ -403,9 +433,9 @@ const RoleSchema: Record<string, unknown> = {
         "tags": [
           "roles"
         ],
-        "summary": "Upsert organization roles",
-        "operationId": "upsertRoles",
-        "description": "Creates or updates roles for the specified organization.",
+        "summary": "Upsert organization role",
+        "operationId": "upsertRole",
+        "description": "Creates or updates a role for the specified organization.",
         "parameters": [
           {
             "name": "orgID",
@@ -428,8 +458,89 @@ const RoleSchema: Record<string, unknown> = {
           "content": {
             "application/json": {
               "schema": {
-                "type": "array",
-                "items": {
+                "type": "object",
+                "description": "Role definition for Layer5 Cloud (Meshery).",
+                "required": [
+                  "role_name",
+                  "description"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                    "x-go-type": "uuid.UUID",
+                    "x-go-type-import": {
+                      "path": "github.com/gofrs/uuid"
+                    },
+                    "x-order": 1,
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "id"
+                    }
+                  },
+                  "role_name": {
+                    "type": "string",
+                    "description": "Unique name of the role.",
+                    "x-order": 2,
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "role_name"
+                    }
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Human-readable description of the role.",
+                    "x-order": 3,
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "description"
+                    }
+                  },
+                  "created_at": {
+                    "x-order": 4,
+                    "description": "Timestamp when the resource was created.",
+                    "x-go-type": "time.Time",
+                    "type": "string",
+                    "format": "date-time",
+                    "x-go-name": "CreatedAt",
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "created_at",
+                      "yaml": "created_at"
+                    },
+                    "x-go-type-skip-optional-pointer": true
+                  },
+                  "updated_at": {
+                    "x-order": 5,
+                    "description": "Timestamp when the resource was updated.",
+                    "x-go-type": "time.Time",
+                    "type": "string",
+                    "format": "date-time",
+                    "x-go-name": "UpdatedAt",
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "updated_at",
+                      "yaml": "updated_at"
+                    },
+                    "x-go-type-skip-optional-pointer": true
+                  },
+                  "deleted_at": {
+                    "description": "Timestamp when the role was soft-deleted.",
+                    "x-order": 6,
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "deleted_at"
+                    },
+                    "x-go-type": "sql.NullTime",
+                    "type": "string",
+                    "x-go-type-skip-optional-pointer": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Role upserted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
                   "type": "object",
                   "description": "Role definition for Layer5 Cloud (Meshery).",
                   "required": [
@@ -501,122 +612,6 @@ const RoleSchema: Record<string, unknown> = {
                       "x-go-type": "sql.NullTime",
                       "type": "string",
                       "x-go-type-skip-optional-pointer": true
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Roles upserted successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "description": "A paginated list of roles.",
-                  "required": [
-                    "page",
-                    "page_size",
-                    "total_count",
-                    "roles"
-                  ],
-                  "properties": {
-                    "page": {
-                      "type": "integer",
-                      "description": "Current page number (zero-based).",
-                      "x-order": 1
-                    },
-                    "page_size": {
-                      "type": "integer",
-                      "description": "Number of roles per page.",
-                      "x-order": 2
-                    },
-                    "total_count": {
-                      "type": "integer",
-                      "description": "Total number of roles across all pages.",
-                      "x-order": 3
-                    },
-                    "roles": {
-                      "type": "array",
-                      "items": {
-                        "x-go-type": "Role",
-                        "type": "object",
-                        "description": "Role definition for Layer5 Cloud (Meshery).",
-                        "required": [
-                          "role_name",
-                          "description"
-                        ],
-                        "properties": {
-                          "id": {
-                            "type": "string",
-                            "format": "uuid",
-                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-                            "x-go-type": "uuid.UUID",
-                            "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
-                            },
-                            "x-order": 1,
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "id"
-                            }
-                          },
-                          "role_name": {
-                            "type": "string",
-                            "description": "Unique name of the role.",
-                            "x-order": 2,
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "role_name"
-                            }
-                          },
-                          "description": {
-                            "type": "string",
-                            "description": "Human-readable description of the role.",
-                            "x-order": 3,
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "description"
-                            }
-                          },
-                          "created_at": {
-                            "x-order": 4,
-                            "description": "Timestamp when the resource was created.",
-                            "x-go-type": "time.Time",
-                            "type": "string",
-                            "format": "date-time",
-                            "x-go-name": "CreatedAt",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "created_at",
-                              "yaml": "created_at"
-                            },
-                            "x-go-type-skip-optional-pointer": true
-                          },
-                          "updated_at": {
-                            "x-order": 5,
-                            "description": "Timestamp when the resource was updated.",
-                            "x-go-type": "time.Time",
-                            "type": "string",
-                            "format": "date-time",
-                            "x-go-name": "UpdatedAt",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "updated_at",
-                              "yaml": "updated_at"
-                            },
-                            "x-go-type-skip-optional-pointer": true
-                          },
-                          "deleted_at": {
-                            "description": "Timestamp when the role was soft-deleted.",
-                            "x-order": 6,
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "deleted_at"
-                            },
-                            "x-go-type": "sql.NullTime",
-                            "type": "string",
-                            "x-go-type-skip-optional-pointer": true
-                          }
-                        }
-                      },
-                      "x-order": 4
                     }
                   }
                 }
@@ -843,11 +838,171 @@ const RoleSchema: Record<string, unknown> = {
                 "path": "github.com/gofrs/uuid"
               }
             }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Get responses by page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pagesize",
+            "in": "query",
+            "description": "Get responses by pagesize",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Get responses that match search param value",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Get ordered responses",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Keychains fetched successfully"
+            "description": "Keychains fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "page",
+                    "page_size",
+                    "total_count",
+                    "keychains"
+                  ],
+                  "properties": {
+                    "page": {
+                      "x-order": 1,
+                      "type": "integer",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "page_size": {
+                      "x-order": 2,
+                      "type": "integer",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "total_count": {
+                      "x-order": 3,
+                      "type": "integer",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "keychains": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "description": "Represents a collection of keys.",
+                        "required": [
+                          "id",
+                          "name",
+                          "owner",
+                          "created_at",
+                          "updated_at"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-name": "ID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "id"
+                            },
+                            "x-order": 1
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Name of the keychain.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "name"
+                            },
+                            "x-order": 2
+                          },
+                          "owner": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "owner"
+                            },
+                            "x-order": 3
+                          },
+                          "created_at": {
+                            "x-order": 4,
+                            "description": "Timestamp when the resource was created.",
+                            "x-go-type": "time.Time",
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-name": "CreatedAt",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "yaml": "created_at"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "updated_at": {
+                            "x-order": 5,
+                            "description": "Timestamp when the resource was updated.",
+                            "x-go-type": "time.Time",
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-name": "UpdatedAt",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "yaml": "updated_at"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "deleted_at": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deleted_at"
+                            },
+                            "x-order": 6,
+                            "description": "SQL null Timestamp to handle null values of time.",
+                            "x-go-type": "sql.NullTime",
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          }
+                        }
+                      },
+                      "x-order": 4
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "401": {
             "description": "Expired JWT token used or insufficient privilege",
@@ -1212,6 +1367,36 @@ const RoleSchema: Record<string, unknown> = {
         "description": "Get ordered responses",
         "schema": {
           "type": "string"
+        }
+      },
+      "all": {
+        "name": "all",
+        "in": "query",
+        "description": "Get all possible entries",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "selector": {
+        "name": "selector",
+        "in": "query",
+        "description": "Role grouping selector such as provider, organization, or team.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "teamID": {
+        "name": "teamID",
+        "in": "query",
+        "description": "Team ID used when selector is team.",
+        "schema": {
+          "type": "string",
+          "format": "uuid",
+          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+          "x-go-type": "uuid.UUID",
+          "x-go-type-import": {
+            "path": "github.com/gofrs/uuid"
+          }
         }
       }
     },

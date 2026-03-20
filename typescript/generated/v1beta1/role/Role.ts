@@ -17,8 +17,8 @@ export interface paths {
     get: operations["getAllRoles"];
     /** Updates role assignments for multiple users in the organization. */
     put: operations["bulkEditRoleHolder"];
-    /** Creates or updates roles for the specified organization. */
-    post: operations["upsertRoles"];
+    /** Creates or updates a role for the specified organization. */
+    post: operations["upsertRole"];
   };
   "/api/identity/orgs/{orgID}/roles/{roleID}/keychains": {
     /** Returns all keychains assigned to the specified role. */
@@ -207,6 +207,12 @@ export interface components {
     search: string;
     /** @description Get ordered responses */
     order: string;
+    /** @description Get all possible entries */
+    all: boolean;
+    /** @description Role grouping selector such as provider, organization, or team. */
+    selector: string;
+    /** @description Team ID used when selector is team. */
+    teamID: string;
   };
 }
 
@@ -302,6 +308,12 @@ export interface operations {
         search?: string;
         /** Get ordered responses */
         order?: string;
+        /** Get all possible entries */
+        all?: boolean;
+        /** Role grouping selector such as provider, organization, or team. */
+        selector?: string;
+        /** Team ID used when selector is team. */
+        teamID?: string;
       };
     };
     responses: {
@@ -415,8 +427,8 @@ export interface operations {
       };
     };
   };
-  /** Creates or updates roles for the specified organization. */
-  upsertRoles: {
+  /** Creates or updates a role for the specified organization. */
+  upsertRole: {
     parameters: {
       path: {
         /** Organization ID */
@@ -424,39 +436,31 @@ export interface operations {
       };
     };
     responses: {
-      /** Roles upserted successfully */
+      /** Role upserted successfully */
       200: {
         content: {
           "application/json": {
-            /** @description Current page number (zero-based). */
-            page: number;
-            /** @description Number of roles per page. */
-            page_size: number;
-            /** @description Total number of roles across all pages. */
-            total_count: number;
-            roles: {
-              /**
-               * Format: uuid
-               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-               */
-              id?: string;
-              /** @description Unique name of the role. */
-              role_name: string;
-              /** @description Human-readable description of the role. */
-              description: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the resource was created.
-               */
-              created_at?: string;
-              /**
-               * Format: date-time
-               * @description Timestamp when the resource was updated.
-               */
-              updated_at?: string;
-              /** @description Timestamp when the role was soft-deleted. */
-              deleted_at?: string;
-            }[];
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id?: string;
+            /** @description Unique name of the role. */
+            role_name: string;
+            /** @description Human-readable description of the role. */
+            description: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the resource was created.
+             */
+            created_at?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the resource was updated.
+             */
+            updated_at?: string;
+            /** @description Timestamp when the role was soft-deleted. */
+            deleted_at?: string;
           };
         };
       };
@@ -503,7 +507,7 @@ export interface operations {
           updated_at?: string;
           /** @description Timestamp when the role was soft-deleted. */
           deleted_at?: string;
-        }[];
+        };
       };
     };
   };
@@ -516,10 +520,60 @@ export interface operations {
         /** Role ID */
         roleID: string;
       };
+      query: {
+        /** Get responses by page */
+        page?: string;
+        /** Get responses by pagesize */
+        pagesize?: string;
+        /** Get responses that match search param value */
+        search?: string;
+        /** Get ordered responses */
+        order?: string;
+      };
     };
     responses: {
       /** Keychains fetched successfully */
-      200: unknown;
+      200: {
+        content: {
+          "application/json": {
+            page: number;
+            page_size: number;
+            total_count: number;
+            keychains: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id: string;
+              /** @description Name of the keychain. */
+              name: string;
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              owner: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was created.
+               */
+              created_at: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was updated.
+               */
+              updated_at: string;
+              /** @description SQL null Timestamp to handle null values of time. */
+              deleted_at?: string;
+            }[];
+          };
+        };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
       /** Expired JWT token used or insufficient privilege */
       401: {
         content: {

@@ -38,6 +38,20 @@ export interface paths {
   };
   "/events": {
     post: {
+      responses: {
+        /** Event created successfully */
+        200: unknown;
+        /** Invalid request */
+        400: {
+          content: {
+            "application/json": {
+              error?: string;
+            };
+          };
+        };
+        /** Server error */
+        500: unknown;
+      };
       requestBody: {
         content: {
           "application/json": { [key: string]: unknown };
@@ -148,6 +162,10 @@ export interface paths {
       };
     };
   };
+  "/api/workspaces/{workspaceId}/events": {
+    /** Gets events for a workspace. */
+    get: operations["GetEventsOfWorkspace"];
+  };
 }
 
 export interface components {
@@ -164,12 +182,144 @@ export interface components {
       /** @example failed */
       status: string;
     };
+    eventResult: {
+      /** Format: uuid */
+      user_id?: string;
+      /** Format: uuid */
+      system_id?: string;
+      category?: string;
+      action?: string;
+      description?: string;
+      first_name?: string;
+      last_name?: string;
+      /**
+       * Format: email
+       * @description email
+       */
+      email?: string;
+      /** @description One of (x-oapi-codegen-extra-tags-cloud, github, google) */
+      provider?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was created.
+       */
+      created_at?: string;
+    };
+    eventsPage: {
+      page?: number;
+      page_size?: number;
+      total_count?: number;
+      data?: {
+        /** Format: uuid */
+        user_id?: string;
+        /** Format: uuid */
+        system_id?: string;
+        category?: string;
+        action?: string;
+        description?: string;
+        first_name?: string;
+        last_name?: string;
+        /**
+         * Format: email
+         * @description email
+         */
+        email?: string;
+        /** @description One of (x-oapi-codegen-extra-tags-cloud, github, google) */
+        provider?: string;
+        /**
+         * Format: date-time
+         * @description Timestamp when the resource was created.
+         */
+        created_at?: string;
+      }[];
+    };
     ErrorResponse: {
       error?: string;
     };
   };
+  parameters: {
+    /** @description Workspace ID */
+    workspaceId: string;
+    /** @description Get responses by page */
+    page: string;
+    /** @description Get responses by pagesize */
+    pagesize: string;
+    /** @description Get responses that match search param value */
+    search: string;
+    /** @description Get ordered responses */
+    order: string;
+  };
 }
 
-export interface operations {}
+export interface operations {
+  /** Gets events for a workspace. */
+  GetEventsOfWorkspace: {
+    parameters: {
+      path: {
+        /** Workspace ID */
+        workspaceId: string;
+      };
+      query: {
+        /** Get responses by page */
+        page?: string;
+        /** Get responses by pagesize */
+        pagesize?: string;
+        /** Get responses that match search param value */
+        search?: string;
+        /** Get ordered responses */
+        order?: string;
+      };
+    };
+    responses: {
+      /** Workspace events */
+      200: {
+        content: {
+          "application/json": {
+            page?: number;
+            page_size?: number;
+            total_count?: number;
+            data?: {
+              /** Format: uuid */
+              user_id?: string;
+              /** Format: uuid */
+              system_id?: string;
+              category?: string;
+              action?: string;
+              description?: string;
+              first_name?: string;
+              last_name?: string;
+              /**
+               * Format: email
+               * @description email
+               */
+              email?: string;
+              /** @description One of (x-oapi-codegen-extra-tags-cloud, github, google) */
+              provider?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was created.
+               */
+              created_at?: string;
+            }[];
+          };
+        };
+      };
+      /** Invalid request */
+      400: {
+        content: {
+          "application/json": {
+            error?: string;
+          };
+        };
+      };
+      /** Unauthorized */
+      401: unknown;
+      /** Workspace not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
+    };
+  };
+}
 
 export interface external {}

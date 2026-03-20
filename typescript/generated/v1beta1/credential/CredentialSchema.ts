@@ -775,6 +775,79 @@ const CredentialSchema: Record<string, unknown> = {
             }
           }
         }
+      },
+      "delete": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "credentials"
+        ],
+        "summary": "Delete credential",
+        "operationId": "deleteUserCredential",
+        "description": "Deletes a credential belonging to the authenticated user.",
+        "parameters": [
+          {
+            "name": "credential_id",
+            "in": "query",
+            "description": "Credential ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Credential deleted successfully"
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/integrations/credentials/{id}": {
@@ -944,79 +1017,6 @@ const CredentialSchema: Record<string, unknown> = {
             }
           }
         }
-      },
-      "delete": {
-        "x-internal": [
-          "cloud"
-        ],
-        "tags": [
-          "credentials"
-        ],
-        "summary": "Delete credential",
-        "operationId": "deleteUserCredential",
-        "description": "Deletes a credential belonging to the authenticated user.",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "Credential ID",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-              "x-go-type": "uuid.UUID",
-              "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
-              }
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Credential deleted successfully"
-          },
-          "400": {
-            "description": "Invalid request body or request param",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Expired JWT token used or insufficient privilege",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Result not found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
       }
     }
   },
@@ -1074,6 +1074,21 @@ const CredentialSchema: Record<string, unknown> = {
       "id": {
         "name": "id",
         "in": "path",
+        "description": "Credential ID",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid",
+          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+          "x-go-type": "uuid.UUID",
+          "x-go-type-import": {
+            "path": "github.com/gofrs/uuid"
+          }
+        }
+      },
+      "credentialId": {
+        "name": "credential_id",
+        "in": "query",
         "description": "Credential ID",
         "required": true,
         "schema": {

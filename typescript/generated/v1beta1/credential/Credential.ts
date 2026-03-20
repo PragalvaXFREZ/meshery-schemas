@@ -11,12 +11,12 @@ export interface paths {
     put: operations["updateUserCredential"];
     /** Saves a new credential for the authenticated user. */
     post: operations["saveUserCredential"];
+    /** Deletes a credential belonging to the authenticated user. */
+    delete: operations["deleteUserCredential"];
   };
   "/api/integrations/credentials/{id}": {
     /** Retrieves a specific credential by its ID. */
     get: operations["getCredentialByID"];
-    /** Deletes a credential belonging to the authenticated user. */
-    delete: operations["deleteUserCredential"];
   };
 }
 
@@ -122,6 +122,8 @@ export interface components {
   parameters: {
     /** @description Credential ID */
     id: string;
+    /** @description Credential ID */
+    credentialId: string;
     /** @description Get responses by page */
     page: string;
     /** @description Get responses by pagesize */
@@ -396,6 +398,43 @@ export interface operations {
       };
     };
   };
+  /** Deletes a credential belonging to the authenticated user. */
+  deleteUserCredential: {
+    parameters: {
+      query: {
+        /** Credential ID */
+        credential_id: string;
+      };
+    };
+    responses: {
+      /** Credential deleted successfully */
+      204: never;
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
   /** Retrieves a specific credential by its ID. */
   getCredentialByID: {
     parameters: {
@@ -438,43 +477,6 @@ export interface operations {
             /** @description Timestamp when the credential was soft-deleted. */
             deleted_at?: string;
           };
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  /** Deletes a credential belonging to the authenticated user. */
-  deleteUserCredential: {
-    parameters: {
-      path: {
-        /** Credential ID */
-        id: string;
-      };
-    };
-    responses: {
-      /** Credential deleted successfully */
-      204: never;
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
         };
       };
       /** Expired JWT token used or insufficient privilege */

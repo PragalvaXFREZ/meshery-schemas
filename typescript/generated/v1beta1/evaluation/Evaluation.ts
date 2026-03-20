@@ -232,13 +232,20 @@ export interface paths {
                          * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         owner?: string;
-                        /** Format: date-time */
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the resource was created.
+                         */
                         created_at?: string;
+                        /** @description Additional metadata associated with the environment. */
                         metadata?: { [key: string]: unknown };
-                        /** Format: date-time */
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the resource was updated.
+                         */
                         updated_at?: string;
-                        /** @description SQL null Timestamp to handle null values of time. */
-                        deleted_at?: string;
+                        /** @description Timestamp when the environment was soft deleted. Null while the environment remains active. */
+                        deleted_at?: string | null;
                       }[];
                       /**
                        * @description Specifies the version of the schema used for the definition.
@@ -292,6 +299,7 @@ export interface paths {
                         | "Serverless"
                         | "Tools"
                         | "Uncategorized";
+                      /** @description Additional metadata associated with the category. */
                       metadata: { [key: string]: unknown };
                     };
                     /**
@@ -1754,13 +1762,20 @@ export interface paths {
                        * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                        */
                       owner?: string;
-                      /** Format: date-time */
+                      /**
+                       * Format: date-time
+                       * @description Timestamp when the resource was created.
+                       */
                       created_at?: string;
+                      /** @description Additional metadata associated with the environment. */
                       metadata?: { [key: string]: unknown };
-                      /** Format: date-time */
+                      /**
+                       * Format: date-time
+                       * @description Timestamp when the resource was updated.
+                       */
                       updated_at?: string;
-                      /** @description SQL null Timestamp to handle null values of time. */
-                      deleted_at?: string;
+                      /** @description Timestamp when the environment was soft deleted. Null while the environment remains active. */
+                      deleted_at?: string | null;
                     }[];
                     /**
                      * @description Specifies the version of the schema used for the definition.
@@ -1814,6 +1829,7 @@ export interface paths {
                       | "Serverless"
                       | "Tools"
                       | "Uncategorized";
+                    /** @description Additional metadata associated with the category. */
                     metadata: { [key: string]: unknown };
                   };
                   /**
@@ -3270,13 +3286,20 @@ export interface components {
                  * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
                 owner?: string;
-                /** Format: date-time */
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the resource was created.
+                 */
                 created_at?: string;
+                /** @description Additional metadata associated with the environment. */
                 metadata?: { [key: string]: unknown };
-                /** Format: date-time */
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the resource was updated.
+                 */
                 updated_at?: string;
-                /** @description SQL null Timestamp to handle null values of time. */
-                deleted_at?: string;
+                /** @description Timestamp when the environment was soft deleted. Null while the environment remains active. */
+                deleted_at?: string | null;
               }[];
               /**
                * @description Specifies the version of the schema used for the definition.
@@ -3330,6 +3353,7 @@ export interface components {
                 | "Serverless"
                 | "Tools"
                 | "Uncategorized";
+              /** @description Additional metadata associated with the category. */
               metadata: { [key: string]: unknown };
             };
             /**
@@ -4771,13 +4795,20 @@ export interface components {
                  * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
                 owner?: string;
-                /** Format: date-time */
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the resource was created.
+                 */
                 created_at?: string;
+                /** @description Additional metadata associated with the environment. */
                 metadata?: { [key: string]: unknown };
-                /** Format: date-time */
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the resource was updated.
+                 */
                 updated_at?: string;
-                /** @description SQL null Timestamp to handle null values of time. */
-                deleted_at?: string;
+                /** @description Timestamp when the environment was soft deleted. Null while the environment remains active. */
+                deleted_at?: string | null;
               }[];
               /**
                * @description Specifies the version of the schema used for the definition.
@@ -4831,6 +4862,7 @@ export interface components {
                 | "Serverless"
                 | "Tools"
                 | "Uncategorized";
+              /** @description Additional metadata associated with the category. */
               metadata: { [key: string]: unknown };
             };
             /**

@@ -50,6 +50,7 @@ type CredentialPage struct {
 }
 
 // Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+// Id defines model for id.
 type Id = corev1alpha1.Uuid
 
 // Order defines model for order.

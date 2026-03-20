@@ -18,6 +18,43 @@ You'll find detailed guides covering:
 - What to commit (and what not to)
 - OpenAPI best practices for this project
 
+## Schema Design: The Dual-Schema Pattern
+
+The single most important rule when contributing a new entity schema:
+
+> **The `<construct>.yaml` file is a response schema. POST/PUT bodies always use a separate `*Payload` schema.**
+
+### Why this matters
+
+These schemas drive Go struct generation (`oapi-codegen`) and TypeScript client generation. If the full entity schema (which has `id`, `created_at`, `updated_at` in `required`) is used as a POST request body, generated clients will incorrectly require clients to supply server-generated fields.
+
+### Rules
+
+1. **`<construct>.yaml`** — represents the persisted object as returned from the API:
+   - Must have `additionalProperties: false`
+   - Must include all server-generated fields (`id`, `created_at`, `updated_at`, `deleted_at`) in `properties`
+   - Server-generated fields that are always present in responses belong in `required`
+
+2. **`{Construct}Payload` in `api.yml`** — used as `requestBody` for `POST`/`PUT`:
+   - Contains only client-settable fields
+   - `id` is optional (with `json:"id,omitempty"`) for upsert patterns, or absent for create-only
+   - Never includes `created_at`, `updated_at`, `deleted_at`
+
+3. **`POST`/`PUT` operations** must reference `{Construct}Payload` — never the full entity schema
+
+4. **`GET` responses** reference the full entity schema
+
+### Reference implementations
+
+- `schemas/constructs/v1beta1/connection/` — `Connection` + `ConnectionPayload`
+- `schemas/constructs/v1beta1/key/` — `Key` + `KeyPayload`
+- `schemas/constructs/v1beta1/team/` — `team.yaml` + `teamPayload` / `teamUpdatePayload`
+- `schemas/constructs/v1beta1/environment/` — `environment.yaml` + `environmentPayload`
+
+See the [Schema Design Principles](./README.md#schema-design-principles-the-dual-schema-pattern) section in the README for full examples and a contributor checklist.
+
+---
+
 ## 🚀 Quick Start
 
 ```bash

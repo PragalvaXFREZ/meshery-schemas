@@ -9,7 +9,7 @@ import (
 	corev1alpha1 "github.com/meshery/schemas/models/v1alpha1/core"
 )
 
-// Environment Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments
+// Environment Environments allow you to logically group related Connections and their associated Credentials. Learn more at https://docs.meshery.io/concepts/logical/environments
 type Environment struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	ID corev1alpha1.Uuid `db:"id" json:"id" yaml:"id"`
@@ -27,13 +27,19 @@ type Environment struct {
 	OrganizationID corev1alpha1.Uuid `db:"organization_id" json:"organization_id" yaml:"organization_id"`
 
 	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Owner     *corev1alpha1.Uuid `db:"owner" json:"owner,omitempty" yaml:"owner"`
-	CreatedAt corev1alpha1.Time  `db:"created_at" json:"created_at,omitempty" yaml:"created_at"`
-	Metadata  core.Map           `db:"metadata" json:"metadata,omitempty" yaml:"metadata"`
-	UpdatedAt corev1alpha1.Time  `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at"`
+	Owner *corev1alpha1.Uuid `db:"owner" json:"owner,omitempty" yaml:"owner"`
+
+	// CreatedAt Timestamp when the resource was created.
+	CreatedAt corev1alpha1.CreatedAt `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+
+	// Metadata Additional metadata associated with the environment.
+	Metadata core.Map `db:"metadata" json:"metadata,omitempty" yaml:"metadata"`
+
+	// UpdatedAt Timestamp when the resource was updated.
+	UpdatedAt corev1alpha1.UpdatedAt `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt corev1alpha1.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at"`
+	DeletedAt core.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at"`
 }
 
 // EnvironmentConnectionMapping defines model for environmentConnectionMapping.
