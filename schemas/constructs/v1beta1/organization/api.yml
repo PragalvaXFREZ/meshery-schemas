@@ -443,11 +443,11 @@ components:
           x-go-type: "OrgMetadata"
           $ref: "#/components/schemas/OrgMetadata"
         created_at:
-          $ref: "#/components/schemas/Time"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/created_at"
         updated_at:
-          $ref: "#/components/schemas/Time"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/updated_at"
         deleted_at:
-          $ref: "#/components/schemas/NullableTime"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/deleted_at"
 
     OrganizationsPage:
       type: object
