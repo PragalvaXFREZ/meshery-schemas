@@ -39,6 +39,9 @@ func (m *MapObject) Scan(src interface{}) error {
 
 // Value implements the driver.Valuer interface for MapObject.
 func (m MapObject) Value() (driver.Value, error) {
+	if m == nil {
+		return nil, nil
+	}
 	b, err := json.Marshal(m)
 	if err != nil {
 		return nil, err
