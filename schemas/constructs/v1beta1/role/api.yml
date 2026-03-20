@@ -86,6 +86,9 @@ paths:
         - $ref: "#/components/parameters/pagesize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/all"
+        - $ref: "#/components/parameters/selector"
+        - $ref: "#/components/parameters/teamID"
       responses:
         "200":
           description: Roles fetched successfully
@@ -111,16 +114,14 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: "#/components/schemas/Role"
+              $ref: "#/components/schemas/Role"
       responses:
         "200":
-          description: Roles upserted successfully
+          description: Role upserted successfully
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RolesPage"
+                $ref: "#/components/schemas/Role"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -165,9 +166,19 @@ paths:
       parameters:
         - $ref: "#/components/parameters/orgID"
         - $ref: "#/components/parameters/roleID"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
       responses:
         "200":
           description: Keychains fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "../keychain/api.yml#/components/schemas/KeychainPage"
+        "400":
+          $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
         "500":
@@ -271,6 +282,24 @@ components:
       $ref: "../../v1alpha1/core/api.yml#/components/parameters/search"
     order:
       $ref: "../../v1alpha1/core/api.yml#/components/parameters/order"
+    all:
+      name: all
+      in: query
+      description: Whether to return all roles without pagination filtering.
+      schema:
+        type: boolean
+    selector:
+      name: selector
+      in: query
+      description: Role grouping selector such as provider, organization, or team.
+      schema:
+        type: string
+    teamID:
+      name: teamID
+      in: query
+      description: Team ID used when selector is team.
+      schema:
+        $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
 
   schemas:
     Role:

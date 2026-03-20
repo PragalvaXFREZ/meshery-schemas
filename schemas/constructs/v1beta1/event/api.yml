@@ -11,6 +11,13 @@ info:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
 
+security:
+  - jwt: []
+
+tags:
+  - name: events
+    description: APIs for Meshery Cloud events.
+
 paths:
   /events/{id}:
     delete:
@@ -54,7 +61,6 @@ paths:
           application/json:
             schema:
               type: object
-
     delete:
       summary: Bulk delete events
       requestBody:
@@ -157,7 +163,80 @@ paths:
         "500":
           description: Server error
 
+  /api/workspaces/{workspaceId}/events:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - events
+      operationId: GetEventsOfWorkspace
+      summary: Get workspace events
+      description: Gets events for a workspace.
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+      responses:
+        "200":
+          description: Workspace events
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/eventsPage"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+        "404":
+          description: Workspace not found
+        "500":
+          description: Server error
+
 components:
+  parameters:
+    workspaceId:
+      name: workspaceId
+      in: path
+      description: Workspace ID
+      schema:
+        $ref: "../../v1alpha1/core/api.yml#/components/schemas/workspace_id"
+      required: true
+    page:
+      name: page
+      in: query
+      description: Page number.
+      schema:
+        type: integer
+    pagesize:
+      name: pagesize
+      in: query
+      description: Number of items per page.
+      schema:
+        type: integer
+    search:
+      name: search
+      in: query
+      description: Search term.
+      schema:
+        type: string
+    order:
+      name: order
+      in: query
+      description: Sort order.
+      schema:
+        type: string
+
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     UpdateEventStatusRequest:
       type: object
@@ -166,7 +245,7 @@ components:
       properties:
         status:
           type: string
-          example: "completed"
+          example: completed
 
     BulkDeleteRequest:
       type: object
@@ -190,7 +269,45 @@ components:
             $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
         status:
           type: string
-          example: "failed"
+          example: failed
+
+    eventResult:
+      type: object
+      properties:
+        user_id:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/user_uuid"
+        system_id:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/system_id"
+        category:
+          type: string
+        action:
+          type: string
+        description:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/email"
+        provider:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/provider"
+        created_at:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/created_at"
+
+    eventsPage:
+      type: object
+      properties:
+        page:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/number"
+        page_size:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/number"
+        total_count:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/number"
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/eventResult"
 
     ErrorResponse:
       type: object
