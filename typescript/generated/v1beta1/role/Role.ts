@@ -55,7 +55,10 @@ export interface components {
        * @description Timestamp when the resource was updated.
        */
       updated_at?: string;
-      /** @description Timestamp when the role was soft-deleted. */
+      /**
+       * Format: date-time
+       * @description Timestamp when the role was soft-deleted.
+       */
       deleted_at?: string;
     };
     /** @description A paginated list of roles. */
@@ -86,7 +89,10 @@ export interface components {
          * @description Timestamp when the resource was updated.
          */
         updated_at?: string;
-        /** @description Timestamp when the role was soft-deleted. */
+        /**
+         * Format: date-time
+         * @description Timestamp when the role was soft-deleted.
+         */
         deleted_at?: string;
       }[];
     };
@@ -117,7 +123,10 @@ export interface components {
        * @description Timestamp when the resource was updated.
        */
       updated_at: string;
-      /** @description SQL null Timestamp to handle null values of time. */
+      /**
+       * Format: date-time
+       * @description SQL null Timestamp to handle null values of time.
+       */
       deleted_at?: string;
     };
     /** @description Request body for assigning a role to a user. */
@@ -153,7 +162,10 @@ export interface components {
       created_at?: string;
       /** Format: date-time */
       updated_at?: string;
-      /** @description SQL null Timestamp to handle null values of time. */
+      /**
+       * Format: date-time
+       * @description SQL null Timestamp to handle null values of time.
+       */
       deleted_at?: string;
     };
     /** @description User notification preferences. */
@@ -347,7 +359,10 @@ export interface operations {
                * @description Timestamp when the resource was updated.
                */
               updated_at?: string;
-              /** @description Timestamp when the role was soft-deleted. */
+              /**
+               * Format: date-time
+               * @description Timestamp when the role was soft-deleted.
+               */
               deleted_at?: string;
             }[];
           };
@@ -421,7 +436,10 @@ export interface operations {
           created_at?: string;
           /** Format: date-time */
           updated_at?: string;
-          /** @description SQL null Timestamp to handle null values of time. */
+          /**
+           * Format: date-time
+           * @description SQL null Timestamp to handle null values of time.
+           */
           deleted_at?: string;
         }[];
       };
@@ -459,7 +477,10 @@ export interface operations {
              * @description Timestamp when the resource was updated.
              */
             updated_at?: string;
-            /** @description Timestamp when the role was soft-deleted. */
+            /**
+             * Format: date-time
+             * @description Timestamp when the role was soft-deleted.
+             */
             deleted_at?: string;
           };
         };
@@ -505,7 +526,10 @@ export interface operations {
            * @description Timestamp when the resource was updated.
            */
           updated_at?: string;
-          /** @description Timestamp when the role was soft-deleted. */
+          /**
+           * Format: date-time
+           * @description Timestamp when the role was soft-deleted.
+           */
           deleted_at?: string;
         };
       };
@@ -562,7 +586,10 @@ export interface operations {
                * @description Timestamp when the resource was updated.
                */
               updated_at: string;
-              /** @description SQL null Timestamp to handle null values of time. */
+              /**
+               * Format: date-time
+               * @description SQL null Timestamp to handle null values of time.
+               */
               deleted_at?: string;
             }[];
           };

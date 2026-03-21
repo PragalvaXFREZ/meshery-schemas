@@ -202,8 +202,13 @@ const CredentialSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "deleted_at"
                             },
-                            "x-go-type": "sql.NullTime",
+                            "x-go-type": "meshcore.NullTime",
+                            "x-go-type-import": {
+                              "name": "meshcore",
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
                             "type": "string",
+                            "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           }
                         }
@@ -360,8 +365,13 @@ const CredentialSchema: Record<string, unknown> = {
                     "x-oapi-codegen-extra-tags": {
                       "db": "deleted_at"
                     },
-                    "x-go-type": "sql.NullTime",
+                    "x-go-type": "meshcore.NullTime",
+                    "x-go-type-import": {
+                      "name": "meshcore",
+                      "path": "github.com/meshery/schemas/models/core"
+                    },
                     "type": "string",
+                    "format": "date-time",
                     "x-go-type-skip-optional-pointer": true
                   }
                 }
@@ -468,8 +478,13 @@ const CredentialSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "deleted_at"
                       },
-                      "x-go-type": "sql.NullTime",
+                      "x-go-type": "meshcore.NullTime",
+                      "x-go-type-import": {
+                        "name": "meshcore",
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
                       "type": "string",
+                      "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     }
                   }
@@ -617,8 +632,13 @@ const CredentialSchema: Record<string, unknown> = {
                     "x-oapi-codegen-extra-tags": {
                       "db": "deleted_at"
                     },
-                    "x-go-type": "sql.NullTime",
+                    "x-go-type": "meshcore.NullTime",
+                    "x-go-type-import": {
+                      "name": "meshcore",
+                      "path": "github.com/meshery/schemas/models/core"
+                    },
                     "type": "string",
+                    "format": "date-time",
                     "x-go-type-skip-optional-pointer": true
                   }
                 }
@@ -725,8 +745,13 @@ const CredentialSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "deleted_at"
                       },
-                      "x-go-type": "sql.NullTime",
+                      "x-go-type": "meshcore.NullTime",
+                      "x-go-type-import": {
+                        "name": "meshcore",
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
                       "type": "string",
+                      "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     }
                   }
@@ -977,8 +1002,13 @@ const CredentialSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "deleted_at"
                       },
-                      "x-go-type": "sql.NullTime",
+                      "x-go-type": "meshcore.NullTime",
+                      "x-go-type-import": {
+                        "name": "meshcore",
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
                       "type": "string",
+                      "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     }
                   }
@@ -1229,8 +1259,13 @@ const CredentialSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "deleted_at"
             },
-            "x-go-type": "sql.NullTime",
+            "x-go-type": "meshcore.NullTime",
+            "x-go-type-import": {
+              "name": "meshcore",
+              "path": "github.com/meshery/schemas/models/core"
+            },
             "type": "string",
+            "format": "date-time",
             "x-go-type-skip-optional-pointer": true
           }
         }
@@ -1342,8 +1377,13 @@ const CredentialSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "deleted_at"
                   },
-                  "x-go-type": "sql.NullTime",
+                  "x-go-type": "meshcore.NullTime",
+                  "x-go-type-import": {
+                    "name": "meshcore",
+                    "path": "github.com/meshery/schemas/models/core"
+                  },
                   "type": "string",
+                  "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
                 }
               }

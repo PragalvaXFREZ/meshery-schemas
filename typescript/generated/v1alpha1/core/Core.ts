@@ -118,7 +118,10 @@ export interface components {
      * @description Timestamp when the resource was deleted.
      */
     deleted_at: string;
-    /** @description SQL null Timestamp to handle null values of time. */
+    /**
+     * Format: date-time
+     * @description SQL null Timestamp to handle null values of time.
+     */
     nullTime: string;
     /** @description Common styles for all entities */
     styles: {

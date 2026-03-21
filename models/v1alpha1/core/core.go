@@ -10,9 +10,8 @@ import (
 
 	"database/sql"
 
-	meshcore "github.com/meshery/schemas/models/core"
-
 	"github.com/gofrs/uuid"
+	meshcore "github.com/meshery/schemas/models/core"
 	"github.com/oapi-codegen/runtime"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )

@@ -107,7 +107,10 @@ export interface components {
         created_at?: string;
         /** Format: date-time */
         updated_at?: string;
-        /** @description SQL null Timestamp to handle null values of time. */
+        /**
+         * Format: date-time
+         * @description SQL null Timestamp to handle null values of time.
+         */
         deleted_at?: string;
         /** @description Associated environments for this connection */
         environments?: {
@@ -155,7 +158,10 @@ export interface components {
            * @description Timestamp when the resource was updated.
            */
           updated_at?: string;
-          /** @description Timestamp when the environment was soft deleted. Null while the environment remains active. */
+          /**
+           * Format: date-time
+           * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+           */
           deleted_at?: string | null;
         }[];
         /**

@@ -50,7 +50,10 @@ export interface components {
        * @description Timestamp when the resource was updated.
        */
       updated_at?: string;
-      /** @description Timestamp when the credential was soft-deleted. */
+      /**
+       * Format: date-time
+       * @description Timestamp when the credential was soft-deleted.
+       */
       deleted_at?: string;
     };
     /** @description A paginated list of credentials. */
@@ -82,7 +85,10 @@ export interface components {
          * @description Timestamp when the resource was updated.
          */
         updated_at?: string;
-        /** @description Timestamp when the credential was soft-deleted. */
+        /**
+         * Format: date-time
+         * @description Timestamp when the credential was soft-deleted.
+         */
         deleted_at?: string;
       }[];
       /** @description Total number of credentials across all pages. */
@@ -182,7 +188,10 @@ export interface operations {
                * @description Timestamp when the resource was updated.
                */
               updated_at?: string;
-              /** @description Timestamp when the credential was soft-deleted. */
+              /**
+               * Format: date-time
+               * @description Timestamp when the credential was soft-deleted.
+               */
               deleted_at?: string;
             }[];
             /** @description Total number of credentials across all pages. */
@@ -241,7 +250,10 @@ export interface operations {
              * @description Timestamp when the resource was updated.
              */
             updated_at?: string;
-            /** @description Timestamp when the credential was soft-deleted. */
+            /**
+             * Format: date-time
+             * @description Timestamp when the credential was soft-deleted.
+             */
             deleted_at?: string;
           };
         };
@@ -300,7 +312,10 @@ export interface operations {
            * @description Timestamp when the resource was updated.
            */
           updated_at?: string;
-          /** @description Timestamp when the credential was soft-deleted. */
+          /**
+           * Format: date-time
+           * @description Timestamp when the credential was soft-deleted.
+           */
           deleted_at?: string;
         };
       };
@@ -339,7 +354,10 @@ export interface operations {
              * @description Timestamp when the resource was updated.
              */
             updated_at?: string;
-            /** @description Timestamp when the credential was soft-deleted. */
+            /**
+             * Format: date-time
+             * @description Timestamp when the credential was soft-deleted.
+             */
             deleted_at?: string;
           };
         };
@@ -392,7 +410,10 @@ export interface operations {
            * @description Timestamp when the resource was updated.
            */
           updated_at?: string;
-          /** @description Timestamp when the credential was soft-deleted. */
+          /**
+           * Format: date-time
+           * @description Timestamp when the credential was soft-deleted.
+           */
           deleted_at?: string;
         };
       };
@@ -474,7 +495,10 @@ export interface operations {
              * @description Timestamp when the resource was updated.
              */
             updated_at?: string;
-            /** @description Timestamp when the credential was soft-deleted. */
+            /**
+             * Format: date-time
+             * @description Timestamp when the credential was soft-deleted.
+             */
             deleted_at?: string;
           };
         };

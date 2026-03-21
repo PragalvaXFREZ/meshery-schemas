@@ -570,8 +570,13 @@ const EvaluationSchema: Record<string, unknown> = {
                                           },
                                           "x-order": 12,
                                           "description": "SQL null Timestamp to handle null values of time.",
-                                          "x-go-type": "sql.NullTime",
+                                          "x-go-type": "meshcore.NullTime",
+                                          "x-go-type-import": {
+                                            "name": "meshcore",
+                                            "path": "github.com/meshery/schemas/models/core"
+                                          },
                                           "type": "string",
+                                          "format": "date-time",
                                           "x-go-type-skip-optional-pointer": true
                                         },
                                         "environments": {
@@ -742,7 +747,12 @@ const EvaluationSchema: Record<string, unknown> = {
                                                 "x-go-type": "core.NullTime",
                                                 "x-go-import": "database/sql",
                                                 "x-order": 10,
+                                                "x-go-type-import": {
+                                                  "name": "meshcore",
+                                                  "path": "github.com/meshery/schemas/models/core"
+                                                },
                                                 "type": "string",
+                                                "format": "date-time",
                                                 "x-go-type-skip-optional-pointer": true
                                               }
                                             }
@@ -5215,8 +5225,13 @@ const EvaluationSchema: Record<string, unknown> = {
                                             },
                                             "x-order": 12,
                                             "description": "SQL null Timestamp to handle null values of time.",
-                                            "x-go-type": "sql.NullTime",
+                                            "x-go-type": "meshcore.NullTime",
+                                            "x-go-type-import": {
+                                              "name": "meshcore",
+                                              "path": "github.com/meshery/schemas/models/core"
+                                            },
                                             "type": "string",
+                                            "format": "date-time",
                                             "x-go-type-skip-optional-pointer": true
                                           },
                                           "environments": {
@@ -5387,7 +5402,12 @@ const EvaluationSchema: Record<string, unknown> = {
                                                   "x-go-type": "core.NullTime",
                                                   "x-go-import": "database/sql",
                                                   "x-order": 10,
+                                                  "x-go-type-import": {
+                                                    "name": "meshcore",
+                                                    "path": "github.com/meshery/schemas/models/core"
+                                                  },
                                                   "type": "string",
+                                                  "format": "date-time",
                                                   "x-go-type-skip-optional-pointer": true
                                                 }
                                               }
@@ -9884,8 +9904,13 @@ const EvaluationSchema: Record<string, unknown> = {
                                   },
                                   "x-order": 12,
                                   "description": "SQL null Timestamp to handle null values of time.",
-                                  "x-go-type": "sql.NullTime",
+                                  "x-go-type": "meshcore.NullTime",
+                                  "x-go-type-import": {
+                                    "name": "meshcore",
+                                    "path": "github.com/meshery/schemas/models/core"
+                                  },
                                   "type": "string",
+                                  "format": "date-time",
                                   "x-go-type-skip-optional-pointer": true
                                 },
                                 "environments": {
@@ -10056,7 +10081,12 @@ const EvaluationSchema: Record<string, unknown> = {
                                         "x-go-type": "core.NullTime",
                                         "x-go-import": "database/sql",
                                         "x-order": 10,
+                                        "x-go-type-import": {
+                                          "name": "meshcore",
+                                          "path": "github.com/meshery/schemas/models/core"
+                                        },
                                         "type": "string",
+                                        "format": "date-time",
                                         "x-go-type-skip-optional-pointer": true
                                       }
                                     }
@@ -14521,8 +14551,13 @@ const EvaluationSchema: Record<string, unknown> = {
                                   },
                                   "x-order": 12,
                                   "description": "SQL null Timestamp to handle null values of time.",
-                                  "x-go-type": "sql.NullTime",
+                                  "x-go-type": "meshcore.NullTime",
+                                  "x-go-type-import": {
+                                    "name": "meshcore",
+                                    "path": "github.com/meshery/schemas/models/core"
+                                  },
                                   "type": "string",
+                                  "format": "date-time",
                                   "x-go-type-skip-optional-pointer": true
                                 },
                                 "environments": {
@@ -14693,7 +14728,12 @@ const EvaluationSchema: Record<string, unknown> = {
                                         "x-go-type": "core.NullTime",
                                         "x-go-import": "database/sql",
                                         "x-order": 10,
+                                        "x-go-type-import": {
+                                          "name": "meshcore",
+                                          "path": "github.com/meshery/schemas/models/core"
+                                        },
                                         "type": "string",
+                                        "format": "date-time",
                                         "x-go-type-skip-optional-pointer": true
                                       }
                                     }

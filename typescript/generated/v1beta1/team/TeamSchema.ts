@@ -275,8 +275,13 @@ const TeamSchema: Record<string, unknown> = {
             },
             "x-order": 8,
             "description": "SQL null Timestamp to handle null values of time.",
-            "x-go-type": "sql.NullTime",
+            "x-go-type": "meshcore.NullTime",
+            "x-go-type-import": {
+              "name": "meshcore",
+              "path": "github.com/meshery/schemas/models/core"
+            },
             "type": "string",
+            "format": "date-time",
             "x-go-type-skip-optional-pointer": true
           }
         }
@@ -432,8 +437,13 @@ const TeamSchema: Record<string, unknown> = {
                   },
                   "x-order": 8,
                   "description": "SQL null Timestamp to handle null values of time.",
-                  "x-go-type": "sql.NullTime",
+                  "x-go-type": "meshcore.NullTime",
+                  "x-go-type-import": {
+                    "name": "meshcore",
+                    "path": "github.com/meshery/schemas/models/core"
+                  },
                   "type": "string",
+                  "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
                 }
               }
@@ -511,8 +521,13 @@ const TeamSchema: Record<string, unknown> = {
               "db": "deleted_at"
             },
             "description": "SQL null Timestamp to handle null values of time.",
-            "x-go-type": "sql.NullTime",
+            "x-go-type": "meshcore.NullTime",
+            "x-go-type-import": {
+              "name": "meshcore",
+              "path": "github.com/meshery/schemas/models/core"
+            },
             "type": "string",
+            "format": "date-time",
             "x-go-type-skip-optional-pointer": true
           }
         }
@@ -607,8 +622,13 @@ const TeamSchema: Record<string, unknown> = {
                     "db": "deleted_at"
                   },
                   "description": "SQL null Timestamp to handle null values of time.",
-                  "x-go-type": "sql.NullTime",
+                  "x-go-type": "meshcore.NullTime",
+                  "x-go-type-import": {
+                    "name": "meshcore",
+                    "path": "github.com/meshery/schemas/models/core"
+                  },
                   "type": "string",
+                  "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
                 }
               }
@@ -855,8 +875,13 @@ const TeamSchema: Record<string, unknown> = {
                             },
                             "x-order": 8,
                             "description": "SQL null Timestamp to handle null values of time.",
-                            "x-go-type": "sql.NullTime",
+                            "x-go-type": "meshcore.NullTime",
+                            "x-go-type-import": {
+                              "name": "meshcore",
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
                             "type": "string",
+                            "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           }
                         }
@@ -1046,8 +1071,13 @@ const TeamSchema: Record<string, unknown> = {
                       },
                       "x-order": 8,
                       "description": "SQL null Timestamp to handle null values of time.",
-                      "x-go-type": "sql.NullTime",
+                      "x-go-type": "meshcore.NullTime",
+                      "x-go-type-import": {
+                        "name": "meshcore",
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
                       "type": "string",
+                      "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     }
                   }
@@ -1229,8 +1259,13 @@ const TeamSchema: Record<string, unknown> = {
                       },
                       "x-order": 8,
                       "description": "SQL null Timestamp to handle null values of time.",
-                      "x-go-type": "sql.NullTime",
+                      "x-go-type": "meshcore.NullTime",
+                      "x-go-type-import": {
+                        "name": "meshcore",
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
                       "type": "string",
+                      "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     }
                   }
@@ -1454,8 +1489,13 @@ const TeamSchema: Record<string, unknown> = {
                       },
                       "x-order": 8,
                       "description": "SQL null Timestamp to handle null values of time.",
-                      "x-go-type": "sql.NullTime",
+                      "x-go-type": "meshcore.NullTime",
+                      "x-go-type-import": {
+                        "name": "meshcore",
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
                       "type": "string",
+                      "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     }
                   }
@@ -1778,8 +1818,13 @@ const TeamSchema: Record<string, unknown> = {
                               "db": "deleted_at"
                             },
                             "description": "SQL null Timestamp to handle null values of time.",
-                            "x-go-type": "sql.NullTime",
+                            "x-go-type": "meshcore.NullTime",
+                            "x-go-type-import": {
+                              "name": "meshcore",
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
                             "type": "string",
+                            "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           }
                         }
@@ -1969,8 +2014,13 @@ const TeamSchema: Record<string, unknown> = {
                         "db": "deleted_at"
                       },
                       "description": "SQL null Timestamp to handle null values of time.",
-                      "x-go-type": "sql.NullTime",
+                      "x-go-type": "meshcore.NullTime",
+                      "x-go-type-import": {
+                        "name": "meshcore",
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
                       "type": "string",
+                      "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     }
                   }
@@ -2145,8 +2195,13 @@ const TeamSchema: Record<string, unknown> = {
                         "db": "deleted_at"
                       },
                       "description": "SQL null Timestamp to handle null values of time.",
-                      "x-go-type": "sql.NullTime",
+                      "x-go-type": "meshcore.NullTime",
+                      "x-go-type-import": {
+                        "name": "meshcore",
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
                       "type": "string",
+                      "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     }
                   }

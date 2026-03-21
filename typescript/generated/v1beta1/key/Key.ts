@@ -50,7 +50,10 @@ export interface components {
        * @description Timestamp when the resource was updated.
        */
       updated_at: string;
-      /** @description SQL null Timestamp to handle null values of time. */
+      /**
+       * Format: date-time
+       * @description SQL null Timestamp to handle null values of time.
+       */
       deleted_at?: string;
     };
     /** @description Payload for creating or updating a key. */
@@ -102,7 +105,10 @@ export interface components {
          * @description Timestamp when the resource was updated.
          */
         updated_at: string;
-        /** @description SQL null Timestamp to handle null values of time. */
+        /**
+         * Format: date-time
+         * @description SQL null Timestamp to handle null values of time.
+         */
         deleted_at?: string;
       }[];
     };
@@ -195,7 +201,10 @@ export interface operations {
                * @description Timestamp when the resource was updated.
                */
               updated_at: string;
-              /** @description SQL null Timestamp to handle null values of time. */
+              /**
+               * Format: date-time
+               * @description SQL null Timestamp to handle null values of time.
+               */
               deleted_at?: string;
             }[];
           };
@@ -265,7 +274,10 @@ export interface operations {
                * @description Timestamp when the resource was updated.
                */
               updated_at: string;
-              /** @description SQL null Timestamp to handle null values of time. */
+              /**
+               * Format: date-time
+               * @description SQL null Timestamp to handle null values of time.
+               */
               deleted_at?: string;
             }[];
           };
@@ -325,7 +337,10 @@ export interface operations {
              * @description Timestamp when the resource was updated.
              */
             updated_at: string;
-            /** @description SQL null Timestamp to handle null values of time. */
+            /**
+             * Format: date-time
+             * @description SQL null Timestamp to handle null values of time.
+             */
             deleted_at?: string;
           };
         };
@@ -409,7 +424,10 @@ export interface operations {
              * @description Timestamp when the resource was updated.
              */
             updated_at: string;
-            /** @description SQL null Timestamp to handle null values of time. */
+            /**
+             * Format: date-time
+             * @description SQL null Timestamp to handle null values of time.
+             */
             deleted_at?: string;
           };
         };
