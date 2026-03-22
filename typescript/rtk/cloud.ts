@@ -309,6 +309,12 @@ const injectedRtkApi = api
             search: queryArg.search,
             order: queryArg.order,
             visibility: queryArg.visibility,
+            user_id: queryArg.userId,
+            orgID: queryArg.orgId,
+            metrics: queryArg.metrics,
+            workspaceid: queryArg.workspaceid,
+            populate: queryArg.populate,
+            shared: queryArg.shared,
           },
         }),
         providesTags: ["Design_designs"],
@@ -4113,6 +4119,14 @@ export type GetPatternsApiArg = {
   order?: string;
   /** Filter by visibility (public, private, published) */
   visibility?: string;
+  /** UUID of User. Pass user_id for fetching public and published designs. */
+  userId?: string;
+  /** User's organization ID. */
+  orgId?: string;
+  metrics?: boolean;
+  workspaceid?: string;
+  populate?: boolean;
+  shared?: boolean;
 };
 export type UpsertPatternApiResponse = /** status 200 Design saved successfully */ {
   catalog_data?: {

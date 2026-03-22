@@ -71,6 +71,56 @@ const PatternSchema: Record<string, unknown> = {
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "description": "UUID of User. Pass user_id for fetching public and published designs.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orgID",
+            "in": "query",
+            "required": false,
+            "description": "User's organization ID.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "metrics",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "workspaceid",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "populate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "shared",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
           }
         ],
         "responses": {

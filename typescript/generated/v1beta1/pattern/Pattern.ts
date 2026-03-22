@@ -6307,6 +6307,14 @@ export interface operations {
         order?: string;
         /** Filter by visibility (public, private, published) */
         visibility?: string;
+        /** UUID of User. Pass user_id for fetching public and published designs. */
+        user_id?: string;
+        /** User's organization ID. */
+        orgID?: string;
+        metrics?: boolean;
+        workspaceid?: string;
+        populate?: boolean;
+        shared?: boolean;
       };
     };
     responses: {
