@@ -65,7 +65,64 @@ paths:
               schema:
                 $ref: "#/components/schemas/Badge"
 
+  /api/identity/badges:
+    get:
+      x-internal: ["cloud"]
+      operationId: getAvailableBadges
+      tags:
+        - Badge
+      summary: Get available badges
+      responses:
+        "200":
+          description: Available badges
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadgesPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/badges:
+    put:
+      x-internal: ["cloud"]
+      operationId: assignBadges
+      tags:
+        - Badge
+      summary: Assign badges to a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BadgeAssignmentPayload"
+      responses:
+        "200":
+          description: Badge assignment result
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
 components:
+  responses:
+    400:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
+    401:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
+    500:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
+
   schemas:
     BadgePayload:
       type: object
@@ -201,3 +258,23 @@ components:
           x-oapi-codegen-extra-tags:
             db: "deleted_at"
             json: "deleted_at"
+
+    BadgesPage:
+      type: object
+      properties:
+        badges:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/Badge"
+
+    BadgeAssignmentPayload:
+      type: object
+      properties:
+        badges:
+          type: array
+          items:
+            type: string
+        user_id:
+          type: string
+        notify:
+          type: boolean

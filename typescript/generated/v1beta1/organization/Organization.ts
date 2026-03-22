@@ -33,6 +33,10 @@ export interface paths {
     /** Removes (unassigns) a team from an organization. */
     post: operations["removeTeamFromOrg"];
   };
+  "/api/identity/orgs/{orgId}/users/{userId}": {
+    post: operations["addUserToOrg"];
+    delete: operations["deleteUserFromOrg"];
+  };
 }
 
 export interface components {
@@ -1266,6 +1270,46 @@ export interface operations {
       401: unknown;
       /** Not found */
       404: unknown;
+      /** Internal server error */
+      500: unknown;
+    };
+  };
+  addUserToOrg: {
+    parameters: {
+      path: {
+        orgId: string;
+        userId: string;
+      };
+    };
+    responses: {
+      /** User added to organization */
+      200: {
+        content: {
+          "application/json": { [key: string]: unknown };
+        };
+      };
+      /** Unauthorized */
+      401: unknown;
+      /** Internal server error */
+      500: unknown;
+    };
+  };
+  deleteUserFromOrg: {
+    parameters: {
+      path: {
+        orgId: string;
+        userId: string;
+      };
+    };
+    responses: {
+      /** User removed from organization */
+      200: {
+        content: {
+          "application/json": { [key: string]: unknown };
+        };
+      };
+      /** Unauthorized */
+      401: unknown;
       /** Internal server error */
       500: unknown;
     };

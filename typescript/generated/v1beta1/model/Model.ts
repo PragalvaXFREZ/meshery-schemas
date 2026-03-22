@@ -7,6 +7,9 @@ export interface paths {
   "/api/meshmodels/register": {
     post: operations["registerMeshmodels"];
   };
+  "/api/integrations/meshmodels/models": {
+    get: operations["getMeshModelModels"];
+  };
 }
 
 export interface components {
@@ -519,6 +522,12 @@ export interface components {
         } & {
           model: unknown;
         });
+    MeshModelModelsPage: {
+      page?: number;
+      page_size?: number;
+      total_count?: number;
+      models?: { [key: string]: unknown }[];
+    };
   };
 }
 
@@ -593,6 +602,31 @@ export interface operations {
           register: boolean;
         };
       };
+    };
+  };
+  getMeshModelModels: {
+    parameters: {
+      query: {
+        page?: string;
+        pagesize?: string;
+        search?: string;
+        order?: string;
+      };
+    };
+    responses: {
+      /** Model and capabilities registry entries retrieved. */
+      200: {
+        content: {
+          "application/json": {
+            page?: number;
+            page_size?: number;
+            total_count?: number;
+            models?: { [key: string]: unknown }[];
+          };
+        };
+      };
+      /** Internal server error */
+      500: unknown;
     };
   };
 }

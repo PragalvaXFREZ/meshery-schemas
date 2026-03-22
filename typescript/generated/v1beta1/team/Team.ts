@@ -18,7 +18,7 @@ export interface paths {
     /** Deletes a team by its ID */
     delete: operations["deleteTeam"];
   };
-  "/api/identity/orgs/{orgId}/teams/{teamId}/users": {
+  "/api/identity/teams/{teamId}/users": {
     /** Gets all users that belong to a team */
     get: operations["getTeamUsers"];
   };
@@ -27,6 +27,9 @@ export interface paths {
     post: operations["addUserToTeam"];
     /** Unassigns a user from a team */
     delete: operations["removeUserFromTeam"];
+  };
+  "/api/identity/orgs/{orgId}/teams/{teamId}/users": {
+    get: operations["listUsersNotInTeam"];
   };
 }
 
@@ -159,6 +162,13 @@ export interface components {
          */
         deleted_at?: string;
       }[];
+    };
+    teamMember: { [key: string]: unknown };
+    teamMembersPage: {
+      page?: number;
+      page_size?: number;
+      total_count?: number;
+      data?: { [key: string]: unknown }[];
     };
   };
   responses: {
@@ -562,8 +572,6 @@ export interface operations {
   getTeamUsers: {
     parameters: {
       path: {
-        /** Organization ID */
-        orgId: string;
         /** Team ID */
         teamId: string;
       };
@@ -620,12 +628,6 @@ export interface operations {
       };
       /** Expired JWT token used or insufficient privilege */
       401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Result not found */
-      404: {
         content: {
           "text/plain": string;
         };
@@ -754,6 +756,57 @@ export interface operations {
       };
       /** Result not found */
       404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  listUsersNotInTeam: {
+    parameters: {
+      path: {
+        /** Organization ID */
+        orgId: string;
+        /** Team ID */
+        teamId: string;
+      };
+      query: {
+        /** Get responses that match search param value */
+        search?: string;
+        /** Get ordered responses */
+        order?: string;
+        /** Get responses by page */
+        page?: string;
+        /** Get responses by pagesize */
+        pagesize?: string;
+      };
+    };
+    responses: {
+      /** Users not currently in the team */
+      200: {
+        content: {
+          "application/json": {
+            page?: number;
+            page_size?: number;
+            total_count?: number;
+            data?: { [key: string]: unknown }[];
+          };
+        };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
         content: {
           "text/plain": string;
         };

@@ -31,6 +31,17 @@ type Team struct {
 	DeletedAt corev1alpha1.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at"`
 }
 
+// TeamMember defines model for teamMember.
+type TeamMember map[string]interface{}
+
+// TeamMembersPage defines model for teamMembersPage.
+type TeamMembersPage struct {
+	Data       *[]TeamMember `json:"data,omitempty" yaml:"data,omitempty"`
+	Page       *int          `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize   *int          `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	TotalCount *int          `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+}
+
 // TeamPage Paginated list of teams
 type TeamPage struct {
 	Page       corev1alpha1.Number `json:"page,omitempty" yaml:"page,omitempty"`

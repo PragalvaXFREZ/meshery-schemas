@@ -104,6 +104,200 @@ paths:
           $ref: "#/components/responses/401"
         "500":
           $ref: "#/components/responses/500"
+
+  /api/identity/users/preferences:
+    put:
+      tags:
+        - users
+      operationId: updateUserPreference
+      summary: Update user preferences
+      requestBody:
+        $ref: "#/components/requestBodies/userPreferencePayload"
+      responses:
+        "201":
+          description: Preferences updated
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/self:
+    delete:
+      tags:
+        - users
+      operationId: deleteOwnAccount
+      summary: Delete current user account
+      responses:
+        "201":
+          description: Account deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/orgs/{orgId}/users/bulk:
+    post:
+      tags:
+        - users
+      operationId: bulkDeleteUsers
+      summary: Bulk delete organization users
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+      requestBody:
+        $ref: "#/components/requestBodies/bulkDeleteUsersPayload"
+      responses:
+        "201":
+          description: Users deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/profile/details:
+    get:
+      tags:
+        - users
+      operationId: getProfileOverview
+      summary: Get current user profile overview
+      responses:
+        "200":
+          description: User account overview
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountOverview"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/{userId}/profile/activity:
+    get:
+      tags:
+        - users
+      operationId: getUserActivity
+      summary: Get user activity
+      security: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: User ID
+          schema:
+            $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/filter"
+      responses:
+        "200":
+          description: User recent activity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecentActivityPage"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/notify/feedback:
+    post:
+      tags:
+        - users
+      operationId: handleFeedbackFormSubmission
+      summary: Submit feedback notification
+      requestBody:
+        $ref: "#/components/requestBodies/userFeedbackPayload"
+      responses:
+        "201":
+          description: Feedback submitted
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/password:
+    post:
+      tags:
+        - users
+      operationId: updateUsersPassword
+      summary: Update current user password
+      requestBody:
+        $ref: "#/components/requestBodies/updatePasswordPayload"
+      responses:
+        "200":
+          description: Password updated
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/notifications/preferences:
+    put:
+      tags:
+        - users
+      operationId: updateNotificationPreferences
+      summary: Update notification preferences
+      requestBody:
+        $ref: "#/components/requestBodies/notificationPreferencePayload"
+      responses:
+        "200":
+          description: Notification preferences updated
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          $ref: "#/components/responses/400"
+        "500":
+          $ref: "#/components/responses/500"
+    get:
+      tags:
+        - users
+      operationId: getAvailableNotificationPreferences
+      summary: Get available notification preferences
+      responses:
+        "200":
+          description: Available notification preferences
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AvailableNotificationPreferences"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
 components:
   responses:
     400:
@@ -153,6 +347,45 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+
+  requestBodies:
+    userPreferencePayload:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: true
+    bulkDeleteUsersPayload:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: true
+    userFeedbackPayload:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: true
+    updatePasswordPayload:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              password:
+                type: string
+    notificationPreferencePayload:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: true
 
   schemas:
     User:
@@ -560,6 +793,49 @@ components:
           type: string
           format: uri
       required: ["site", "link"]
+
+    AccountOverview:
+      type: object
+      additionalProperties: true
+
+    RecentActivity:
+      type: object
+      additionalProperties: true
+
+    RecentActivityPage:
+      type: object
+      properties:
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_count:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/RecentActivity"
+
+    AvailableNotificationPreference:
+      type: object
+      properties:
+        category:
+          type: string
+        subcategory:
+          type: string
+        label:
+          type: string
+        name:
+          type: string
+      additionalProperties: true
+
+    AvailableNotificationPreferences:
+      type: object
+      properties:
+        notification_preferences:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/AvailableNotificationPreference"
 
     # UsersPage:
     #   description: "link"

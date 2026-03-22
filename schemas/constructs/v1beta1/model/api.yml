@@ -35,6 +35,42 @@ paths:
           description: Invalid request format
         "500":
           description: Internal server error
+
+  /api/integrations/meshmodels/models:
+    get:
+      x-internal: ["cloud"]
+      summary: Get mesh model models
+      operationId: getMeshModelModels
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: pagesize
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: order
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Model and capabilities registry entries retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeshModelModelsPage"
+        "500":
+          description: Internal server error
 components:
   schemas:
     Model:
@@ -186,3 +222,18 @@ components:
                   x-metadata:
                     uiType: "url"
                     validationHint: "Enter an Artifact Hub URL (e.g., https://artifacthub.io/packages/search?ts_query_web={meshery-operator})"
+
+    MeshModelModelsPage:
+      type: object
+      properties:
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_count:
+          type: integer
+        models:
+          type: array
+          items:
+            type: object
+            additionalProperties: true

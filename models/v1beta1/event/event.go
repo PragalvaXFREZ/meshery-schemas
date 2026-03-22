@@ -4,6 +4,9 @@
 package event
 
 import (
+	"encoding/json"
+	"fmt"
+
 	corev1alpha1 "github.com/meshery/schemas/models/v1alpha1/core"
 )
 
@@ -48,6 +51,29 @@ type EventResult struct {
 	UserID   corev1alpha1.UserUuid `db:"user_id" json:"user_id" yaml:"user_id"`
 }
 
+// EventSummary defines model for eventSummary.
+type EventSummary map[string]interface{}
+
+// EventSummaryPage defines model for eventSummaryPage.
+type EventSummaryPage struct {
+	Data       *[]EventSummary `json:"data,omitempty" yaml:"data,omitempty"`
+	Page       *int            `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize   *int            `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	TotalCount *int            `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+}
+
+// EventType defines model for eventType.
+type EventType struct {
+	Action   *string `json:"action,omitempty" yaml:"action,omitempty"`
+	Category *string `json:"category,omitempty" yaml:"category,omitempty"`
+}
+
+// EventsAggregate defines model for eventsAggregate.
+type EventsAggregate struct {
+	Audit                *int                   `json:"audit,omitempty" yaml:"audit,omitempty"`
+	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
+}
+
 // EventsPage defines model for eventsPage.
 type EventsPage struct {
 	Data       *[]EventResult      `json:"data,omitempty" yaml:"data,omitempty"`
@@ -55,6 +81,12 @@ type EventsPage struct {
 	PageSize   corev1alpha1.Number `json:"page_size,omitempty" yaml:"page_size,omitempty"`
 	TotalCount corev1alpha1.Number `json:"total_count,omitempty" yaml:"total_count,omitempty"`
 }
+
+// Cumulative defines model for cumulative.
+type Cumulative = bool
+
+// Filter defines model for filter.
+type Filter = string
 
 // Order defines model for order.
 type Order = string
@@ -70,3 +102,71 @@ type Search = string
 
 // WorkspaceId defines model for workspaceId.
 type WorkspaceId = corev1alpha1.WorkspaceId
+
+// Getter for additional properties for EventsAggregate. Returns the specified
+// element and whether it was found
+func (a EventsAggregate) Get(fieldName string) (value interface{}, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
+}
+
+// Setter for additional properties for EventsAggregate
+func (a *EventsAggregate) Set(fieldName string, value interface{}) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]interface{})
+	}
+	a.AdditionalProperties[fieldName] = value
+}
+
+// Override default JSON handling for EventsAggregate to handle AdditionalProperties
+func (a *EventsAggregate) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["audit"]; found {
+		err = json.Unmarshal(raw, &a.Audit)
+		if err != nil {
+			return fmt.Errorf("error reading 'audit': %w", err)
+		}
+		delete(object, "audit")
+	}
+
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]interface{})
+		for fieldName, fieldBuf := range object {
+			var fieldVal interface{}
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
+}
+
+// Override default JSON handling for EventsAggregate to handle AdditionalProperties
+func (a EventsAggregate) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
+
+	if a.Audit != nil {
+		object["audit"], err = json.Marshal(a.Audit)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'audit': %w", err)
+		}
+	}
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
+		}
+	}
+	return json.Marshal(object)
+}

@@ -10,6 +10,14 @@ export interface paths {
     /** Creates a new environment */
     post: operations["createEnvironment"];
   };
+  "/api/environments/{environmentId}": {
+    get: operations["getEnvironmentById"];
+    put: operations["updateEnvironment"];
+    delete: operations["deleteEnvironment"];
+  };
+  "/api/environments/{environmentId}/connections": {
+    get: operations["getEnvironmentConnections"];
+  };
 }
 
 export interface components {
@@ -163,6 +171,12 @@ export interface components {
          */
         deleted_at?: string | null;
       }[];
+    };
+    environmentConnectionsPage: {
+      page?: number;
+      page_size?: number;
+      total_count?: number;
+      connections?: { [key: string]: unknown }[];
     };
   };
   responses: {
@@ -401,6 +415,348 @@ export interface operations {
           OrganizationID?: string;
         } & {
           organizationID: unknown;
+        };
+      };
+    };
+  };
+  getEnvironmentById: {
+    parameters: {
+      path: {
+        /** Environment ID */
+        environmentId: string;
+      };
+      query: {
+        /** User's organization ID */
+        orgID: string;
+      };
+    };
+    responses: {
+      /** Environment page */
+      200: {
+        content: {
+          "application/json": {
+            page?: number;
+            page_size?: number;
+            total_count?: number;
+            environments?: {
+              /**
+               * Format: uuid
+               * @description ID
+               */
+              id: string;
+              /**
+               * @description Specifies the version of the schema to which the environment conforms.
+               * @default environments.meshery.io/v1beta1
+               * @example [
+               *   "v1",
+               *   "v1alpha1",
+               *   "v2beta3",
+               *   "v1.custom-suffix",
+               *   "models.meshery.io/v1beta1",
+               *   "capability.meshery.io/v1alpha1"
+               * ]
+               */
+              schemaVersion: string;
+              /** @description Environment name */
+              name: string;
+              /** @description Environment description */
+              description: string;
+              /**
+               * Format: uuid
+               * @description Environment organization ID
+               */
+              organization_id: string;
+              /**
+               * Format: uuid
+               * @description Environment owner
+               */
+              owner?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was created.
+               */
+              created_at?: string;
+              /** @description Additional metadata associated with the environment. */
+              metadata?: { [key: string]: unknown };
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was updated.
+               */
+              updated_at?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+               */
+              deleted_at?: string | null;
+            }[];
+          };
+        };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  updateEnvironment: {
+    parameters: {
+      path: {
+        /** Environment ID */
+        environmentId: string;
+      };
+    };
+    responses: {
+      /** Environment page */
+      200: {
+        content: {
+          "application/json": {
+            page?: number;
+            page_size?: number;
+            total_count?: number;
+            environments?: {
+              /**
+               * Format: uuid
+               * @description ID
+               */
+              id: string;
+              /**
+               * @description Specifies the version of the schema to which the environment conforms.
+               * @default environments.meshery.io/v1beta1
+               * @example [
+               *   "v1",
+               *   "v1alpha1",
+               *   "v2beta3",
+               *   "v1.custom-suffix",
+               *   "models.meshery.io/v1beta1",
+               *   "capability.meshery.io/v1alpha1"
+               * ]
+               */
+              schemaVersion: string;
+              /** @description Environment name */
+              name: string;
+              /** @description Environment description */
+              description: string;
+              /**
+               * Format: uuid
+               * @description Environment organization ID
+               */
+              organization_id: string;
+              /**
+               * Format: uuid
+               * @description Environment owner
+               */
+              owner?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was created.
+               */
+              created_at?: string;
+              /** @description Additional metadata associated with the environment. */
+              metadata?: { [key: string]: unknown };
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was updated.
+               */
+              updated_at?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+               */
+              deleted_at?: string | null;
+            }[];
+          };
+        };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    /** Body for creating environment */
+    requestBody: {
+      content: {
+        "application/json": {
+          /** @description An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation. */
+          name: string;
+          /** @description An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments). */
+          description?: string;
+          /** @description Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation. */
+          OrganizationID?: string;
+        } & {
+          organizationID: unknown;
+        };
+      };
+    };
+  };
+  deleteEnvironment: {
+    parameters: {
+      path: {
+        /** Environment ID */
+        environmentId: string;
+      };
+    };
+    responses: {
+      /** Environment page */
+      200: {
+        content: {
+          "application/json": {
+            page?: number;
+            page_size?: number;
+            total_count?: number;
+            environments?: {
+              /**
+               * Format: uuid
+               * @description ID
+               */
+              id: string;
+              /**
+               * @description Specifies the version of the schema to which the environment conforms.
+               * @default environments.meshery.io/v1beta1
+               * @example [
+               *   "v1",
+               *   "v1alpha1",
+               *   "v2beta3",
+               *   "v1.custom-suffix",
+               *   "models.meshery.io/v1beta1",
+               *   "capability.meshery.io/v1alpha1"
+               * ]
+               */
+              schemaVersion: string;
+              /** @description Environment name */
+              name: string;
+              /** @description Environment description */
+              description: string;
+              /**
+               * Format: uuid
+               * @description Environment organization ID
+               */
+              organization_id: string;
+              /**
+               * Format: uuid
+               * @description Environment owner
+               */
+              owner?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was created.
+               */
+              created_at?: string;
+              /** @description Additional metadata associated with the environment. */
+              metadata?: { [key: string]: unknown };
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was updated.
+               */
+              updated_at?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+               */
+              deleted_at?: string | null;
+            }[];
+          };
+        };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  getEnvironmentConnections: {
+    parameters: {
+      path: {
+        /** Environment ID */
+        environmentId: string;
+      };
+      query: {
+        /** Get responses that match search param value */
+        search?: string;
+        /** Get ordered responses */
+        order?: string;
+        /** Get responses by page */
+        page?: string;
+        /** Get responses by pagesize */
+        pagesize?: string;
+        filter?: string;
+      };
+    };
+    responses: {
+      /** Environment connections */
+      200: {
+        content: {
+          "application/json": {
+            page?: number;
+            page_size?: number;
+            total_count?: number;
+            connections?: { [key: string]: unknown }[];
+          };
+        };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
         };
       };
     };

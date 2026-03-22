@@ -19,11 +19,46 @@ type DesignPreferences struct {
 	Layers map[string]interface{} `json:"layers" yaml:"layers"`
 }
 
+// CatalogContentClass defines model for CatalogContentClass.
+type CatalogContentClass struct {
+	Class                *string                `json:"class,omitempty" yaml:"class,omitempty"`
+	Description          *string                `json:"description,omitempty" yaml:"description,omitempty"`
+	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
+}
+
+// CatalogContentItem defines model for CatalogContentItem.
+type CatalogContentItem map[string]interface{}
+
+// CatalogContentPage defines model for CatalogContentPage.
+type CatalogContentPage struct {
+	CategoryCount *[]map[string]interface{} `json:"category_count,omitempty" yaml:"category_count,omitempty"`
+	Filters       *[]MesheryFilter          `json:"filters,omitempty" yaml:"filters,omitempty"`
+	ModelsCount   *[]map[string]interface{} `json:"models_count,omitempty" yaml:"models_count,omitempty"`
+	Page          *int                      `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize      *int                      `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	Patterns      *[]MesheryPattern         `json:"patterns,omitempty" yaml:"patterns,omitempty"`
+	TotalCount    *int                      `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+}
+
+// CatalogRequest defines model for CatalogRequest.
+type CatalogRequest map[string]interface{}
+
+// CatalogRequestsPage defines model for CatalogRequestsPage.
+type CatalogRequestsPage struct {
+	CatalogRequests *[]CatalogRequest `json:"catalogRequests,omitempty" yaml:"catalogRequests,omitempty"`
+	Page            *int              `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize        *int              `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	TotalCount      *int              `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+}
+
 // DeletePatternModel defines model for DeletePatternModel.
 type DeletePatternModel struct {
 	ID   corev1alpha1.Id   `json:"id,omitempty" yaml:"id,omitempty"`
 	Name corev1alpha1.Text `json:"name,omitempty" yaml:"name,omitempty"`
 }
+
+// MesheryFilter defines model for MesheryFilter.
+type MesheryFilter map[string]interface{}
 
 // MesheryPattern defines model for MesheryPattern.
 type MesheryPattern struct {
@@ -78,6 +113,17 @@ type MesheryPatternRequestBody struct {
 	Url         corev1alpha1.Endpoint `json:"url,omitempty" yaml:"url,omitempty"`
 }
 
+// MesheryView defines model for MesheryView.
+type MesheryView map[string]interface{}
+
+// MesheryViewPage defines model for MesheryViewPage.
+type MesheryViewPage struct {
+	Page       *int           `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize   *int           `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	TotalCount *int           `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+	Views      *[]MesheryView `json:"views,omitempty" yaml:"views,omitempty"`
+}
+
 // PatternFile Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.
 type PatternFile struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -110,6 +156,14 @@ type PatternFile_Metadata struct {
 	AdditionalProperties map[string]interface{}                 `json:"-" yaml:"-"`
 }
 
+// ResourceAccessActorsResponse defines model for ResourceAccessActorsResponse.
+type ResourceAccessActorsResponse struct {
+	Users *[]map[string]interface{} `json:"users,omitempty" yaml:"users,omitempty"`
+}
+
+// ResourceAccessMapping defines model for ResourceAccessMapping.
+type ResourceAccessMapping map[string]interface{}
+
 // Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type Id = corev1alpha1.Uuid
 
@@ -124,6 +178,98 @@ type Pagesize = string
 
 // Search defines model for search.
 type Search = string
+
+// CatalogContentPayload defines model for catalogContentPayload.
+type CatalogContentPayload map[string]interface{}
+
+// ResourceSharePayload defines model for resourceSharePayload.
+type ResourceSharePayload map[string]interface{}
+
+// ViewUpdatePayload defines model for viewUpdatePayload.
+type ViewUpdatePayload map[string]interface{}
+
+// Getter for additional properties for CatalogContentClass. Returns the specified
+// element and whether it was found
+func (a CatalogContentClass) Get(fieldName string) (value interface{}, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
+}
+
+// Setter for additional properties for CatalogContentClass
+func (a *CatalogContentClass) Set(fieldName string, value interface{}) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]interface{})
+	}
+	a.AdditionalProperties[fieldName] = value
+}
+
+// Override default JSON handling for CatalogContentClass to handle AdditionalProperties
+func (a *CatalogContentClass) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["class"]; found {
+		err = json.Unmarshal(raw, &a.Class)
+		if err != nil {
+			return fmt.Errorf("error reading 'class': %w", err)
+		}
+		delete(object, "class")
+	}
+
+	if raw, found := object["description"]; found {
+		err = json.Unmarshal(raw, &a.Description)
+		if err != nil {
+			return fmt.Errorf("error reading 'description': %w", err)
+		}
+		delete(object, "description")
+	}
+
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]interface{})
+		for fieldName, fieldBuf := range object {
+			var fieldVal interface{}
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
+}
+
+// Override default JSON handling for CatalogContentClass to handle AdditionalProperties
+func (a CatalogContentClass) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
+
+	if a.Class != nil {
+		object["class"], err = json.Marshal(a.Class)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'class': %w", err)
+		}
+	}
+
+	if a.Description != nil {
+		object["description"], err = json.Marshal(a.Description)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'description': %w", err)
+		}
+	}
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
+		}
+	}
+	return json.Marshal(object)
+}
 
 // Getter for additional properties for PatternFile_Metadata. Returns the specified
 // element and whether it was found

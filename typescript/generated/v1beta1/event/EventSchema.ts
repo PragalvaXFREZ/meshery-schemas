@@ -554,6 +554,354 @@ const EventSchema: Record<string, unknown> = {
           }
         }
       }
+    },
+    "/api/events": {
+      "get": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "events"
+        ],
+        "operationId": "getEventsAggregate",
+        "summary": "Get events aggregate summary",
+        "parameters": [
+          {
+            "name": "cumulative",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Events aggregate",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "audit": {
+                      "type": "integer"
+                    }
+                  },
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/events/list": {
+      "get": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "events"
+        ],
+        "operationId": "getEvents",
+        "summary": "Get events list",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Get responses by page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pagesize",
+            "in": "query",
+            "description": "Get responses by pagesize",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Get responses that match search param value",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Get ordered responses",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Get filtered reponses",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Events page",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "page": {
+                      "type": "integer",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "page_size": {
+                      "type": "integer",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "total_count": {
+                      "type": "integer",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "user_id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "user_id",
+                              "json": "user_id"
+                            },
+                            "x-go-name": "UserID",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "system_id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "system_id"
+                            },
+                            "x-go-name": "SystemID",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "category": {
+                            "type": "string"
+                          },
+                          "action": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "first_name": {
+                            "type": "string"
+                          },
+                          "last_name": {
+                            "type": "string"
+                          },
+                          "email": {
+                            "type": "string",
+                            "format": "email",
+                            "description": "email",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "provider": {
+                            "type": "string",
+                            "description": "One of (x-oapi-codegen-extra-tags-cloud, github, google)",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "created_at": {
+                            "description": "Timestamp when the resource was created.",
+                            "x-go-type": "time.Time",
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-name": "CreatedAt",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "yaml": "created_at"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/events/summary": {
+      "get": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "events"
+        ],
+        "operationId": "getEventSummaryByUser",
+        "summary": "Get event summary by user",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Get responses by page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pagesize",
+            "in": "query",
+            "description": "Get responses by pagesize",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Get responses that match search param value",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Get ordered responses",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Get filtered reponses",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event summary page",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "page": {
+                      "type": "integer"
+                    },
+                    "page_size": {
+                      "type": "integer"
+                    },
+                    "total_count": {
+                      "type": "integer"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/events/types": {
+      "get": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "events"
+        ],
+        "operationId": "getEventTypes",
+        "summary": "Get event types",
+        "responses": {
+          "200": {
+            "description": "Event types",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "category": {
+                        "type": "string"
+                      },
+                      "action": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -606,6 +954,30 @@ const EventSchema: Record<string, unknown> = {
         "name": "order",
         "in": "query",
         "description": "Get ordered responses",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "cumulative": {
+        "name": "cumulative",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "filter": {
+        "name": "filter",
+        "in": "query",
+        "description": "Get filtered reponses",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "eventsFilter": {
+        "name": "filter",
+        "in": "query",
+        "description": "Get filtered reponses",
         "schema": {
           "type": "string"
         }
@@ -833,6 +1205,51 @@ const EventSchema: Record<string, unknown> = {
                 }
               }
             }
+          }
+        }
+      },
+      "eventsAggregate": {
+        "type": "object",
+        "properties": {
+          "audit": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": true
+      },
+      "eventSummary": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "eventSummaryPage": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer"
+          },
+          "page_size": {
+            "type": "integer"
+          },
+          "total_count": {
+            "type": "integer"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        }
+      },
+      "eventType": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string"
           }
         }
       },

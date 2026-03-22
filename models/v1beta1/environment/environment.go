@@ -54,6 +54,14 @@ type EnvironmentConnectionMapping struct {
 	UpdatedAt     corev1alpha1.Time      `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 }
 
+// EnvironmentConnectionsPage defines model for environmentConnectionsPage.
+type EnvironmentConnectionsPage struct {
+	Connections *[]map[string]interface{} `json:"connections,omitempty" yaml:"connections,omitempty"`
+	Page        *int                      `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize    *int                      `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	TotalCount  *int                      `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+}
+
 // EnvironmentPage defines model for environmentPage.
 type EnvironmentPage struct {
 	Environments []Environment       `json:"environments,omitempty" yaml:"environments,omitempty"`

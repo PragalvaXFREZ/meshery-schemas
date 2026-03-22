@@ -16,6 +16,22 @@ export interface paths {
   "/api/organizations/invitations/{invitationId}/accept": {
     post: operations["acceptInvitation"];
   };
+  "/api/identity/orgs/{orgId}/users/invite": {
+    post: operations["handleUserInvite"];
+  };
+  "/api/identity/users/request": {
+    get: operations["getSignupRequests"];
+    post: operations["signupRequest"];
+  };
+  "/api/identity/users/request/approve": {
+    post: operations["approveSignupRequest"];
+  };
+  "/api/identity/users/request/deny": {
+    post: operations["denySignupRequest"];
+  };
+  "/api/identity/users/request/notification": {
+    get: operations["getSignupRequestNotification"];
+  };
 }
 
 export interface components {
@@ -81,6 +97,13 @@ export interface components {
       }[];
       /** @description Total number of invitations available */
       total: number;
+    };
+    SignupRequest: { [key: string]: unknown };
+    SignupRequestsPage: {
+      page?: number;
+      page_size?: number;
+      total_count?: number;
+      data?: { [key: string]: unknown }[];
     };
     /** @description Payload for creating or updating an invitation. */
     InvitationPayload: {
@@ -640,6 +663,129 @@ export interface operations {
       401: unknown;
       /** Internal Server Error */
       500: unknown;
+    };
+  };
+  handleUserInvite: {
+    parameters: {
+      path: {
+        /** The ID of the organization */
+        orgId: string;
+      };
+    };
+    responses: {
+      /** Invitation request accepted */
+      200: {
+        content: {
+          "application/json": { [key: string]: unknown };
+        };
+      };
+      /** Unauthorized */
+      401: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+    requestBody: {
+      content: {
+        "application/json": { [key: string]: unknown };
+      };
+    };
+  };
+  getSignupRequests: {
+    parameters: {
+      query: {
+        /** Get responses by page */
+        page?: string;
+        /** Get responses by pagesize */
+        pagesize?: string;
+        /** Get responses that match search param value */
+        search?: string;
+        /** Get ordered responses */
+        order?: string;
+        /** Get filtered reponses */
+        filter?: string;
+      };
+    };
+    responses: {
+      /** Signup requests page */
+      200: {
+        content: {
+          "application/json": {
+            page?: number;
+            page_size?: number;
+            total_count?: number;
+            data?: { [key: string]: unknown }[];
+          };
+        };
+      };
+      /** Unauthorized */
+      401: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+  };
+  signupRequest: {
+    responses: {
+      /** Signup request created */
+      200: {
+        content: {
+          "application/json": { [key: string]: unknown };
+        };
+      };
+      /** Unauthorized */
+      401: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+    requestBody: {
+      content: {
+        "application/json": { [key: string]: unknown };
+      };
+    };
+  };
+  approveSignupRequest: {
+    responses: {
+      /** Signup request approved */
+      200: {
+        content: {
+          "application/json": { [key: string]: unknown };
+        };
+      };
+      /** Bad Request */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+  };
+  denySignupRequest: {
+    responses: {
+      /** Signup request denied */
+      200: {
+        content: {
+          "application/json": { [key: string]: unknown };
+        };
+      };
+      /** Bad Request */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Internal Server Error */
+      500: unknown;
+    };
+  };
+  getSignupRequestNotification: {
+    responses: {
+      /** Signup request notification payload */
+      200: {
+        content: {
+          "application/json": { [key: string]: unknown };
+        };
+      };
+      /** No pending signup request notifications */
+      204: never;
+      /** Unauthorized */
+      401: unknown;
     };
   };
 }

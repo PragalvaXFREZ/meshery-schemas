@@ -2429,6 +2429,126 @@ const OrganizationSchema: Record<string, unknown> = {
           }
         }
       }
+    },
+    "/api/identity/orgs/{orgId}/users/{userId}": {
+      "post": {
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "summary": "Add user to organization",
+        "operationId": "addUserToOrg",
+        "parameters": [
+          {
+            "name": "orgId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              },
+              "x-oapi-codegen-extra-tags": {
+                "db": "org_id",
+                "json": "org_id"
+              },
+              "x-go-type-name": "OrganizationId",
+              "x-go-type-skip-optional-pointer": true
+            }
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "user's email or username",
+              "x-go-type-skip-optional-pointer": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User added to organization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "summary": "Remove user from organization",
+        "operationId": "deleteUserFromOrg",
+        "parameters": [
+          {
+            "name": "orgId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              },
+              "x-oapi-codegen-extra-tags": {
+                "db": "org_id",
+                "json": "org_id"
+              },
+              "x-go-type-name": "OrganizationId",
+              "x-go-type-skip-optional-pointer": true
+            }
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "user's email or username",
+              "x-go-type-skip-optional-pointer": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User removed from organization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
     }
   },
   "components": {

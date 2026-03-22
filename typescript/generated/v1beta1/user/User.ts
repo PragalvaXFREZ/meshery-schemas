@@ -18,6 +18,31 @@ export interface paths {
   "/api/identity/users/profile": {
     get: operations["getUser"];
   };
+  "/api/identity/users/preferences": {
+    put: operations["updateUserPreference"];
+  };
+  "/api/identity/users/self": {
+    delete: operations["deleteOwnAccount"];
+  };
+  "/api/identity/orgs/{orgId}/users/bulk": {
+    post: operations["bulkDeleteUsers"];
+  };
+  "/api/identity/users/profile/details": {
+    get: operations["getProfileOverview"];
+  };
+  "/api/identity/users/{userId}/profile/activity": {
+    get: operations["getUserActivity"];
+  };
+  "/api/identity/users/notify/feedback": {
+    post: operations["handleFeedbackFormSubmission"];
+  };
+  "/api/identity/users/password": {
+    post: operations["updateUsersPassword"];
+  };
+  "/api/identity/users/notifications/preferences": {
+    get: operations["getAvailableNotificationPreferences"];
+    put: operations["updateNotificationPreferences"];
+  };
 }
 
 export interface components {
@@ -579,6 +604,30 @@ export interface components {
       /** Format: uri */
       link: string;
     };
+    AccountOverview: { [key: string]: unknown };
+    RecentActivity: { [key: string]: unknown };
+    RecentActivityPage: {
+      page?: number;
+      page_size?: number;
+      total_count?: number;
+      data?: { [key: string]: unknown }[];
+    };
+    AvailableNotificationPreference: {
+      category?: string;
+      subcategory?: string;
+      label?: string;
+      name?: string;
+    } & { [key: string]: unknown };
+    AvailableNotificationPreferences: {
+      notification_preferences?: {
+        [key: string]: {
+          category?: string;
+          subcategory?: string;
+          label?: string;
+          name?: string;
+        } & { [key: string]: unknown };
+      };
+    };
   };
   responses: {
     /** Invalid request body or request param */
@@ -623,6 +672,35 @@ export interface components {
     filter: string;
     /** @description Optional team filter when listing organization users */
     teamID: string;
+  };
+  requestBodies: {
+    userPreferencePayload: {
+      content: {
+        "application/json": { [key: string]: unknown };
+      };
+    };
+    bulkDeleteUsersPayload: {
+      content: {
+        "application/json": { [key: string]: unknown };
+      };
+    };
+    userFeedbackPayload: {
+      content: {
+        "application/json": { [key: string]: unknown };
+      };
+    };
+    updatePasswordPayload: {
+      content: {
+        "application/json": {
+          password?: string;
+        };
+      };
+    };
+    notificationPreferencePayload: {
+      content: {
+        "application/json": { [key: string]: unknown };
+      };
+    };
   };
 }
 
@@ -1380,6 +1458,279 @@ export interface operations {
         content: {
           "text/plain": string;
         };
+      };
+    };
+  };
+  updateUserPreference: {
+    responses: {
+      /** Preferences updated */
+      201: {
+        content: {
+          "application/json": { [key: string]: unknown };
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": { [key: string]: unknown };
+      };
+    };
+  };
+  deleteOwnAccount: {
+    responses: {
+      /** Account deleted */
+      201: {
+        content: {
+          "application/json": { [key: string]: unknown };
+        };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  bulkDeleteUsers: {
+    parameters: {
+      path: {
+        /** Organization ID */
+        orgId: string;
+      };
+    };
+    responses: {
+      /** Users deleted */
+      201: {
+        content: {
+          "application/json": { [key: string]: unknown };
+        };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": { [key: string]: unknown };
+      };
+    };
+  };
+  getProfileOverview: {
+    responses: {
+      /** User account overview */
+      200: {
+        content: {
+          "application/json": { [key: string]: unknown };
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  getUserActivity: {
+    parameters: {
+      path: {
+        /** User ID */
+        userId: string;
+      };
+      query: {
+        /** Get responses by page */
+        page?: string;
+        /** Get responses by pagesize */
+        pagesize?: string;
+        /** Get ordered responses */
+        order?: string;
+        /** Get filtered reponses */
+        filter?: string;
+      };
+    };
+    responses: {
+      /** User recent activity */
+      200: {
+        content: {
+          "application/json": {
+            page?: number;
+            page_size?: number;
+            total_count?: number;
+            data?: { [key: string]: unknown }[];
+          };
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  handleFeedbackFormSubmission: {
+    responses: {
+      /** Feedback submitted */
+      201: {
+        content: {
+          "application/json": { [key: string]: unknown };
+        };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": { [key: string]: unknown };
+      };
+    };
+  };
+  updateUsersPassword: {
+    responses: {
+      /** Password updated */
+      200: {
+        content: {
+          "application/json": { [key: string]: unknown };
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          password?: string;
+        };
+      };
+    };
+  };
+  getAvailableNotificationPreferences: {
+    responses: {
+      /** Available notification preferences */
+      200: {
+        content: {
+          "application/json": {
+            notification_preferences?: {
+              [key: string]: {
+                category?: string;
+                subcategory?: string;
+                label?: string;
+                name?: string;
+              } & { [key: string]: unknown };
+            };
+          };
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  updateNotificationPreferences: {
+    responses: {
+      /** Notification preferences updated */
+      200: {
+        content: {
+          "application/json": { [key: string]: unknown };
+        };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": { [key: string]: unknown };
       };
     };
   };

@@ -635,6 +635,31 @@ const TeamSchema: Record<string, unknown> = {
             }
           }
         }
+      },
+      "teamMember": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "teamMembersPage": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer"
+          },
+          "page_size": {
+            "type": "integer"
+          },
+          "total_count": {
+            "type": "integer"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        }
       }
     },
     "requestBodies": {
@@ -1641,7 +1666,7 @@ const TeamSchema: Record<string, unknown> = {
         }
       }
     },
-    "/api/identity/orgs/{orgId}/teams/{teamId}/users": {
+    "/api/identity/teams/{teamId}/users": {
       "get": {
         "tags": [
           "teams"
@@ -1650,26 +1675,6 @@ const TeamSchema: Record<string, unknown> = {
         "summary": "Get all users in a team",
         "description": "Gets all users that belong to a team",
         "parameters": [
-          {
-            "name": "orgId",
-            "in": "path",
-            "description": "Organization ID",
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "x-go-type": "uuid.UUID",
-              "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
-              },
-              "x-oapi-codegen-extra-tags": {
-                "db": "org_id",
-                "json": "org_id"
-              },
-              "x-go-type-name": "OrganizationId",
-              "x-go-type-skip-optional-pointer": true
-            },
-            "required": true
-          },
           {
             "name": "teamId",
             "in": "path",
@@ -1847,16 +1852,6 @@ const TeamSchema: Record<string, unknown> = {
           },
           "401": {
             "description": "Expired JWT token used or insufficient privilege",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Result not found",
             "content": {
               "text/plain": {
                 "schema": {
@@ -2231,6 +2226,149 @@ const TeamSchema: Record<string, unknown> = {
           },
           "404": {
             "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/identity/orgs/{orgId}/teams/{teamId}/users": {
+      "get": {
+        "tags": [
+          "teams"
+        ],
+        "operationId": "listUsersNotInTeam",
+        "summary": "Get users that are not in a team",
+        "parameters": [
+          {
+            "name": "orgId",
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              },
+              "x-oapi-codegen-extra-tags": {
+                "db": "org_id",
+                "json": "org_id"
+              },
+              "x-go-type-name": "OrganizationId",
+              "x-go-type-skip-optional-pointer": true
+            },
+            "required": true
+          },
+          {
+            "name": "teamId",
+            "in": "path",
+            "description": "Team ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              },
+              "x-oapi-codegen-extra-tags": {
+                "db": "team_id",
+                "json": "team_id"
+              },
+              "x-go-type-name": "TeamId",
+              "x-go-type-skip-optional-pointer": true
+            },
+            "required": true
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Get responses that match search param value",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Get ordered responses",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Get responses by page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pagesize",
+            "in": "query",
+            "description": "Get responses by pagesize",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Users not currently in the team",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "page": {
+                      "type": "integer"
+                    },
+                    "page_size": {
+                      "type": "integer"
+                    },
+                    "total_count": {
+                      "type": "integer"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
             "content": {
               "text/plain": {
                 "schema": {

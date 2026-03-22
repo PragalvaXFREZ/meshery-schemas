@@ -81,6 +81,14 @@ type ImportRequest struct {
 // ImportRequestUploadType Choose the method you prefer to upload your model file. Select 'File Import' or 'CSV Import' if you have the file on your local system or 'URL Import' if you have the file hosted online.
 type ImportRequestUploadType string
 
+// MeshModelModelsPage defines model for MeshModelModelsPage.
+type MeshModelModelsPage struct {
+	Models     *[]map[string]interface{} `json:"models,omitempty" yaml:"models,omitempty"`
+	Page       *int                      `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize   *int                      `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	TotalCount *int                      `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+}
+
 // Model Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).
 type Model struct {
 	// Version A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'.

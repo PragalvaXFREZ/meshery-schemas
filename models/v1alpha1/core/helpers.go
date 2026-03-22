@@ -20,6 +20,11 @@ func ResolvedAliasFromNonResolved(nonResolved NonResolvedAlias, resolvedParentId
 	}
 }
 
+// GormDataType returns the data type for GORM to use when creating the database column.
+func (m MapObject) GormDataType() string {
+	return "text"
+}
+
 // Scan implements the sql.Scanner interface for MapObject.
 func (m *MapObject) Scan(src interface{}) error {
 	var b []byte
@@ -39,9 +44,6 @@ func (m *MapObject) Scan(src interface{}) error {
 
 // Value implements the driver.Valuer interface for MapObject.
 func (m MapObject) Value() (driver.Value, error) {
-	if m == nil {
-		return nil, nil
-	}
 	b, err := json.Marshal(m)
 	if err != nil {
 		return nil, err

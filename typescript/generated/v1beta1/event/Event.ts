@@ -168,6 +168,18 @@ export interface paths {
     /** Gets events for a workspace. */
     get: operations["getEventsOfWorkspace"];
   };
+  "/api/events": {
+    get: operations["getEventsAggregate"];
+  };
+  "/api/events/list": {
+    get: operations["getEvents"];
+  };
+  "/api/events/summary": {
+    get: operations["getEventSummaryByUser"];
+  };
+  "/api/events/types": {
+    get: operations["getEventTypes"];
+  };
 }
 
 export interface components {
@@ -235,6 +247,20 @@ export interface components {
         created_at?: string;
       }[];
     };
+    eventsAggregate: {
+      audit?: number;
+    } & { [key: string]: unknown };
+    eventSummary: { [key: string]: unknown };
+    eventSummaryPage: {
+      page?: number;
+      page_size?: number;
+      total_count?: number;
+      data?: { [key: string]: unknown }[];
+    };
+    eventType: {
+      category?: string;
+      action?: string;
+    };
     ErrorResponse: {
       error?: string;
     };
@@ -250,6 +276,11 @@ export interface components {
     search: string;
     /** @description Get ordered responses */
     order: string;
+    cumulative: boolean;
+    /** @description Get filtered reponses */
+    filter: string;
+    /** @description Get filtered reponses */
+    eventsFilter: string;
   };
 }
 
@@ -317,6 +348,140 @@ export interface operations {
       /** Unauthorized */
       401: unknown;
       /** Workspace not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
+    };
+  };
+  getEventsAggregate: {
+    parameters: {
+      query: {
+        cumulative?: boolean;
+      };
+    };
+    responses: {
+      /** Events aggregate */
+      200: {
+        content: {
+          "application/json": {
+            audit?: number;
+          } & { [key: string]: unknown };
+        };
+      };
+      /** Unauthorized */
+      401: unknown;
+      /** Not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
+    };
+  };
+  getEvents: {
+    parameters: {
+      query: {
+        /** Get responses by page */
+        page?: string;
+        /** Get responses by pagesize */
+        pagesize?: string;
+        /** Get responses that match search param value */
+        search?: string;
+        /** Get ordered responses */
+        order?: string;
+        /** Get filtered reponses */
+        filter?: string;
+      };
+    };
+    responses: {
+      /** Events page */
+      200: {
+        content: {
+          "application/json": {
+            page?: number;
+            page_size?: number;
+            total_count?: number;
+            data?: {
+              /** Format: uuid */
+              user_id?: string;
+              /** Format: uuid */
+              system_id?: string;
+              category?: string;
+              action?: string;
+              description?: string;
+              first_name?: string;
+              last_name?: string;
+              /**
+               * Format: email
+               * @description email
+               */
+              email?: string;
+              /** @description One of (x-oapi-codegen-extra-tags-cloud, github, google) */
+              provider?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was created.
+               */
+              created_at?: string;
+            }[];
+          };
+        };
+      };
+      /** Unauthorized */
+      401: unknown;
+      /** Not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
+    };
+  };
+  getEventSummaryByUser: {
+    parameters: {
+      query: {
+        /** Get responses by page */
+        page?: string;
+        /** Get responses by pagesize */
+        pagesize?: string;
+        /** Get responses that match search param value */
+        search?: string;
+        /** Get ordered responses */
+        order?: string;
+        /** Get filtered reponses */
+        filter?: string;
+      };
+    };
+    responses: {
+      /** Event summary page */
+      200: {
+        content: {
+          "application/json": {
+            page?: number;
+            page_size?: number;
+            total_count?: number;
+            data?: { [key: string]: unknown }[];
+          };
+        };
+      };
+      /** Unauthorized */
+      401: unknown;
+      /** Not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
+    };
+  };
+  getEventTypes: {
+    responses: {
+      /** Event types */
+      200: {
+        content: {
+          "application/json": {
+            category?: string;
+            action?: string;
+          }[];
+        };
+      };
+      /** Unauthorized */
+      401: unknown;
+      /** Not found */
       404: unknown;
       /** Server error */
       500: unknown;

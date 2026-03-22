@@ -34,13 +34,13 @@ paths:
           required: false
           description: UUID of User. Pass user_id for fetching public and published designs.
           schema:
-            $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+            type: string
         - name: orgID
           in: query
           required: false
           description: User's organization ID.
           schema:
-            $ref: "../../v1alpha1/core/api.yml#/components/schemas/organization_id"
+            type: string
         - name: metrics
           in: query
           required: false
@@ -50,7 +50,7 @@ paths:
           in: query
           required: false
           schema:
-            $ref: "../../v1alpha1/core/api.yml#/components/schemas/workspace_id"
+            type: string
         - name: populate
           in: query
           required: false
@@ -334,6 +334,459 @@ paths:
           description: Invalid request format
         "500":
           description: Internal server error
+
+  /api/catalog/content/{type}:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - designs
+      summary: Get catalog content
+      operationId: getCatalogContent
+      security: []
+      parameters:
+        - name: type
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - name: type
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: technology
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: metrics
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: class
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: userid
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: orgID
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: workspaceid
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: teamId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: populate
+          in: query
+          required: false
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Catalog content page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogContentPage"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - designs
+      summary: Publish catalog content
+      operationId: publishCatalogContent
+      parameters:
+        - name: type
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/catalogContentPayload"
+      responses:
+        "200":
+          description: Catalog request result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogRequest"
+        "401":
+          $ref: "#/components/responses/401"
+        "409":
+          description: Conflict
+        "500":
+          $ref: "#/components/responses/500"
+  /api/catalog/content/{type}/unpublish:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - designs
+      summary: Unpublish catalog content
+      operationId: unPublishCatalogContent
+      parameters:
+        - name: type
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/catalogContentPayload"
+      responses:
+        "200":
+          description: Catalog request result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogRequest"
+        "401":
+          $ref: "#/components/responses/401"
+        "409":
+          description: Conflict
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/catalog/content/classes:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - designs
+      summary: Get catalog content classes
+      operationId: getCatalogContentClasses
+      responses:
+        "200":
+          description: Catalog content classes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CatalogContentClass"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/catalog/requests/approve:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - designs
+      summary: Approve a catalog request
+      operationId: approveCatalogRequest
+      requestBody:
+        $ref: "#/components/requestBodies/catalogContentPayload"
+      responses:
+        "201":
+          description: Request approved
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "401":
+          $ref: "#/components/responses/401"
+        "409":
+          description: Conflict
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/catalog/requests/deny:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - designs
+      summary: Deny a catalog request
+      operationId: denyCatalogRequest
+      requestBody:
+        $ref: "#/components/requestBodies/catalogContentPayload"
+      responses:
+        "201":
+          description: Request denied
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "401":
+          $ref: "#/components/responses/401"
+        "409":
+          description: Conflict
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/content/filters/{id}:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - designs
+      summary: Get filter by ID
+      operationId: getFilter
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200":
+          description: Filter
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MesheryFilter"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/content/filters/clone/{id}:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - designs
+      summary: Clone filter
+      operationId: cloneFilter
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "200":
+          description: Cloned filter
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MesheryFilter"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/content/views/{viewId}:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - designs
+      summary: Get a view by ID
+      operationId: getViewById
+      parameters:
+        - name: viewId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: View
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MesheryView"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      x-internal: ["cloud"]
+      tags:
+        - designs
+      summary: Update a view
+      operationId: updateView
+      parameters:
+        - name: viewId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/viewUpdatePayload"
+      responses:
+        "200":
+          description: Updated view
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MesheryView"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/content/views:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - designs
+      summary: Get views
+      operationId: getViews
+      parameters:
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - name: filter
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: shared
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: visibility
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: orgID
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: user_id
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Views page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MesheryViewPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/resource/{resourceType}/share/{resourceId}:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - designs
+      summary: Share a resource
+      operationId: handleResourceShare
+      parameters:
+        - name: resourceType
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: resourceId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/resourceSharePayload"
+      responses:
+        "200":
+          description: Resource access mapping
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceAccessMapping"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/resource/{resourceType}/share/{resourceId}/{actorType}:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - designs
+      summary: Get resource access actors by type
+      operationId: getResourceAccessActorsByType
+      parameters:
+        - name: resourceType
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: resourceId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: actorType
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Resource access actors
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceAccessActorsResponse"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/catalog/requests:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - designs
+      summary: Get catalog requests
+      operationId: getCatalogRequest
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - name: filter
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Catalog requests page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogRequestsPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
 components:
   securitySchemes:
     jwt:
@@ -484,3 +937,120 @@ components:
           description: Map of available layers, where keys are layer names.
       required:
         - layers
+
+    CatalogContentItem:
+      type: object
+      additionalProperties: true
+
+    CatalogContentPage:
+      type: object
+      properties:
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_count:
+          type: integer
+        patterns:
+          type: array
+          items:
+            $ref: "#/components/schemas/MesheryPattern"
+        filters:
+          type: array
+          items:
+            $ref: "#/components/schemas/MesheryFilter"
+        models_count:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        category_count:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+
+    CatalogRequest:
+      type: object
+      additionalProperties: true
+
+    CatalogRequestsPage:
+      type: object
+      properties:
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_count:
+          type: integer
+        catalogRequests:
+          type: array
+          items:
+            $ref: "#/components/schemas/CatalogRequest"
+
+    CatalogContentClass:
+      type: object
+      properties:
+        class:
+          type: string
+        description:
+          type: string
+      additionalProperties: true
+
+    MesheryFilter:
+      type: object
+      additionalProperties: true
+
+    MesheryView:
+      type: object
+      additionalProperties: true
+
+    MesheryViewPage:
+      type: object
+      properties:
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_count:
+          type: integer
+        views:
+          type: array
+          items:
+            $ref: "#/components/schemas/MesheryView"
+
+    ResourceAccessMapping:
+      type: object
+      additionalProperties: true
+
+    ResourceAccessActorsResponse:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+
+  requestBodies:
+    catalogContentPayload:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: true
+    viewUpdatePayload:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: true
+    resourceSharePayload:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: true

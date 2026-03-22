@@ -107,6 +107,17 @@ type InvitationsPage struct {
 	Total int `json:"total" yaml:"total"`
 }
 
+// SignupRequest defines model for SignupRequest.
+type SignupRequest map[string]interface{}
+
+// SignupRequestsPage defines model for SignupRequestsPage.
+type SignupRequestsPage struct {
+	Data       *[]SignupRequest `json:"data,omitempty" yaml:"data,omitempty"`
+	Page       *int             `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize   *int             `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	TotalCount *int             `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+}
+
 // Uuid A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type Uuid = corev1alpha1.Uuid
 

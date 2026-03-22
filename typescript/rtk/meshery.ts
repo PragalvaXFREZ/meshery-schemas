@@ -106,6 +106,40 @@ const injectedRtkApi = api
         }),
         providesTags: ["Environment_environments"],
       }),
+      getEnvironmentById: build.query<GetEnvironmentByIdApiResponse, GetEnvironmentByIdApiArg>({
+        query: (queryArg) => ({
+          url: `/api/environments/${queryArg.environmentId}`,
+          params: {
+            orgID: queryArg.orgId,
+          },
+        }),
+        providesTags: ["Environment_environments"],
+      }),
+      updateEnvironment: build.mutation<UpdateEnvironmentApiResponse, UpdateEnvironmentApiArg>({
+        query: (queryArg) => ({
+          url: `/api/environments/${queryArg.environmentId}`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Environment_environments"],
+      }),
+      deleteEnvironment: build.mutation<DeleteEnvironmentApiResponse, DeleteEnvironmentApiArg>({
+        query: (queryArg) => ({ url: `/api/environments/${queryArg.environmentId}`, method: "DELETE" }),
+        invalidatesTags: ["Environment_environments"],
+      }),
+      getEnvironmentConnections: build.query<GetEnvironmentConnectionsApiResponse, GetEnvironmentConnectionsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/environments/${queryArg.environmentId}/connections`,
+          params: {
+            search: queryArg.search,
+            order: queryArg.order,
+            page: queryArg.page,
+            pagesize: queryArg.pagesize,
+            filter: queryArg.filter,
+          },
+        }),
+        providesTags: ["Environment_environments"],
+      }),
       postEvaluate: build.mutation<PostEvaluateApiResponse, PostEvaluateApiArg>({
         query: (queryArg) => ({ url: `/evaluate`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Evaluation_other"],
@@ -214,6 +248,17 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Organization_other"],
       }),
+      addUserToOrg: build.mutation<AddUserToOrgApiResponse, AddUserToOrgApiArg>({
+        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/users/${queryArg.userId}`, method: "POST" }),
+        invalidatesTags: ["Organization_other"],
+      }),
+      deleteUserFromOrg: build.mutation<DeleteUserFromOrgApiResponse, DeleteUserFromOrgApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/users/${queryArg.userId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Organization_other"],
+      }),
       getTeams: build.query<GetTeamsApiResponse, GetTeamsApiArg>({
         query: (queryArg) => ({
           url: `/api/identity/orgs/${queryArg.orgId}/teams`,
@@ -236,7 +281,7 @@ const injectedRtkApi = api
       }),
       getTeamUsers: build.query<GetTeamUsersApiResponse, GetTeamUsersApiArg>({
         query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}/users`,
+          url: `/api/identity/teams/${queryArg.teamId}/users`,
           params: {
             search: queryArg.search,
             order: queryArg.order,
@@ -259,6 +304,18 @@ const injectedRtkApi = api
           method: "DELETE",
         }),
         invalidatesTags: ["Team_teams"],
+      }),
+      listUsersNotInTeam: build.query<ListUsersNotInTeamApiResponse, ListUsersNotInTeamApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}/users`,
+          params: {
+            search: queryArg.search,
+            order: queryArg.order,
+            page: queryArg.page,
+            pagesize: queryArg.pagesize,
+          },
+        }),
+        providesTags: ["Team_teams"],
       }),
       getUsersForOrg: build.query<GetUsersForOrgApiResponse, GetUsersForOrgApiArg>({
         query: (queryArg) => ({
@@ -293,6 +350,67 @@ const injectedRtkApi = api
       }),
       getUser: build.query<GetUserApiResponse, GetUserApiArg>({
         query: () => ({ url: `/api/identity/users/profile` }),
+        providesTags: ["User_users"],
+      }),
+      updateUserPreference: build.mutation<UpdateUserPreferenceApiResponse, UpdateUserPreferenceApiArg>({
+        query: (queryArg) => ({ url: `/api/identity/users/preferences`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["User_users"],
+      }),
+      deleteOwnAccount: build.mutation<DeleteOwnAccountApiResponse, DeleteOwnAccountApiArg>({
+        query: () => ({ url: `/api/identity/users/self`, method: "DELETE" }),
+        invalidatesTags: ["User_users"],
+      }),
+      bulkDeleteUsers: build.mutation<BulkDeleteUsersApiResponse, BulkDeleteUsersApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/users/bulk`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["User_users"],
+      }),
+      getProfileOverview: build.query<GetProfileOverviewApiResponse, GetProfileOverviewApiArg>({
+        query: () => ({ url: `/api/identity/users/profile/details` }),
+        providesTags: ["User_users"],
+      }),
+      getUserActivity: build.query<GetUserActivityApiResponse, GetUserActivityApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/users/${queryArg.userId}/profile/activity`,
+          params: {
+            page: queryArg.page,
+            pagesize: queryArg.pagesize,
+            order: queryArg.order,
+            filter: queryArg.filter,
+          },
+        }),
+        providesTags: ["User_users"],
+      }),
+      handleFeedbackFormSubmission: build.mutation<
+        HandleFeedbackFormSubmissionApiResponse,
+        HandleFeedbackFormSubmissionApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/identity/users/notify/feedback`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["User_users"],
+      }),
+      updateUsersPassword: build.mutation<UpdateUsersPasswordApiResponse, UpdateUsersPasswordApiArg>({
+        query: (queryArg) => ({ url: `/api/identity/users/password`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["User_users"],
+      }),
+      updateNotificationPreferences: build.mutation<
+        UpdateNotificationPreferencesApiResponse,
+        UpdateNotificationPreferencesApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/identity/users/notifications/preferences`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["User_users"],
+      }),
+      getAvailableNotificationPreferences: build.query<
+        GetAvailableNotificationPreferencesApiResponse,
+        GetAvailableNotificationPreferencesApiArg
+      >({
+        query: () => ({ url: `/api/identity/users/notifications/preferences` }),
         providesTags: ["User_users"],
       }),
     }),
@@ -734,6 +852,131 @@ export type GetEnvironmentsApiArg = {
   pagesize?: string;
   /** User's organization ID */
   orgId: string;
+};
+export type GetEnvironmentByIdApiResponse = /** status 200 Environment page */ {
+  page?: number;
+  page_size?: number;
+  total_count?: number;
+  environments?: {
+    /** ID */
+    id: string;
+    /** Specifies the version of the schema to which the environment conforms. */
+    schemaVersion: string;
+    /** Environment name */
+    name: string;
+    /** Environment description */
+    description: string;
+    /** Environment organization ID */
+    organization_id: string;
+    /** Environment owner */
+    owner?: string;
+    /** Timestamp when the resource was created. */
+    created_at?: string;
+    /** Additional metadata associated with the environment. */
+    metadata?: object;
+    /** Timestamp when the resource was updated. */
+    updated_at?: string;
+    /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+    deleted_at?: string | null;
+  }[];
+};
+export type GetEnvironmentByIdApiArg = {
+  /** Environment ID */
+  environmentId: string;
+  /** User's organization ID */
+  orgId: string;
+};
+export type UpdateEnvironmentApiResponse = /** status 200 Environment page */ {
+  page?: number;
+  page_size?: number;
+  total_count?: number;
+  environments?: {
+    /** ID */
+    id: string;
+    /** Specifies the version of the schema to which the environment conforms. */
+    schemaVersion: string;
+    /** Environment name */
+    name: string;
+    /** Environment description */
+    description: string;
+    /** Environment organization ID */
+    organization_id: string;
+    /** Environment owner */
+    owner?: string;
+    /** Timestamp when the resource was created. */
+    created_at?: string;
+    /** Additional metadata associated with the environment. */
+    metadata?: object;
+    /** Timestamp when the resource was updated. */
+    updated_at?: string;
+    /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+    deleted_at?: string | null;
+  }[];
+};
+export type UpdateEnvironmentApiArg = {
+  /** Environment ID */
+  environmentId: string;
+  /** Body for creating environment */
+  body: {
+    /** An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation. */
+    name: string;
+    /** An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments). */
+    description?: string;
+    /** Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation. */
+    OrganizationID?: string;
+  };
+};
+export type DeleteEnvironmentApiResponse = /** status 200 Environment page */ {
+  page?: number;
+  page_size?: number;
+  total_count?: number;
+  environments?: {
+    /** ID */
+    id: string;
+    /** Specifies the version of the schema to which the environment conforms. */
+    schemaVersion: string;
+    /** Environment name */
+    name: string;
+    /** Environment description */
+    description: string;
+    /** Environment organization ID */
+    organization_id: string;
+    /** Environment owner */
+    owner?: string;
+    /** Timestamp when the resource was created. */
+    created_at?: string;
+    /** Additional metadata associated with the environment. */
+    metadata?: object;
+    /** Timestamp when the resource was updated. */
+    updated_at?: string;
+    /** Timestamp when the environment was soft deleted. Null while the environment remains active. */
+    deleted_at?: string | null;
+  }[];
+};
+export type DeleteEnvironmentApiArg = {
+  /** Environment ID */
+  environmentId: string;
+};
+export type GetEnvironmentConnectionsApiResponse = /** status 200 Environment connections */ {
+  page?: number;
+  page_size?: number;
+  total_count?: number;
+  connections?: {
+    [key: string]: any;
+  }[];
+};
+export type GetEnvironmentConnectionsApiArg = {
+  /** Environment ID */
+  environmentId: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  filter?: string;
 };
 export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
   /** Specifies the version of the schema to which the evaluation response conforms. */
@@ -3334,6 +3577,20 @@ export type RemoveTeamFromOrgApiArg = {
   orgId: string;
   teamId: string;
 };
+export type AddUserToOrgApiResponse = /** status 200 User added to organization */ {
+  [key: string]: any;
+};
+export type AddUserToOrgApiArg = {
+  orgId: string;
+  userId: string;
+};
+export type DeleteUserFromOrgApiResponse = /** status 200 User removed from organization */ {
+  [key: string]: any;
+};
+export type DeleteUserFromOrgApiArg = {
+  orgId: string;
+  userId: string;
+};
 export type GetTeamsApiResponse = /** status 200 Teams */ {
   page?: number;
   page_size?: number;
@@ -3412,8 +3669,6 @@ export type GetTeamUsersApiResponse = /** status 200 Team users mapping */ {
   }[];
 };
 export type GetTeamUsersApiArg = {
-  /** Organization ID */
-  orgId: string;
   /** Team ID */
   teamId: string;
   /** Get responses that match search param value */
@@ -3464,6 +3719,28 @@ export type RemoveUserFromTeamApiArg = {
   teamId: string;
   /** User ID */
   userId: string;
+};
+export type ListUsersNotInTeamApiResponse = /** status 200 Users not currently in the team */ {
+  page?: number;
+  page_size?: number;
+  total_count?: number;
+  data?: {
+    [key: string]: any;
+  }[];
+};
+export type ListUsersNotInTeamApiArg = {
+  /** Organization ID */
+  orgId: string;
+  /** Team ID */
+  teamId: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
 };
 export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organization users */ {
   page?: number;
@@ -3968,6 +4245,88 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
   };
 };
 export type GetUserApiArg = void;
+export type UpdateUserPreferenceApiResponse = /** status 201 Preferences updated */ {
+  [key: string]: any;
+};
+export type UpdateUserPreferenceApiArg = {
+  body: {
+    [key: string]: any;
+  };
+};
+export type DeleteOwnAccountApiResponse = /** status 201 Account deleted */ {
+  [key: string]: any;
+};
+export type DeleteOwnAccountApiArg = void;
+export type BulkDeleteUsersApiResponse = /** status 201 Users deleted */ {
+  [key: string]: any;
+};
+export type BulkDeleteUsersApiArg = {
+  /** Organization ID */
+  orgId: string;
+  body: {
+    [key: string]: any;
+  };
+};
+export type GetProfileOverviewApiResponse = /** status 200 User account overview */ {
+  [key: string]: any;
+};
+export type GetProfileOverviewApiArg = void;
+export type GetUserActivityApiResponse = /** status 200 User recent activity */ {
+  page?: number;
+  page_size?: number;
+  total_count?: number;
+  data?: {
+    [key: string]: any;
+  }[];
+};
+export type GetUserActivityApiArg = {
+  /** User ID */
+  userId: string;
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get filtered reponses */
+  filter?: string;
+};
+export type HandleFeedbackFormSubmissionApiResponse = /** status 201 Feedback submitted */ {
+  [key: string]: any;
+};
+export type HandleFeedbackFormSubmissionApiArg = {
+  body: {
+    [key: string]: any;
+  };
+};
+export type UpdateUsersPasswordApiResponse = /** status 200 Password updated */ {
+  [key: string]: any;
+};
+export type UpdateUsersPasswordApiArg = {
+  body: {
+    password?: string;
+  };
+};
+export type UpdateNotificationPreferencesApiResponse = /** status 200 Notification preferences updated */ {
+  [key: string]: any;
+};
+export type UpdateNotificationPreferencesApiArg = {
+  body: {
+    [key: string]: any;
+  };
+};
+export type GetAvailableNotificationPreferencesApiResponse = /** status 200 Available notification preferences */ {
+  notification_preferences?: {
+    [key: string]: {
+      category?: string;
+      subcategory?: string;
+      label?: string;
+      name?: string;
+      [key: string]: any;
+    };
+  };
+};
+export type GetAvailableNotificationPreferencesApiArg = void;
 export const {
   useGetConnectionsQuery,
   useRegisterConnectionMutation,
@@ -3981,6 +4340,10 @@ export const {
   useImportDesignMutation,
   useCreateEnvironmentMutation,
   useGetEnvironmentsQuery,
+  useGetEnvironmentByIdQuery,
+  useUpdateEnvironmentMutation,
+  useDeleteEnvironmentMutation,
+  useGetEnvironmentConnectionsQuery,
   usePostEvaluateMutation,
   useDeleteEventsByIdMutation,
   usePostEventsMutation,
@@ -4001,13 +4364,25 @@ export const {
   useUpdateTeamMutation,
   useDeleteTeamMutation,
   useRemoveTeamFromOrgMutation,
+  useAddUserToOrgMutation,
+  useDeleteUserFromOrgMutation,
   useGetTeamsQuery,
   useCreateTeamMutation,
   useGetTeamUsersQuery,
   useAddUserToTeamMutation,
   useRemoveUserFromTeamMutation,
+  useListUsersNotInTeamQuery,
   useGetUsersForOrgQuery,
   useGetUsersQuery,
   useGetUserProfileByIdQuery,
   useGetUserQuery,
+  useUpdateUserPreferenceMutation,
+  useDeleteOwnAccountMutation,
+  useBulkDeleteUsersMutation,
+  useGetProfileOverviewQuery,
+  useGetUserActivityQuery,
+  useHandleFeedbackFormSubmissionMutation,
+  useUpdateUsersPasswordMutation,
+  useUpdateNotificationPreferencesMutation,
+  useGetAvailableNotificationPreferencesQuery,
 } = injectedRtkApi;

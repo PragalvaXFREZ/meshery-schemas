@@ -152,6 +152,24 @@ components:
             x-go-type: TeamsUsersMapping
             $ref: "#/components/schemas/teamsUsersMapping"
 
+    teamMember:
+      type: object
+      additionalProperties: true
+
+    teamMembersPage:
+      type: object
+      properties:
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_count:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/teamMember"
+
   requestBodies:
     teamPayload:
       description: Body for creating a team
@@ -287,7 +305,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  /api/identity/orgs/{orgId}/teams/{teamId}/users:
+  /api/identity/teams/{teamId}/users:
     get:
       tags:
         - teams
@@ -295,7 +313,6 @@ paths:
       summary: Get all users in a team
       description: Gets all users that belong to a team
       parameters:
-        - $ref: "#/components/parameters/orgId"
         - $ref: "#/components/parameters/teamId"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
@@ -312,8 +329,6 @@ paths:
           $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
-        "404":
-          $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
 
@@ -374,5 +389,32 @@ paths:
           $ref: "#/components/responses/401"
         "404":
           $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/orgs/{orgId}/teams/{teamId}/users:
+    get:
+      tags:
+        - teams
+      operationId: listUsersNotInTeam
+      summary: Get users that are not in a team
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+        - $ref: "#/components/parameters/teamId"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+      responses:
+        "200":
+          description: Users not currently in the team
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/teamMembersPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
         "500":
           $ref: "#/components/responses/500"

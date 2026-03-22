@@ -148,6 +148,154 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
+  /api/identity/orgs/{orgId}/users/invite:
+    post:
+      x-internal: ["cloud"]
+      operationId: handleUserInvite
+      tags:
+        - Invitation
+      summary: Invite users to an organization
+      parameters:
+        - name: orgId
+          in: path
+          required: true
+          description: The ID of the organization
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "200":
+          description: Invitation request accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/request:
+    post:
+      x-internal: ["cloud"]
+      operationId: signupRequest
+      tags:
+        - Invitation
+      summary: Create a signup request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "200":
+          description: Signup request created
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    get:
+      x-internal: ["cloud"]
+      operationId: getSignupRequests
+      tags:
+        - Invitation
+      summary: Get signup requests
+      parameters:
+        - $ref: "../../v1alpha1/core/api.yml#/components/parameters/page"
+        - $ref: "../../v1alpha1/core/api.yml#/components/parameters/pagesize"
+        - $ref: "../../v1alpha1/core/api.yml#/components/parameters/search"
+        - $ref: "../../v1alpha1/core/api.yml#/components/parameters/order"
+        - $ref: "../../v1alpha1/core/api.yml#/components/parameters/filter"
+      responses:
+        "200":
+          description: Signup requests page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SignupRequestsPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/request/approve:
+    post:
+      x-internal: ["cloud"]
+      operationId: approveSignupRequest
+      tags:
+        - Invitation
+      summary: Approve a signup request
+      responses:
+        "200":
+          description: Signup request approved
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/request/deny:
+    post:
+      x-internal: ["cloud"]
+      operationId: denySignupRequest
+      tags:
+        - Invitation
+      summary: Deny a signup request
+      responses:
+        "200":
+          description: Signup request denied
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/request/notification:
+    get:
+      x-internal: ["cloud"]
+      operationId: getSignupRequestNotification
+      tags:
+        - Invitation
+      summary: Get signup request notification summary
+      responses:
+        "200":
+          description: Signup request notification payload
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "204":
+          description: No pending signup request notifications
+        "401":
+          $ref: "#/components/responses/401"
+
 components:
   parameters:
     organization_id:
@@ -198,6 +346,24 @@ components:
 
           x-oapi-codegen-extra-tags:
             json: "total"
+
+    SignupRequest:
+      type: object
+      additionalProperties: true
+
+    SignupRequestsPage:
+      type: object
+      properties:
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_count:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/SignupRequest"
 
     InvitationPayload:
       type: object

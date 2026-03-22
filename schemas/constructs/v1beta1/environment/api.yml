@@ -127,6 +127,21 @@ components:
             x-go-type: Environment
             $ref: "#/components/schemas/environment"
 
+    environmentConnectionsPage:
+      type: object
+      properties:
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_count:
+          type: integer
+        connections:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+
   requestBodies:
     environmentPayload:
       description: Body for creating environment
@@ -176,6 +191,104 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/environmentPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/environments/{environmentId}:
+    get:
+      tags:
+        - environments
+      operationId: getEnvironmentById
+      summary: Get environment by ID
+      parameters:
+        - $ref: "#/components/parameters/environmentId"
+        - $ref: "#/components/parameters/orgIDQuery"
+      responses:
+        "200":
+          description: Environment page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/environmentPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      tags:
+        - environments
+      operationId: updateEnvironment
+      summary: Update an environment
+      parameters:
+        - $ref: "#/components/parameters/environmentId"
+      requestBody:
+        $ref: "#/components/requestBodies/environmentPayload"
+      responses:
+        "200":
+          description: Environment page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/environmentPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      tags:
+        - environments
+      operationId: deleteEnvironment
+      summary: Delete an environment
+      parameters:
+        - $ref: "#/components/parameters/environmentId"
+      responses:
+        "200":
+          description: Environment page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/environmentPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/environments/{environmentId}/connections:
+    get:
+      tags:
+        - environments
+      operationId: getEnvironmentConnections
+      summary: Get environment connections
+      parameters:
+        - $ref: "#/components/parameters/environmentId"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - name: filter
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Environment connections
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/environmentConnectionsPage"
+        "400":
+          $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
         "500":

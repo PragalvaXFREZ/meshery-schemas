@@ -1345,6 +1345,288 @@ const InvitationSchema: Record<string, unknown> = {
           }
         }
       }
+    },
+    "/api/identity/orgs/{orgId}/users/invite": {
+      "post": {
+        "x-internal": [
+          "cloud"
+        ],
+        "operationId": "handleUserInvite",
+        "tags": [
+          "Invitation"
+        ],
+        "summary": "Invite users to an organization",
+        "parameters": [
+          {
+            "name": "orgId",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the organization",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Invitation request accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/identity/users/request": {
+      "post": {
+        "x-internal": [
+          "cloud"
+        ],
+        "operationId": "signupRequest",
+        "tags": [
+          "Invitation"
+        ],
+        "summary": "Create a signup request",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Signup request created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "get": {
+        "x-internal": [
+          "cloud"
+        ],
+        "operationId": "getSignupRequests",
+        "tags": [
+          "Invitation"
+        ],
+        "summary": "Get signup requests",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Get responses by page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pagesize",
+            "in": "query",
+            "description": "Get responses by pagesize",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Get responses that match search param value",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Get ordered responses",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Get filtered reponses",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Signup requests page",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "page": {
+                      "type": "integer"
+                    },
+                    "page_size": {
+                      "type": "integer"
+                    },
+                    "total_count": {
+                      "type": "integer"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/identity/users/request/approve": {
+      "post": {
+        "x-internal": [
+          "cloud"
+        ],
+        "operationId": "approveSignupRequest",
+        "tags": [
+          "Invitation"
+        ],
+        "summary": "Approve a signup request",
+        "responses": {
+          "200": {
+            "description": "Signup request approved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/identity/users/request/deny": {
+      "post": {
+        "x-internal": [
+          "cloud"
+        ],
+        "operationId": "denySignupRequest",
+        "tags": [
+          "Invitation"
+        ],
+        "summary": "Deny a signup request",
+        "responses": {
+          "200": {
+            "description": "Signup request denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/identity/users/request/notification": {
+      "get": {
+        "x-internal": [
+          "cloud"
+        ],
+        "operationId": "getSignupRequestNotification",
+        "tags": [
+          "Invitation"
+        ],
+        "summary": "Get signup request notification summary",
+        "responses": {
+          "200": {
+            "description": "Signup request notification payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "No pending signup request notifications"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1576,6 +1858,31 @@ const InvitationSchema: Record<string, unknown> = {
             "description": "Total number of invitations available",
             "x-oapi-codegen-extra-tags": {
               "json": "total"
+            }
+          }
+        }
+      },
+      "SignupRequest": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "SignupRequestsPage": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer"
+          },
+          "page_size": {
+            "type": "integer"
+          },
+          "total_count": {
+            "type": "integer"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
             }
           }
         }

@@ -425,9 +425,293 @@ const BadgeSchema: Record<string, unknown> = {
           }
         }
       }
+    },
+    "/api/identity/badges": {
+      "get": {
+        "x-internal": [
+          "cloud"
+        ],
+        "operationId": "getAvailableBadges",
+        "tags": [
+          "Badge"
+        ],
+        "summary": "Get available badges",
+        "responses": {
+          "200": {
+            "description": "Available badges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "badges": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "label",
+                          "name",
+                          "org_id",
+                          "description",
+                          "image_url",
+                          "created_at",
+                          "updated_at",
+                          "deleted_at"
+                        ],
+                        "properties": {
+                          "id": {
+                            "x-go-name": "ID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "id",
+                              "json": "id"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "org_id": {
+                            "description": "The ID of the organization in which this badge is available .",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "org_id",
+                              "json": "org_id"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "label": {
+                            "type": "string",
+                            "description": "unique identifier for the badge ( auto generated )",
+                            "example": "Kubernetes-Expert",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "label",
+                              "json": "label"
+                            }
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Concise descriptor for the badge or certificate.",
+                            "example": "Kubernetes Expert",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "name",
+                              "json": "name"
+                            }
+                          },
+                          "description": {
+                            "type": "string",
+                            "description": "A description of the milestone achieved, often including criteria for receiving this recognition.",
+                            "example": "Awarded for mastering Kubernetes concepts and practices.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "description",
+                              "json": "description"
+                            }
+                          },
+                          "image_url": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "URL to the badge image",
+                            "example": "https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "image_url",
+                              "json": "image_url"
+                            }
+                          },
+                          "created_at": {
+                            "description": "Timestamp when the resource was created.",
+                            "x-go-type": "time.Time",
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-name": "CreatedAt",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "yaml": "created_at"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "updated_at": {
+                            "description": "Timestamp when the resource was updated.",
+                            "x-go-type": "time.Time",
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-name": "UpdatedAt",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "yaml": "updated_at"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "deleted_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type": "core.NullTime",
+                            "description": "Timestamp when the resource was deleted, if applicable",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deleted_at",
+                              "json": "deleted_at"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/identity/users/badges": {
+      "put": {
+        "x-internal": [
+          "cloud"
+        ],
+        "operationId": "assignBadges",
+        "tags": [
+          "Badge"
+        ],
+        "summary": "Assign badges to a user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "badges": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "notify": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Badge assignment result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
+    "responses": {
+      "400": {
+        "description": "Invalid request body or request param",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Expired JWT token used or insufficient privilege",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal server error",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
     "schemas": {
       "BadgePayload": {
         "type": "object",
@@ -617,6 +901,145 @@ const BadgeSchema: Record<string, unknown> = {
               "db": "deleted_at",
               "json": "deleted_at"
             }
+          }
+        }
+      },
+      "BadgesPage": {
+        "type": "object",
+        "properties": {
+          "badges": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "required": [
+                "id",
+                "label",
+                "name",
+                "org_id",
+                "description",
+                "image_url",
+                "created_at",
+                "updated_at",
+                "deleted_at"
+              ],
+              "properties": {
+                "id": {
+                  "x-go-name": "ID",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "id",
+                    "json": "id"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "org_id": {
+                  "description": "The ID of the organization in which this badge is available .",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "org_id",
+                    "json": "org_id"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "label": {
+                  "type": "string",
+                  "description": "unique identifier for the badge ( auto generated )",
+                  "example": "Kubernetes-Expert",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "label",
+                    "json": "label"
+                  }
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Concise descriptor for the badge or certificate.",
+                  "example": "Kubernetes Expert",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "name",
+                    "json": "name"
+                  }
+                },
+                "description": {
+                  "type": "string",
+                  "description": "A description of the milestone achieved, often including criteria for receiving this recognition.",
+                  "example": "Awarded for mastering Kubernetes concepts and practices.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "description",
+                    "json": "description"
+                  }
+                },
+                "image_url": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "URL to the badge image",
+                  "example": "https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "image_url",
+                    "json": "image_url"
+                  }
+                },
+                "created_at": {
+                  "description": "Timestamp when the resource was created.",
+                  "x-go-type": "time.Time",
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-name": "CreatedAt",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "created_at",
+                    "yaml": "created_at"
+                  },
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "updated_at": {
+                  "description": "Timestamp when the resource was updated.",
+                  "x-go-type": "time.Time",
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-name": "UpdatedAt",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "updated_at",
+                    "yaml": "updated_at"
+                  },
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "deleted_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type": "core.NullTime",
+                  "description": "Timestamp when the resource was deleted, if applicable",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "deleted_at",
+                    "json": "deleted_at"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "BadgeAssignmentPayload": {
+        "type": "object",
+        "properties": {
+          "badges": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "notify": {
+            "type": "boolean"
           }
         }
       }
