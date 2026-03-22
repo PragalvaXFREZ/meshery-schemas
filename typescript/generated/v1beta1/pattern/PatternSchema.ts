@@ -264,14 +264,14 @@ const PatternSchema: Record<string, unknown> = {
                             "additionalProperties": false,
                             "properties": {
                               "id": {
-                                "x-order": 1,
                                 "type": "string",
                                 "format": "uuid",
                                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                 "x-go-type": "uuid.UUID",
                                 "x-go-type-import": {
                                   "path": "github.com/gofrs/uuid"
-                                }
+                                },
+                                "x-order": 1
                               },
                               "name": {
                                 "type": "string",
@@ -5070,14 +5070,14 @@ const PatternSchema: Record<string, unknown> = {
                         "additionalProperties": false,
                         "properties": {
                           "id": {
-                            "x-order": 1,
                             "type": "string",
                             "format": "uuid",
                             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
-                            }
+                            },
+                            "x-order": 1
                           },
                           "name": {
                             "type": "string",
@@ -9843,14 +9843,14 @@ const PatternSchema: Record<string, unknown> = {
                       "additionalProperties": false,
                       "properties": {
                         "id": {
-                          "x-order": 1,
                           "type": "string",
                           "format": "uuid",
                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          }
+                          },
+                          "x-order": 1
                         },
                         "name": {
                           "type": "string",
@@ -14987,14 +14987,14 @@ const PatternSchema: Record<string, unknown> = {
                       "additionalProperties": false,
                       "properties": {
                         "id": {
-                          "x-order": 1,
                           "type": "string",
                           "format": "uuid",
                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          }
+                          },
+                          "x-order": 1
                         },
                         "name": {
                           "type": "string",
@@ -19868,14 +19868,14 @@ const PatternSchema: Record<string, unknown> = {
                       "additionalProperties": false,
                       "properties": {
                         "id": {
-                          "x-order": 1,
                           "type": "string",
                           "format": "uuid",
                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          }
+                          },
+                          "x-order": 1
                         },
                         "name": {
                           "type": "string",
@@ -30846,14 +30846,14 @@ const PatternSchema: Record<string, unknown> = {
         "additionalProperties": false,
         "properties": {
           "id": {
-            "x-order": 1,
             "type": "string",
             "format": "uuid",
             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
-            }
+            },
+            "x-order": 1
           },
           "name": {
             "type": "string",
@@ -35576,14 +35576,14 @@ const PatternSchema: Record<string, unknown> = {
             "additionalProperties": false,
             "properties": {
               "id": {
-                "x-order": 1,
                 "type": "string",
                 "format": "uuid",
                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                 "x-go-type": "uuid.UUID",
                 "x-go-type-import": {
                   "path": "github.com/gofrs/uuid"
-                }
+                },
+                "x-order": 1
               },
               "name": {
                 "type": "string",
@@ -40338,14 +40338,14 @@ const PatternSchema: Record<string, unknown> = {
                   "additionalProperties": false,
                   "properties": {
                     "id": {
-                      "x-order": 1,
                       "type": "string",
                       "format": "uuid",
                       "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
                         "path": "github.com/gofrs/uuid"
-                      }
+                      },
+                      "x-order": 1
                     },
                     "name": {
                       "type": "string",
@@ -45132,14 +45132,14 @@ const PatternSchema: Record<string, unknown> = {
                 "additionalProperties": false,
                 "properties": {
                   "id": {
-                    "x-order": 1,
                     "type": "string",
                     "format": "uuid",
                     "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                     "x-go-type": "uuid.UUID",
                     "x-go-type-import": {
                       "path": "github.com/gofrs/uuid"
-                    }
+                    },
+                    "x-order": 1
                   },
                   "name": {
                     "type": "string",
