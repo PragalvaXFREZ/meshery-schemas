@@ -1072,23 +1072,50 @@ function validateSecurityScheme(filePath, doc) {
   );
   if (!hasOperations) return;
 
-  const hasSecuritySchemes = doc.components?.securitySchemes &&
-    Object.keys(doc.components.securitySchemes).length > 0;
+  const securitySchemes = doc.components?.securitySchemes || null;
+  const hasSecuritySchemes =
+    securitySchemes && Object.keys(securitySchemes).length > 0;
 
-  // Top-level security must be non-empty (security: [] means explicitly public, not secured)
-  const hasTopLevelSecurity = Array.isArray(doc.security) &&
-    doc.security.length > 0 &&
-    doc.security.some((entry) => Object.keys(entry || {}).length > 0);
-
-  if (!hasSecuritySchemes && !hasTopLevelSecurity) {
+  // Rule requirement: any api.yml with operations must declare at least one
+  // security scheme under components.securitySchemes.
+  if (!hasSecuritySchemes) {
     warn(
       filePath,
-      `No security scheme declared. api.yml files with operations must define ` +
-        `\`components.securitySchemes\` with a non-empty scheme declaration, and either ` +
-        `a top-level \`security\` array (e.g. \`security: [{ jwt: [] }]\`) or ` +
-        `per-operation \`security\` on each endpoint. ` +
-        `Without this, endpoints ship unauthenticated by default.`,
+      `No security schemes declared. api.yml files with operations must define ` +
+        `at least one entry under \`components.securitySchemes\` (e.g. \`jwt\`, \`apiKey\`).`,
     );
+    return;
+  }
+
+  const validSchemeKeys = new Set(Object.keys(securitySchemes));
+
+  function validateSecurityArray(securityArray, context) {
+    if (!Array.isArray(securityArray)) return;
+    for (const requirement of securityArray) {
+      if (!requirement || typeof requirement !== "object") continue;
+      for (const schemeKey of Object.keys(requirement)) {
+        if (!validSchemeKeys.has(schemeKey)) {
+          warn(
+            filePath,
+            `${context} references undefined security scheme \`${schemeKey}\`. ` +
+              `All security requirements must reference keys declared in \`components.securitySchemes\`.`,
+          );
+        }
+      }
+    }
+  }
+
+  // Validate top-level security (if present)
+  validateSecurityArray(doc.security, "Top-level security");
+
+  // Validate per-operation security (if present)
+  for (const [pathKey, pathItem] of Object.entries(doc.paths)) {
+    for (const method of ["get", "post", "put", "patch", "delete"]) {
+      const op = pathItem[method];
+      if (!op || op.security === undefined) continue;
+      const context = `Operation ${method.toUpperCase()} ${pathKey} security`;
+      validateSecurityArray(op.security, context);
+    }
   }
 }
 
