@@ -166,6 +166,7 @@ const CredentialSchema: Record<string, unknown> = {
                             "x-go-type-import": {
                               "path": "github.com/meshery/schemas/models/core"
                             },
+                            "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "secret"
                             }
@@ -329,6 +330,7 @@ const CredentialSchema: Record<string, unknown> = {
                     "x-go-type-import": {
                       "path": "github.com/meshery/schemas/models/core"
                     },
+                    "x-go-type-skip-optional-pointer": true,
                     "x-oapi-codegen-extra-tags": {
                       "db": "secret"
                     }
@@ -442,6 +444,7 @@ const CredentialSchema: Record<string, unknown> = {
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/core"
                       },
+                      "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "secret"
                       }
@@ -596,6 +599,7 @@ const CredentialSchema: Record<string, unknown> = {
                     "x-go-type-import": {
                       "path": "github.com/meshery/schemas/models/core"
                     },
+                    "x-go-type-skip-optional-pointer": true,
                     "x-oapi-codegen-extra-tags": {
                       "db": "secret"
                     }
@@ -709,6 +713,7 @@ const CredentialSchema: Record<string, unknown> = {
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/core"
                       },
+                      "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "secret"
                       }
@@ -966,6 +971,7 @@ const CredentialSchema: Record<string, unknown> = {
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/core"
                       },
+                      "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "secret"
                       }
@@ -1223,6 +1229,7 @@ const CredentialSchema: Record<string, unknown> = {
             "x-go-type-import": {
               "path": "github.com/meshery/schemas/models/core"
             },
+            "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "secret"
             }
@@ -1341,6 +1348,7 @@ const CredentialSchema: Record<string, unknown> = {
                   "x-go-type-import": {
                     "path": "github.com/meshery/schemas/models/core"
                   },
+                  "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "secret"
                   }

@@ -23,7 +23,7 @@ type Credential struct {
 	Type string `db:"type" json:"type" yaml:"type"`
 
 	// Secret Key-value pairs containing the sensitive credential data.
-	Secret *core.Map `db:"secret" json:"secret,omitempty" yaml:"secret,omitempty"`
+	Secret core.Map `db:"secret" json:"secret,omitempty" yaml:"secret,omitempty"`
 
 	// CreatedAt Timestamp when the resource was created.
 	CreatedAt corev1alpha1.CreatedAt `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`

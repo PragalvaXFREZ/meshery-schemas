@@ -72,10 +72,11 @@ type EnvironmentPage struct {
 
 // EnvironmentPayload defines model for environmentPayload.
 type EnvironmentPayload struct {
-	// OrgId Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
-	OrgId       string            `json:"organization_id" yaml:"organization_id"`
 	Description corev1alpha1.Text `json:"description,omitempty" yaml:"description,omitempty"`
 	Name        corev1alpha1.Text `json:"name" yaml:"name"`
+
+	// OrgId Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
+	OrgId string `json:"organization_id" yaml:"organization_id"`
 }
 
 // EnvironmentId defines model for environmentId.

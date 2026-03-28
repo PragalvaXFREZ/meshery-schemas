@@ -112,9 +112,7 @@ export interface components {
       /** @description An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments). */
       description?: string;
       /** @description Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation. */
-      OrganizationID?: string;
-    } & {
-      organizationID: unknown;
+      organization_id: string;
     };
     environmentPage: {
       page?: number;
@@ -229,9 +227,7 @@ export interface components {
           /** @description An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments). */
           description?: string;
           /** @description Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation. */
-          OrganizationID?: string;
-        } & {
-          organizationID: unknown;
+          organization_id: string;
         };
       };
     };
@@ -412,9 +408,7 @@ export interface operations {
           /** @description An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments). */
           description?: string;
           /** @description Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation. */
-          OrganizationID?: string;
-        } & {
-          organizationID: unknown;
+          organization_id: string;
         };
       };
     };
@@ -615,9 +609,7 @@ export interface operations {
           /** @description An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments). */
           description?: string;
           /** @description Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation. */
-          OrganizationID?: string;
-        } & {
-          organizationID: unknown;
+          organization_id: string;
         };
       };
     };

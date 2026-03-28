@@ -978,7 +978,7 @@ export interface components {
         }[];
       } & { [key: string]: unknown };
     } & {
-      RegistrationCount: number;
+      registration_count: number;
       Invitation?: {
         /**
          * Format: uuid
@@ -1401,7 +1401,7 @@ export interface components {
         }[];
       } & { [key: string]: unknown };
     } & {
-      RegistrationCount: number;
+      registration_count: number;
     };
     AcademyCurriculaListResponse: {
       /**
@@ -1798,7 +1798,7 @@ export interface components {
           }[];
         } & { [key: string]: unknown };
       } & {
-        RegistrationCount: number;
+        registration_count: number;
       })[];
     };
     ChallengeMetadata: {
@@ -2454,7 +2454,7 @@ export interface components {
            * @description Organization ID that owns this quiz
            * @example layer5
            */
-          orgId: string;
+          org_id: string;
           /**
            * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
            * @example true
@@ -2542,7 +2542,7 @@ export interface components {
          * @description Organization ID that owns this quiz
          * @example layer5
          */
-        orgId: string;
+        org_id: string;
         /**
          * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
          * @example true
@@ -2804,7 +2804,7 @@ export interface components {
              * @description Organization ID that owns this quiz
              * @example layer5
              */
-            orgId: string;
+            org_id: string;
             /**
              * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
              * @example true
@@ -2931,7 +2931,7 @@ export interface components {
        * @description Organization ID that owns this quiz
        * @example layer5
        */
-      orgId: string;
+      org_id: string;
       /**
        * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
        * @example true
@@ -3122,7 +3122,7 @@ export interface components {
            * @description Organization ID that owns this quiz
            * @example layer5
            */
-          orgId: string;
+          org_id: string;
           /**
            * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
            * @example true
@@ -3199,7 +3199,7 @@ export interface components {
          * @description Organization ID that owns this quiz
          * @example layer5
          */
-        orgId: string;
+        org_id: string;
         /**
          * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
          * @example true
@@ -3278,7 +3278,7 @@ export interface components {
          * @description Organization ID that owns this quiz
          * @example layer5
          */
-        orgId: string;
+        org_id: string;
         /**
          * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
          * @example true
@@ -4301,7 +4301,7 @@ export interface operations {
                 }[];
               } & { [key: string]: unknown };
             } & {
-              RegistrationCount: number;
+              registration_count: number;
             })[];
           };
         };
@@ -4787,7 +4787,7 @@ export interface operations {
               }[];
             } & { [key: string]: unknown };
           } & {
-            RegistrationCount: number;
+            registration_count: number;
             Invitation?: {
               /**
                * Format: uuid
@@ -5054,7 +5054,7 @@ export interface operations {
               }[];
             } & { [key: string]: unknown };
           } & {
-            RegistrationCount: number;
+            registration_count: number;
             Invitation?: {
               /**
                * Format: uuid
@@ -5358,7 +5358,7 @@ export interface operations {
                      * @description Organization ID that owns this quiz
                      * @example layer5
                      */
-                    orgId: string;
+                    org_id: string;
                     /**
                      * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
                      * @example true
@@ -5517,7 +5517,7 @@ export interface operations {
              * @description Organization ID that owns this quiz
              * @example layer5
              */
-            orgId: string;
+            org_id: string;
             /**
              * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
              * @example true
@@ -5606,7 +5606,7 @@ export interface operations {
              * @description Organization ID that owns this quiz
              * @example layer5
              */
-            orgId: string;
+            org_id: string;
             /**
              * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
              * @example true
@@ -5722,7 +5722,7 @@ export interface operations {
                * @description Organization ID that owns this quiz
                * @example layer5
                */
-              orgId: string;
+              org_id: string;
               /**
                * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
                * @example true
@@ -5823,7 +5823,7 @@ export interface operations {
                * @description Organization ID that owns this quiz
                * @example layer5
                */
-              orgId: string;
+              org_id: string;
               /**
                * @description Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
                * @example true

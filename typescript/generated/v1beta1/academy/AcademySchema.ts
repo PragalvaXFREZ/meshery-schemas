@@ -1947,10 +1947,10 @@ const AcademySchema: Record<string, unknown> = {
                           {
                             "type": "object",
                             "required": [
-                              "RegistrationCount"
+                              "registration_count"
                             ],
                             "properties": {
-                              "RegistrationCount": {
+                              "registration_count": {
                                 "type": "number",
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "registration_count,omitempty",
@@ -2612,6 +2612,7 @@ const AcademySchema: Record<string, unknown> = {
                     },
                     "certificate": {
                       "x-go-type": "core.Map",
+                      "x-go-type-skip-optional-pointer": true,
                       "description": "Issued certificate for completing the curricula under registration",
                       "x-oapi-codegen-extra-tags": {
                         "db": "certificate"
@@ -2869,6 +2870,7 @@ const AcademySchema: Record<string, unknown> = {
                     },
                     "certificate": {
                       "x-go-type": "core.Map",
+                      "x-go-type-skip-optional-pointer": true,
                       "description": "Issued certificate for completing the curricula under registration",
                       "x-oapi-codegen-extra-tags": {
                         "db": "certificate"
@@ -3819,10 +3821,10 @@ const AcademySchema: Record<string, unknown> = {
                     {
                       "type": "object",
                       "required": [
-                        "RegistrationCount"
+                        "registration_count"
                       ],
                       "properties": {
-                        "RegistrationCount": {
+                        "registration_count": {
                           "type": "number",
                           "x-oapi-codegen-extra-tags": {
                             "db": "registration_count,omitempty",
@@ -4519,10 +4521,10 @@ const AcademySchema: Record<string, unknown> = {
                     {
                       "type": "object",
                       "required": [
-                        "RegistrationCount"
+                        "registration_count"
                       ],
                       "properties": {
-                        "RegistrationCount": {
+                        "registration_count": {
                           "type": "number",
                           "x-oapi-codegen-extra-tags": {
                             "db": "registration_count,omitempty",
@@ -4863,6 +4865,7 @@ const AcademySchema: Record<string, unknown> = {
                     },
                     "certificate": {
                       "x-go-type": "core.Map",
+                      "x-go-type-skip-optional-pointer": true,
                       "description": "Issued certificate for completing the curricula under registration",
                       "x-oapi-codegen-extra-tags": {
                         "db": "certificate"
@@ -5161,7 +5164,7 @@ const AcademySchema: Record<string, unknown> = {
                                 "required": [
                                   "id",
                                   "title",
-                                  "orgId",
+                                  "org_id",
                                   "description",
                                   "slug",
                                   "relPermalink",
@@ -5193,7 +5196,7 @@ const AcademySchema: Record<string, unknown> = {
                                       "json": "id"
                                     }
                                   },
-                                  "orgId": {
+                                  "org_id": {
                                     "type": "string",
                                     "description": "Organization ID that owns this quiz",
                                     "example": "layer5",
@@ -5596,7 +5599,7 @@ const AcademySchema: Record<string, unknown> = {
                   "required": [
                     "id",
                     "title",
-                    "orgId",
+                    "org_id",
                     "description",
                     "slug",
                     "relPermalink",
@@ -5628,7 +5631,7 @@ const AcademySchema: Record<string, unknown> = {
                         "json": "id"
                       }
                     },
-                    "orgId": {
+                    "org_id": {
                       "type": "string",
                       "description": "Organization ID that owns this quiz",
                       "example": "layer5",
@@ -5912,7 +5915,7 @@ const AcademySchema: Record<string, unknown> = {
                   "required": [
                     "id",
                     "title",
-                    "orgId",
+                    "org_id",
                     "description",
                     "slug",
                     "relPermalink",
@@ -5944,7 +5947,7 @@ const AcademySchema: Record<string, unknown> = {
                         "json": "id"
                       }
                     },
-                    "orgId": {
+                    "org_id": {
                       "type": "string",
                       "description": "Organization ID that owns this quiz",
                       "example": "layer5",
@@ -6269,7 +6272,7 @@ const AcademySchema: Record<string, unknown> = {
                           "required": [
                             "id",
                             "title",
-                            "orgId",
+                            "org_id",
                             "description",
                             "slug",
                             "relPermalink",
@@ -6301,7 +6304,7 @@ const AcademySchema: Record<string, unknown> = {
                                 "json": "id"
                               }
                             },
-                            "orgId": {
+                            "org_id": {
                               "type": "string",
                               "description": "Organization ID that owns this quiz",
                               "example": "layer5",
@@ -6674,7 +6677,7 @@ const AcademySchema: Record<string, unknown> = {
                       "required": [
                         "id",
                         "title",
-                        "orgId",
+                        "org_id",
                         "description",
                         "slug",
                         "relPermalink",
@@ -6706,7 +6709,7 @@ const AcademySchema: Record<string, unknown> = {
                             "json": "id"
                           }
                         },
-                        "orgId": {
+                        "org_id": {
                           "type": "string",
                           "description": "Organization ID that owns this quiz",
                           "example": "layer5",
@@ -8668,10 +8671,10 @@ const AcademySchema: Record<string, unknown> = {
           {
             "type": "object",
             "required": [
-              "RegistrationCount"
+              "registration_count"
             ],
             "properties": {
-              "RegistrationCount": {
+              "registration_count": {
                 "type": "number",
                 "x-oapi-codegen-extra-tags": {
                   "db": "registration_count,omitempty",
@@ -9646,10 +9649,10 @@ const AcademySchema: Record<string, unknown> = {
           {
             "type": "object",
             "required": [
-              "RegistrationCount"
+              "registration_count"
             ],
             "properties": {
-              "RegistrationCount": {
+              "registration_count": {
                 "type": "number",
                 "x-oapi-codegen-extra-tags": {
                   "db": "registration_count,omitempty",
@@ -10558,10 +10561,10 @@ const AcademySchema: Record<string, unknown> = {
                 {
                   "type": "object",
                   "required": [
-                    "RegistrationCount"
+                    "registration_count"
                   ],
                   "properties": {
-                    "RegistrationCount": {
+                    "registration_count": {
                       "type": "number",
                       "x-oapi-codegen-extra-tags": {
                         "db": "registration_count,omitempty",
@@ -11451,6 +11454,7 @@ const AcademySchema: Record<string, unknown> = {
           },
           "certificate": {
             "x-go-type": "core.Map",
+            "x-go-type-skip-optional-pointer": true,
             "description": "Issued certificate for completing the curricula under registration",
             "x-oapi-codegen-extra-tags": {
               "db": "certificate"
@@ -11613,7 +11617,7 @@ const AcademySchema: Record<string, unknown> = {
                 "required": [
                   "id",
                   "title",
-                  "orgId",
+                  "org_id",
                   "description",
                   "slug",
                   "relPermalink",
@@ -11645,7 +11649,7 @@ const AcademySchema: Record<string, unknown> = {
                       "json": "id"
                     }
                   },
-                  "orgId": {
+                  "org_id": {
                     "type": "string",
                     "description": "Organization ID that owns this quiz",
                     "example": "layer5",
@@ -11929,7 +11933,7 @@ const AcademySchema: Record<string, unknown> = {
               "required": [
                 "id",
                 "title",
-                "orgId",
+                "org_id",
                 "description",
                 "slug",
                 "relPermalink",
@@ -11961,7 +11965,7 @@ const AcademySchema: Record<string, unknown> = {
                     "json": "id"
                   }
                 },
-                "orgId": {
+                "org_id": {
                   "type": "string",
                   "description": "Organization ID that owns this quiz",
                   "example": "layer5",
@@ -12381,6 +12385,7 @@ const AcademySchema: Record<string, unknown> = {
                 },
                 "certificate": {
                   "x-go-type": "core.Map",
+                  "x-go-type-skip-optional-pointer": true,
                   "description": "Issued certificate for completing the curricula under registration",
                   "x-oapi-codegen-extra-tags": {
                     "db": "certificate"
@@ -12614,7 +12619,7 @@ const AcademySchema: Record<string, unknown> = {
                   "required": [
                     "id",
                     "title",
-                    "orgId",
+                    "org_id",
                     "description",
                     "slug",
                     "relPermalink",
@@ -12646,7 +12651,7 @@ const AcademySchema: Record<string, unknown> = {
                         "json": "id"
                       }
                     },
-                    "orgId": {
+                    "org_id": {
                       "type": "string",
                       "description": "Organization ID that owns this quiz",
                       "example": "layer5",
@@ -13035,7 +13040,7 @@ const AcademySchema: Record<string, unknown> = {
         "required": [
           "id",
           "title",
-          "orgId",
+          "org_id",
           "description",
           "slug",
           "relPermalink",
@@ -13067,7 +13072,7 @@ const AcademySchema: Record<string, unknown> = {
               "json": "id"
             }
           },
-          "orgId": {
+          "org_id": {
             "type": "string",
             "description": "Organization ID that owns this quiz",
             "example": "layer5",
@@ -13742,7 +13747,7 @@ const AcademySchema: Record<string, unknown> = {
                 "required": [
                   "id",
                   "title",
-                  "orgId",
+                  "org_id",
                   "description",
                   "slug",
                   "relPermalink",
@@ -13774,7 +13779,7 @@ const AcademySchema: Record<string, unknown> = {
                       "json": "id"
                     }
                   },
-                  "orgId": {
+                  "org_id": {
                     "type": "string",
                     "description": "Organization ID that owns this quiz",
                     "example": "layer5",
@@ -14018,7 +14023,7 @@ const AcademySchema: Record<string, unknown> = {
             "required": [
               "id",
               "title",
-              "orgId",
+              "org_id",
               "description",
               "slug",
               "relPermalink",
@@ -14050,7 +14055,7 @@ const AcademySchema: Record<string, unknown> = {
                   "json": "id"
                 }
               },
-              "orgId": {
+              "org_id": {
                 "type": "string",
                 "description": "Organization ID that owns this quiz",
                 "example": "layer5",
@@ -14322,7 +14327,7 @@ const AcademySchema: Record<string, unknown> = {
             "required": [
               "id",
               "title",
-              "orgId",
+              "org_id",
               "description",
               "slug",
               "relPermalink",
@@ -14354,7 +14359,7 @@ const AcademySchema: Record<string, unknown> = {
                   "json": "id"
                 }
               },
-              "orgId": {
+              "org_id": {
                 "type": "string",
                 "description": "Organization ID that owns this quiz",
                 "example": "layer5",

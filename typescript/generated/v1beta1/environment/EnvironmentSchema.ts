@@ -393,7 +393,7 @@ const EnvironmentSchema: Record<string, unknown> = {
             "type": "string",
             "x-go-type-skip-optional-pointer": true
           },
-          "OrganizationID": {
+          "organization_id": {
             "type": "string",
             "description": "Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.",
             "x-go-type-skip-optional-pointer": true,
@@ -405,7 +405,7 @@ const EnvironmentSchema: Record<string, unknown> = {
         },
         "required": [
           "name",
-          "organizationID"
+          "organization_id"
         ]
       },
       "environmentPage": {
@@ -639,7 +639,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                   "type": "string",
                   "x-go-type-skip-optional-pointer": true
                 },
-                "OrganizationID": {
+                "organization_id": {
                   "type": "string",
                   "description": "Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.",
                   "x-go-type-skip-optional-pointer": true,
@@ -651,7 +651,7 @@ const EnvironmentSchema: Record<string, unknown> = {
               },
               "required": [
                 "name",
-                "organizationID"
+                "organization_id"
               ]
             }
           }
@@ -685,7 +685,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                     "type": "string",
                     "x-go-type-skip-optional-pointer": true
                   },
-                  "OrganizationID": {
+                  "organization_id": {
                     "type": "string",
                     "description": "Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.",
                     "x-go-type-skip-optional-pointer": true,
@@ -697,7 +697,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                 },
                 "required": [
                   "name",
-                  "organizationID"
+                  "organization_id"
                 ]
               }
             }
@@ -1489,7 +1489,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                     "type": "string",
                     "x-go-type-skip-optional-pointer": true
                   },
-                  "OrganizationID": {
+                  "organization_id": {
                     "type": "string",
                     "description": "Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.",
                     "x-go-type-skip-optional-pointer": true,
@@ -1501,7 +1501,7 @@ const EnvironmentSchema: Record<string, unknown> = {
                 },
                 "required": [
                   "name",
-                  "organizationID"
+                  "organization_id"
                 ]
               }
             }

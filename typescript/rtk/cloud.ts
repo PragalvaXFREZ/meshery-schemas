@@ -1186,67 +1186,6 @@ const injectedRtkApi = api
         query: () => ({ url: `/api/identity/users/profile` }),
         providesTags: ["User_users"],
       }),
-      updateUserPreference: build.mutation<UpdateUserPreferenceApiResponse, UpdateUserPreferenceApiArg>({
-        query: (queryArg) => ({ url: `/api/identity/users/preferences`, method: "PUT", body: queryArg.body }),
-        invalidatesTags: ["User_users"],
-      }),
-      deleteOwnAccount: build.mutation<DeleteOwnAccountApiResponse, DeleteOwnAccountApiArg>({
-        query: () => ({ url: `/api/identity/users/self`, method: "DELETE" }),
-        invalidatesTags: ["User_users"],
-      }),
-      bulkDeleteUsers: build.mutation<BulkDeleteUsersApiResponse, BulkDeleteUsersApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/users/bulk`,
-          method: "POST",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["User_users"],
-      }),
-      getProfileOverview: build.query<GetProfileOverviewApiResponse, GetProfileOverviewApiArg>({
-        query: () => ({ url: `/api/identity/users/profile/details` }),
-        providesTags: ["User_users"],
-      }),
-      getUserActivity: build.query<GetUserActivityApiResponse, GetUserActivityApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/users/${queryArg.userId}/profile/activity`,
-          params: {
-            page: queryArg.page,
-            pagesize: queryArg.pagesize,
-            order: queryArg.order,
-            filter: queryArg.filter,
-          },
-        }),
-        providesTags: ["User_users"],
-      }),
-      handleFeedbackFormSubmission: build.mutation<
-        HandleFeedbackFormSubmissionApiResponse,
-        HandleFeedbackFormSubmissionApiArg
-      >({
-        query: (queryArg) => ({ url: `/api/identity/users/notify/feedback`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["User_users"],
-      }),
-      updateUsersPassword: build.mutation<UpdateUsersPasswordApiResponse, UpdateUsersPasswordApiArg>({
-        query: (queryArg) => ({ url: `/api/identity/users/password`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["User_users"],
-      }),
-      updateNotificationPreferences: build.mutation<
-        UpdateNotificationPreferencesApiResponse,
-        UpdateNotificationPreferencesApiArg
-      >({
-        query: (queryArg) => ({
-          url: `/api/identity/users/notifications/preferences`,
-          method: "PUT",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["User_users"],
-      }),
-      getAvailableNotificationPreferences: build.query<
-        GetAvailableNotificationPreferencesApiResponse,
-        GetAvailableNotificationPreferencesApiArg
-      >({
-        query: () => ({ url: `/api/identity/users/notifications/preferences` }),
-        providesTags: ["User_users"],
-      }),
       getWorkspaces: build.query<GetWorkspacesApiResponse, GetWorkspacesApiArg>({
         query: (queryArg) => ({
           url: `/api/workspaces`,
@@ -1756,7 +1695,7 @@ export type GetAcademyCurriculaApiResponse = /** status 200 A list of content wi
       [key: string]: any;
     };
   } & {
-    RegistrationCount: number;
+    registration_count: number;
   })[];
 };
 export type GetAcademyCurriculaApiArg = {
@@ -2079,7 +2018,7 @@ export type UpdateAcademyCurriculaByIdApiResponse = /** status 200 updated the c
     [key: string]: any;
   };
 } & {
-  RegistrationCount: number;
+  registration_count: number;
   Invitation?: {
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id: string;
@@ -2289,7 +2228,7 @@ export type GetAcademyCurriculaByIdApiResponse = /** status 200 A single curricu
     [key: string]: any;
   };
 } & {
-  RegistrationCount: number;
+  registration_count: number;
   Invitation?: {
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id: string;
@@ -2409,7 +2348,7 @@ export type UpdateCurrentItemInProgressTrackerApiResponse =
           quiz: {
             id: string;
             /** Organization ID that owns this quiz */
-            orgId: string;
+            org_id: string;
             /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
             final: boolean;
             title: string;
@@ -2509,7 +2448,7 @@ export type UpdateCurrentItemInProgressTrackerApiArg = {
 export type GetTestByAbsPathApiResponse = /** status 200 A single test */ {
   id: string;
   /** Organization ID that owns this quiz */
-  orgId: string;
+  org_id: string;
   /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
   final: boolean;
   title: string;
@@ -2572,7 +2511,7 @@ export type GetTestByAbsPathApiArg = {
 export type StartTestByIdApiResponse = /** status 200 A single test */ {
   id: string;
   /** Organization ID that owns this quiz */
-  orgId: string;
+  org_id: string;
   /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
   final: boolean;
   title: string;
@@ -2647,7 +2586,7 @@ export type GetAllTestSessionsForRegistrationApiResponse =
     quiz: {
       id: string;
       /** Organization ID that owns this quiz */
-      orgId: string;
+      org_id: string;
       /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
       final: boolean;
       title: string;
@@ -2724,7 +2663,7 @@ export type SubmitQuizApiResponse = /** status 200 Successfully updated the prog
   quiz: {
     id: string;
     /** Organization ID that owns this quiz */
-    orgId: string;
+    org_id: string;
     /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
     final: boolean;
     title: string;
@@ -9789,7 +9728,7 @@ export type CreateEnvironmentApiArg = {
     /** An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments). */
     description?: string;
     /** Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation. */
-    OrganizationID?: string;
+    organization_id: string;
   };
 };
 export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
@@ -9901,7 +9840,7 @@ export type UpdateEnvironmentApiArg = {
     /** An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments). */
     description?: string;
     /** Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation. */
-    OrganizationID?: string;
+    organization_id: string;
   };
 };
 export type DeleteEnvironmentApiResponse = /** status 200 Environment page */ {
@@ -12568,88 +12507,6 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
   };
 };
 export type GetUserApiArg = void;
-export type UpdateUserPreferenceApiResponse = /** status 201 Preferences updated */ {
-  [key: string]: any;
-};
-export type UpdateUserPreferenceApiArg = {
-  body: {
-    [key: string]: any;
-  };
-};
-export type DeleteOwnAccountApiResponse = /** status 201 Account deleted */ {
-  [key: string]: any;
-};
-export type DeleteOwnAccountApiArg = void;
-export type BulkDeleteUsersApiResponse = /** status 201 Users deleted */ {
-  [key: string]: any;
-};
-export type BulkDeleteUsersApiArg = {
-  /** Organization ID */
-  orgId: string;
-  body: {
-    [key: string]: any;
-  };
-};
-export type GetProfileOverviewApiResponse = /** status 200 User account overview */ {
-  [key: string]: any;
-};
-export type GetProfileOverviewApiArg = void;
-export type GetUserActivityApiResponse = /** status 200 User recent activity */ {
-  page?: number;
-  page_size?: number;
-  total_count?: number;
-  data?: {
-    [key: string]: any;
-  }[];
-};
-export type GetUserActivityApiArg = {
-  /** User ID */
-  userId: string;
-  /** Get responses by page */
-  page?: string;
-  /** Get responses by pagesize */
-  pagesize?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Get filtered reponses */
-  filter?: string;
-};
-export type HandleFeedbackFormSubmissionApiResponse = /** status 201 Feedback submitted */ {
-  [key: string]: any;
-};
-export type HandleFeedbackFormSubmissionApiArg = {
-  body: {
-    [key: string]: any;
-  };
-};
-export type UpdateUsersPasswordApiResponse = /** status 200 Password updated */ {
-  [key: string]: any;
-};
-export type UpdateUsersPasswordApiArg = {
-  body: {
-    password?: string;
-  };
-};
-export type UpdateNotificationPreferencesApiResponse = /** status 200 Notification preferences updated */ {
-  [key: string]: any;
-};
-export type UpdateNotificationPreferencesApiArg = {
-  body: {
-    [key: string]: any;
-  };
-};
-export type GetAvailableNotificationPreferencesApiResponse = /** status 200 Available notification preferences */ {
-  notification_preferences?: {
-    [key: string]: {
-      category?: string;
-      subcategory?: string;
-      label?: string;
-      name?: string;
-      [key: string]: any;
-    };
-  };
-};
-export type GetAvailableNotificationPreferencesApiArg = void;
 export type GetWorkspacesApiResponse = /** status 200 Workspaces */ {
   page?: number;
   page_size?: number;
@@ -14252,15 +14109,6 @@ export const {
   useGetUsersQuery,
   useGetUserProfileByIdQuery,
   useGetUserQuery,
-  useUpdateUserPreferenceMutation,
-  useDeleteOwnAccountMutation,
-  useBulkDeleteUsersMutation,
-  useGetProfileOverviewQuery,
-  useGetUserActivityQuery,
-  useHandleFeedbackFormSubmissionMutation,
-  useUpdateUsersPasswordMutation,
-  useUpdateNotificationPreferencesMutation,
-  useGetAvailableNotificationPreferencesQuery,
   useGetWorkspacesQuery,
   useCreateWorkspaceMutation,
   useGetWorkspaceByIdQuery,

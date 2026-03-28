@@ -128,8 +128,6 @@ type AcademyCurriculaUpdatedAt = corev1alpha1.Time
 
 // AcademyCurriculaWithMetrics defines model for AcademyCurriculaWithMetrics.
 type AcademyCurriculaWithMetrics struct {
-	RegistrationCount float32 `db:"registration_count,omitempty" json:"registration_count,omitempty" yaml:"registration_count,omitempty"`
-
 	// BadgeId ID of the badge to be awarded on completion of this curricula
 	BadgeId *corev1alpha1.Uuid `db:"badge_id" json:"badge_id" yaml:"badge_id"`
 
@@ -148,7 +146,8 @@ type AcademyCurriculaWithMetrics struct {
 	Metadata AcademyCurriculaMetadata `db:"metadata" json:"metadata" yaml:"metadata"`
 
 	// OrgId Organization ID that owns this learning path
-	OrgId AcademyCurriculaOrgId `db:"org_id" json:"org_id" yaml:"org_id"`
+	OrgId             AcademyCurriculaOrgId `db:"org_id" json:"org_id" yaml:"org_id"`
+	RegistrationCount float32               `db:"registration_count,omitempty" json:"registration_count,omitempty" yaml:"registration_count,omitempty"`
 
 	// Slug slug of the Curricula
 	Slug   string      `json:"slug" yaml:"slug"`
@@ -497,8 +496,7 @@ type RegisterToAcademyContentRequest struct {
 
 // SingleAcademyCurriculaResponse defines model for SingleAcademyCurriculaResponse.
 type SingleAcademyCurriculaResponse struct {
-	Invitation        *invitationv1beta1.Invitation `json:"Invitation,omitempty" yaml:"Invitation,omitempty"`
-	RegistrationCount float32                  `db:"registration_count,omitempty" json:"registration_count,omitempty" yaml:"registration_count,omitempty"`
+	Invitation *invitationv1beta1.Invitation `json:"Invitation,omitempty" yaml:"Invitation,omitempty"`
 
 	// BadgeId ID of the badge to be awarded on completion of this curricula
 	BadgeId *corev1alpha1.Uuid `db:"badge_id" json:"badge_id" yaml:"badge_id"`
@@ -518,7 +516,8 @@ type SingleAcademyCurriculaResponse struct {
 	Metadata AcademyCurriculaMetadata `db:"metadata" json:"metadata" yaml:"metadata"`
 
 	// OrgId Organization ID that owns this learning path
-	OrgId AcademyCurriculaOrgId `db:"org_id" json:"org_id" yaml:"org_id"`
+	OrgId             AcademyCurriculaOrgId `db:"org_id" json:"org_id" yaml:"org_id"`
+	RegistrationCount float32               `db:"registration_count,omitempty" json:"registration_count,omitempty" yaml:"registration_count,omitempty"`
 
 	// Slug slug of the Curricula
 	Slug   string      `json:"slug" yaml:"slug"`

@@ -4,8 +4,6 @@
 package user
 
 import (
-	"encoding/json"
-	"fmt"
 	"time"
 
 	"github.com/meshery/schemas/models/core"
@@ -33,25 +31,8 @@ const (
 	Pending   UserStatus = "pending"
 )
 
-// AccountOverview defines model for AccountOverview.
-type AccountOverview map[string]interface{}
-
 // Adapter Placeholder for Adapter struct definition.
 type Adapter = map[string]interface{}
-
-// AvailableNotificationPreference defines model for AvailableNotificationPreference.
-type AvailableNotificationPreference struct {
-	Category             *string                `json:"category,omitempty" yaml:"category,omitempty"`
-	Label                *string                `json:"label,omitempty" yaml:"label,omitempty"`
-	Name                 *string                `json:"name,omitempty" yaml:"name,omitempty"`
-	Subcategory          *string                `json:"subcategory,omitempty" yaml:"subcategory,omitempty"`
-	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
-}
-
-// AvailableNotificationPreferences defines model for AvailableNotificationPreferences.
-type AvailableNotificationPreferences struct {
-	NotificationPreferences *map[string]AvailableNotificationPreference `json:"notification_preferences,omitempty" yaml:"notification_preferences,omitempty"`
-}
 
 // Grafana defines model for Grafana.
 type Grafana struct {
@@ -103,17 +84,6 @@ type Prometheus struct {
 	SelectedPrometheusBoardsConfigs *[]SelectedGrafanaConfig `json:"selectedPrometheusBoardsConfigs,omitempty" yaml:"selectedPrometheusBoardsConfigs,omitempty"`
 }
 
-// RecentActivity defines model for RecentActivity.
-type RecentActivity map[string]interface{}
-
-// RecentActivityPage defines model for RecentActivityPage.
-type RecentActivityPage struct {
-	Data       *[]RecentActivity `json:"data,omitempty" yaml:"data,omitempty"`
-	Page       *int              `json:"page,omitempty" yaml:"page,omitempty"`
-	PageSize   *int              `json:"page_size,omitempty" yaml:"page_size,omitempty"`
-	TotalCount *int              `json:"total_count,omitempty" yaml:"total_count,omitempty"`
-}
-
 // SelectedGrafanaConfig defines model for SelectedGrafanaConfig.
 type SelectedGrafanaConfig struct {
 	// Board Placeholder for GrafanaBoard definition (define fields as needed)
@@ -139,7 +109,7 @@ type User struct {
 	Bio *string `db:"bio" json:"bio" yaml:"bio"`
 
 	// Country User's country information stored as JSONB
-	Country   *core.Map         `db:"country" json:"country" yaml:"country"`
+	Country   core.Map          `db:"country" json:"country" yaml:"country"`
 	CreatedAt corev1alpha1.Time `db:"created_at" json:"created_at" yaml:"created_at"`
 
 	// DeletedAt Timestamp when the user record was soft-deleted (null if not deleted)
@@ -170,7 +140,7 @@ type User struct {
 	Provider string `db:"provider" json:"provider" yaml:"provider"`
 
 	// Region User's region information stored as JSONB
-	Region *core.Map `db:"region" json:"region" yaml:"region"`
+	Region core.Map `db:"region" json:"region" yaml:"region"`
 
 	// RoleNames List of global roles assigned to the user
 	RoleNames *[]UserRoleNames `db:"role_names" json:"role_names" yaml:"role_names"`
@@ -235,133 +205,3 @@ type Search = string
 
 // TeamID defines model for teamID.
 type TeamID = corev1alpha1.TeamId
-
-// BulkDeleteUsersPayload defines model for bulkDeleteUsersPayload.
-type BulkDeleteUsersPayload map[string]interface{}
-
-// NotificationPreferencePayload defines model for notificationPreferencePayload.
-type NotificationPreferencePayload map[string]interface{}
-
-// UpdatePasswordPayload defines model for updatePasswordPayload.
-type UpdatePasswordPayload struct {
-	Password *string `json:"password,omitempty" yaml:"password,omitempty"`
-}
-
-// UserFeedbackPayload defines model for userFeedbackPayload.
-type UserFeedbackPayload map[string]interface{}
-
-// UserPreferencePayload defines model for userPreferencePayload.
-type UserPreferencePayload map[string]interface{}
-
-// Getter for additional properties for AvailableNotificationPreference. Returns the specified
-// element and whether it was found
-func (a AvailableNotificationPreference) Get(fieldName string) (value interface{}, found bool) {
-	if a.AdditionalProperties != nil {
-		value, found = a.AdditionalProperties[fieldName]
-	}
-	return
-}
-
-// Setter for additional properties for AvailableNotificationPreference
-func (a *AvailableNotificationPreference) Set(fieldName string, value interface{}) {
-	if a.AdditionalProperties == nil {
-		a.AdditionalProperties = make(map[string]interface{})
-	}
-	a.AdditionalProperties[fieldName] = value
-}
-
-// Override default JSON handling for AvailableNotificationPreference to handle AdditionalProperties
-func (a *AvailableNotificationPreference) UnmarshalJSON(b []byte) error {
-	object := make(map[string]json.RawMessage)
-	err := json.Unmarshal(b, &object)
-	if err != nil {
-		return err
-	}
-
-	if raw, found := object["category"]; found {
-		err = json.Unmarshal(raw, &a.Category)
-		if err != nil {
-			return fmt.Errorf("error reading 'category': %w", err)
-		}
-		delete(object, "category")
-	}
-
-	if raw, found := object["label"]; found {
-		err = json.Unmarshal(raw, &a.Label)
-		if err != nil {
-			return fmt.Errorf("error reading 'label': %w", err)
-		}
-		delete(object, "label")
-	}
-
-	if raw, found := object["name"]; found {
-		err = json.Unmarshal(raw, &a.Name)
-		if err != nil {
-			return fmt.Errorf("error reading 'name': %w", err)
-		}
-		delete(object, "name")
-	}
-
-	if raw, found := object["subcategory"]; found {
-		err = json.Unmarshal(raw, &a.Subcategory)
-		if err != nil {
-			return fmt.Errorf("error reading 'subcategory': %w", err)
-		}
-		delete(object, "subcategory")
-	}
-
-	if len(object) != 0 {
-		a.AdditionalProperties = make(map[string]interface{})
-		for fieldName, fieldBuf := range object {
-			var fieldVal interface{}
-			err := json.Unmarshal(fieldBuf, &fieldVal)
-			if err != nil {
-				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
-			}
-			a.AdditionalProperties[fieldName] = fieldVal
-		}
-	}
-	return nil
-}
-
-// Override default JSON handling for AvailableNotificationPreference to handle AdditionalProperties
-func (a AvailableNotificationPreference) MarshalJSON() ([]byte, error) {
-	var err error
-	object := make(map[string]json.RawMessage)
-
-	if a.Category != nil {
-		object["category"], err = json.Marshal(a.Category)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'category': %w", err)
-		}
-	}
-
-	if a.Label != nil {
-		object["label"], err = json.Marshal(a.Label)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'label': %w", err)
-		}
-	}
-
-	if a.Name != nil {
-		object["name"], err = json.Marshal(a.Name)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'name': %w", err)
-		}
-	}
-
-	if a.Subcategory != nil {
-		object["subcategory"], err = json.Marshal(a.Subcategory)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'subcategory': %w", err)
-		}
-	}
-
-	for fieldName, field := range a.AdditionalProperties {
-		object[fieldName], err = json.Marshal(field)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
-		}
-	}
-	return json.Marshal(object)
-}

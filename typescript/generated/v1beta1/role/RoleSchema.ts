@@ -898,6 +898,11 @@ const RoleSchema: Record<string, unknown> = {
             "content": {
               "application/json": {
                 "schema": {
+                  "x-go-type": "keychainv1beta1.KeychainPage",
+                  "x-go-type-import": {
+                    "path": "github.com/meshery/schemas/models/v1beta1/keychain",
+                    "name": "keychainv1beta1"
+                  },
                   "type": "object",
                   "required": [
                     "page",
