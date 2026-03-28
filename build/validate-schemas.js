@@ -118,7 +118,7 @@ function loadAdvisoryBaseline() {
 
 function recordIssue(file, message, severity = "error") {
   const bucket = severity === "warning" ? advisoryViolations : blockingViolations;
-  const relativeFile = path.relative(ROOT, file);
+  const relativeFile = path.relative(ROOT, file).split(path.sep).join("/");
 
   if (severity === "warning") {
     const baselineKey = `${relativeFile}\t${message}`;
