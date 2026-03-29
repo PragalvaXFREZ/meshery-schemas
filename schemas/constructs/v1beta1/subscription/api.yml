@@ -140,7 +140,7 @@ paths:
           $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
-  /api/entitlement/subscriptions/{subscriptionId}/upgrade-preview:
+  /api/entitlement/subscriptions/{subscriptionId}/upgradePreview:
     post:
       x-internal: ["cloud"]
       summary: Preview the invoice for upgrading or downgrading an existing subscription by changing one of the plans in the subscription

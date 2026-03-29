@@ -15,7 +15,7 @@ security:
   - jwt: []
 
 paths:
-  /api/academy/curricula/registered:
+  /api/academy/Curricula/registered:
     get:
       x-internal: ["cloud"]
       tags:
@@ -87,6 +87,7 @@ paths:
         "500":
           description: Server error
 
+  /api/academy/Curricula:
     get:
       x-internal: ["cloud"]
       tags:
@@ -812,7 +813,7 @@ components:
       description: Expiry time for curricula access
       x-go-type: "*time.Time"
       x-oapi-codegen-extra-tags:
-        json: "accessExpiresAt"
+        json: "access_expires_at"
         db: "access_expires_at"
 
     RegisterToAcademyContentRequest:
@@ -1007,7 +1008,7 @@ components:
             json: "team_id"
             db: "team_id"
 
-        accessExpiresAt:
+        access_expires_at:
           $ref: "#/components/schemas/AcademyCurriculaAccessExpiresAt"
 
         access_status:
@@ -1500,17 +1501,17 @@ components:
         - final
         - lastmod
         - draft
-        - filePath
-        - passPercentage
-        - timeLimit
-        - maxAttempts
+        - file_path
+        - pass_percentage
+        - time_limit
+        - max_attempts
         - questions
-        - totalQuestions
-        - totalQuestionsInBank
-        - totalQuestionSets
-        - totalMarks
+        - total_questions
+        - total_questions_in_bank
+        - total_question_sets
+        - total_marks
         - prerequisites
-        - nextPage
+        - next_page
 
       properties:
         id:
@@ -1553,15 +1554,15 @@ components:
           format: date
         draft:
           type: boolean
-        filePath:
+        file_path:
           type: string
-        passPercentage:
+        pass_percentage:
           type: number
           format: float
-        timeLimit:
+        time_limit:
           description: Time limit for the quiz in minutes. A value of 0 indicates no time limit.
           type: string
-        maxAttempts:
+        max_attempts:
           description: Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.
           type: integer
         questions:
@@ -1569,13 +1570,13 @@ components:
           items:
             $ref: "#/components/schemas/Question"
             x-go-type: Question
-        totalQuestions:
+        total_questions:
           type: integer
-        totalQuestionsInBank:
+        total_questions_in_bank:
           type: integer
-        totalQuestionSets:
+        total_question_sets:
           type: integer
-        totalMarks:
+        total_marks:
           type: integer
 
         prerequisites:
@@ -1588,7 +1589,7 @@ components:
           $ref: "#/components/schemas/Parent"
           x-go-type: Parent
 
-        nextPage:
+        next_page:
           $ref: "#/components/schemas/Parent"
           x-go-type: Parent
 
@@ -1818,28 +1819,28 @@ components:
       required:
         - score
         - passed
-        - totalMarks
-        - passPercentage
+        - total_marks
+        - pass_percentage
         - quiz
-        - attemptedAt
+        - attempted_at
         - attempts
-        - percentageScored
-        - correctSubmissions
+        - percentage_scored
+        - correct_submissions
 
       properties:
         score:
           type: integer
         passed:
           type: boolean
-        percentageScored:
+        percentage_scored:
           type: number
           format: float
-        totalMarks:
+        total_marks:
           type: integer
-        passPercentage:
+        pass_percentage:
           type: number
           format: float
-        correctSubmissions:
+        correct_submissions:
           type: object
           additionalProperties:
             type: boolean
@@ -1847,7 +1848,7 @@ components:
           $ref: "#/components/schemas/Quiz"
           x-go-type: Quiz
 
-        attemptedAt:
+        attempted_at:
           type: string
           format: date-time
         attempts:
@@ -1946,14 +1947,14 @@ components:
       required:
         - pagesize
         - page
-        - contentType
+        - content_type
         - status
       properties:
         pagesize:
           type: integer
         page:
           type: integer
-        contentType:
+        content_type:
           type: array
           items:
             type: string
