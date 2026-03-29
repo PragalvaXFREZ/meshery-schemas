@@ -168,7 +168,7 @@ type ConnectionPayload struct {
 	Status string `json:"status" yaml:"status"`
 
 	// SubType Connection sub-type
-	SubType string `json:"sub_type" yaml:"sub_type"`
+	SubType string `json:"subType" yaml:"subType"`
 
 	// Type Connection type
 	Type string `json:"type" yaml:"type"`

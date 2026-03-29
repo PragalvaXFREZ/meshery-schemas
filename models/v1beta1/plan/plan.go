@@ -120,3 +120,9 @@ type PlanPage struct {
 
 // PlanUnit defines model for PlanUnit.
 type PlanUnit string
+
+// Page defines model for page.
+type Page = string
+
+// Pagesize defines model for pagesize.
+type Pagesize = string

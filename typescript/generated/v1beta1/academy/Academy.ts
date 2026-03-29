@@ -4,17 +4,15 @@
  */
 
 export interface paths {
-  "/api/academy/Curricula/registered": {
+  "/api/academy/curricula/registered": {
     /** Returns a list of academy content registered by the user with optional filtering. */
     get: operations["getMyAcademyCurricula"];
   };
   "/api/academy/curricula": {
-    /** Creates a new academy curricula with the provided details. */
-    post: operations["createAcademyCurricula"];
-  };
-  "/api/academy/Curricula": {
     /** Returns a list of academy content with optional filtering. */
     get: operations["getAcademyCurricula"];
+    /** Creates a new academy curricula with the provided details. */
+    post: operations["createAcademyCurricula"];
   };
   "/api/academy/{type}/{orgId}/{slug}": {
     /** Returns a learning path identified by type, orgId, and slug. */
@@ -1079,7 +1077,7 @@ export interface components {
        */
       team_id: string;
       /** @description Expiry time for curricula access */
-      access_expires_at?: string;
+      accessExpiresAt?: string;
       /**
        * @description Current access status of the curricula
        * @enum {string}
@@ -2461,11 +2459,11 @@ export interface components {
         score: number;
         passed: boolean;
         /** Format: float */
-        percentage_scored: number;
-        total_marks: number;
+        percentageScored: number;
+        totalMarks: number;
         /** Format: float */
-        pass_percentage: number;
-        correct_submissions: { [key: string]: boolean };
+        passPercentage: number;
+        correctSubmissions: { [key: string]: boolean };
         quiz: {
           id: string;
           /**
@@ -2491,13 +2489,13 @@ export interface components {
           /** Format: date */
           lastmod: string;
           draft: boolean;
-          file_path: string;
+          filePath: string;
           /** Format: float */
-          pass_percentage: number;
+          passPercentage: number;
           /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-          time_limit: string;
+          timeLimit: string;
           /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-          max_attempts: number;
+          maxAttempts: number;
           questions: {
             id: string;
             text: string;
@@ -2516,10 +2514,10 @@ export interface components {
             }[];
             correctAnswer: string;
           }[];
-          total_questions: number;
-          total_questions_in_bank: number;
-          total_question_sets: number;
-          total_marks: number;
+          totalQuestions: number;
+          totalQuestionsInBank: number;
+          totalQuestionSets: number;
+          totalMarks: number;
           prerequisites: {
             id: string;
             title: string;
@@ -2532,7 +2530,7 @@ export interface components {
             relPermalink: string;
             type: string;
           };
-          next_page: {
+          nextPage: {
             id: string;
             title: string;
             relPermalink: string;
@@ -2540,7 +2538,7 @@ export interface components {
           };
         };
         /** Format: date-time */
-        attempted_at: string;
+        attemptedAt: string;
         attempts: number;
       }[];
     };
@@ -2549,11 +2547,11 @@ export interface components {
       score: number;
       passed: boolean;
       /** Format: float */
-      percentage_scored: number;
-      total_marks: number;
+      percentageScored: number;
+      totalMarks: number;
       /** Format: float */
-      pass_percentage: number;
-      correct_submissions: { [key: string]: boolean };
+      passPercentage: number;
+      correctSubmissions: { [key: string]: boolean };
       quiz: {
         id: string;
         /**
@@ -2579,13 +2577,13 @@ export interface components {
         /** Format: date */
         lastmod: string;
         draft: boolean;
-        file_path: string;
+        filePath: string;
         /** Format: float */
-        pass_percentage: number;
+        passPercentage: number;
         /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-        time_limit: string;
+        timeLimit: string;
         /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-        max_attempts: number;
+        maxAttempts: number;
         questions: {
           id: string;
           text: string;
@@ -2600,10 +2598,10 @@ export interface components {
           }[];
           correctAnswer: string;
         }[];
-        total_questions: number;
-        total_questions_in_bank: number;
-        total_question_sets: number;
-        total_marks: number;
+        totalQuestions: number;
+        totalQuestionsInBank: number;
+        totalQuestionSets: number;
+        totalMarks: number;
         prerequisites: {
           id: string;
           title: string;
@@ -2616,7 +2614,7 @@ export interface components {
           relPermalink: string;
           type: string;
         };
-        next_page: {
+        nextPage: {
           id: string;
           title: string;
           relPermalink: string;
@@ -2624,7 +2622,7 @@ export interface components {
         };
       };
       /** Format: date-time */
-      attempted_at: string;
+      attemptedAt: string;
       attempts: number;
     }[];
     ChildNode: {
@@ -2811,11 +2809,11 @@ export interface components {
           score: number;
           passed: boolean;
           /** Format: float */
-          percentage_scored: number;
-          total_marks: number;
+          percentageScored: number;
+          totalMarks: number;
           /** Format: float */
-          pass_percentage: number;
-          correct_submissions: { [key: string]: boolean };
+          passPercentage: number;
+          correctSubmissions: { [key: string]: boolean };
           quiz: {
             id: string;
             /**
@@ -2841,13 +2839,13 @@ export interface components {
             /** Format: date */
             lastmod: string;
             draft: boolean;
-            file_path: string;
+            filePath: string;
             /** Format: float */
-            pass_percentage: number;
+            passPercentage: number;
             /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-            time_limit: string;
+            timeLimit: string;
             /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-            max_attempts: number;
+            maxAttempts: number;
             questions: {
               id: string;
               text: string;
@@ -2866,10 +2864,10 @@ export interface components {
               }[];
               correctAnswer: string;
             }[];
-            total_questions: number;
-            total_questions_in_bank: number;
-            total_question_sets: number;
-            total_marks: number;
+            totalQuestions: number;
+            totalQuestionsInBank: number;
+            totalQuestionSets: number;
+            totalMarks: number;
             prerequisites: {
               id: string;
               title: string;
@@ -2882,7 +2880,7 @@ export interface components {
               relPermalink: string;
               type: string;
             };
-            next_page: {
+            nextPage: {
               id: string;
               title: string;
               relPermalink: string;
@@ -2890,7 +2888,7 @@ export interface components {
             };
           };
           /** Format: date-time */
-          attempted_at: string;
+          attemptedAt: string;
           attempts: number;
         };
       };
@@ -2968,13 +2966,13 @@ export interface components {
       /** Format: date */
       lastmod: string;
       draft: boolean;
-      file_path: string;
+      filePath: string;
       /** Format: float */
-      pass_percentage: number;
+      passPercentage: number;
       /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-      time_limit: string;
+      timeLimit: string;
       /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-      max_attempts: number;
+      maxAttempts: number;
       questions: {
         id: string;
         text: string;
@@ -2989,10 +2987,10 @@ export interface components {
         }[];
         correctAnswer: string;
       }[];
-      total_questions: number;
-      total_questions_in_bank: number;
-      total_question_sets: number;
-      total_marks: number;
+      totalQuestions: number;
+      totalQuestionsInBank: number;
+      totalQuestionSets: number;
+      totalMarks: number;
       prerequisites: {
         id: string;
         title: string;
@@ -3005,7 +3003,7 @@ export interface components {
         relPermalink: string;
         type: string;
       };
-      next_page: {
+      nextPage: {
         id: string;
         title: string;
         relPermalink: string;
@@ -3129,11 +3127,11 @@ export interface components {
         score: number;
         passed: boolean;
         /** Format: float */
-        percentage_scored: number;
-        total_marks: number;
+        percentageScored: number;
+        totalMarks: number;
         /** Format: float */
-        pass_percentage: number;
-        correct_submissions: { [key: string]: boolean };
+        passPercentage: number;
+        correctSubmissions: { [key: string]: boolean };
         quiz: {
           id: string;
           /**
@@ -3159,13 +3157,13 @@ export interface components {
           /** Format: date */
           lastmod: string;
           draft: boolean;
-          file_path: string;
+          filePath: string;
           /** Format: float */
-          pass_percentage: number;
+          passPercentage: number;
           /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-          time_limit: string;
+          timeLimit: string;
           /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-          max_attempts: number;
+          maxAttempts: number;
           questions: {
             id: string;
             text: string;
@@ -3184,10 +3182,10 @@ export interface components {
             }[];
             correctAnswer: string;
           }[];
-          total_questions: number;
-          total_questions_in_bank: number;
-          total_question_sets: number;
-          total_marks: number;
+          totalQuestions: number;
+          totalQuestionsInBank: number;
+          totalQuestionSets: number;
+          totalMarks: number;
           prerequisites: {
             id: string;
             title: string;
@@ -3200,7 +3198,7 @@ export interface components {
             relPermalink: string;
             type: string;
           };
-          next_page: {
+          nextPage: {
             id: string;
             title: string;
             relPermalink: string;
@@ -3208,7 +3206,7 @@ export interface components {
           };
         };
         /** Format: date-time */
-        attempted_at: string;
+        attemptedAt: string;
         attempts: number;
       };
       test: {
@@ -3236,13 +3234,13 @@ export interface components {
         /** Format: date */
         lastmod: string;
         draft: boolean;
-        file_path: string;
+        filePath: string;
         /** Format: float */
-        pass_percentage: number;
+        passPercentage: number;
         /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-        time_limit: string;
+        timeLimit: string;
         /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-        max_attempts: number;
+        maxAttempts: number;
         questions: {
           id: string;
           text: string;
@@ -3257,10 +3255,10 @@ export interface components {
           }[];
           correctAnswer: string;
         }[];
-        total_questions: number;
-        total_questions_in_bank: number;
-        total_question_sets: number;
-        total_marks: number;
+        totalQuestions: number;
+        totalQuestionsInBank: number;
+        totalQuestionSets: number;
+        totalMarks: number;
         prerequisites: {
           id: string;
           title: string;
@@ -3273,7 +3271,7 @@ export interface components {
           relPermalink: string;
           type: string;
         };
-        next_page: {
+        nextPage: {
           id: string;
           title: string;
           relPermalink: string;
@@ -3285,11 +3283,11 @@ export interface components {
       score: number;
       passed: boolean;
       /** Format: float */
-      percentage_scored: number;
-      total_marks: number;
+      percentageScored: number;
+      totalMarks: number;
       /** Format: float */
-      pass_percentage: number;
-      correct_submissions: { [key: string]: boolean };
+      passPercentage: number;
+      correctSubmissions: { [key: string]: boolean };
       quiz: {
         id: string;
         /**
@@ -3315,13 +3313,13 @@ export interface components {
         /** Format: date */
         lastmod: string;
         draft: boolean;
-        file_path: string;
+        filePath: string;
         /** Format: float */
-        pass_percentage: number;
+        passPercentage: number;
         /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-        time_limit: string;
+        timeLimit: string;
         /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-        max_attempts: number;
+        maxAttempts: number;
         questions: {
           id: string;
           text: string;
@@ -3336,10 +3334,10 @@ export interface components {
           }[];
           correctAnswer: string;
         }[];
-        total_questions: number;
-        total_questions_in_bank: number;
-        total_question_sets: number;
-        total_marks: number;
+        totalQuestions: number;
+        totalQuestionsInBank: number;
+        totalQuestionSets: number;
+        totalMarks: number;
         prerequisites: {
           id: string;
           title: string;
@@ -3352,7 +3350,7 @@ export interface components {
           relPermalink: string;
           type: string;
         };
-        next_page: {
+        nextPage: {
           id: string;
           title: string;
           relPermalink: string;
@@ -3360,7 +3358,7 @@ export interface components {
         };
       };
       /** Format: date-time */
-      attempted_at: string;
+      attemptedAt: string;
       attempts: number;
     };
     UserRegistration: {
@@ -3416,7 +3414,7 @@ export interface components {
     CurriculaRegistrationsFilter: {
       pagesize: number;
       page: number;
-      content_type: string[];
+      contentType: string[];
       status: string[];
     };
     CurriculaRegistrationsResponse: {
@@ -3492,11 +3490,11 @@ export interface components {
             score: number;
             passed: boolean;
             /** Format: float */
-            percentage_scored: number;
-            total_marks: number;
+            percentageScored: number;
+            totalMarks: number;
             /** Format: float */
-            pass_percentage: number;
-            correct_submissions: { [key: string]: boolean };
+            passPercentage: number;
+            correctSubmissions: { [key: string]: boolean };
             quiz: {
               id: string;
               /**
@@ -3522,13 +3520,13 @@ export interface components {
               /** Format: date */
               lastmod: string;
               draft: boolean;
-              file_path: string;
+              filePath: string;
               /** Format: float */
-              pass_percentage: number;
+              passPercentage: number;
               /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-              time_limit: string;
+              timeLimit: string;
               /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-              max_attempts: number;
+              maxAttempts: number;
               questions: {
                 id: string;
                 text: string;
@@ -3547,10 +3545,10 @@ export interface components {
                 }[];
                 correctAnswer: string;
               }[];
-              total_questions: number;
-              total_questions_in_bank: number;
-              total_question_sets: number;
-              total_marks: number;
+              totalQuestions: number;
+              totalQuestionsInBank: number;
+              totalQuestionSets: number;
+              totalMarks: number;
               prerequisites: {
                 id: string;
                 title: string;
@@ -3563,7 +3561,7 @@ export interface components {
                 relPermalink: string;
                 type: string;
               };
-              next_page: {
+              nextPage: {
                 id: string;
                 title: string;
                 relPermalink: string;
@@ -3571,7 +3569,7 @@ export interface components {
               };
             };
             /** Format: date-time */
-            attempted_at: string;
+            attemptedAt: string;
             attempts: number;
           };
         };
@@ -3867,399 +3865,6 @@ export interface operations {
       500: unknown;
     };
   };
-  /** Creates a new academy curricula with the provided details. */
-  createAcademyCurricula: {
-    responses: {
-      /** created the curricula */
-      201: {
-        content: {
-          "application/json": {
-            /**
-             * @description Id of the Curricula
-             * @example 923458-3490394-934893
-             */
-            id: string;
-            /** @enum {string} */
-            type: "learning-path" | "challenge" | "certification";
-            /**
-             * @description Organization ID that owns this learning path
-             * @example layer5
-             */
-            orgId: string;
-            /**
-             * @description Visibility of the Curricula
-             * @enum {string}
-             */
-            visibility: "public" | "private";
-            /**
-             * @description Status of the Curricula
-             * @example ready
-             * @enum {string}
-             */
-            status: "ready" | "archived" | "not_ready";
-            /**
-             * @description slug of the Curricula
-             * @example intro-kubernetes-course
-             */
-            slug: string;
-            /**
-             * @description Level of the Curricula
-             * @enum {string}
-             */
-            level: "beginner" | "intermediate" | "advanced";
-            /**
-             * Format: uuid
-             * @description ID of the badge to be awarded on completion of this curricula
-             */
-            badge_id?: string;
-            /** @description ID of the invite associated with this Curricula */
-            inviteId?: string;
-            /** @description ID of the workspace to which this Curricula belongs */
-            workspace_id?: string;
-            /** @description When the Curricula item was created */
-            createdAt: string;
-            /** @description When the Curricula was last updated */
-            updatedAt: string;
-            deletedAt: string;
-            /** @description Additional metadata about the Curricula */
-            metadata: {
-              /**
-               * @description Title of the learning path
-               * @example Mastering Kubernetes for Engineers
-               */
-              title: string;
-              /**
-               * @description Short description of the curricula
-               * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
-               */
-              description: string;
-              /**
-               * @description Detailed description of the curricula
-               * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
-               */
-              detailedDescription?: string;
-              /**
-               * Format: uri
-               * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-               * @example kubernetes-icon.svg
-               */
-              banner?: string | null;
-              /**
-               * Format: uri
-               * @description Canonical URL for the learning path
-               * @example http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
-               */
-              permalink: string;
-              certificate?: {
-                /**
-                 * @description Unique identifier for the certificate
-                 * @example 1234567890abcdef
-                 */
-                id: string;
-                /**
-                 * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                 */
-                orgId: string;
-                /**
-                 * @description ID of the recipient (user) who received the certificate
-                 * @example 1234567890abcdef
-                 */
-                recipientId: string;
-                /**
-                 * @description Name of the recipient (user) who received the certificate
-                 * @example John Doe
-                 */
-                recipientName: string;
-                /**
-                 * @description Title of the certificate
-                 * @example Kubernetes Expert Certification
-                 */
-                title: string;
-                /**
-                 * @description Description of the certificate
-                 * @example Awarded for successfully completing the Kubernetes Expert course
-                 */
-                description: string;
-                /** @description List of issuing authorities for the certificate */
-                issuingAuthorities: ({
-                  /**
-                   * @description Name of the issuing authority
-                   * @example Cloud Native Foundation
-                   */
-                  name: string;
-                  /**
-                   * @description Role of the issuing authority
-                   * @example COO
-                   */
-                  role?: string;
-                  /**
-                   * Format: uri
-                   * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
-                   * @example http://localhost:9876/signatures/cloud-native-foundation.png
-                   */
-                  signatureUrl?: string;
-                } & {
-                  url: unknown;
-                })[];
-                /**
-                 * Format: date-time
-                 * @description Date when the certificate was issued
-                 * @example 2023-10-01T12:00:00Z
-                 */
-                issuedDate: string;
-                /**
-                 * Format: date-time
-                 * @description Date when the certificate expires (optional)
-                 * @example 2025-10-01T12:00:00Z
-                 */
-                expirationDate?: string;
-                /**
-                 * @description Number of months after which the certificate expires
-                 * @example 24
-                 */
-                expiresIn?: number;
-              };
-              /** @description List of children items in the top-level curricula */
-              children?: {
-                /**
-                 * @description Unique identifier for the course
-                 * @example 1234567890abcdef
-                 */
-                id: string;
-                /**
-                 * @description Title of the course
-                 * @example Kubernetes Basics
-                 */
-                title: string;
-                /**
-                 * Format: uri
-                 * @description URL to the course content
-                 * @example http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
-                 */
-                permalink: string;
-                /**
-                 * @description Course description
-                 * @example Learn the basics of Kubernetes
-                 */
-                description: string;
-                /**
-                 * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
-                 * @example eg 1 , 2
-                 */
-                weight?: number;
-                /**
-                 * Format: uri
-                 * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-                 * @example kubernetes-icon.svg
-                 */
-                banner?: string | null;
-                /**
-                 * @description Type of the content (e.g., learning-path, challenge, certification)
-                 * @enum {string}
-                 */
-                type?: "learning-path" | "challenge" | "certification";
-                /** @description List of child nodes (sub-courses or modules) */
-                children?: { [key: string]: unknown }[];
-              }[];
-            } & { [key: string]: unknown };
-          };
-        };
-      };
-      /** Invalid request parameters */
-      400: unknown;
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Server error */
-      500: unknown;
-    };
-    requestBody: {
-      content: {
-        "application/json": {
-          /**
-           * @description Type of the curricula
-           * @enum {string}
-           */
-          type: "learning-path" | "challenge" | "certification";
-          /**
-           * @description Title of the curricula
-           * @example Introduction to Kubernetes
-           */
-          title: string;
-          /**
-           * @description Organization ID that owns this learning path
-           * @example layer5
-           */
-          orgId: string;
-          /** @description ID of the workspace to which this Curricula belongs */
-          workspace_id: string;
-          /**
-           * Format: uuid
-           * @description ID of the badge to be awarded on completion of this curricula
-           */
-          badge_id?: string;
-          /**
-           * Format: uuid
-           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-           */
-          team_id: string;
-          /** @description Expiry time for curricula access */
-          access_expires_at?: string;
-          /**
-           * @description Current access status of the curricula
-           * @enum {string}
-           */
-          access_status: "enabled" | "disabled";
-          /** @description Additional metadata about the Curricula */
-          metadata: {
-            /**
-             * @description Title of the learning path
-             * @example Mastering Kubernetes for Engineers
-             */
-            title: string;
-            /**
-             * @description Short description of the curricula
-             * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
-             */
-            description: string;
-            /**
-             * @description Detailed description of the curricula
-             * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
-             */
-            detailedDescription?: string;
-            /**
-             * Format: uri
-             * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-             * @example kubernetes-icon.svg
-             */
-            banner?: string | null;
-            /**
-             * Format: uri
-             * @description Canonical URL for the learning path
-             * @example http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
-             */
-            permalink: string;
-            certificate?: {
-              /**
-               * @description Unique identifier for the certificate
-               * @example 1234567890abcdef
-               */
-              id: string;
-              /**
-               * Format: uuid
-               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-               */
-              orgId: string;
-              /**
-               * @description ID of the recipient (user) who received the certificate
-               * @example 1234567890abcdef
-               */
-              recipientId: string;
-              /**
-               * @description Name of the recipient (user) who received the certificate
-               * @example John Doe
-               */
-              recipientName: string;
-              /**
-               * @description Title of the certificate
-               * @example Kubernetes Expert Certification
-               */
-              title: string;
-              /**
-               * @description Description of the certificate
-               * @example Awarded for successfully completing the Kubernetes Expert course
-               */
-              description: string;
-              /** @description List of issuing authorities for the certificate */
-              issuingAuthorities: ({
-                /**
-                 * @description Name of the issuing authority
-                 * @example Cloud Native Foundation
-                 */
-                name: string;
-                /**
-                 * @description Role of the issuing authority
-                 * @example COO
-                 */
-                role?: string;
-                /**
-                 * Format: uri
-                 * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
-                 * @example http://localhost:9876/signatures/cloud-native-foundation.png
-                 */
-                signatureUrl?: string;
-              } & {
-                url: unknown;
-              })[];
-              /**
-               * Format: date-time
-               * @description Date when the certificate was issued
-               * @example 2023-10-01T12:00:00Z
-               */
-              issuedDate: string;
-              /**
-               * Format: date-time
-               * @description Date when the certificate expires (optional)
-               * @example 2025-10-01T12:00:00Z
-               */
-              expirationDate?: string;
-              /**
-               * @description Number of months after which the certificate expires
-               * @example 24
-               */
-              expiresIn?: number;
-            };
-            /** @description List of children items in the top-level curricula */
-            children?: {
-              /**
-               * @description Unique identifier for the course
-               * @example 1234567890abcdef
-               */
-              id: string;
-              /**
-               * @description Title of the course
-               * @example Kubernetes Basics
-               */
-              title: string;
-              /**
-               * Format: uri
-               * @description URL to the course content
-               * @example http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
-               */
-              permalink: string;
-              /**
-               * @description Course description
-               * @example Learn the basics of Kubernetes
-               */
-              description: string;
-              /**
-               * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
-               * @example eg 1 , 2
-               */
-              weight?: number;
-              /**
-               * Format: uri
-               * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
-               * @example kubernetes-icon.svg
-               */
-              banner?: string | null;
-              /**
-               * @description Type of the content (e.g., learning-path, challenge, certification)
-               * @enum {string}
-               */
-              type?: "learning-path" | "challenge" | "certification";
-              /** @description List of child nodes (sub-courses or modules) */
-              children?: { [key: string]: unknown }[];
-            }[];
-          } & { [key: string]: unknown };
-        };
-      };
-    };
-  };
   /** Returns a list of academy content with optional filtering. */
   getAcademyCurricula: {
     parameters: {
@@ -4504,6 +4109,399 @@ export interface operations {
       };
       /** Server error */
       500: unknown;
+    };
+  };
+  /** Creates a new academy curricula with the provided details. */
+  createAcademyCurricula: {
+    responses: {
+      /** created the curricula */
+      201: {
+        content: {
+          "application/json": {
+            /**
+             * @description Id of the Curricula
+             * @example 923458-3490394-934893
+             */
+            id: string;
+            /** @enum {string} */
+            type: "learning-path" | "challenge" | "certification";
+            /**
+             * @description Organization ID that owns this learning path
+             * @example layer5
+             */
+            orgId: string;
+            /**
+             * @description Visibility of the Curricula
+             * @enum {string}
+             */
+            visibility: "public" | "private";
+            /**
+             * @description Status of the Curricula
+             * @example ready
+             * @enum {string}
+             */
+            status: "ready" | "archived" | "not_ready";
+            /**
+             * @description slug of the Curricula
+             * @example intro-kubernetes-course
+             */
+            slug: string;
+            /**
+             * @description Level of the Curricula
+             * @enum {string}
+             */
+            level: "beginner" | "intermediate" | "advanced";
+            /**
+             * Format: uuid
+             * @description ID of the badge to be awarded on completion of this curricula
+             */
+            badge_id?: string;
+            /** @description ID of the invite associated with this Curricula */
+            inviteId?: string;
+            /** @description ID of the workspace to which this Curricula belongs */
+            workspace_id?: string;
+            /** @description When the Curricula item was created */
+            createdAt: string;
+            /** @description When the Curricula was last updated */
+            updatedAt: string;
+            deletedAt: string;
+            /** @description Additional metadata about the Curricula */
+            metadata: {
+              /**
+               * @description Title of the learning path
+               * @example Mastering Kubernetes for Engineers
+               */
+              title: string;
+              /**
+               * @description Short description of the curricula
+               * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
+               */
+              description: string;
+              /**
+               * @description Detailed description of the curricula
+               * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
+               */
+              detailedDescription?: string;
+              /**
+               * Format: uri
+               * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+               * @example kubernetes-icon.svg
+               */
+              banner?: string | null;
+              /**
+               * Format: uri
+               * @description Canonical URL for the learning path
+               * @example http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+               */
+              permalink: string;
+              certificate?: {
+                /**
+                 * @description Unique identifier for the certificate
+                 * @example 1234567890abcdef
+                 */
+                id: string;
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                orgId: string;
+                /**
+                 * @description ID of the recipient (user) who received the certificate
+                 * @example 1234567890abcdef
+                 */
+                recipientId: string;
+                /**
+                 * @description Name of the recipient (user) who received the certificate
+                 * @example John Doe
+                 */
+                recipientName: string;
+                /**
+                 * @description Title of the certificate
+                 * @example Kubernetes Expert Certification
+                 */
+                title: string;
+                /**
+                 * @description Description of the certificate
+                 * @example Awarded for successfully completing the Kubernetes Expert course
+                 */
+                description: string;
+                /** @description List of issuing authorities for the certificate */
+                issuingAuthorities: ({
+                  /**
+                   * @description Name of the issuing authority
+                   * @example Cloud Native Foundation
+                   */
+                  name: string;
+                  /**
+                   * @description Role of the issuing authority
+                   * @example COO
+                   */
+                  role?: string;
+                  /**
+                   * Format: uri
+                   * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+                   * @example http://localhost:9876/signatures/cloud-native-foundation.png
+                   */
+                  signatureUrl?: string;
+                } & {
+                  url: unknown;
+                })[];
+                /**
+                 * Format: date-time
+                 * @description Date when the certificate was issued
+                 * @example 2023-10-01T12:00:00Z
+                 */
+                issuedDate: string;
+                /**
+                 * Format: date-time
+                 * @description Date when the certificate expires (optional)
+                 * @example 2025-10-01T12:00:00Z
+                 */
+                expirationDate?: string;
+                /**
+                 * @description Number of months after which the certificate expires
+                 * @example 24
+                 */
+                expiresIn?: number;
+              };
+              /** @description List of children items in the top-level curricula */
+              children?: {
+                /**
+                 * @description Unique identifier for the course
+                 * @example 1234567890abcdef
+                 */
+                id: string;
+                /**
+                 * @description Title of the course
+                 * @example Kubernetes Basics
+                 */
+                title: string;
+                /**
+                 * Format: uri
+                 * @description URL to the course content
+                 * @example http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
+                 */
+                permalink: string;
+                /**
+                 * @description Course description
+                 * @example Learn the basics of Kubernetes
+                 */
+                description: string;
+                /**
+                 * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
+                 * @example eg 1 , 2
+                 */
+                weight?: number;
+                /**
+                 * Format: uri
+                 * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+                 * @example kubernetes-icon.svg
+                 */
+                banner?: string | null;
+                /**
+                 * @description Type of the content (e.g., learning-path, challenge, certification)
+                 * @enum {string}
+                 */
+                type?: "learning-path" | "challenge" | "certification";
+                /** @description List of child nodes (sub-courses or modules) */
+                children?: { [key: string]: unknown }[];
+              }[];
+            } & { [key: string]: unknown };
+          };
+        };
+      };
+      /** Invalid request parameters */
+      400: unknown;
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Server error */
+      500: unknown;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /**
+           * @description Type of the curricula
+           * @enum {string}
+           */
+          type: "learning-path" | "challenge" | "certification";
+          /**
+           * @description Title of the curricula
+           * @example Introduction to Kubernetes
+           */
+          title: string;
+          /**
+           * @description Organization ID that owns this learning path
+           * @example layer5
+           */
+          orgId: string;
+          /** @description ID of the workspace to which this Curricula belongs */
+          workspace_id: string;
+          /**
+           * Format: uuid
+           * @description ID of the badge to be awarded on completion of this curricula
+           */
+          badge_id?: string;
+          /**
+           * Format: uuid
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+           */
+          team_id: string;
+          /** @description Expiry time for curricula access */
+          accessExpiresAt?: string;
+          /**
+           * @description Current access status of the curricula
+           * @enum {string}
+           */
+          access_status: "enabled" | "disabled";
+          /** @description Additional metadata about the Curricula */
+          metadata: {
+            /**
+             * @description Title of the learning path
+             * @example Mastering Kubernetes for Engineers
+             */
+            title: string;
+            /**
+             * @description Short description of the curricula
+             * @example Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
+             */
+            description: string;
+            /**
+             * @description Detailed description of the curricula
+             * @example This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
+             */
+            detailedDescription?: string;
+            /**
+             * Format: uri
+             * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+             * @example kubernetes-icon.svg
+             */
+            banner?: string | null;
+            /**
+             * Format: uri
+             * @description Canonical URL for the learning path
+             * @example http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+             */
+            permalink: string;
+            certificate?: {
+              /**
+               * @description Unique identifier for the certificate
+               * @example 1234567890abcdef
+               */
+              id: string;
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              orgId: string;
+              /**
+               * @description ID of the recipient (user) who received the certificate
+               * @example 1234567890abcdef
+               */
+              recipientId: string;
+              /**
+               * @description Name of the recipient (user) who received the certificate
+               * @example John Doe
+               */
+              recipientName: string;
+              /**
+               * @description Title of the certificate
+               * @example Kubernetes Expert Certification
+               */
+              title: string;
+              /**
+               * @description Description of the certificate
+               * @example Awarded for successfully completing the Kubernetes Expert course
+               */
+              description: string;
+              /** @description List of issuing authorities for the certificate */
+              issuingAuthorities: ({
+                /**
+                 * @description Name of the issuing authority
+                 * @example Cloud Native Foundation
+                 */
+                name: string;
+                /**
+                 * @description Role of the issuing authority
+                 * @example COO
+                 */
+                role?: string;
+                /**
+                 * Format: uri
+                 * @description URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+                 * @example http://localhost:9876/signatures/cloud-native-foundation.png
+                 */
+                signatureUrl?: string;
+              } & {
+                url: unknown;
+              })[];
+              /**
+               * Format: date-time
+               * @description Date when the certificate was issued
+               * @example 2023-10-01T12:00:00Z
+               */
+              issuedDate: string;
+              /**
+               * Format: date-time
+               * @description Date when the certificate expires (optional)
+               * @example 2025-10-01T12:00:00Z
+               */
+              expirationDate?: string;
+              /**
+               * @description Number of months after which the certificate expires
+               * @example 24
+               */
+              expiresIn?: number;
+            };
+            /** @description List of children items in the top-level curricula */
+            children?: {
+              /**
+               * @description Unique identifier for the course
+               * @example 1234567890abcdef
+               */
+              id: string;
+              /**
+               * @description Title of the course
+               * @example Kubernetes Basics
+               */
+              title: string;
+              /**
+               * Format: uri
+               * @description URL to the course content
+               * @example http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
+               */
+              permalink: string;
+              /**
+               * @description Course description
+               * @example Learn the basics of Kubernetes
+               */
+              description: string;
+              /**
+               * @description A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
+               * @example eg 1 , 2
+               */
+              weight?: number;
+              /**
+               * Format: uri
+               * @description Filename of the banner image, which should be placed in the same directory as the _index.md file
+               * @example kubernetes-icon.svg
+               */
+              banner?: string | null;
+              /**
+               * @description Type of the content (e.g., learning-path, challenge, certification)
+               * @enum {string}
+               */
+              type?: "learning-path" | "challenge" | "certification";
+              /** @description List of child nodes (sub-courses or modules) */
+              children?: { [key: string]: unknown }[];
+            }[];
+          } & { [key: string]: unknown };
+        };
+      };
     };
   };
   registerToAcademyContent: {
@@ -5372,7 +5370,7 @@ export interface operations {
            */
           team_id: string;
           /** @description Expiry time for curricula access */
-          access_expires_at?: string;
+          accessExpiresAt?: string;
           /**
            * @description Current access status of the curricula
            * @enum {string}
@@ -5577,11 +5575,11 @@ export interface operations {
                   score: number;
                   passed: boolean;
                   /** Format: float */
-                  percentage_scored: number;
-                  total_marks: number;
+                  percentageScored: number;
+                  totalMarks: number;
                   /** Format: float */
-                  pass_percentage: number;
-                  correct_submissions: { [key: string]: boolean };
+                  passPercentage: number;
+                  correctSubmissions: { [key: string]: boolean };
                   quiz: {
                     id: string;
                     /**
@@ -5607,13 +5605,13 @@ export interface operations {
                     /** Format: date */
                     lastmod: string;
                     draft: boolean;
-                    file_path: string;
+                    filePath: string;
                     /** Format: float */
-                    pass_percentage: number;
+                    passPercentage: number;
                     /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-                    time_limit: string;
+                    timeLimit: string;
                     /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-                    max_attempts: number;
+                    maxAttempts: number;
                     questions: {
                       id: string;
                       text: string;
@@ -5632,10 +5630,10 @@ export interface operations {
                       }[];
                       correctAnswer: string;
                     }[];
-                    total_questions: number;
-                    total_questions_in_bank: number;
-                    total_question_sets: number;
-                    total_marks: number;
+                    totalQuestions: number;
+                    totalQuestionsInBank: number;
+                    totalQuestionSets: number;
+                    totalMarks: number;
                     prerequisites: {
                       id: string;
                       title: string;
@@ -5648,7 +5646,7 @@ export interface operations {
                       relPermalink: string;
                       type: string;
                     };
-                    next_page: {
+                    nextPage: {
                       id: string;
                       title: string;
                       relPermalink: string;
@@ -5656,7 +5654,7 @@ export interface operations {
                     };
                   };
                   /** Format: date-time */
-                  attempted_at: string;
+                  attemptedAt: string;
                   attempts: number;
                 };
               };
@@ -5778,13 +5776,13 @@ export interface operations {
             /** Format: date */
             lastmod: string;
             draft: boolean;
-            file_path: string;
+            filePath: string;
             /** Format: float */
-            pass_percentage: number;
+            passPercentage: number;
             /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-            time_limit: string;
+            timeLimit: string;
             /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-            max_attempts: number;
+            maxAttempts: number;
             questions: {
               id: string;
               text: string;
@@ -5803,10 +5801,10 @@ export interface operations {
               }[];
               correctAnswer: string;
             }[];
-            total_questions: number;
-            total_questions_in_bank: number;
-            total_question_sets: number;
-            total_marks: number;
+            totalQuestions: number;
+            totalQuestionsInBank: number;
+            totalQuestionSets: number;
+            totalMarks: number;
             prerequisites: {
               id: string;
               title: string;
@@ -5819,7 +5817,7 @@ export interface operations {
               relPermalink: string;
               type: string;
             };
-            next_page: {
+            nextPage: {
               id: string;
               title: string;
               relPermalink: string;
@@ -5873,13 +5871,13 @@ export interface operations {
             /** Format: date */
             lastmod: string;
             draft: boolean;
-            file_path: string;
+            filePath: string;
             /** Format: float */
-            pass_percentage: number;
+            passPercentage: number;
             /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-            time_limit: string;
+            timeLimit: string;
             /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-            max_attempts: number;
+            maxAttempts: number;
             questions: {
               id: string;
               text: string;
@@ -5898,10 +5896,10 @@ export interface operations {
               }[];
               correctAnswer: string;
             }[];
-            total_questions: number;
-            total_questions_in_bank: number;
-            total_question_sets: number;
-            total_marks: number;
+            totalQuestions: number;
+            totalQuestionsInBank: number;
+            totalQuestionSets: number;
+            totalMarks: number;
             prerequisites: {
               id: string;
               title: string;
@@ -5914,7 +5912,7 @@ export interface operations {
               relPermalink: string;
               type: string;
             };
-            next_page: {
+            nextPage: {
               id: string;
               title: string;
               relPermalink: string;
@@ -5969,11 +5967,11 @@ export interface operations {
             score: number;
             passed: boolean;
             /** Format: float */
-            percentage_scored: number;
-            total_marks: number;
+            percentageScored: number;
+            totalMarks: number;
             /** Format: float */
-            pass_percentage: number;
-            correct_submissions: { [key: string]: boolean };
+            passPercentage: number;
+            correctSubmissions: { [key: string]: boolean };
             quiz: {
               id: string;
               /**
@@ -5999,13 +5997,13 @@ export interface operations {
               /** Format: date */
               lastmod: string;
               draft: boolean;
-              file_path: string;
+              filePath: string;
               /** Format: float */
-              pass_percentage: number;
+              passPercentage: number;
               /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-              time_limit: string;
+              timeLimit: string;
               /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-              max_attempts: number;
+              maxAttempts: number;
               questions: {
                 id: string;
                 text: string;
@@ -6024,10 +6022,10 @@ export interface operations {
                 }[];
                 correctAnswer: string;
               }[];
-              total_questions: number;
-              total_questions_in_bank: number;
-              total_question_sets: number;
-              total_marks: number;
+              totalQuestions: number;
+              totalQuestionsInBank: number;
+              totalQuestionSets: number;
+              totalMarks: number;
               prerequisites: {
                 id: string;
                 title: string;
@@ -6040,7 +6038,7 @@ export interface operations {
                 relPermalink: string;
                 type: string;
               };
-              next_page: {
+              nextPage: {
                 id: string;
                 title: string;
                 relPermalink: string;
@@ -6048,7 +6046,7 @@ export interface operations {
               };
             };
             /** Format: date-time */
-            attempted_at: string;
+            attemptedAt: string;
             attempts: number;
           }[][];
         };
@@ -6076,11 +6074,11 @@ export interface operations {
             score: number;
             passed: boolean;
             /** Format: float */
-            percentage_scored: number;
-            total_marks: number;
+            percentageScored: number;
+            totalMarks: number;
             /** Format: float */
-            pass_percentage: number;
-            correct_submissions: { [key: string]: boolean };
+            passPercentage: number;
+            correctSubmissions: { [key: string]: boolean };
             quiz: {
               id: string;
               /**
@@ -6106,13 +6104,13 @@ export interface operations {
               /** Format: date */
               lastmod: string;
               draft: boolean;
-              file_path: string;
+              filePath: string;
               /** Format: float */
-              pass_percentage: number;
+              passPercentage: number;
               /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-              time_limit: string;
+              timeLimit: string;
               /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-              max_attempts: number;
+              maxAttempts: number;
               questions: {
                 id: string;
                 text: string;
@@ -6131,10 +6129,10 @@ export interface operations {
                 }[];
                 correctAnswer: string;
               }[];
-              total_questions: number;
-              total_questions_in_bank: number;
-              total_question_sets: number;
-              total_marks: number;
+              totalQuestions: number;
+              totalQuestionsInBank: number;
+              totalQuestionSets: number;
+              totalMarks: number;
               prerequisites: {
                 id: string;
                 title: string;
@@ -6147,7 +6145,7 @@ export interface operations {
                 relPermalink: string;
                 type: string;
               };
-              next_page: {
+              nextPage: {
                 id: string;
                 title: string;
                 relPermalink: string;
@@ -6155,7 +6153,7 @@ export interface operations {
               };
             };
             /** Format: date-time */
-            attempted_at: string;
+            attemptedAt: string;
             attempts: number;
           };
         };

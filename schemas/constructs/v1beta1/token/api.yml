@@ -199,14 +199,14 @@ components:
       schema:
         type: string
     tokenId:
-      name: token_id
+      name: tokenId
       in: query
       description: ID of the token.
       required: true
       schema:
         $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
     userId:
-      name: user_id
+      name: userId
       in: query
       description: UUID of the user.
       required: true

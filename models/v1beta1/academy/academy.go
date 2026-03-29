@@ -394,7 +394,7 @@ type ContentType string
 // CreateAcademyCurriculaRequest defines model for CreateAcademyCurriculaRequest.
 type CreateAcademyCurriculaRequest struct {
 	// AccessExpiresAt Expiry time for curricula access
-	AccessExpiresAt *AcademyCurriculaAccessExpiresAt `db:"access_expires_at" json:"access_expires_at" yaml:"access_expires_at"`
+	AccessExpiresAt *AcademyCurriculaAccessExpiresAt `db:"access_expires_at" json:"accessExpiresAt" yaml:"accessExpiresAt"`
 
 	// AccessStatus Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
 	AccessStatus invitationv1beta1.InvitationStatus `db:"access_status" json:"access_status" yaml:"access_status"`
@@ -463,7 +463,7 @@ type CurriculaProgressTracker struct {
 
 // CurriculaRegistrationsFilter defines model for CurriculaRegistrationsFilter.
 type CurriculaRegistrationsFilter struct {
-	ContentType []string `json:"content_type" yaml:"content_type"`
+	ContentType []string `json:"contentType" yaml:"contentType"`
 	Page        int      `json:"page" yaml:"page"`
 	Pagesize    int      `json:"pagesize" yaml:"pagesize"`
 	Status      []string `json:"status" yaml:"status"`
@@ -530,7 +530,7 @@ type Quiz struct {
 	Date        openapi_types.Date `json:"date" yaml:"date"`
 	Description string             `json:"description" yaml:"description"`
 	Draft       bool               `json:"draft" yaml:"draft"`
-	FilePath    string             `json:"file_path" yaml:"file_path"`
+	FilePath    string             `json:"filePath" yaml:"filePath"`
 
 	// Final Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
 	Final   bool               `json:"final" yaml:"final"`
@@ -539,13 +539,13 @@ type Quiz struct {
 	Layout  string             `json:"layout" yaml:"layout"`
 
 	// MaxAttempts Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.
-	MaxAttempts int    `json:"max_attempts" yaml:"max_attempts"`
-	NextPage    Parent `json:"next_page" yaml:"next_page"`
+	MaxAttempts int    `json:"maxAttempts" yaml:"maxAttempts"`
+	NextPage    Parent `json:"nextPage" yaml:"nextPage"`
 
 	// OrgId Organization ID that owns this quiz
 	OrgId          string     `db:"org_id" json:"org_id" yaml:"org_id"`
 	Parent         *Parent    `json:"parent,omitempty" yaml:"parent,omitempty"`
-	PassPercentage float32    `json:"pass_percentage" yaml:"pass_percentage"`
+	PassPercentage float32    `json:"passPercentage" yaml:"passPercentage"`
 	Permalink      string     `json:"permalink" yaml:"permalink"`
 	Prerequisites  []Parent   `json:"prerequisites" yaml:"prerequisites"`
 	Questions      []Question `json:"questions" yaml:"questions"`
@@ -554,26 +554,26 @@ type Quiz struct {
 	Slug           string     `json:"slug" yaml:"slug"`
 
 	// TimeLimit Time limit for the quiz in minutes. A value of 0 indicates no time limit.
-	TimeLimit            string `json:"time_limit" yaml:"time_limit"`
+	TimeLimit            string `json:"timeLimit" yaml:"timeLimit"`
 	Title                string `json:"title" yaml:"title"`
-	TotalMarks           int    `json:"total_marks" yaml:"total_marks"`
-	TotalQuestionSets    int    `json:"total_question_sets" yaml:"total_question_sets"`
-	TotalQuestions       int    `json:"total_questions" yaml:"total_questions"`
-	TotalQuestionsInBank int    `json:"total_questions_in_bank" yaml:"total_questions_in_bank"`
+	TotalMarks           int    `json:"totalMarks" yaml:"totalMarks"`
+	TotalQuestionSets    int    `json:"totalQuestionSets" yaml:"totalQuestionSets"`
+	TotalQuestions       int    `json:"totalQuestions" yaml:"totalQuestions"`
+	TotalQuestionsInBank int    `json:"totalQuestionsInBank" yaml:"totalQuestionsInBank"`
 	Type                 string `json:"type" yaml:"type"`
 }
 
 // QuizEvaluationResult defines model for QuizEvaluationResult.
 type QuizEvaluationResult struct {
-	AttemptedAt        time.Time       `json:"attempted_at" yaml:"attempted_at"`
+	AttemptedAt        time.Time       `json:"attemptedAt" yaml:"attemptedAt"`
 	Attempts           int             `json:"attempts" yaml:"attempts"`
-	CorrectSubmissions map[string]bool `json:"correct_submissions" yaml:"correct_submissions"`
-	PassPercentage     float32         `json:"pass_percentage" yaml:"pass_percentage"`
+	CorrectSubmissions map[string]bool `json:"correctSubmissions" yaml:"correctSubmissions"`
+	PassPercentage     float32         `json:"passPercentage" yaml:"passPercentage"`
 	Passed             bool            `json:"passed" yaml:"passed"`
-	PercentageScored   float32         `json:"percentage_scored" yaml:"percentage_scored"`
+	PercentageScored   float32         `json:"percentageScored" yaml:"percentageScored"`
 	Quiz               Quiz            `json:"quiz" yaml:"quiz"`
 	Score              int             `json:"score" yaml:"score"`
-	TotalMarks         int             `json:"total_marks" yaml:"total_marks"`
+	TotalMarks         int             `json:"totalMarks" yaml:"totalMarks"`
 }
 
 // QuizSubmission defines model for QuizSubmission.

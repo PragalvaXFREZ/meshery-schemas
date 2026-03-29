@@ -29,7 +29,7 @@ site:
 #-----------------------------------------------------------------------------
 # OpenAPI spec
 #-----------------------------------------------------------------------------
-.PHONY: setup docs-build generate-ts publish-ts bundle-openapi generate-golang generate-rtk golangci validate-schemas audit-schemas audit-schemas-full audit-schemas-style-full audit-schemas-debt-full
+.PHONY: setup docs-build generate-ts publish-ts bundle-openapi generate-golang generate-rtk golangci validate-schemas validate-schemas-strict audit-schemas audit-schemas-full audit-schemas-style-full audit-schemas-debt-full
 
 ## (Re)Initialize Golang (go.mod) and Node (package.json) manifests
 setup:
@@ -97,6 +97,10 @@ golangci: dep-check
 ## Validate schema design rules (Dual-Schema Pattern, additionalProperties)
 validate-schemas:
 	node build/validate-schemas.js
+
+## Fail on all schema design, style, and contract debt across validated APIs
+validate-schemas-strict:
+	node build/validate-schemas.js --strict-consistency --style-debt --contract-debt
 
 ## Report new advisory schema issues without failing the build (uses advisory baseline)
 audit-schemas:

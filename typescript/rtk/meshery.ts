@@ -529,7 +529,7 @@ export type RegisterConnectionApiArg = {
     /** Connection type */
     type: string;
     /** Connection sub-type */
-    sub_type: string;
+    subType: string;
     /** Credential secret data */
     credentialSecret?: object;
     /** Connection metadata */
@@ -671,7 +671,7 @@ export type UpdateConnectionApiArg = {
     /** Connection type */
     type: string;
     /** Connection sub-type */
-    sub_type: string;
+    subType: string;
     /** Credential secret data */
     credentialSecret?: object;
     /** Connection metadata */

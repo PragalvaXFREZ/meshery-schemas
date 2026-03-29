@@ -317,7 +317,7 @@ export interface operations {
     parameters: {
       query: {
         /** ID of the token. */
-        token_id: string;
+        tokenId: string;
       };
     };
     responses: {
@@ -461,7 +461,7 @@ export interface operations {
     parameters: {
       query: {
         /** UUID of the user. */
-        user_id: string;
+        userId: string;
         /** Remote provider. */
         provider: string;
       };

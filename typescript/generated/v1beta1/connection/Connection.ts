@@ -304,7 +304,7 @@ export interface components {
       /** @description Connection type */
       type: string;
       /** @description Connection sub-type */
-      sub_type: string;
+      subType: string;
       /** @description Credential secret data */
       credentialSecret?: { [key: string]: unknown };
       /** @description Connection metadata */
@@ -778,7 +778,7 @@ export interface operations {
           /** @description Connection type */
           type: string;
           /** @description Connection sub-type */
-          sub_type: string;
+          subType: string;
           /** @description Credential secret data */
           credentialSecret?: { [key: string]: unknown };
           /** @description Connection metadata */
@@ -1110,7 +1110,7 @@ export interface operations {
           /** @description Connection type */
           type: string;
           /** @description Connection sub-type */
-          sub_type: string;
+          subType: string;
           /** @description Credential secret data */
           credentialSecret?: { [key: string]: unknown };
           /** @description Connection metadata */

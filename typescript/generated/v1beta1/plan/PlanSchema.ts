@@ -41,6 +41,24 @@ const PlanSchema: Record<string, unknown> = {
           "Plans"
         ],
         "summary": "Get all plans supported by the system",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Get responses by page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pagesize",
+            "in": "query",
+            "description": "Get responses by pagesize",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Plans response",
@@ -217,6 +235,24 @@ const PlanSchema: Record<string, unknown> = {
               "type": "string"
             }
           }
+        }
+      }
+    },
+    "parameters": {
+      "page": {
+        "name": "page",
+        "in": "query",
+        "description": "Get responses by page",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "pagesize": {
+        "name": "pagesize",
+        "in": "query",
+        "description": "Get responses by pagesize",
+        "schema": {
+          "type": "string"
         }
       }
     },

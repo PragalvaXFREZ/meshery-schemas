@@ -1196,7 +1196,7 @@ const SubscriptionSchema: Record<string, unknown> = {
         }
       }
     },
-    "/api/entitlement/subscriptions/{subscriptionId}/upgradePreview": {
+    "/api/entitlement/subscriptions/{subscriptionId}/upgrade-preview": {
       "post": {
         "x-internal": [
           "cloud"

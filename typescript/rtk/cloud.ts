@@ -36,7 +36,7 @@ const injectedRtkApi = api
     endpoints: (build) => ({
       getMyAcademyCurricula: build.query<GetMyAcademyCurriculaApiResponse, GetMyAcademyCurriculaApiArg>({
         query: (queryArg) => ({
-          url: `/api/academy/Curricula/registered`,
+          url: `/api/academy/curricula/registered`,
           params: {
             contentType: queryArg.contentType,
             orgId: queryArg.orgId,
@@ -50,7 +50,7 @@ const injectedRtkApi = api
       }),
       getAcademyCurricula: build.query<GetAcademyCurriculaApiResponse, GetAcademyCurriculaApiArg>({
         query: (queryArg) => ({
-          url: `/api/academy/Curricula`,
+          url: `/api/academy/curricula`,
           params: {
             contentType: queryArg.contentType,
             visibility: queryArg.visibility,
@@ -912,7 +912,13 @@ const injectedRtkApi = api
         invalidatesTags: ["Organization_other"],
       }),
       getPlans: build.query<GetPlansApiResponse, GetPlansApiArg>({
-        query: () => ({ url: `/api/entitlement/plans` }),
+        query: (queryArg) => ({
+          url: `/api/entitlement/plans`,
+          params: {
+            page: queryArg.page,
+            pagesize: queryArg.pagesize,
+          },
+        }),
         providesTags: ["Plan_Plans"],
       }),
       addRoleHolder: build.mutation<AddRoleHolderApiResponse, AddRoleHolderApiArg>({
@@ -1049,7 +1055,7 @@ const injectedRtkApi = api
         PostApiEntitlementSubscriptionsBySubscriptionIdUpgradePreviewApiArg
       >({
         query: (queryArg) => ({
-          url: `/api/entitlement/subscriptions/${queryArg.subscriptionId}/upgradePreview`,
+          url: `/api/entitlement/subscriptions/${queryArg.subscriptionId}/upgrade-preview`,
           method: "POST",
           body: queryArg.body,
         }),
@@ -1149,7 +1155,7 @@ const injectedRtkApi = api
           url: `/api/identity/tokens`,
           method: "DELETE",
           params: {
-            token_id: queryArg.tokenId,
+            tokenId: queryArg.tokenId,
           },
         }),
         invalidatesTags: ["token_tokens"],
@@ -1165,7 +1171,7 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/api/identity/tokens/infinite`,
           params: {
-            user_id: queryArg.userId,
+            userId: queryArg.userId,
             provider: queryArg.provider,
           },
         }),
@@ -1557,7 +1563,7 @@ export type CreateAcademyCurriculaApiArg = {
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     team_id: string;
     /** Expiry time for curricula access */
-    access_expires_at?: string;
+    accessExpiresAt?: string;
     /** Current access status of the curricula */
     access_status: "enabled" | "disabled";
     /** Additional metadata about the Curricula */
@@ -2088,7 +2094,7 @@ export type UpdateAcademyCurriculaByIdApiArg = {
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     team_id: string;
     /** Expiry time for curricula access */
-    access_expires_at?: string;
+    accessExpiresAt?: string;
     /** Current access status of the curricula */
     access_status: "enabled" | "disabled";
     /** Additional metadata about the Curricula */
@@ -2358,10 +2364,10 @@ export type UpdateCurrentItemInProgressTrackerApiResponse = /** status 200 Progr
       [key: string]: {
         score: number;
         passed: boolean;
-        percentage_scored: number;
-        total_marks: number;
-        pass_percentage: number;
-        correct_submissions: {
+        percentageScored: number;
+        totalMarks: number;
+        passPercentage: number;
+        correctSubmissions: {
           [key: string]: boolean;
         };
         quiz: {
@@ -2381,12 +2387,12 @@ export type UpdateCurrentItemInProgressTrackerApiResponse = /** status 200 Progr
           date: string;
           lastmod: string;
           draft: boolean;
-          file_path: string;
-          pass_percentage: number;
+          filePath: string;
+          passPercentage: number;
           /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-          time_limit: string;
+          timeLimit: string;
           /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-          max_attempts: number;
+          maxAttempts: number;
           questions: {
             id: string;
             text: string;
@@ -2400,10 +2406,10 @@ export type UpdateCurrentItemInProgressTrackerApiResponse = /** status 200 Progr
             }[];
             correctAnswer: string;
           }[];
-          total_questions: number;
-          total_questions_in_bank: number;
-          total_question_sets: number;
-          total_marks: number;
+          totalQuestions: number;
+          totalQuestionsInBank: number;
+          totalQuestionSets: number;
+          totalMarks: number;
           prerequisites: {
             id: string;
             title: string;
@@ -2416,14 +2422,14 @@ export type UpdateCurrentItemInProgressTrackerApiResponse = /** status 200 Progr
             relPermalink: string;
             type: string;
           };
-          next_page: {
+          nextPage: {
             id: string;
             title: string;
             relPermalink: string;
             type: string;
           };
         };
-        attempted_at: string;
+        attemptedAt: string;
         attempts: number;
       };
     };
@@ -2481,12 +2487,12 @@ export type GetTestByAbsPathApiResponse = /** status 200 A single test */ {
   date: string;
   lastmod: string;
   draft: boolean;
-  file_path: string;
-  pass_percentage: number;
+  filePath: string;
+  passPercentage: number;
   /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-  time_limit: string;
+  timeLimit: string;
   /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-  max_attempts: number;
+  maxAttempts: number;
   questions: {
     id: string;
     text: string;
@@ -2500,10 +2506,10 @@ export type GetTestByAbsPathApiResponse = /** status 200 A single test */ {
     }[];
     correctAnswer: string;
   }[];
-  total_questions: number;
-  total_questions_in_bank: number;
-  total_question_sets: number;
-  total_marks: number;
+  totalQuestions: number;
+  totalQuestionsInBank: number;
+  totalQuestionSets: number;
+  totalMarks: number;
   prerequisites: {
     id: string;
     title: string;
@@ -2516,7 +2522,7 @@ export type GetTestByAbsPathApiResponse = /** status 200 A single test */ {
     relPermalink: string;
     type: string;
   };
-  next_page: {
+  nextPage: {
     id: string;
     title: string;
     relPermalink: string;
@@ -2544,12 +2550,12 @@ export type StartTestByIdApiResponse = /** status 200 A single test */ {
   date: string;
   lastmod: string;
   draft: boolean;
-  file_path: string;
-  pass_percentage: number;
+  filePath: string;
+  passPercentage: number;
   /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-  time_limit: string;
+  timeLimit: string;
   /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-  max_attempts: number;
+  maxAttempts: number;
   questions: {
     id: string;
     text: string;
@@ -2563,10 +2569,10 @@ export type StartTestByIdApiResponse = /** status 200 A single test */ {
     }[];
     correctAnswer: string;
   }[];
-  total_questions: number;
-  total_questions_in_bank: number;
-  total_question_sets: number;
-  total_marks: number;
+  totalQuestions: number;
+  totalQuestionsInBank: number;
+  totalQuestionSets: number;
+  totalMarks: number;
   prerequisites: {
     id: string;
     title: string;
@@ -2579,7 +2585,7 @@ export type StartTestByIdApiResponse = /** status 200 A single test */ {
     relPermalink: string;
     type: string;
   };
-  next_page: {
+  nextPage: {
     id: string;
     title: string;
     relPermalink: string;
@@ -2596,10 +2602,10 @@ export type GetAllTestSessionsForRegistrationApiResponse =
   /** status 200 A list of tests for the specified registration */ {
     score: number;
     passed: boolean;
-    percentage_scored: number;
-    total_marks: number;
-    pass_percentage: number;
-    correct_submissions: {
+    percentageScored: number;
+    totalMarks: number;
+    passPercentage: number;
+    correctSubmissions: {
       [key: string]: boolean;
     };
     quiz: {
@@ -2619,12 +2625,12 @@ export type GetAllTestSessionsForRegistrationApiResponse =
       date: string;
       lastmod: string;
       draft: boolean;
-      file_path: string;
-      pass_percentage: number;
+      filePath: string;
+      passPercentage: number;
       /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-      time_limit: string;
+      timeLimit: string;
       /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-      max_attempts: number;
+      maxAttempts: number;
       questions: {
         id: string;
         text: string;
@@ -2638,10 +2644,10 @@ export type GetAllTestSessionsForRegistrationApiResponse =
         }[];
         correctAnswer: string;
       }[];
-      total_questions: number;
-      total_questions_in_bank: number;
-      total_question_sets: number;
-      total_marks: number;
+      totalQuestions: number;
+      totalQuestionsInBank: number;
+      totalQuestionSets: number;
+      totalMarks: number;
       prerequisites: {
         id: string;
         title: string;
@@ -2654,14 +2660,14 @@ export type GetAllTestSessionsForRegistrationApiResponse =
         relPermalink: string;
         type: string;
       };
-      next_page: {
+      nextPage: {
         id: string;
         title: string;
         relPermalink: string;
         type: string;
       };
     };
-    attempted_at: string;
+    attemptedAt: string;
     attempts: number;
   }[][];
 export type GetAllTestSessionsForRegistrationApiArg = {
@@ -2677,10 +2683,10 @@ export type GetAllTestSessionsForRegistrationApiArg = {
 export type SubmitQuizApiResponse = /** status 200 Progress tracker updated */ {
   score: number;
   passed: boolean;
-  percentage_scored: number;
-  total_marks: number;
-  pass_percentage: number;
-  correct_submissions: {
+  percentageScored: number;
+  totalMarks: number;
+  passPercentage: number;
+  correctSubmissions: {
     [key: string]: boolean;
   };
   quiz: {
@@ -2700,12 +2706,12 @@ export type SubmitQuizApiResponse = /** status 200 Progress tracker updated */ {
     date: string;
     lastmod: string;
     draft: boolean;
-    file_path: string;
-    pass_percentage: number;
+    filePath: string;
+    passPercentage: number;
     /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
-    time_limit: string;
+    timeLimit: string;
     /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
-    max_attempts: number;
+    maxAttempts: number;
     questions: {
       id: string;
       text: string;
@@ -2719,10 +2725,10 @@ export type SubmitQuizApiResponse = /** status 200 Progress tracker updated */ {
       }[];
       correctAnswer: string;
     }[];
-    total_questions: number;
-    total_questions_in_bank: number;
-    total_question_sets: number;
-    total_marks: number;
+    totalQuestions: number;
+    totalQuestionsInBank: number;
+    totalQuestionSets: number;
+    totalMarks: number;
     prerequisites: {
       id: string;
       title: string;
@@ -2735,14 +2741,14 @@ export type SubmitQuizApiResponse = /** status 200 Progress tracker updated */ {
       relPermalink: string;
       type: string;
     };
-    next_page: {
+    nextPage: {
       id: string;
       title: string;
       relPermalink: string;
       type: string;
     };
   };
-  attempted_at: string;
+  attemptedAt: string;
   attempts: number;
 };
 export type SubmitQuizApiArg = {
@@ -3105,7 +3111,7 @@ export type RegisterConnectionApiArg = {
     /** Connection type */
     type: string;
     /** Connection sub-type */
-    sub_type: string;
+    subType: string;
     /** Credential secret data */
     credentialSecret?: object;
     /** Connection metadata */
@@ -3247,7 +3253,7 @@ export type UpdateConnectionApiArg = {
     /** Connection type */
     type: string;
     /** Connection sub-type */
-    sub_type: string;
+    subType: string;
     /** Credential secret data */
     credentialSecret?: object;
     /** Connection metadata */
@@ -11226,7 +11232,12 @@ export type GetPlansApiResponse = /** status 200 Plans response */ {
   price_per_unit: number;
   currency: "usd";
 }[];
-export type GetPlansApiArg = void;
+export type GetPlansApiArg = {
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+};
 export type AddRoleHolderApiResponse = unknown;
 export type AddRoleHolderApiArg = {
   body: {

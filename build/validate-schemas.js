@@ -51,6 +51,7 @@
  *   node build/validate-schemas.js --warn --no-baseline   # prints full actionable advisory backlog
  *   node build/validate-schemas.js --warn --no-baseline --style-debt   # includes legacy style debt too
  *   node build/validate-schemas.js --warn --no-baseline --style-debt --contract-debt   # includes all legacy debt
+ *   node build/validate-schemas.js --strict-consistency --style-debt --contract-debt   # fails on all style/design/contract debt
  *
  * DEPENDENCIES:
  *   js-yaml (already a project dependency)
@@ -63,6 +64,11 @@ const fs = require("fs");
 const path = require("path");
 const yaml = require("js-yaml");
 
+const {
+  classifyContractIssue,
+  classifyDesignIssue,
+  classifyStyleIssue,
+} = require("./lib/consistency-policy");
 const { findNewNonLowercaseEnumValues } = require("./lib/enum-validation");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -108,6 +114,8 @@ const noAdvisoryBaseline = process.argv.includes("--no-baseline");
 const includeLegacyStyleDebt = process.argv.includes("--style-debt") || process.argv.includes("--legacy-style");
 const includeLegacyContractDebt =
   process.argv.includes("--contract-debt") || process.argv.includes("--compat-debt");
+const strictConsistency =
+  process.argv.includes("--strict-consistency") || process.argv.includes("--strict-debt");
 const blockingViolations = [];
 const advisoryViolations = [];
 const refDocCache = new Map();
@@ -175,26 +183,35 @@ function isStrictStyleFile(filePath) {
 }
 
 function reportStyleIssue(filePath, message) {
-  if (isStrictStyleFile(filePath)) {
-    warn(filePath, message);
+  const severity = classifyStyleIssue({
+    strictConsistency,
+    strictStyleFile: isStrictStyleFile(filePath),
+    includeLegacyStyleDebt,
+  });
+
+  if (!severity) {
     return;
   }
 
-  if (!includeLegacyStyleDebt) {
-    return;
-  }
-
-  advisory(filePath, message);
+  recordIssue(filePath, message, severity);
 }
 
 function reportDesignAdvisory(filePath, message) {
-  advisory(filePath, message);
+  recordIssue(filePath, message, classifyDesignIssue({ strictConsistency }));
 }
 
 function reportContractAdvisory(filePath, message) {
-  if (isStrictStyleFile(filePath) || includeLegacyContractDebt) {
-    advisory(filePath, message);
+  const severity = classifyContractIssue({
+    strictConsistency,
+    strictStyleFile: isStrictStyleFile(filePath),
+    includeLegacyContractDebt,
+  });
+
+  if (!severity) {
+    return;
   }
+
+  recordIssue(filePath, message, severity);
 }
 
 // ─── Casing helpers ───────────────────────────────────────────────────────────
