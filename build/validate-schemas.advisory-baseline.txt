@@ -1,0 +1,1 @@
+schemas/constructs/v1beta1/plan/api.yml	GET /api/entitlement/plans — list endpoint (returns array or paged response) is missing pagination parameter(s): page, pagesize. Reference the shared parameters from v1alpha1/core/api.yml for consistent pagination across all list endpoints.
