@@ -2,8 +2,6 @@ openapi: 3.0.0
 info:
   title: Component
   description: OpenAPI schema for component definitions in Meshery.
-  x-deprecated: true
-  x-superseded-by: v1beta2
   version: v1beta1
   contact:
     name: Meshery Maintainers

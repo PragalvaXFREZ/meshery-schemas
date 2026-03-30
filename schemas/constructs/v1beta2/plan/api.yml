@@ -2,9 +2,7 @@ openapi: 3.0.0
 info:
   title: Plan
   description: OpenAPI schema for subscription plan management in Meshery Cloud.
-  x-deprecated: true
-  x-superseded-by: v1beta2
-  version: v1beta1
+  version: v1beta2
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -26,6 +24,9 @@ paths:
       tags:
         - Plans
       summary: Get all plans supported by the system
+      parameters:
+        - $ref: "../core/api.yml#/components/parameters/page"
+        - $ref: "../core/api.yml#/components/parameters/pagesize"
       responses:
         "200":
           description: Plans response
@@ -82,7 +83,7 @@ components:
       type: object
       properties:
         id:
-          $ref: "../core/api.yml#/components/schemas/uuid"
+          $ref: "../core/api.yml#/components/schemas/Uuid"
           x-oapi-codegen-extra-tags:
             db: "id"
             json: "id"

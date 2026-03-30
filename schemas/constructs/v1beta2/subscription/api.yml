@@ -2,9 +2,7 @@ openapi: 3.0.0
 info:
   title: Subscription
   description: API for managing subscriptions using various payment processors in a SaaS application.
-  x-deprecated: true
-  x-superseded-by: v1beta2
-  version: v1beta1
+  version: v1beta2
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -102,7 +100,7 @@ paths:
             schema:
               $ref: "#/components/schemas/CreateSubscriptionRequest"
       responses:
-        "200":
+        "201":
           description: A new subscription has been created
           content:
             application/json:
@@ -142,7 +140,7 @@ paths:
           $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
-  /api/entitlement/subscriptions/{subscriptionId}/upgradePreview:
+  /api/entitlement/subscriptions/{subscriptionId}/upgrade-preview:
     post:
       x-internal: ["cloud"]
       summary: Preview the invoice for upgrading or downgrading an existing subscription by changing one of the plans in the subscription
@@ -267,10 +265,10 @@ components:
       type: object
       properties:
         oldPlanId:
-          $ref: "../core/api.yml#/components/schemas/uuid"
+          $ref: "../core/api.yml#/components/schemas/Uuid"
           description: Old Plan id that is being changed
         newPlanId:
-          $ref: "../core/api.yml#/components/schemas/uuid"
+          $ref: "../core/api.yml#/components/schemas/Uuid"
           description: New Plan id that is being changed to
 
     CreateSubscriptionResponse:
@@ -323,15 +321,15 @@ components:
       type: object
       properties:
         id:
-          $ref: "../core/api.yml#/components/schemas/uuid"
+          $ref: "../core/api.yml#/components/schemas/Uuid"
           x-oapi-codegen-extra-tags:
             db: "id"
         org_id:
-          $ref: "../core/api.yml#/components/schemas/uuid"
+          $ref: "../core/api.yml#/components/schemas/Uuid"
           x-oapi-codegen-extra-tags:
             db: "org_id"
         plan_id:
-          $ref: "../core/api.yml#/components/schemas/uuid"
+          $ref: "../core/api.yml#/components/schemas/Uuid"
           x-oapi-codegen-extra-tags:
             db: "plan_id"
         plan:

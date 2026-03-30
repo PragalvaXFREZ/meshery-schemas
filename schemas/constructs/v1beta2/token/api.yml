@@ -2,8 +2,6 @@ openapi: 3.0.0
 info:
   title: token
   description: Documentation for Meshery Cloud REST APIs for user tokens and sessions
-  x-deprecated: true
-  x-superseded-by: v1beta2
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -11,7 +9,7 @@ info:
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: v1beta1
+  version: v1beta2
 servers:
   - url: https://cloud.layer5.io
     description: Meshery Cloud production server URL
@@ -133,7 +131,7 @@ paths:
       description: Creates a non-expiring user token for provider admin use cases.
       parameters:
         - $ref: "#/components/parameters/userId"
-        - $ref: "#/components/parameters/provider"
+        - $ref: "#/components/parameters/Provider"
       responses:
         "200":
           description: Token generated
@@ -172,7 +170,7 @@ components:
       description: Token ID
       required: true
       schema:
-        $ref: "../core/api.yml#/components/schemas/uuid"
+        $ref: "../core/api.yml#/components/schemas/Uuid"
     page:
       $ref: "../core/api.yml#/components/parameters/page"
     pagesize:
@@ -201,19 +199,19 @@ components:
       schema:
         type: string
     tokenId:
-      name: token_id
+      name: tokenId
       in: query
       description: ID of the token.
       required: true
       schema:
-        $ref: "../core/api.yml#/components/schemas/uuid"
+        $ref: "../core/api.yml#/components/schemas/Uuid"
     userId:
-      name: user_id
+      name: userId
       in: query
       description: UUID of the user.
       required: true
       schema:
-        $ref: "../core/api.yml#/components/schemas/uuid"
+        $ref: "../core/api.yml#/components/schemas/Uuid"
     provider:
       name: provider
       in: query
@@ -228,13 +226,13 @@ components:
       description: Represents a user-owned API token or OAuth session.
       properties:
         id:
-          $ref: "../core/api.yml#/components/schemas/uuid"
+          $ref: "../core/api.yml#/components/schemas/Uuid"
           description: Unique identifier for the token.
           x-order: 1
           x-oapi-codegen-extra-tags:
             db: "id"
         user_id:
-          $ref: "../core/api.yml#/components/schemas/uuid"
+          $ref: "../core/api.yml#/components/schemas/Uuid"
           description: UUID of the user who owns the token.
           x-order: 2
           x-oapi-codegen-extra-tags:
@@ -276,10 +274,10 @@ components:
           x-oapi-codegen-extra-tags:
             db: "is_oauth"
         created_at:
-          $ref: "../core/api.yml#/components/schemas/created_at"
+          $ref: "../core/api.yml#/components/schemas/CreatedAt"
           x-order: 9
         updated_at:
-          $ref: "../core/api.yml#/components/schemas/updated_at"
+          $ref: "../core/api.yml#/components/schemas/UpdatedAt"
           x-order: 10
 
     TokenPage:

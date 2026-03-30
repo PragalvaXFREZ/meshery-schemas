@@ -2,9 +2,7 @@ openapi: 3.0.0
 info:
   title: Invitation
   description: OpenAPI schema for managing invitations.
-  x-deprecated: true
-  x-superseded-by: v1beta2
-  version: v1beta1
+  version: v1beta2
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -216,7 +214,7 @@ paths:
               type: object
               additionalProperties: true
       responses:
-        "200":
+        "201":
           description: Signup request created
           content:
             application/json:
@@ -354,7 +352,7 @@ components:
 
   schemas:
     Uuid:
-      $ref: "../core/api.yml#/components/schemas/uuid"
+      $ref: "../core/api.yml#/components/schemas/Uuid"
 
     InvitationsPage:
       type: object
@@ -409,14 +407,14 @@ components:
         - status
       properties:
         id:
-          $ref: "../core/api.yml#/components/schemas/uuid"
+          $ref: "../core/api.yml#/components/schemas/Uuid"
           x-go-name: ID
           description: Existing invitation ID for updates; omit on create.
           x-oapi-codegen-extra-tags:
             json: "id,omitempty"
 
         owner_id:
-          $ref: "../core/api.yml#/components/schemas/uuid"
+          $ref: "../core/api.yml#/components/schemas/Uuid"
           description: ID of the user who created the invitation.
           x-oapi-codegen-extra-tags:
             db: "owner_id"
@@ -514,12 +512,12 @@ components:
         - deleted_at
       properties:
         id:
-          $ref: "../core/api.yml#/components/schemas/uuid"
+          $ref: "../core/api.yml#/components/schemas/Uuid"
           x-go-name: ID
           description: Unique identifier for the invitation , is also used as the invitation code
 
         owner_id:
-          $ref: "../core/api.yml#/components/schemas/uuid"
+          $ref: "../core/api.yml#/components/schemas/Uuid"
           description: "ID of the user who created the invitation,
             this is used to track who created the invitation and can be used for auditing purposes"
 

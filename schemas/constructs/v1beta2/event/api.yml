@@ -2,9 +2,7 @@ openapi: 3.0.0
 info:
   title: Events
   description: OpenAPI schema for Meshery events and system notifications.
-  x-deprecated: true
-  x-superseded-by: v1beta2
-  version: v1beta1
+  version: v1beta2
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -55,7 +53,7 @@ paths:
             schema:
               type: object
       responses:
-        "200":
+        "201":
           description: Event created
         "400":
           $ref: "#/components/responses/400"
@@ -325,7 +323,7 @@ components:
       in: path
       description: Workspace ID
       schema:
-        $ref: "../core/api.yml#/components/schemas/workspace_id"
+        $ref: "../core/api.yml#/components/schemas/WorkspaceId"
       required: true
     page:
       $ref: "../core/api.yml#/components/parameters/page"
@@ -370,7 +368,7 @@ components:
         ids:
           type: array
           items:
-            $ref: "../core/api.yml#/components/schemas/uuid"
+            $ref: "../core/api.yml#/components/schemas/Uuid"
 
     BulkUpdateStatusRequest:
       type: object
@@ -381,7 +379,7 @@ components:
         ids:
           type: array
           items:
-            $ref: "../core/api.yml#/components/schemas/uuid"
+            $ref: "../core/api.yml#/components/schemas/Uuid"
         status:
           type: string
           example: failed
@@ -390,9 +388,9 @@ components:
       type: object
       properties:
         user_id:
-          $ref: "../core/api.yml#/components/schemas/user_uuid"
+          $ref: "../core/api.yml#/components/schemas/UserUuid"
         system_id:
-          $ref: "../core/api.yml#/components/schemas/system_id"
+          $ref: "../core/api.yml#/components/schemas/SystemId"
         category:
           type: string
         action:
@@ -404,21 +402,21 @@ components:
         lastName:
           type: string
         email:
-          $ref: "../core/api.yml#/components/schemas/email"
+          $ref: "../core/api.yml#/components/schemas/Email"
         provider:
-          $ref: "../core/api.yml#/components/schemas/provider"
+          $ref: "../core/api.yml#/components/schemas/Provider"
         created_at:
-          $ref: "../core/api.yml#/components/schemas/created_at"
+          $ref: "../core/api.yml#/components/schemas/CreatedAt"
 
     EventsPage:
       type: object
       properties:
         page:
-          $ref: "../core/api.yml#/components/schemas/number"
+          $ref: "../core/api.yml#/components/schemas/Number"
         page_size:
-          $ref: "../core/api.yml#/components/schemas/number"
+          $ref: "../core/api.yml#/components/schemas/Number"
         total_count:
-          $ref: "../core/api.yml#/components/schemas/number"
+          $ref: "../core/api.yml#/components/schemas/Number"
         data:
           type: array
           items:

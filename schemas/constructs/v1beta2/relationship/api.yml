@@ -2,9 +2,7 @@ openapi: 3.0.0
 info:
   title: Relationship
   description: OpenAPI schema for relationship definitions between Meshery components.
-  x-deprecated: true
-  x-superseded-by: v1beta2
-  version: v1beta1
+  version: v1beta2
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -27,9 +25,9 @@ components:
     MatchSelector:
       $ref: "./relationship.yaml#/components/schemas/MatchSelector"
 
-    RelationshipDefinition_Selectors_Patch:
-      $ref: "./relationship.yaml#/components/schemas/RelationshipDefinition_Selectors_Patch"
-      x-go-name: RelationshipDefinition_Selectors_Patch
+    RelationshipDefinitionSelectorsPatch:
+      $ref: "./relationship.yaml#/components/schemas/RelationshipDefinitionSelectorsPatch"
+      x-go-name: RelationshipDefinitionSelectorsPatch
 
     SelectorItem:
       $ref: "./relationship.yaml#/components/schemas/SelectorItem"
@@ -43,9 +41,9 @@ components:
     SelectorSet:
       $ref: "./relationship.yaml#/components/schemas/SelectorSet"
 
-    Relationship_Metadata:
-      $ref: "./relationship.yaml#/components/schemas/Relationship_Metadata"
-      x-go-name: "Relationship_Metadata"
+    RelationshipMetadata:
+      $ref: "./relationship.yaml#/components/schemas/RelationshipMetadata"
+      x-go-name: "RelationshipMetadata"
 
     RelationshipDefinitionMetadataStyles:
       $ref: "./relationship.yaml#/components/schemas/RelationshipDefinitionMetadataStyles"

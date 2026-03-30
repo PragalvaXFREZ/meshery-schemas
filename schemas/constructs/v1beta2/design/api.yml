@@ -2,9 +2,7 @@ openapi: 3.0.0
 info:
   title: Design
   description: OpenAPI schema for managing Meshery designs and infrastructure patterns.
-  x-deprecated: true
-  x-superseded-by: v1beta2
-  version: v1beta1
+  version: v1beta2
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -849,7 +847,7 @@ components:
       description: Design (Pattern) ID
       required: true
       schema:
-        $ref: "../core/api.yml#/components/schemas/uuid"
+        $ref: "../core/api.yml#/components/schemas/Uuid"
     page:
       $ref: "../core/api.yml#/components/parameters/page"
     pagesize:
