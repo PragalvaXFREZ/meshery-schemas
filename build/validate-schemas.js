@@ -1830,12 +1830,26 @@ function collectSchemaFingerprints(filePath, doc) {
   }
 }
 
+/**
+ * Extract the construct identity from a file path, stripping the version.
+ * e.g. "schemas/constructs/v1beta1/academy/api.yml" → "academy"
+ */
+function extractConstructName(filePath) {
+  const match = filePath.match(/schemas\/constructs\/[^/]+\/([^/]+)\//);
+  return match ? match[1] : filePath;
+}
+
 function reportDuplicateSchemas() {
   for (const [, entries] of schemaFingerprints) {
     if (entries.length < 2) continue;
     // Only report across different files
     const uniqueFiles = new Set(entries.map((e) => e.file));
     if (uniqueFiles.size < 2) continue;
+
+    // Exclude cross-version duplicates of the same construct.
+    // e.g. v1beta1/academy + v1beta2/academy are expected to share schemas.
+    const uniqueConstructs = new Set(entries.map((e) => extractConstructName(e.file)));
+    if (uniqueConstructs.size < 2) continue;
 
     const locations = entries.map((e) => `${e.schemaName} (${e.file})`).join(", ");
     // Use first entry's file for the warning
@@ -1960,6 +1974,22 @@ function walk(dir) {
       if (!construct.isDirectory()) continue;
 
       const constructDir = path.join(versionDir, construct.name);
+
+      // Skip deprecated constructs in strict mode. They are superseded
+      // by a newer API version and kept only for backward compatibility.
+      if (strictConsistency) {
+        const apiCheck = path.join(constructDir, "api.yml");
+        if (fs.existsSync(apiCheck)) {
+          try {
+            const checkDoc = yaml.load(fs.readFileSync(apiCheck, "utf-8"));
+            if (checkDoc?.info?.["x-deprecated"] === true) {
+              continue;
+            }
+          } catch (e) {
+            // parse error — proceed with validation to surface it
+          }
+        }
+      }
 
       // Rules 1, 20: check all top-level *.yaml files (entity schemas, not api.yml)
       for (const file of fs.readdirSync(constructDir).sort()) {
