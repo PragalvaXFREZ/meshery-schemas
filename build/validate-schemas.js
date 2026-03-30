@@ -44,6 +44,7 @@
  *   Rule 31 — Response descriptions and inline response message text must not include the word "successfully".
  *   Rule 32 — DB-backed property names must exactly match snake_case db tags.
  *   Rule 33 — Pagination envelopes must use page, page_size, total_count.
+ *   Rule 34 — Template file values must match schema property types.
  *
  * USAGE:
  *   node build/validate-schemas.js          # exits 0 if no blocking violations found
@@ -243,6 +244,15 @@ function hasScreamingIdToken(s) {
 }
 
 /**
+ * Detects common suffixes that are incorrectly all-lowercase in a camelCase name.
+ * e.g. "workspaceid" should be "workspaceId", "pageurl" should be "pageUrl".
+ */
+const LOWERCASE_SUFFIX_PATTERN = /(?<=[a-z])(id|ids|url|uri)$/;
+function hasLowercaseSuffix(s) {
+  return LOWERCASE_SUFFIX_PATTERN.test(s);
+}
+
+/**
  * Convert a property name to its expected camelCase form with correct "Id" suffix.
  * Handles snake_case, PascalCase, and SCREAMING_CASE "ID" suffix all at once.
  */
@@ -299,6 +309,12 @@ function getCamelCaseIssues(name, { allowDbMirrored = false, definition = null }
   }
   if (hasScreamingIdToken(name)) {
     issues.push('uses "ID" token (must be "Id")');
+  }
+  if (hasLowercaseSuffix(name)) {
+    const match = name.match(LOWERCASE_SUFFIX_PATTERN);
+    const suffix = match[0];
+    const corrected = name.slice(0, -suffix.length) + suffix.charAt(0).toUpperCase() + suffix.slice(1);
+    issues.push(`has all-lowercase suffix "${suffix}" (must be "${corrected}")`);
   }
   if (/^[0-9]/.test(name)) {
     issues.push("starts with a digit");
@@ -1184,8 +1200,7 @@ function validateTemplateFiles(constructDir, constructName) {
       (f) =>
         /\.ya?ml$/.test(f) &&
         f !== "api.yml" &&
-        !f.includes("_template") &&
-        !f.includes("_page"),
+        !f.includes("_template"),
     );
 
   if (entitySchemaFiles.length === 0) {
@@ -1223,6 +1238,79 @@ function validateTemplateFiles(constructDir, constructName) {
       `Construct "${constructName}" has template file(s) at root level: ${rootFiles.join(", ")}. ` +
         `Template files must be inside the templates/ subdirectory.`,
     );
+  }
+}
+
+// ─── Rule 34: template values must match schema property types ────────────────
+
+/**
+ * Validates that JSON/YAML template files use the correct default value types
+ * matching their corresponding entity schema properties. Catches mismatches like
+ * using {} (object) where the schema declares a string or array.
+ */
+function validateTemplateTypes(constructDir) {
+  const templatesDir = path.join(constructDir, "templates");
+  if (!fs.existsSync(templatesDir)) return;
+
+  // Find entity schemas in construct root
+  const entitySchemas = fs.readdirSync(constructDir).filter(
+    (f) => f.endsWith(".yaml") && f !== "api.yml" && !f.includes("_template"),
+  );
+
+  for (const schemaFile of entitySchemas) {
+    const schemaPath = path.join(constructDir, schemaFile);
+    const schema = loadYamlDoc(schemaPath);
+    if (!schema || !schema.properties) continue;
+
+    const baseName = schemaFile.replace(".yaml", "");
+    const templateFiles = fs.readdirSync(templatesDir).filter(
+      (f) => f.includes(baseName + "_template"),
+    );
+
+    for (const tmplFile of templateFiles) {
+      const tmplPath = path.join(templatesDir, tmplFile);
+      let template;
+      try {
+        if (tmplFile.endsWith(".json")) {
+          template = JSON.parse(fs.readFileSync(tmplPath, "utf-8"));
+        } else {
+          template = yaml.load(fs.readFileSync(tmplPath, "utf-8"));
+        }
+      } catch {
+        continue;
+      }
+      if (!template || typeof template !== "object") continue;
+
+      for (const [key, value] of Object.entries(template)) {
+        const prop = schema.properties[key];
+        if (!prop || !prop.type) continue;
+
+        const isArray = Array.isArray(value);
+        const jsType = isArray ? "array" : typeof value;
+
+        if (prop.type === "string" && jsType === "object") {
+          warn(
+            tmplPath,
+            `Template property "${key}" is an object but schema declares type: string. ` +
+              `Use an empty string "" as the default value.`,
+          );
+        }
+        if (prop.type === "array" && jsType === "object" && !isArray) {
+          warn(
+            tmplPath,
+            `Template property "${key}" is an object {} but schema declares type: array. ` +
+              `Use an empty array [] as the default value.`,
+          );
+        }
+        if (prop.type === "integer" && jsType === "string" && value !== "") {
+          warn(
+            tmplPath,
+            `Template property "${key}" is a string but schema declares type: integer. ` +
+              `Use 0 as the default value.`,
+          );
+        }
+      }
+    }
   }
 }
 
@@ -1990,8 +2078,7 @@ function walk(dir) {
         if (
           file.endsWith(".yaml") &&
           file !== "api.yml" &&
-          !file.includes("_template") &&
-          !file.includes("_page")
+          !file.includes("_template")
         ) {
           const entityPath = path.join(constructDir, file);
           validateEntitySchema(entityPath);
@@ -2011,6 +2098,9 @@ function walk(dir) {
 
       // Rule 18: template files
       validateTemplateFiles(constructDir, construct.name);
+
+      // Rule 34: template value types
+      validateTemplateTypes(constructDir);
 
       // Rules 2–17, 19, 21: check api.yml
       const apiYml = path.join(constructDir, "api.yml");

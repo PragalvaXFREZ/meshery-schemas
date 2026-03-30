@@ -340,6 +340,8 @@ These patterns are deliberate. Do not suggest changes during code review:
 18. ❌ Using SCREAMING\_CASE path parameters (`{orgID}`, `{roleID}`) — always camelCase with `Id` suffix (`{orgId}`, `{roleId}`)
 19. ❌ Using `DELETE` with a request body for bulk operations — use `POST /api/{resources}/delete` instead
 20. ❌ Returning 200 from a `POST` that exclusively creates a new resource — use 201
+21. ❌ Using all-lowercase `id`/`url` suffixes in parameter names — always capitalize (`workspaceId`, not `workspaceid`; `pageUrl`, not `pageurl`)
+22. ❌ Template files with wrong value types — if schema says `type: array`, use `[]` not `{}`; if `type: string`, use `""` not `{}`
 
 ## Checklist for Schema Changes
 

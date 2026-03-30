@@ -856,8 +856,8 @@ components:
       description: Get responses by page
       schema:
         type: string
-    userid:
-      name: userid
+    userId:
+      name: userId
       in: query
       description: Filter catalog items by user ID. Pass multiple user IDs to fetch content for several users simultaneously.
       schema:

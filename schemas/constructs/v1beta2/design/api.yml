@@ -49,7 +49,7 @@ paths:
           required: false
           schema:
             type: boolean
-        - name: workspaceid
+        - name: workspaceId
           in: query
           required: false
           schema:
@@ -382,7 +382,7 @@ paths:
           required: false
           schema:
             type: string
-        - name: userid
+        - name: userId
           in: query
           required: false
           schema:
@@ -392,7 +392,7 @@ paths:
           required: false
           schema:
             type: string
-        - name: workspaceid
+        - name: workspaceId
           in: query
           required: false
           schema:
