@@ -17,7 +17,7 @@ components:
       $ref: "./component.yaml"
 
     Component:
-      description: "data related to the third party capability that Component Defintion wraps , this is herematicaly sealed an"
+      description: "Data related to the third-party capability that a ComponentDefinition wraps; this payload is treated as a hermetically sealed, opaque object."
       type: object
       properties:
         version:
