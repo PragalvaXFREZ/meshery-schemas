@@ -69,6 +69,9 @@ paths:
   /api/entitlement/subscriptions/{subscriptionId}/cancel:
     post:
       x-internal: ["cloud"]
+      tags:
+        - Subscriptions
+      operationId: cancelSubscription
       summary: Cancel an existing subscription . The subscription will remain active until the end of the billing period and then it will be canceled.
       security:
         - jwt: []
@@ -92,6 +95,9 @@ paths:
   /api/entitlement/subscriptions/create:
     post:
       x-internal: ["cloud"]
+      tags:
+        - Subscriptions
+      operationId: createSubscription
       summary: Create a new subscription for an organization
       security:
         - jwt: []
@@ -117,6 +123,9 @@ paths:
   /api/entitlement/subscriptions/{subscriptionId}/upgrade:
     post:
       x-internal: ["cloud"]
+      tags:
+        - Subscriptions
+      operationId: upgradeSubscription
       summary: Upgrade or downgrade an existing subscription by changing one of the plans in the subscription
       security:
         - jwt: []
@@ -145,6 +154,9 @@ paths:
   /api/entitlement/subscriptions/{subscriptionId}/upgradePreview:
     post:
       x-internal: ["cloud"]
+      tags:
+        - Subscriptions
+      operationId: previewSubscriptionUpgrade
       summary: Preview the invoice for upgrading or downgrading an existing subscription by changing one of the plans in the subscription
       security:
         - jwt: []
@@ -175,6 +187,9 @@ paths:
   /api/entitlement/subscriptions/webhooks:
     post:
       x-internal: ["cloud"]
+      tags:
+        - Payment Processors
+      operationId: handleSubscriptionWebhook
       summary: Handle webhook events from payment processors
       security: []
       requestBody:

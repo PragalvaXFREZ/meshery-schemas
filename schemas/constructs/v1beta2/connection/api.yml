@@ -427,13 +427,12 @@ components:
           description: Connection type
           x-oapi-codegen-extra-tags:
             json: "type"
-          maxLength: 255
-        subType:
+        sub_type:
           type: string
           description: Connection sub-type
           x-oapi-codegen-extra-tags:
-            json: "subType"
-          maxLength: 255
+            db: "sub_type"
+            json: "sub_type"
         credentialSecret:
           type: object
           description: Credential secret data
@@ -469,7 +468,7 @@ components:
         - name
         - kind
         - type
-        - subType
+        - sub_type
         - status
 
     ConnectionStatusInfo:

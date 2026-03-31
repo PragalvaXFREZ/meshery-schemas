@@ -112,7 +112,7 @@ components:
         - id
         - plan_id
         - quantity
-        - feature
+        - name
       properties:
         id:
           $ref: "../core/api.yml#/components/schemas/uuid"

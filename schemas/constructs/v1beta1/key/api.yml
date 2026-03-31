@@ -17,6 +17,8 @@ security:
 tags:
   - name: Key
     description: Operations related to authorization keys
+  - name: users
+    description: Operations related to users and their authorization keys
 
 paths:
   /api/identity/orgs/{orgId}/users/keys:

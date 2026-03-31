@@ -11,9 +11,15 @@ info:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
 
+tags:
+  - name: Organizations
+    description: Operations related to organization management
+
 paths:
   /api/identity/orgs:
     get:
+      tags:
+        - Organizations
       security:
         - jwt: []
       summary: Read organizations
@@ -39,6 +45,8 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     post:
+      tags:
+        - Organizations
       security:
         - jwt: []
       summary: Create an organization
@@ -62,6 +70,8 @@ paths:
 
   /api/identity/orgs/by-domain:
     get:
+      tags:
+        - Organizations
       summary: Get organization by domain
       operationId: getOrgByDomain
       parameters:
@@ -85,6 +95,8 @@ paths:
           description: Internal server error
   /api/identity/orgs/{orgId}:
     get:
+      tags:
+        - Organizations
       security:
         - jwt: []
       summary: Read an organization
@@ -106,6 +118,8 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     delete:
+      tags:
+        - Organizations
       security:
         - jwt: []
       summary: Delete an organization
@@ -125,6 +139,8 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     put:
+      tags:
+        - Organizations
       security:
         - jwt: []
       summary: Update an organization
@@ -151,6 +167,8 @@ paths:
           $ref: "#/components/responses/500"
   /api/identity/orgs/{orgId}/preferences:
     get:
+      tags:
+        - Organizations
       security:
         - jwt: []
       summary: Get organization preferences
@@ -174,6 +192,8 @@ paths:
 
   /api/identity/orgs/{orgId}/teams/{teamId}:
     post:
+      tags:
+        - Organizations
       security:
         - jwt: []
       summary: Add team to organization or soft delete team
@@ -208,6 +228,8 @@ paths:
 
   /api/identity/orgs/{orgId}/teams/{teamId}/remove:
     post:
+      tags:
+        - Organizations
       security:
         - jwt: []
       summary: Remove team from organization
@@ -234,6 +256,8 @@ paths:
 
   /api/identity/orgs/{orgId}/users/{userId}:
     post:
+      tags:
+        - Organizations
       security:
         - jwt: []
       summary: Add user to organization
@@ -262,6 +286,8 @@ paths:
         "500":
           description: Internal server error
     delete:
+      tags:
+        - Organizations
       security:
         - jwt: []
       summary: Remove user from organization

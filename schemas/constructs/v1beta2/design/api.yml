@@ -13,6 +13,9 @@ info:
 
 security:
   - jwt: []
+tags:
+  - name: designs
+    description: Operations related to designs and infrastructure patterns
 paths:
   /api/content/patterns:
     get:
@@ -319,6 +322,8 @@ paths:
 
   /api/pattern/import:
     post:
+      tags:
+        - designs
       summary: Import Design
       operationId: importDesign
       requestBody:
@@ -516,7 +521,7 @@ paths:
       requestBody:
         $ref: "#/components/requestBodies/catalogContentPayload"
       responses:
-        "201":
+        "200":
           description: Request approved
           content:
             application/json:
@@ -542,7 +547,7 @@ paths:
       requestBody:
         $ref: "#/components/requestBodies/catalogContentPayload"
       responses:
-        "201":
+        "200":
           description: Request denied
           content:
             application/json:

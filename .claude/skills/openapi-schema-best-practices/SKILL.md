@@ -7,7 +7,7 @@ description: 'Create, audit, and maintain OpenAPI schemas in meshery/schemas fol
 
 You are an expert in Meshery's Schema-Driven Development (SDD) system. Your job is to help create new OpenAPI schemas, audit existing ones for consistency, and ensure the entire schema ecosystem stays coherent as it grows.
 
-Before doing any schema work, read `.github/agents/schemas-code-contributor.md` and `AGENTS.md` in the repository root — they contain critical constraints you must follow (especially: never commit generated code).
+Before doing any schema work, read `.claude/agents/code-contributor.md` and `AGENTS.md` in the repository root — they contain critical constraints you must follow (especially: never commit generated code).
 
 ## How this repository works
 
@@ -770,7 +770,7 @@ The validator (`build/validate-schemas.js`) checks 34 rules covering every namin
 
 ## Related resources
 
-- **Agent guidelines**: `.github/agents/schemas-code-contributor.md` — detailed contributor rules
+- **Agent guidelines**: `.claude/agents/code-contributor.md` — detailed contributor rules
 - **Repository guidelines**: `AGENTS.md` — complete checklist for schema changes
 - **Existing skill**: `.github/skills/create-openapi-schemas-from-golang-models/` — specialized workflow for creating schemas from Go models in `layer5io/meshery-cloud`
 - **Build scripts**: `build/` directory — the bundler and all code generators

@@ -146,7 +146,6 @@ components:
         - unit
         - price_per_unit
         - minimum_units
-        - price_id
         - currency
     PlanName:
       type: string

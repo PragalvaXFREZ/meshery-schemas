@@ -375,6 +375,7 @@ These patterns are deliberate. Do not suggest changes during code review:
 22. ❌ Template files with wrong value types — if schema says `type: array`, use `[]` not `{}`; if `type: string`, use `""` not `{}`
 23. ❌ Adding `format: uuid` to ID properties that hold external system identifiers (Stripe IDs, etc.) — use `x-id-format: external` instead
 24. ❌ Setting `minimum: 0` on page-size properties — page size must be at least 1
+23. ❌ Omitting `tags` from operations — every operation must have at least one tag for API documentation and client generation
 
 ## Checklist for Schema Changes
 
@@ -403,6 +404,7 @@ These patterns are deliberate. Do not suggest changes during code review:
 - [ ] (New property) Numeric properties have `minimum`, `maximum`, or `const`
 - [ ] (New property) ID properties have `format: uuid` (or `$ref` to UUID type), OR `x-id-format: external` if they hold non-UUID external identifiers
 - [ ] (New property) Page-size properties have `minimum: 1`
+- [ ] (New endpoint) Operation has at least one `tags` entry matching the construct's top-level tag definition
 
 ## Questions?
 

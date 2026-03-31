@@ -54,6 +54,7 @@
  *   Rule 39 — String properties named *id/*Id must have format: uuid or $ref to a UUID schema.
  *              Skips non-string types and properties annotated with `x-id-format: external`.
  *   Rule 40 — Page-size properties (page_size, pagesize) must have minimum: 1.
+ *   Rule 36 — Every operation must define at least one OpenAPI tag, and when document-root `tags:` are declared operation tags must reference one of those definitions.
  *
  * USAGE:
  *   node build/validate-schemas.js          # exits 0 if no blocking violations found
@@ -82,6 +83,7 @@ const {
 const { findNewNonLowercaseEnumValues } = require("./lib/enum-validation");
 const { detectPostCreate, isSingleResourceDelete } = require("./lib/response-code-semantics");
 const { collectPropertyConstraintIssues } = require("./lib/property-constraint-validation");
+const { findOperationTagIssues } = require("./lib/operation-tags");
 
 const ROOT = path.resolve(__dirname, "..");
 const CONSTRUCTS_DIR = path.join(ROOT, "schemas", "constructs");
@@ -2035,6 +2037,30 @@ function validateResponseCodeSemantics(filePath, doc) {
   }
 }
 
+// ─── Rule 36: every operation must have tags ──────────────────────────────────
+
+function validateOperationTags(filePath, doc) {
+  for (const issue of findOperationTagIssues(doc)) {
+    if (issue.type === "missing-tags") {
+      reportDesignAdvisory(
+        filePath,
+        `${issue.method.toUpperCase()} ${issue.routePath} — operation is missing \`tags\`. ` +
+          `Every operation must have at least one tag for consistent API documentation and client generation. ` +
+          `See AGENTS.md § "Checklist for Schema Changes".`,
+      );
+      continue;
+    }
+
+    if (issue.type === "undefined-tag") {
+      reportDesignAdvisory(
+        filePath,
+        `${issue.method.toUpperCase()} ${issue.routePath} — operation tag \`${issue.tagName}\` is not declared in the document-root \`tags:\` section. ` +
+          `Declare the tag at the top level or use one of the existing tag definitions so API docs and generated clients stay consistently grouped. ` +
+          `See AGENTS.md § "Checklist for Schema Changes".`,
+      );
+    }
+  }
+}
 // ─── Rule 29: detect duplicate schemas across constructs ──────────────────────
 
 /**
@@ -2342,6 +2368,7 @@ function walk(dir) {
           validateDbBackedPropertyNames(apiYml, doc);
           validatePaginationEnvelopeFieldNames(apiYml, doc);
           validateResponseCodeSemantics(apiYml, doc);
+          validateOperationTags(apiYml, doc);
           collectSchemaFingerprints(apiYml, doc);
           validateResponseSchemaRefs(apiYml, doc);
           validateResponseText(apiYml, doc);
