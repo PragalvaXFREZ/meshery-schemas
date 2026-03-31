@@ -1,6 +1,6 @@
 "use strict";
 
-const ID_PROPERTY_PATTERN = /(?:^id$|_id$|Id$|ID$)/i;
+const ID_PROPERTY_PATTERN = /(?:^id$|_id$|Id$|ID$)/;
 const PAGE_SIZE_NAMES = new Set(["page_size", "pagesize", "pageSize"]);
 const COMBINERS = ["allOf", "oneOf", "anyOf"];
 

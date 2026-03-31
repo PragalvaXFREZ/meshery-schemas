@@ -514,17 +514,17 @@ components:
       properties:
         grafanaURL:
           type: string
-          description: The grafana u r l of the grafana.
+          description: Grafana URL for the user configuration.
           maxLength: 500
         grafanaAPIKey:
           type: string
-          description: The grafana a p i key of the grafana.
+          description: Grafana API key for the user configuration.
           maxLength: 500
         selectedBoardsConfigs:
           type: array
           items:
             $ref: "#/components/schemas/SelectedGrafanaConfig"
-          description: The selected boards configs of the grafana.
+          description: Selected Grafana board configurations for the user.
 
     SelectedGrafanaConfig:
       type: object
@@ -535,12 +535,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Panel"
-          description: The panels of the selectedgrafanaconfig.
+          description: Panels selected for the Grafana board configuration.
         templateVars:
           type: array
           items:
             type: string
-          description: The template vars of the selectedgrafanaconfig.
+          description: Template variables applied to the selected Grafana board configuration.
 
     GrafanaBoard:
       type: object

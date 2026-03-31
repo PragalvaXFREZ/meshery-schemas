@@ -168,7 +168,7 @@ The schema validator (`build/validate-schemas.js`) enforces per-property constra
 | Rule | What it checks |
 |---|---|
 | 36 | Every property has a `description` |
-| 37 | String properties have `minLength`, `maxLength`, or `pattern` |
+| 37 | String properties have `minLength`, `maxLength`, `pattern`, or `format` |
 | 38 | Numeric properties have `minimum`, `maximum`, or `const` |
 | 39 | ID-like properties (`id`, `*_id`, `*Id`) have `format: uuid` or `$ref` to a UUID type |
 | 40 | Page-size properties (`page_size`, `pagesize`, `pageSize`) have `minimum: 1` |

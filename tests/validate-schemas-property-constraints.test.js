@@ -127,3 +127,31 @@ test("recursively validates nested object, array item, combiner, and additionalP
   assert.match(issuesText, /Schema "Example\.metadataMap\.additionalProperties" — ID property "externalId" should have `format: uuid`/);
   assert.match(issuesText, /Schema "Example\.variant\.oneOf\[0\]" — property "size" is missing a `description`/);
 });
+
+
+test("does not treat arbitrary lowercase id suffixes as ID fields", () => {
+  const issues = collectPropertyConstraintIssues({
+    components: {
+      schemas: {
+        Example: {
+          type: "object",
+          properties: {
+            grid: {
+              type: "string",
+              description: "Grid label.",
+              maxLength: 100,
+            },
+            android: {
+              type: "string",
+              description: "Android package label.",
+              maxLength: 100,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  assert.equal(issues.some((issue) => issue.includes('ID property "grid"')), false);
+  assert.equal(issues.some((issue) => issue.includes('ID property "android"')), false);
+});
