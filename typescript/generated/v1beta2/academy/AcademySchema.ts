@@ -24,6 +24,12 @@ const AcademySchema: Record<string, unknown> = {
       "jwt": []
     }
   ],
+  "tags": [
+    {
+      "name": "Academy",
+      "description": "Operations related to Meshery Academy content and curriculum"
+    }
+  ],
   "paths": {
     "/api/academy/curricula/registered": {
       "get": {
@@ -1977,6 +1983,10 @@ const AcademySchema: Record<string, unknown> = {
         "x-internal": [
           "cloud"
         ],
+        "tags": [
+          "Academy"
+        ],
+        "operationId": "getAcademyContent",
         "summary": "Get a single learning path",
         "description": "Returns a learning path identified by type, orgId, and slug.",
         "parameters": [

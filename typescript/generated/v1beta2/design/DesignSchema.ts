@@ -24,6 +24,12 @@ const DesignSchema: Record<string, unknown> = {
       "jwt": []
     }
   ],
+  "tags": [
+    {
+      "name": "designs",
+      "description": "Operations related to designs and infrastructure patterns"
+    }
+  ],
   "paths": {
     "/api/content/patterns": {
       "get": {
@@ -24110,6 +24116,9 @@ const DesignSchema: Record<string, unknown> = {
     },
     "/api/pattern/import": {
       "post": {
+        "tags": [
+          "designs"
+        ],
         "summary": "Import Design",
         "operationId": "importDesign",
         "requestBody": {
@@ -29275,7 +29284,7 @@ const DesignSchema: Record<string, unknown> = {
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Request approved",
             "content": {
               "application/json": {
@@ -29344,7 +29353,7 @@ const DesignSchema: Record<string, unknown> = {
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Request denied",
             "content": {
               "application/json": {

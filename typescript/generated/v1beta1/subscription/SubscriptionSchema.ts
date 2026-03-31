@@ -269,7 +269,6 @@ const SubscriptionSchema: Record<string, unknown> = {
                               "unit",
                               "price_per_unit",
                               "minimum_units",
-                              "price_id",
                               "currency"
                             ]
                           },
@@ -412,6 +411,10 @@ const SubscriptionSchema: Record<string, unknown> = {
         "x-internal": [
           "cloud"
         ],
+        "tags": [
+          "Subscriptions"
+        ],
+        "operationId": "cancelSubscription",
         "summary": "Cancel an existing subscription . The subscription will remain active until the end of the billing period and then it will be canceled.",
         "security": [
           {
@@ -600,7 +603,6 @@ const SubscriptionSchema: Record<string, unknown> = {
                               "unit",
                               "price_per_unit",
                               "minimum_units",
-                              "price_id",
                               "currency"
                             ]
                           },
@@ -752,6 +754,10 @@ const SubscriptionSchema: Record<string, unknown> = {
         "x-internal": [
           "cloud"
         ],
+        "tags": [
+          "Subscriptions"
+        ],
+        "operationId": "createSubscription",
         "summary": "Create a new subscription for an organization",
         "security": [
           {
@@ -857,6 +863,10 @@ const SubscriptionSchema: Record<string, unknown> = {
         "x-internal": [
           "cloud"
         ],
+        "tags": [
+          "Subscriptions"
+        ],
+        "operationId": "upgradeSubscription",
         "summary": "Upgrade or downgrade an existing subscription by changing one of the plans in the subscription",
         "security": [
           {
@@ -1054,7 +1064,6 @@ const SubscriptionSchema: Record<string, unknown> = {
                         "unit",
                         "price_per_unit",
                         "minimum_units",
-                        "price_id",
                         "currency"
                       ]
                     },
@@ -1203,6 +1212,10 @@ const SubscriptionSchema: Record<string, unknown> = {
         "x-internal": [
           "cloud"
         ],
+        "tags": [
+          "Subscriptions"
+        ],
+        "operationId": "previewSubscriptionUpgrade",
         "summary": "Preview the invoice for upgrading or downgrading an existing subscription by changing one of the plans in the subscription",
         "security": [
           {
@@ -1309,6 +1322,10 @@ const SubscriptionSchema: Record<string, unknown> = {
         "x-internal": [
           "cloud"
         ],
+        "tags": [
+          "Payment Processors"
+        ],
+        "operationId": "handleSubscriptionWebhook",
         "summary": "Handle webhook events from payment processors",
         "security": [],
         "requestBody": {
@@ -1735,7 +1752,6 @@ const SubscriptionSchema: Record<string, unknown> = {
                     "unit",
                     "price_per_unit",
                     "minimum_units",
-                    "price_id",
                     "currency"
                   ]
                 },
@@ -1982,7 +1998,6 @@ const SubscriptionSchema: Record<string, unknown> = {
               "unit",
               "price_per_unit",
               "minimum_units",
-              "price_id",
               "currency"
             ]
           },

@@ -42,6 +42,14 @@ const WorkspaceSchema: Record<string, unknown> = {
     {
       "name": "workspaces",
       "description": "APIs for Meshery Cloud workspaces."
+    },
+    {
+      "name": "views",
+      "description": "APIs for Meshery Cloud views associated with workspaces."
+    },
+    {
+      "name": "designs",
+      "description": "APIs for Meshery Cloud designs associated with workspaces."
     }
   ],
   "paths": {

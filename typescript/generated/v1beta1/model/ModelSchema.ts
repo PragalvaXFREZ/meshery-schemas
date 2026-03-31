@@ -24,9 +24,18 @@ const ModelSchema: Record<string, unknown> = {
       "jwt": []
     }
   ],
+  "tags": [
+    {
+      "name": "Models",
+      "description": "Operations related to mesh models"
+    }
+  ],
   "paths": {
     "/api/meshmodels/register": {
       "post": {
+        "tags": [
+          "Models"
+        ],
         "summary": "Register mesh models",
         "operationId": "registerMeshmodels",
         "requestBody": {
@@ -208,6 +217,9 @@ const ModelSchema: Record<string, unknown> = {
       "get": {
         "x-internal": [
           "cloud"
+        ],
+        "tags": [
+          "Models"
         ],
         "summary": "Get mesh model models",
         "operationId": "getMeshModelModels",

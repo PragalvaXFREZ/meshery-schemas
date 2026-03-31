@@ -147,7 +147,6 @@ const PlanSchema: Record<string, unknown> = {
                       "unit",
                       "price_per_unit",
                       "minimum_units",
-                      "price_id",
                       "currency"
                     ]
                   }
@@ -347,7 +346,6 @@ const PlanSchema: Record<string, unknown> = {
                 "unit",
                 "price_per_unit",
                 "minimum_units",
-                "price_id",
                 "currency"
               ],
               "x-go-type": "Plan"
@@ -452,7 +450,6 @@ const PlanSchema: Record<string, unknown> = {
           "unit",
           "price_per_unit",
           "minimum_units",
-          "price_id",
           "currency"
         ]
       },

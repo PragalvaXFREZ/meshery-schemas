@@ -15,7 +15,7 @@ export interface components {
       page: number;
       page_size: number;
       total_count: number;
-      plans: ({
+      plans: {
         /**
          * Format: uuid
          * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -36,9 +36,7 @@ export interface components {
         price_per_unit: number;
         /** @enum {string} */
         currency: "usd";
-      } & {
-        price_id: unknown;
-      })[];
+      }[];
     };
     Plan: {
       /**
@@ -61,8 +59,6 @@ export interface components {
       price_per_unit: number;
       /** @enum {string} */
       currency: "usd";
-    } & {
-      price_id: unknown;
     };
     /**
      * @description Name of the plan
@@ -104,7 +100,7 @@ export interface operations {
       /** Plans response */
       200: {
         content: {
-          "application/json": ({
+          "application/json": {
             /**
              * Format: uuid
              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -125,9 +121,7 @@ export interface operations {
             price_per_unit: number;
             /** @enum {string} */
             currency: "usd";
-          } & {
-            price_id: unknown;
-          })[];
+          }[];
         };
       };
       /** Invalid request body or request param */

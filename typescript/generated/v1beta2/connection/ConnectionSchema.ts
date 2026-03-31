@@ -636,11 +636,12 @@ const ConnectionSchema: Record<string, unknown> = {
                       "json": "type"
                     }
                   },
-                  "subType": {
+                  "sub_type": {
                     "type": "string",
                     "description": "Connection sub-type",
                     "x-oapi-codegen-extra-tags": {
-                      "json": "subType"
+                      "db": "sub_type",
+                      "json": "sub_type"
                     }
                   },
                   "credentialSecret": {
@@ -688,7 +689,7 @@ const ConnectionSchema: Record<string, unknown> = {
                   "name",
                   "kind",
                   "type",
-                  "subType",
+                  "sub_type",
                   "status"
                 ]
               }
@@ -1605,11 +1606,12 @@ const ConnectionSchema: Record<string, unknown> = {
                       "json": "type"
                     }
                   },
-                  "subType": {
+                  "sub_type": {
                     "type": "string",
                     "description": "Connection sub-type",
                     "x-oapi-codegen-extra-tags": {
-                      "json": "subType"
+                      "db": "sub_type",
+                      "json": "sub_type"
                     }
                   },
                   "credentialSecret": {
@@ -1657,7 +1659,7 @@ const ConnectionSchema: Record<string, unknown> = {
                   "name",
                   "kind",
                   "type",
-                  "subType",
+                  "sub_type",
                   "status"
                 ]
               }
@@ -3377,11 +3379,12 @@ const ConnectionSchema: Record<string, unknown> = {
               "json": "type"
             }
           },
-          "subType": {
+          "sub_type": {
             "type": "string",
             "description": "Connection sub-type",
             "x-oapi-codegen-extra-tags": {
-              "json": "subType"
+              "db": "sub_type",
+              "json": "sub_type"
             }
           },
           "credentialSecret": {
@@ -3429,7 +3432,7 @@ const ConnectionSchema: Record<string, unknown> = {
           "name",
           "kind",
           "type",
-          "subType",
+          "sub_type",
           "status"
         ]
       },

@@ -28,6 +28,10 @@ const KeySchema: Record<string, unknown> = {
     {
       "name": "Key",
       "description": "Operations related to authorization keys"
+    },
+    {
+      "name": "users",
+      "description": "Operations related to users and their authorization keys"
     }
   ],
   "paths": {

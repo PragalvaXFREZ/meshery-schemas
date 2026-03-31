@@ -19,9 +19,18 @@ const OrganizationSchema: Record<string, unknown> = {
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     }
   },
+  "tags": [
+    {
+      "name": "Organizations",
+      "description": "Operations related to organization management"
+    }
+  ],
   "paths": {
     "/api/identity/orgs": {
       "get": {
+        "tags": [
+          "Organizations"
+        ],
         "security": [
           {
             "jwt": []
@@ -295,6 +304,9 @@ const OrganizationSchema: Record<string, unknown> = {
         }
       },
       "post": {
+        "tags": [
+          "Organizations"
+        ],
         "security": [
           {
             "jwt": []
@@ -677,6 +689,9 @@ const OrganizationSchema: Record<string, unknown> = {
     },
     "/api/identity/orgs/by-domain": {
       "get": {
+        "tags": [
+          "Organizations"
+        ],
         "summary": "Get organization by domain",
         "operationId": "getOrgByDomain",
         "parameters": [
@@ -938,6 +953,9 @@ const OrganizationSchema: Record<string, unknown> = {
     },
     "/api/identity/orgs/{orgId}": {
       "get": {
+        "tags": [
+          "Organizations"
+        ],
         "security": [
           {
             "jwt": []
@@ -1199,6 +1217,9 @@ const OrganizationSchema: Record<string, unknown> = {
         }
       },
       "delete": {
+        "tags": [
+          "Organizations"
+        ],
         "security": [
           {
             "jwt": []
@@ -1275,6 +1296,9 @@ const OrganizationSchema: Record<string, unknown> = {
         }
       },
       "put": {
+        "tags": [
+          "Organizations"
+        ],
         "security": [
           {
             "jwt": []
@@ -1688,6 +1712,9 @@ const OrganizationSchema: Record<string, unknown> = {
     },
     "/api/identity/orgs/{orgId}/preferences": {
       "get": {
+        "tags": [
+          "Organizations"
+        ],
         "security": [
           {
             "jwt": []
@@ -1877,6 +1904,9 @@ const OrganizationSchema: Record<string, unknown> = {
     },
     "/api/identity/orgs/{orgId}/teams/{teamId}": {
       "post": {
+        "tags": [
+          "Organizations"
+        ],
         "security": [
           {
             "jwt": []
@@ -2131,6 +2161,9 @@ const OrganizationSchema: Record<string, unknown> = {
     },
     "/api/identity/orgs/{orgId}/teams/{teamId}/remove": {
       "post": {
+        "tags": [
+          "Organizations"
+        ],
         "security": [
           {
             "jwt": []
@@ -2287,6 +2320,9 @@ const OrganizationSchema: Record<string, unknown> = {
     },
     "/api/identity/orgs/{orgId}/users/{userId}": {
       "post": {
+        "tags": [
+          "Organizations"
+        ],
         "security": [
           {
             "jwt": []
@@ -2366,6 +2402,9 @@ const OrganizationSchema: Record<string, unknown> = {
         }
       },
       "delete": {
+        "tags": [
+          "Organizations"
+        ],
         "security": [
           {
             "jwt": []

@@ -26,6 +26,12 @@ const PatternSchema: Record<string, unknown> = {
       "jwt": []
     }
   ],
+  "tags": [
+    {
+      "name": "designs",
+      "description": "Operations related to designs and infrastructure patterns"
+    }
+  ],
   "paths": {
     "/api/content/patterns": {
       "get": {
@@ -24672,6 +24678,9 @@ const PatternSchema: Record<string, unknown> = {
     },
     "/api/pattern/import": {
       "post": {
+        "tags": [
+          "designs"
+        ],
         "summary": "Import Design",
         "operationId": "importDesign",
         "requestBody": {

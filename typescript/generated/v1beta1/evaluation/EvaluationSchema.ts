@@ -24,11 +24,20 @@ const EvaluationSchema: Record<string, unknown> = {
       "jwt": []
     }
   ],
+  "tags": [
+    {
+      "name": "Evaluation",
+      "description": "Operations related to design evaluation"
+    }
+  ],
   "paths": {
     "/evaluate": {
       "post": {
         "x-internal": [
           "meshery"
+        ],
+        "tags": [
+          "Evaluation"
         ],
         "summary": "Evaluate relationships in a design",
         "description": "Performs relationship evaluation on a given design, applying policies and updating components and relationships as needed.",
