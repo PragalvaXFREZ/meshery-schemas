@@ -203,6 +203,7 @@ paths:
     get:
       x-internal:
       - cloud
+      operationId: getAcademyContent
       summary: Get a single learning path
       description: Returns a learning path identified by type, orgId, and slug.
       parameters:

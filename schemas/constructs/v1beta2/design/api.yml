@@ -516,7 +516,7 @@ paths:
       requestBody:
         $ref: "#/components/requestBodies/catalogContentPayload"
       responses:
-        "201":
+        "200":
           description: Request approved
           content:
             application/json:
@@ -542,7 +542,7 @@ paths:
       requestBody:
         $ref: "#/components/requestBodies/catalogContentPayload"
       responses:
-        "201":
+        "200":
           description: Request denied
           content:
             application/json:
