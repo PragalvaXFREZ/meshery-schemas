@@ -85,32 +85,39 @@ const excludeFromGoGeneration = [
  * Packages to EXCLUDE from the merged OpenAPI spec
  * These will still be processed for Go generation but not included in the merge
  */
-const excludeFromMerge = [
-  // Promoted constructs (v1alpha* → v1beta1): original alpha directories
-  // still exist for backward compatibility but are excluded from merge.
+/**
+ * Static exclusions: non-API base schemas that should never appear in the
+ * merged OpenAPI spec regardless of version.
+ */
+const excludeFromMergeStatic = new Set([
   "v1alpha1/core",
   "v1alpha1/capability",
-  // Core, capability, selector are reusable base schemas, not standalone
-  // API surfaces — exclude from the merged spec in all versions.
   "v1beta1/core",
   "v1beta1/capability",
   "v1beta1/selector",
   "v1beta2/core",
   "v1beta2/selector",
-  // Deprecated v1beta1 constructs superseded by v1beta2.
-  // Excluded to prevent path conflicts during OpenAPI merge.
-  "v1beta1/academy",
-  "v1beta1/catalog",
-  "v1beta1/component",
-  "v1beta1/connection",
-  "v1beta1/design",
-  "v1beta1/event",
-  "v1beta1/invitation",
-  "v1beta1/plan",
-  "v1beta1/relationship",
-  "v1beta1/subscription",
-  "v1beta1/token",
-];
+]);
+
+/**
+ * Dynamic exclusion: constructs marked x-deprecated: true in their api.yml
+ * are excluded from the merged spec (their v1beta2 replacement takes
+ * precedence). This is computed at discovery time, not hardcoded.
+ */
+function isDeprecatedPackage(pkg) {
+  const projectRoot = getProjectRoot();
+  const apiPath = path.join(projectRoot, pkg.openapiPath);
+  try {
+    const yaml = require("js-yaml");
+    const doc = yaml.load(fs.readFileSync(apiPath, "utf-8"));
+    return doc?.info?.["x-deprecated"] === true;
+  } catch {
+    return false;
+  }
+}
+
+// Legacy compat — getMergePackages uses this for static exclusions.
+const excludeFromMerge = [...excludeFromMergeStatic];
 
 /**
  * Get the project root directory
@@ -195,7 +202,11 @@ function getSchemaPackages() {
 function getMergePackages() {
   return getSchemaPackages().filter((pkg) => {
     const packageKey = `${pkg.version}/${pkg.dirName}`;
-    return !excludeFromMerge.includes(packageKey);
+    // Static exclusions: non-API base schemas
+    if (excludeFromMergeStatic.has(packageKey)) return false;
+    // Dynamic exclusion: deprecated constructs (x-deprecated: true)
+    if (isDeprecatedPackage(pkg)) return false;
+    return true;
   });
 }
 
