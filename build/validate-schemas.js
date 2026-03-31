@@ -51,7 +51,8 @@
  *              constraint: minLength, maxLength, pattern, or format.
  *   Rule 38 — Integer/number properties should have minimum and/or maximum bounds.
  *   Rule 39 — String properties named *id/*Id must have format: uuid or $ref to a UUID schema.
- *              Skips non-string types and known external ID fields (e.g. payment processor IDs).
+ *              Skips non-string types and properties annotated with `x-id-format: external`.
+ *   Rule 40 — Page-size properties (page_size, pagesize) must have minimum: 1.
  *
  * USAGE:
  *   node build/validate-schemas.js          # exits 0 if no blocking violations found
@@ -2290,16 +2291,11 @@ function validateNumericBounds(filePath, properties, schemaName) {
 }
 
 // ─── Rule 39: string ID properties must use format: uuid or $ref ─────────────
+//
+// Properties with `x-id-format: external` are exempt — they represent IDs from
+// external systems (payment processors, third-party APIs) that are not UUIDs.
 
 const ID_PROPERTY_PATTERN = /(?:^id$|_id$|Id$)/;
-
-// Known external-system ID fields that are NOT UUIDs (e.g. payment processor IDs).
-const EXTERNAL_ID_FIELDS = new Set([
-  "planId",
-  "couponId",
-  "subscriptionId",
-  "billing_id",
-]);
 
 function validateIdFormat(filePath, properties, schemaName) {
   if (!properties || typeof properties !== "object") return;
@@ -2311,20 +2307,44 @@ function validateIdFormat(filePath, properties, schemaName) {
     if (propDef.type && propDef.type !== "string") continue;
     if (propDef.$ref) continue; // $ref to UUID schema is fine
     if (propDef.format === "uuid") continue;
-    // Skip known external ID fields
-    if (EXTERNAL_ID_FIELDS.has(propName)) continue;
+    // Skip properties annotated as external IDs
+    if (propDef["x-id-format"] === "external") continue;
     // Check allOf wrappers that may contain a $ref
     if (propDef.allOf?.some((entry) => entry.$ref)) continue;
 
     const context = schemaName ? `Schema "${schemaName}" — ` : "";
     reportDesignAdvisory(
       filePath,
-      `${context}ID property "${propName}" should have \`format: uuid\` or use a \`$ref\` to a UUID schema.`,
+      `${context}ID property "${propName}" should have \`format: uuid\`, use a \`$ref\` to a UUID schema, ` +
+        `or add \`x-id-format: external\` if this is an external system identifier.`,
     );
   }
 }
 
-// ─── Rules 36–39: run property-level validation on all schema properties ─────
+// ─── Rule 40: page-size properties must have minimum: 1 ─────────────────────
+
+const PAGE_SIZE_NAMES = new Set(["page_size", "pagesize", "pageSize"]);
+
+function validatePageSizeMinimum(filePath, properties, schemaName) {
+  if (!properties || typeof properties !== "object") return;
+
+  for (const [propName, propDef] of Object.entries(properties)) {
+    if (!propDef || typeof propDef !== "object") continue;
+    if (!PAGE_SIZE_NAMES.has(propName)) continue;
+    if (propDef.type !== "integer" && propDef.type !== "number") continue;
+
+    if (propDef.minimum === undefined || propDef.minimum < 1) {
+      const context = schemaName ? `Schema "${schemaName}" — ` : "";
+      reportDesignAdvisory(
+        filePath,
+        `${context}page-size property "${propName}" must have \`minimum: 1\`. ` +
+          `A page size of 0 is invalid for pagination.`,
+      );
+    }
+  }
+}
+
+// ─── Rules 36–40: run property-level validation on all schema properties ─────
 
 function validatePropertyConstraints(filePath, doc) {
   // Entity-level schemas (top-level properties in .yaml files)
@@ -2333,6 +2353,7 @@ function validatePropertyConstraints(filePath, doc) {
     validateStringConstraints(filePath, doc.properties, null);
     validateNumericBounds(filePath, doc.properties, null);
     validateIdFormat(filePath, doc.properties, null);
+    validatePageSizeMinimum(filePath, doc.properties, null);
   }
 
   // Component schemas in api.yml
@@ -2343,6 +2364,7 @@ function validatePropertyConstraints(filePath, doc) {
       validateStringConstraints(filePath, schema.properties, schemaName);
       validateNumericBounds(filePath, schema.properties, schemaName);
       validateIdFormat(filePath, schema.properties, schemaName);
+      validatePageSizeMinimum(filePath, schema.properties, schemaName);
     }
   }
 }

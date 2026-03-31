@@ -240,11 +240,13 @@ components:
         planId:
           type: string
           description: Price ID from the payment processor
+          x-id-format: external
           maxLength: 500
           pattern: '^[A-Za-z0-9_\-]+$'
         couponId:
           type: string
           description: Coupon ID to apply
+          x-id-format: external
           maxLength: 500
           pattern: '^[A-Za-z0-9_\-]+$'
         userCount:
@@ -272,6 +274,7 @@ components:
         subscriptionId:
           type: string
           description: ID of the associated subscription.
+          x-id-format: external
           maxLength: 500
           pattern: '^[A-Za-z0-9_\-]+$'
         clientSecret:
@@ -289,6 +292,7 @@ components:
         subscriptionId:
           type: string
           description: Subscription ID from the payment processor
+          x-id-format: external
           maxLength: 500
           pattern: '^[A-Za-z0-9_\-]+$'
         paymentProcessor:

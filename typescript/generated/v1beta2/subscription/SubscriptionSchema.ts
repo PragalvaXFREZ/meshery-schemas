@@ -373,6 +373,7 @@ const SubscriptionSchema: Record<string, unknown> = {
                           "billing_id": {
                             "type": "string",
                             "description": "Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe",
+                            "x-id-format": "external",
                             "x-oapi-codegen-extra-tags": {
                               "db": "billing_id"
                             },
@@ -721,6 +722,7 @@ const SubscriptionSchema: Record<string, unknown> = {
                           "billing_id": {
                             "type": "string",
                             "description": "Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe",
+                            "x-id-format": "external",
                             "x-oapi-codegen-extra-tags": {
                               "db": "billing_id"
                             },
@@ -806,12 +808,14 @@ const SubscriptionSchema: Record<string, unknown> = {
                   "planId": {
                     "type": "string",
                     "description": "Price ID from the payment processor",
+                    "x-id-format": "external",
                     "maxLength": 500,
                     "pattern": "^[A-Za-z0-9_\\-]+$"
                   },
                   "couponId": {
                     "type": "string",
                     "description": "Coupon ID to apply",
+                    "x-id-format": "external",
                     "maxLength": 500,
                     "pattern": "^[A-Za-z0-9_\\-]+$"
                   },
@@ -850,6 +854,7 @@ const SubscriptionSchema: Record<string, unknown> = {
                     "subscriptionId": {
                       "type": "string",
                       "description": "ID of the associated subscription.",
+                      "x-id-format": "external",
                       "maxLength": 500,
                       "pattern": "^[A-Za-z0-9_\\-]+$"
                     },
@@ -1198,6 +1203,7 @@ const SubscriptionSchema: Record<string, unknown> = {
                     "billing_id": {
                       "type": "string",
                       "description": "Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe",
+                      "x-id-format": "external",
                       "x-oapi-codegen-extra-tags": {
                         "db": "billing_id"
                       },
@@ -1529,12 +1535,14 @@ const SubscriptionSchema: Record<string, unknown> = {
           "planId": {
             "type": "string",
             "description": "Price ID from the payment processor",
+            "x-id-format": "external",
             "maxLength": 500,
             "pattern": "^[A-Za-z0-9_\\-]+$"
           },
           "couponId": {
             "type": "string",
             "description": "Coupon ID to apply",
+            "x-id-format": "external",
             "maxLength": 500,
             "pattern": "^[A-Za-z0-9_\\-]+$"
           },
@@ -1588,6 +1596,7 @@ const SubscriptionSchema: Record<string, unknown> = {
           "subscriptionId": {
             "type": "string",
             "description": "ID of the associated subscription.",
+            "x-id-format": "external",
             "maxLength": 500,
             "pattern": "^[A-Za-z0-9_\\-]+$"
           },
@@ -1618,6 +1627,7 @@ const SubscriptionSchema: Record<string, unknown> = {
           "subscriptionId": {
             "type": "string",
             "description": "Subscription ID from the payment processor",
+            "x-id-format": "external",
             "maxLength": 500,
             "pattern": "^[A-Za-z0-9_\\-]+$"
           },
@@ -1909,6 +1919,7 @@ const SubscriptionSchema: Record<string, unknown> = {
                 "billing_id": {
                   "type": "string",
                   "description": "Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe",
+                  "x-id-format": "external",
                   "x-oapi-codegen-extra-tags": {
                     "db": "billing_id"
                   },
@@ -2167,6 +2178,7 @@ const SubscriptionSchema: Record<string, unknown> = {
           "billing_id": {
             "type": "string",
             "description": "Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe",
+            "x-id-format": "external",
             "x-oapi-codegen-extra-tags": {
               "db": "billing_id"
             },

@@ -66,6 +66,7 @@ properties:
     type: string
     description: Billing ID of the subscription. This is the ID of the subscription
       in the billing system. eg Stripe
+    x-id-format: external
     x-oapi-codegen-extra-tags:
       db: billing_id
     maxLength: 500

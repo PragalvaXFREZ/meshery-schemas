@@ -159,6 +159,35 @@ Every element in the API has exactly one correct casing. The table below is the 
 
 **Pagination envelopes are fixed API contract fields** — use `page`, `page_size`, and `total_count`, not `pageSize` or `totalCount`.
 
+**`page_size` properties must have `minimum: 1`.** A page size of zero is never valid. The validator enforces this (Rule 40) on all properties named `page_size`, `pagesize`, or `pageSize`.
+
+## Per-Property Validation Constraints
+
+The schema validator (`build/validate-schemas.js`) enforces per-property constraints as advisory rules (Rules 36–40). These do not block CI but are reported on `--warn` runs and should be resolved in new schemas.
+
+| Rule | What it checks |
+|---|---|
+| 36 | Every property has a `description` |
+| 37 | String properties have `minLength`, `maxLength`, or `pattern` |
+| 38 | Numeric properties have `minimum` or `maximum` |
+| 39 | ID-like properties (`id`, `*_id`, `*Id`) have `format: uuid` or `$ref` to a UUID type |
+| 40 | Page-size properties (`page_size`, `pagesize`, `pageSize`) have `minimum: 1` |
+
+### `x-id-format: external` — exempting non-UUID IDs
+
+Some ID properties hold external system identifiers (e.g., Stripe subscription IDs, coupon codes) that are not UUIDs. To exempt these from Rule 39, annotate the property with `x-id-format: external`:
+
+```yaml
+billing_id:
+  type: string
+  description: Billing ID from the external payment processor.
+  x-id-format: external
+  maxLength: 500
+  pattern: '^[A-Za-z0-9_\-]+$'
+```
+
+The annotation is self-documenting: the exemption lives with the schema property where the domain knowledge is, not in a hardcoded allowlist. Use it only for properties that genuinely hold non-UUID external identifiers.
+
 ## HTTP API Design Principles
 
 These rules govern how endpoints are structured. They are enforced in part by `make validate-schemas`.
@@ -318,6 +347,7 @@ These patterns are deliberate. Do not suggest changes during code review:
 4. **`page_size` / `total_count`** — Pagination envelope fields use snake_case as a published API contract, not because they are database-backed. Do not suggest `pageSize`/`totalCount`.
 5. **Deprecated v1beta1 constructs** — Files with `x-deprecated: true` are kept for backward compatibility. Known casing violations are fixed in v1beta2. Do not flag issues in deprecated constructs.
 6. **Same field name, different casing across constructs** — A property like `subType` may be camelCase in one construct (not DB-backed) and `sub_type` in another (DB-backed with `db: "sub_type"`). Both are correct. Casing is determined per-property by whether it maps to a database column in that specific construct, not by what other constructs use.
+7. **`x-id-format: external`** — ID properties annotated with this hold external system identifiers (e.g., Stripe IDs) that are not UUIDs. The validator skips `format: uuid` enforcement for these. Do not remove the annotation or add `format: uuid`.
 
 ## Common Mistakes to Avoid
 
@@ -343,6 +373,8 @@ These patterns are deliberate. Do not suggest changes during code review:
 20. ❌ Returning 200 from a `POST` that exclusively creates a new resource — use 201
 21. ❌ Using all-lowercase `id`/`url` suffixes in parameter names — always capitalize (`workspaceId`, not `workspaceid`; `pageUrl`, not `pageurl`)
 22. ❌ Template files with wrong value types — if schema says `type: array`, use `[]` not `{}`; if `type: string`, use `""` not `{}`
+23. ❌ Adding `format: uuid` to ID properties that hold external system identifiers (Stripe IDs, etc.) — use `x-id-format: external` instead
+24. ❌ Setting `minimum: 0` on page-size properties — page size must be at least 1
 
 ## Checklist for Schema Changes
 
@@ -367,6 +399,10 @@ These patterns are deliberate. Do not suggest changes during code review:
 - [ ] (New endpoint) Path parameters are camelCase with `Id` suffix (e.g., `{workspaceId}`, not `{workspaceID}`)
 - [ ] (New endpoint) No `DELETE` operation has a `requestBody` — bulk deletes use `POST .../delete`
 - [ ] (New `POST` for creation only) Response code is 201, not 200
+- [ ] (New property) String properties have `description`, `maxLength`, and where appropriate `minLength` or `pattern`
+- [ ] (New property) Numeric properties have `minimum` and/or `maximum`
+- [ ] (New property) ID properties have `format: uuid` (or `$ref` to UUID type), OR `x-id-format: external` if they hold non-UUID external identifiers
+- [ ] (New property) Page-size properties have `minimum: 1`
 
 ## Questions?
 
