@@ -8,6 +8,8 @@ const TokenSchema: Record<string, unknown> = {
   "info": {
     "title": "token",
     "description": "Documentation for Meshery Cloud REST APIs for user tokens and sessions",
+    "x-deprecated": true,
+    "x-superseded-by": "v1beta2",
     "contact": {
       "name": "Meshery Maintainers",
       "email": "maintainers@meshery.io",
@@ -485,7 +487,7 @@ const TokenSchema: Record<string, unknown> = {
         "description": "Deletes a specific token for the authenticated user.",
         "parameters": [
           {
-            "name": "tokenId",
+            "name": "token_id",
             "in": "query",
             "description": "ID of the token.",
             "required": true,
@@ -867,7 +869,7 @@ const TokenSchema: Record<string, unknown> = {
         "description": "Creates a non-expiring user token for provider admin use cases.",
         "parameters": [
           {
-            "name": "userId",
+            "name": "user_id",
             "in": "query",
             "description": "UUID of the user.",
             "required": true,
@@ -1195,7 +1197,7 @@ const TokenSchema: Record<string, unknown> = {
         }
       },
       "tokenId": {
-        "name": "tokenId",
+        "name": "token_id",
         "in": "query",
         "description": "ID of the token.",
         "required": true,
@@ -1210,7 +1212,7 @@ const TokenSchema: Record<string, unknown> = {
         }
       },
       "userId": {
-        "name": "userId",
+        "name": "user_id",
         "in": "query",
         "description": "UUID of the user.",
         "required": true,

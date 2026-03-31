@@ -2,6 +2,8 @@ openapi: 3.0.0
 info:
   title: Catalog
   description: OpenAPI schema for Meshery catalog data and content management.
+  x-deprecated: true
+  x-superseded-by: v1beta2
   version: v1beta1
   contact:
     name: Meshery Maintainers

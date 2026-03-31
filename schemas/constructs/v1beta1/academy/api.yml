@@ -2,6 +2,8 @@ openapi: 3.0.0
 info:
   title: Academy API
   description: OpenAPI schema for Meshery Academy content and curriculum management.
+  x-deprecated: true
+  x-superseded-by: v1beta2
   version: v1beta1
   contact:
     name: Meshery Maintainers
@@ -906,10 +908,10 @@ components:
           type: string
           format: uuid
           description: ID of the badge to be awarded on completion of this curricula
-          x-go-type: "corev1beta1.Uuid"
+          x-go-type: "core.Uuid"
           x-go-type-import:
-            path: "github.com/meshery/schemas/models/v1beta1/core"
-            name: corev1beta1
+            path: "github.com/meshery/schemas/models/core"
+            name: core
           x-oapi-codegen-extra-tags:
             db: "badge_id"
             json: "badge_id"
@@ -992,10 +994,10 @@ components:
           type: string
           format: uuid
           description: ID of the badge to be awarded on completion of this curricula
-          x-go-type: "corev1beta1.Uuid"
+          x-go-type: "core.Uuid"
           x-go-type-import:
-            path: "github.com/meshery/schemas/models/v1beta1/core"
-            name: corev1beta1
+            path: "github.com/meshery/schemas/models/core"
+            name: core
           x-oapi-codegen-extra-tags:
             db: "badge_id"
             json: "badge_id"

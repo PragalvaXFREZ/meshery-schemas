@@ -4,7 +4,7 @@
 package token
 
 import (
-	corev1alpha1 "github.com/meshery/schemas/models/v1alpha1/core"
+	core "github.com/meshery/schemas/models/core"
 )
 
 // TokenPage A paginated list of tokens.
@@ -24,10 +24,10 @@ type TokenPage struct {
 // UserToken Represents a user-owned API token or OAuth session.
 type UserToken struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID *corev1alpha1.Uuid `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
+	ID *core.Uuid `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
 
 	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	UserId *corev1alpha1.Uuid `db:"user_id" json:"user_id,omitempty" yaml:"user_id,omitempty"`
+	UserId *core.Uuid `db:"user_id" json:"user_id,omitempty" yaml:"user_id,omitempty"`
 
 	// Provider Authentication provider associated with the token.
 	Provider *string `db:"provider" json:"provider,omitempty" yaml:"provider,omitempty"`
@@ -48,15 +48,15 @@ type UserToken struct {
 	IsOauth *bool `db:"is_oauth" json:"is_oauth,omitempty" yaml:"is_oauth,omitempty"`
 
 	// CreatedAt Timestamp when the resource was created.
-	CreatedAt corev1alpha1.CreatedAt `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt core.CreatedAt `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
 
 	// UpdatedAt Timestamp when the resource was updated.
-	UpdatedAt corev1alpha1.UpdatedAt `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	UpdatedAt core.UpdatedAt `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 }
 
 // Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 // Id defines model for id.
-type Id = corev1alpha1.Uuid
+type Id = core.Uuid
 
 // IsOAuth defines model for isOAuth.
 type IsOAuth = bool
@@ -83,4 +83,4 @@ type Purpose = string
 type Search = string
 
 // UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-type UserId = corev1alpha1.Uuid
+type UserId = core.Uuid

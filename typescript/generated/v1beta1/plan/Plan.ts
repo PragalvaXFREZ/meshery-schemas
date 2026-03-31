@@ -96,24 +96,10 @@ export interface components {
       };
     };
   };
-  parameters: {
-    /** @description Get responses by page */
-    page: string;
-    /** @description Get responses by pagesize */
-    pagesize: string;
-  };
 }
 
 export interface operations {
   getPlans: {
-    parameters: {
-      query: {
-        /** Get responses by page */
-        page?: string;
-        /** Get responses by pagesize */
-        pagesize?: string;
-      };
-    };
     responses: {
       /** Plans response */
       200: {

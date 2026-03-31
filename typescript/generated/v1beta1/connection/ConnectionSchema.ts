@@ -8,6 +8,8 @@ const ConnectionSchema: Record<string, unknown> = {
   "info": {
     "title": "Connection API",
     "description": "API for managing Meshery connections - managed and unmanaged resources tracked by Meshery.",
+    "x-deprecated": true,
+    "x-superseded-by": "v1beta2",
     "version": "v1beta1",
     "contact": {
       "name": "Meshery Maintainers",
@@ -651,12 +653,9 @@ const ConnectionSchema: Record<string, unknown> = {
                       "json": "type"
                     }
                   },
-                  "subType": {
+                  "sub_type": {
                     "type": "string",
-                    "description": "Connection sub-type",
-                    "x-oapi-codegen-extra-tags": {
-                      "json": "subType"
-                    }
+                    "description": "Connection sub-type"
                   },
                   "credentialSecret": {
                     "type": "object",
@@ -703,7 +702,7 @@ const ConnectionSchema: Record<string, unknown> = {
                   "name",
                   "kind",
                   "type",
-                  "subType",
+                  "sub_type",
                   "status"
                 ]
               }
@@ -1620,12 +1619,9 @@ const ConnectionSchema: Record<string, unknown> = {
                       "json": "type"
                     }
                   },
-                  "subType": {
+                  "sub_type": {
                     "type": "string",
-                    "description": "Connection sub-type",
-                    "x-oapi-codegen-extra-tags": {
-                      "json": "subType"
-                    }
+                    "description": "Connection sub-type"
                   },
                   "credentialSecret": {
                     "type": "object",
@@ -1672,7 +1668,7 @@ const ConnectionSchema: Record<string, unknown> = {
                   "name",
                   "kind",
                   "type",
-                  "subType",
+                  "sub_type",
                   "status"
                 ]
               }
@@ -3407,12 +3403,9 @@ const ConnectionSchema: Record<string, unknown> = {
               "json": "type"
             }
           },
-          "subType": {
+          "sub_type": {
             "type": "string",
-            "description": "Connection sub-type",
-            "x-oapi-codegen-extra-tags": {
-              "json": "subType"
-            }
+            "description": "Connection sub-type"
           },
           "credentialSecret": {
             "type": "object",
@@ -3459,7 +3452,7 @@ const ConnectionSchema: Record<string, unknown> = {
           "name",
           "kind",
           "type",
-          "subType",
+          "sub_type",
           "status"
         ]
       },

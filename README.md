@@ -914,22 +914,58 @@ Run unit tests for the validation logic:
 npm run test:validate-schemas
 ```
 
+### Build Pipeline
+
+`make build` runs 8 steps in sequence. Each step depends on the previous.
+
+```
+schemas/constructs/          (OpenAPI YAML source files)
+        |
+        v
+[1] validate-schemas         node build/validate-schemas.js
+        |                    34 rules: casing, dual-schema, templates, pagination
+        v
+[2] bundle-openapi           node build/bundle-openapi.js
+        |                    Per-construct: swagger-cli bundle --dereference
+        |                    Merge all: @redocly/cli join → merged_openapi.yml
+        |                    Filter: cloud_openapi.yml, meshery_openapi.yml
+        v
+[3] generate-golang          node build/generate-golang.js
+        |                    Per-package: oapi-codegen → models/<ver>/<pkg>/<pkg>.go
+        |                    Post-processing pipeline (see below)
+        v
+[4] generate-rtk             node build/generate-rtk.js
+        |                    RTK Query clients from bundled OpenAPI specs
+        v
+[5] generate-ts              npm run generate:types
+        |                    openapi-typescript → typescript/generated/<ver>/<pkg>/
+        v
+[6] generate-permissions     Go + TypeScript permission key generation
+        v
+[7] build-ts                 npm run build (tsup)
+        |                    Bundles TypeScript distribution → dist/
+        v
+[8] test-golang              go build ./... && go test ./...
+```
+
 ### Go Generation Pipeline
 
-`build/generate-golang.js` runs an 8-stage pipeline for each package. The pipeline both generates and validates Go structs to ensure schema property names, json tags, and db tags are consistent end-to-end.
+`build/generate-golang.js` runs a 10-stage pipeline per package. The pipeline generates, transforms, and validates Go structs.
 
 | Stage | Function | What it does |
 | --- | --- | --- |
-| 1 | `oapi-codegen` | Generates Go structs with `json` tags from schema property names (verbatim, no casing transform) |
+| 1 | `oapi-codegen` | Generates Go structs with `json` tags from schema property names (verbatim) |
 | 2 | `addYamlTags()` | Copies each `json` tag value to a `yaml` tag |
-| 3 | `addSchemaExtraTags()` | Merges `db`, `gorm`, etc. from `x-oapi-codegen-extra-tags` into struct tags |
-| 4 | `rewriteExternalRefAliases()` | Normalizes import aliases from opaque names to readable ones |
-| 5 | `validateReadableImportAliases()` | Verifies no opaque import aliases remain |
-| 6 | `addCompatibilityParameterAliases()` | Adds backward-compatible parameter type aliases |
-| 7 | `validateGeneratedDbTags()` | Verifies every `db:` tag declared in the schema is present in generated Go |
-| 8 | `validateGeneratedJsonTags()` | Verifies every `json:` tag in generated Go matches the schema property name |
+| 3 | `removeSelfReferentialAliases()` | Strips `type X = X` aliases when manual definitions exist in same package |
+| 4 | `addSchemaExtraTags()` | Merges `db`, `gorm`, etc. from `x-oapi-codegen-extra-tags` into struct tags |
+| 5 | `rewriteExternalRefAliases()` | Normalizes import aliases from opaque names to readable ones |
+| 6 | `validateReadableImportAliases()` | Verifies no opaque import aliases remain |
+| 7 | `addCompatibilityParameterAliases()` | Adds backward-compatible parameter type aliases |
+| 8 | `ensureRequiredImports()` | Adds missing Go imports (e.g., `uuid`) when inlined `x-go-type` requires them |
+| 9 | `validateGeneratedDbTags()` | Verifies every `db:` tag declared in the schema is present in generated Go |
+| 10 | `validateGeneratedJsonTags()` | Verifies every `json:` tag in generated Go matches the schema property name |
 
-The **property name is the single source of truth** for the json wire format. oapi-codegen reads it verbatim (stage 1), and `validateGeneratedJsonTags` confirms it survived the pipeline unchanged (stage 8).
+The **property name is the single source of truth** for the json wire format. oapi-codegen reads it verbatim (stage 1), and `validateGeneratedJsonTags` confirms it survived the pipeline unchanged (stage 10).
 
 ---
 

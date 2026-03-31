@@ -8,6 +8,8 @@ const AcademySchema: Record<string, unknown> = {
   "info": {
     "title": "Academy API",
     "description": "OpenAPI schema for Meshery Academy content and curriculum management.",
+    "x-deprecated": true,
+    "x-superseded-by": "v1beta2",
     "version": "v1beta1",
     "contact": {
       "name": "Meshery Maintainers",
@@ -25,7 +27,7 @@ const AcademySchema: Record<string, unknown> = {
     }
   ],
   "paths": {
-    "/api/academy/curricula/registered": {
+    "/api/academy/Curricula/registered": {
       "get": {
         "x-internal": [
           "cloud"
@@ -167,10 +169,10 @@ const AcademySchema: Record<string, unknown> = {
                             "type": "string",
                             "format": "uuid",
                             "description": "ID of the badge to be awarded on completion of this curricula",
-                            "x-go-type": "corev1alpha1.Uuid",
+                            "x-go-type": "core.Uuid",
                             "x-go-type-import": {
-                              "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                              "name": "corev1alpha1"
+                              "path": "github.com/meshery/schemas/models/core",
+                              "name": "core"
                             },
                             "x-oapi-codegen-extra-tags": {
                               "db": "badge_id",
@@ -601,10 +603,10 @@ const AcademySchema: Record<string, unknown> = {
                     "type": "string",
                     "format": "uuid",
                     "description": "ID of the badge to be awarded on completion of this curricula",
-                    "x-go-type": "corev1alpha1.Uuid",
+                    "x-go-type": "core.Uuid",
                     "x-go-type-import": {
-                      "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                      "name": "corev1alpha1"
+                      "path": "github.com/meshery/schemas/models/core",
+                      "name": "core"
                     },
                     "x-oapi-codegen-extra-tags": {
                       "db": "badge_id",
@@ -625,7 +627,7 @@ const AcademySchema: Record<string, unknown> = {
                       "db": "team_id"
                     }
                   },
-                  "accessExpiresAt": {
+                  "access_expires_at": {
                     "allOf": [
                       {
                         "type": "string",
@@ -636,7 +638,7 @@ const AcademySchema: Record<string, unknown> = {
                     "description": "Expiry time for curricula access",
                     "x-go-type": "*time.Time",
                     "x-oapi-codegen-extra-tags": {
-                      "json": "accessExpiresAt",
+                      "json": "access_expires_at",
                       "db": "access_expires_at"
                     }
                   },
@@ -984,10 +986,10 @@ const AcademySchema: Record<string, unknown> = {
                       "type": "string",
                       "format": "uuid",
                       "description": "ID of the badge to be awarded on completion of this curricula",
-                      "x-go-type": "corev1alpha1.Uuid",
+                      "x-go-type": "core.Uuid",
                       "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                        "name": "corev1alpha1"
+                        "path": "github.com/meshery/schemas/models/core",
+                        "name": "core"
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "badge_id",
@@ -1337,7 +1339,9 @@ const AcademySchema: Record<string, unknown> = {
             "description": "Server error"
           }
         }
-      },
+      }
+    },
+    "/api/academy/Curricula": {
       "get": {
         "x-internal": [
           "cloud"
@@ -1587,10 +1591,10 @@ const AcademySchema: Record<string, unknown> = {
                                 "type": "string",
                                 "format": "uuid",
                                 "description": "ID of the badge to be awarded on completion of this curricula",
-                                "x-go-type": "corev1alpha1.Uuid",
+                                "x-go-type": "core.Uuid",
                                 "x-go-type-import": {
-                                  "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                                  "name": "corev1alpha1"
+                                  "path": "github.com/meshery/schemas/models/core",
+                                  "name": "core"
                                 },
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "badge_id",
@@ -2089,10 +2093,10 @@ const AcademySchema: Record<string, unknown> = {
                       "type": "string",
                       "format": "uuid",
                       "description": "ID of the badge to be awarded on completion of this curricula",
-                      "x-go-type": "corev1alpha1.Uuid",
+                      "x-go-type": "core.Uuid",
                       "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                        "name": "corev1alpha1"
+                        "path": "github.com/meshery/schemas/models/core",
+                        "name": "core"
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "badge_id",
@@ -3098,10 +3102,10 @@ const AcademySchema: Record<string, unknown> = {
                     "type": "string",
                     "format": "uuid",
                     "description": "ID of the badge to be awarded on completion of this curricula",
-                    "x-go-type": "corev1alpha1.Uuid",
+                    "x-go-type": "core.Uuid",
                     "x-go-type-import": {
-                      "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                      "name": "corev1alpha1"
+                      "path": "github.com/meshery/schemas/models/core",
+                      "name": "core"
                     },
                     "x-oapi-codegen-extra-tags": {
                       "db": "badge_id",
@@ -3122,7 +3126,7 @@ const AcademySchema: Record<string, unknown> = {
                       "db": "team_id"
                     }
                   },
-                  "accessExpiresAt": {
+                  "access_expires_at": {
                     "allOf": [
                       {
                         "type": "string",
@@ -3133,7 +3137,7 @@ const AcademySchema: Record<string, unknown> = {
                     "description": "Expiry time for curricula access",
                     "x-go-type": "*time.Time",
                     "x-oapi-codegen-extra-tags": {
-                      "json": "accessExpiresAt",
+                      "json": "access_expires_at",
                       "db": "access_expires_at"
                     }
                   },
@@ -3484,10 +3488,10 @@ const AcademySchema: Record<string, unknown> = {
                           "type": "string",
                           "format": "uuid",
                           "description": "ID of the badge to be awarded on completion of this curricula",
-                          "x-go-type": "corev1alpha1.Uuid",
+                          "x-go-type": "core.Uuid",
                           "x-go-type-import": {
-                            "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                            "name": "corev1alpha1"
+                            "path": "github.com/meshery/schemas/models/core",
+                            "name": "core"
                           },
                           "x-oapi-codegen-extra-tags": {
                             "db": "badge_id",
@@ -4190,10 +4194,10 @@ const AcademySchema: Record<string, unknown> = {
                           "type": "string",
                           "format": "uuid",
                           "description": "ID of the badge to be awarded on completion of this curricula",
-                          "x-go-type": "corev1alpha1.Uuid",
+                          "x-go-type": "core.Uuid",
                           "x-go-type-import": {
-                            "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                            "name": "corev1alpha1"
+                            "path": "github.com/meshery/schemas/models/core",
+                            "name": "core"
                           },
                           "x-oapi-codegen-extra-tags": {
                             "db": "badge_id",
@@ -5148,13 +5152,13 @@ const AcademySchema: Record<string, unknown> = {
                             "required": [
                               "score",
                               "passed",
-                              "totalMarks",
-                              "passPercentage",
+                              "total_marks",
+                              "pass_percentage",
                               "quiz",
-                              "attemptedAt",
+                              "attempted_at",
                               "attempts",
-                              "percentageScored",
-                              "correctSubmissions"
+                              "percentage_scored",
+                              "correct_submissions"
                             ],
                             "properties": {
                               "score": {
@@ -5163,18 +5167,18 @@ const AcademySchema: Record<string, unknown> = {
                               "passed": {
                                 "type": "boolean"
                               },
-                              "percentageScored": {
+                              "percentage_scored": {
                                 "type": "number",
                                 "format": "float"
                               },
-                              "totalMarks": {
+                              "total_marks": {
                                 "type": "integer"
                               },
-                              "passPercentage": {
+                              "pass_percentage": {
                                 "type": "number",
                                 "format": "float"
                               },
-                              "correctSubmissions": {
+                              "correct_submissions": {
                                 "type": "object",
                                 "additionalProperties": {
                                   "type": "boolean"
@@ -5199,17 +5203,17 @@ const AcademySchema: Record<string, unknown> = {
                                   "final",
                                   "lastmod",
                                   "draft",
-                                  "filePath",
-                                  "passPercentage",
-                                  "timeLimit",
-                                  "maxAttempts",
+                                  "file_path",
+                                  "pass_percentage",
+                                  "time_limit",
+                                  "max_attempts",
                                   "questions",
-                                  "totalQuestions",
-                                  "totalQuestionsInBank",
-                                  "totalQuestionSets",
-                                  "totalMarks",
+                                  "total_questions",
+                                  "total_questions_in_bank",
+                                  "total_question_sets",
+                                  "total_marks",
                                   "prerequisites",
-                                  "nextPage"
+                                  "next_page"
                                 ],
                                 "properties": {
                                   "id": {
@@ -5268,18 +5272,18 @@ const AcademySchema: Record<string, unknown> = {
                                   "draft": {
                                     "type": "boolean"
                                   },
-                                  "filePath": {
+                                  "file_path": {
                                     "type": "string"
                                   },
-                                  "passPercentage": {
+                                  "pass_percentage": {
                                     "type": "number",
                                     "format": "float"
                                   },
-                                  "timeLimit": {
+                                  "time_limit": {
                                     "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
                                     "type": "string"
                                   },
-                                  "maxAttempts": {
+                                  "max_attempts": {
                                     "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
                                     "type": "integer"
                                   },
@@ -5354,16 +5358,16 @@ const AcademySchema: Record<string, unknown> = {
                                       }
                                     }
                                   },
-                                  "totalQuestions": {
+                                  "total_questions": {
                                     "type": "integer"
                                   },
-                                  "totalQuestionsInBank": {
+                                  "total_questions_in_bank": {
                                     "type": "integer"
                                   },
-                                  "totalQuestionSets": {
+                                  "total_question_sets": {
                                     "type": "integer"
                                   },
-                                  "totalMarks": {
+                                  "total_marks": {
                                     "type": "integer"
                                   },
                                   "prerequisites": {
@@ -5417,7 +5421,7 @@ const AcademySchema: Record<string, unknown> = {
                                       }
                                     }
                                   },
-                                  "nextPage": {
+                                  "next_page": {
                                     "x-go-type": "Parent",
                                     "type": "object",
                                     "required": [
@@ -5443,7 +5447,7 @@ const AcademySchema: Record<string, unknown> = {
                                   }
                                 }
                               },
-                              "attemptedAt": {
+                              "attempted_at": {
                                 "type": "string",
                                 "format": "date-time"
                               },
@@ -5653,17 +5657,17 @@ const AcademySchema: Record<string, unknown> = {
                     "final",
                     "lastmod",
                     "draft",
-                    "filePath",
-                    "passPercentage",
-                    "timeLimit",
-                    "maxAttempts",
+                    "file_path",
+                    "pass_percentage",
+                    "time_limit",
+                    "max_attempts",
                     "questions",
-                    "totalQuestions",
-                    "totalQuestionsInBank",
-                    "totalQuestionSets",
-                    "totalMarks",
+                    "total_questions",
+                    "total_questions_in_bank",
+                    "total_question_sets",
+                    "total_marks",
                     "prerequisites",
-                    "nextPage"
+                    "next_page"
                   ],
                   "properties": {
                     "id": {
@@ -5722,18 +5726,18 @@ const AcademySchema: Record<string, unknown> = {
                     "draft": {
                       "type": "boolean"
                     },
-                    "filePath": {
+                    "file_path": {
                       "type": "string"
                     },
-                    "passPercentage": {
+                    "pass_percentage": {
                       "type": "number",
                       "format": "float"
                     },
-                    "timeLimit": {
+                    "time_limit": {
                       "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
                       "type": "string"
                     },
-                    "maxAttempts": {
+                    "max_attempts": {
                       "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
                       "type": "integer"
                     },
@@ -5808,16 +5812,16 @@ const AcademySchema: Record<string, unknown> = {
                         }
                       }
                     },
-                    "totalQuestions": {
+                    "total_questions": {
                       "type": "integer"
                     },
-                    "totalQuestionsInBank": {
+                    "total_questions_in_bank": {
                       "type": "integer"
                     },
-                    "totalQuestionSets": {
+                    "total_question_sets": {
                       "type": "integer"
                     },
-                    "totalMarks": {
+                    "total_marks": {
                       "type": "integer"
                     },
                     "prerequisites": {
@@ -5871,7 +5875,7 @@ const AcademySchema: Record<string, unknown> = {
                         }
                       }
                     },
-                    "nextPage": {
+                    "next_page": {
                       "x-go-type": "Parent",
                       "type": "object",
                       "required": [
@@ -5978,17 +5982,17 @@ const AcademySchema: Record<string, unknown> = {
                     "final",
                     "lastmod",
                     "draft",
-                    "filePath",
-                    "passPercentage",
-                    "timeLimit",
-                    "maxAttempts",
+                    "file_path",
+                    "pass_percentage",
+                    "time_limit",
+                    "max_attempts",
                     "questions",
-                    "totalQuestions",
-                    "totalQuestionsInBank",
-                    "totalQuestionSets",
-                    "totalMarks",
+                    "total_questions",
+                    "total_questions_in_bank",
+                    "total_question_sets",
+                    "total_marks",
                     "prerequisites",
-                    "nextPage"
+                    "next_page"
                   ],
                   "properties": {
                     "id": {
@@ -6047,18 +6051,18 @@ const AcademySchema: Record<string, unknown> = {
                     "draft": {
                       "type": "boolean"
                     },
-                    "filePath": {
+                    "file_path": {
                       "type": "string"
                     },
-                    "passPercentage": {
+                    "pass_percentage": {
                       "type": "number",
                       "format": "float"
                     },
-                    "timeLimit": {
+                    "time_limit": {
                       "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
                       "type": "string"
                     },
-                    "maxAttempts": {
+                    "max_attempts": {
                       "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
                       "type": "integer"
                     },
@@ -6133,16 +6137,16 @@ const AcademySchema: Record<string, unknown> = {
                         }
                       }
                     },
-                    "totalQuestions": {
+                    "total_questions": {
                       "type": "integer"
                     },
-                    "totalQuestionsInBank": {
+                    "total_questions_in_bank": {
                       "type": "integer"
                     },
-                    "totalQuestionSets": {
+                    "total_question_sets": {
                       "type": "integer"
                     },
-                    "totalMarks": {
+                    "total_marks": {
                       "type": "integer"
                     },
                     "prerequisites": {
@@ -6196,7 +6200,7 @@ const AcademySchema: Record<string, unknown> = {
                         }
                       }
                     },
-                    "nextPage": {
+                    "next_page": {
                       "x-go-type": "Parent",
                       "type": "object",
                       "required": [
@@ -6309,13 +6313,13 @@ const AcademySchema: Record<string, unknown> = {
                       "required": [
                         "score",
                         "passed",
-                        "totalMarks",
-                        "passPercentage",
+                        "total_marks",
+                        "pass_percentage",
                         "quiz",
-                        "attemptedAt",
+                        "attempted_at",
                         "attempts",
-                        "percentageScored",
-                        "correctSubmissions"
+                        "percentage_scored",
+                        "correct_submissions"
                       ],
                       "properties": {
                         "score": {
@@ -6324,18 +6328,18 @@ const AcademySchema: Record<string, unknown> = {
                         "passed": {
                           "type": "boolean"
                         },
-                        "percentageScored": {
+                        "percentage_scored": {
                           "type": "number",
                           "format": "float"
                         },
-                        "totalMarks": {
+                        "total_marks": {
                           "type": "integer"
                         },
-                        "passPercentage": {
+                        "pass_percentage": {
                           "type": "number",
                           "format": "float"
                         },
-                        "correctSubmissions": {
+                        "correct_submissions": {
                           "type": "object",
                           "additionalProperties": {
                             "type": "boolean"
@@ -6360,17 +6364,17 @@ const AcademySchema: Record<string, unknown> = {
                             "final",
                             "lastmod",
                             "draft",
-                            "filePath",
-                            "passPercentage",
-                            "timeLimit",
-                            "maxAttempts",
+                            "file_path",
+                            "pass_percentage",
+                            "time_limit",
+                            "max_attempts",
                             "questions",
-                            "totalQuestions",
-                            "totalQuestionsInBank",
-                            "totalQuestionSets",
-                            "totalMarks",
+                            "total_questions",
+                            "total_questions_in_bank",
+                            "total_question_sets",
+                            "total_marks",
                             "prerequisites",
-                            "nextPage"
+                            "next_page"
                           ],
                           "properties": {
                             "id": {
@@ -6429,18 +6433,18 @@ const AcademySchema: Record<string, unknown> = {
                             "draft": {
                               "type": "boolean"
                             },
-                            "filePath": {
+                            "file_path": {
                               "type": "string"
                             },
-                            "passPercentage": {
+                            "pass_percentage": {
                               "type": "number",
                               "format": "float"
                             },
-                            "timeLimit": {
+                            "time_limit": {
                               "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
                               "type": "string"
                             },
-                            "maxAttempts": {
+                            "max_attempts": {
                               "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
                               "type": "integer"
                             },
@@ -6515,16 +6519,16 @@ const AcademySchema: Record<string, unknown> = {
                                 }
                               }
                             },
-                            "totalQuestions": {
+                            "total_questions": {
                               "type": "integer"
                             },
-                            "totalQuestionsInBank": {
+                            "total_questions_in_bank": {
                               "type": "integer"
                             },
-                            "totalQuestionSets": {
+                            "total_question_sets": {
                               "type": "integer"
                             },
-                            "totalMarks": {
+                            "total_marks": {
                               "type": "integer"
                             },
                             "prerequisites": {
@@ -6578,7 +6582,7 @@ const AcademySchema: Record<string, unknown> = {
                                 }
                               }
                             },
-                            "nextPage": {
+                            "next_page": {
                               "x-go-type": "Parent",
                               "type": "object",
                               "required": [
@@ -6604,7 +6608,7 @@ const AcademySchema: Record<string, unknown> = {
                             }
                           }
                         },
-                        "attemptedAt": {
+                        "attempted_at": {
                           "type": "string",
                           "format": "date-time"
                         },
@@ -6723,13 +6727,13 @@ const AcademySchema: Record<string, unknown> = {
                   "required": [
                     "score",
                     "passed",
-                    "totalMarks",
-                    "passPercentage",
+                    "total_marks",
+                    "pass_percentage",
                     "quiz",
-                    "attemptedAt",
+                    "attempted_at",
                     "attempts",
-                    "percentageScored",
-                    "correctSubmissions"
+                    "percentage_scored",
+                    "correct_submissions"
                   ],
                   "properties": {
                     "score": {
@@ -6738,18 +6742,18 @@ const AcademySchema: Record<string, unknown> = {
                     "passed": {
                       "type": "boolean"
                     },
-                    "percentageScored": {
+                    "percentage_scored": {
                       "type": "number",
                       "format": "float"
                     },
-                    "totalMarks": {
+                    "total_marks": {
                       "type": "integer"
                     },
-                    "passPercentage": {
+                    "pass_percentage": {
                       "type": "number",
                       "format": "float"
                     },
-                    "correctSubmissions": {
+                    "correct_submissions": {
                       "type": "object",
                       "additionalProperties": {
                         "type": "boolean"
@@ -6774,17 +6778,17 @@ const AcademySchema: Record<string, unknown> = {
                         "final",
                         "lastmod",
                         "draft",
-                        "filePath",
-                        "passPercentage",
-                        "timeLimit",
-                        "maxAttempts",
+                        "file_path",
+                        "pass_percentage",
+                        "time_limit",
+                        "max_attempts",
                         "questions",
-                        "totalQuestions",
-                        "totalQuestionsInBank",
-                        "totalQuestionSets",
-                        "totalMarks",
+                        "total_questions",
+                        "total_questions_in_bank",
+                        "total_question_sets",
+                        "total_marks",
                         "prerequisites",
-                        "nextPage"
+                        "next_page"
                       ],
                       "properties": {
                         "id": {
@@ -6843,18 +6847,18 @@ const AcademySchema: Record<string, unknown> = {
                         "draft": {
                           "type": "boolean"
                         },
-                        "filePath": {
+                        "file_path": {
                           "type": "string"
                         },
-                        "passPercentage": {
+                        "pass_percentage": {
                           "type": "number",
                           "format": "float"
                         },
-                        "timeLimit": {
+                        "time_limit": {
                           "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
                           "type": "string"
                         },
-                        "maxAttempts": {
+                        "max_attempts": {
                           "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
                           "type": "integer"
                         },
@@ -6929,16 +6933,16 @@ const AcademySchema: Record<string, unknown> = {
                             }
                           }
                         },
-                        "totalQuestions": {
+                        "total_questions": {
                           "type": "integer"
                         },
-                        "totalQuestionsInBank": {
+                        "total_questions_in_bank": {
                           "type": "integer"
                         },
-                        "totalQuestionSets": {
+                        "total_question_sets": {
                           "type": "integer"
                         },
-                        "totalMarks": {
+                        "total_marks": {
                           "type": "integer"
                         },
                         "prerequisites": {
@@ -6992,7 +6996,7 @@ const AcademySchema: Record<string, unknown> = {
                             }
                           }
                         },
-                        "nextPage": {
+                        "next_page": {
                           "x-go-type": "Parent",
                           "type": "object",
                           "required": [
@@ -7018,7 +7022,7 @@ const AcademySchema: Record<string, unknown> = {
                         }
                       }
                     },
-                    "attemptedAt": {
+                    "attempted_at": {
                       "type": "string",
                       "format": "date-time"
                     },
@@ -7910,7 +7914,7 @@ const AcademySchema: Record<string, unknown> = {
         "description": "Expiry time for curricula access",
         "x-go-type": "*time.Time",
         "x-oapi-codegen-extra-tags": {
-          "json": "accessExpiresAt",
+          "json": "access_expires_at",
           "db": "access_expires_at"
         }
       },
@@ -8051,10 +8055,10 @@ const AcademySchema: Record<string, unknown> = {
             "type": "string",
             "format": "uuid",
             "description": "ID of the badge to be awarded on completion of this curricula",
-            "x-go-type": "corev1alpha1.Uuid",
+            "x-go-type": "core.Uuid",
             "x-go-type-import": {
-              "path": "github.com/meshery/schemas/models/v1alpha1/core",
-              "name": "corev1alpha1"
+              "path": "github.com/meshery/schemas/models/core",
+              "name": "core"
             },
             "x-oapi-codegen-extra-tags": {
               "db": "badge_id",
@@ -8472,10 +8476,10 @@ const AcademySchema: Record<string, unknown> = {
                 "type": "string",
                 "format": "uuid",
                 "description": "ID of the badge to be awarded on completion of this curricula",
-                "x-go-type": "corev1alpha1.Uuid",
+                "x-go-type": "core.Uuid",
                 "x-go-type-import": {
-                  "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                  "name": "corev1alpha1"
+                  "path": "github.com/meshery/schemas/models/core",
+                  "name": "core"
                 },
                 "x-oapi-codegen-extra-tags": {
                   "db": "badge_id",
@@ -9051,10 +9055,10 @@ const AcademySchema: Record<string, unknown> = {
             "type": "string",
             "format": "uuid",
             "description": "ID of the badge to be awarded on completion of this curricula",
-            "x-go-type": "corev1alpha1.Uuid",
+            "x-go-type": "core.Uuid",
             "x-go-type-import": {
-              "path": "github.com/meshery/schemas/models/v1alpha1/core",
-              "name": "corev1alpha1"
+              "path": "github.com/meshery/schemas/models/core",
+              "name": "core"
             },
             "x-oapi-codegen-extra-tags": {
               "db": "badge_id",
@@ -9075,7 +9079,7 @@ const AcademySchema: Record<string, unknown> = {
               "db": "team_id"
             }
           },
-          "accessExpiresAt": {
+          "access_expires_at": {
             "allOf": [
               {
                 "type": "string",
@@ -9086,7 +9090,7 @@ const AcademySchema: Record<string, unknown> = {
             "description": "Expiry time for curricula access",
             "x-go-type": "*time.Time",
             "x-oapi-codegen-extra-tags": {
-              "json": "accessExpiresAt",
+              "json": "access_expires_at",
               "db": "access_expires_at"
             }
           },
@@ -9428,10 +9432,10 @@ const AcademySchema: Record<string, unknown> = {
                 "type": "string",
                 "format": "uuid",
                 "description": "ID of the badge to be awarded on completion of this curricula",
-                "x-go-type": "corev1alpha1.Uuid",
+                "x-go-type": "core.Uuid",
                 "x-go-type-import": {
-                  "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                  "name": "corev1alpha1"
+                  "path": "github.com/meshery/schemas/models/core",
+                  "name": "core"
                 },
                 "x-oapi-codegen-extra-tags": {
                   "db": "badge_id",
@@ -9874,10 +9878,10 @@ const AcademySchema: Record<string, unknown> = {
                   "type": "string",
                   "format": "uuid",
                   "description": "ID of the badge to be awarded on completion of this curricula",
-                  "x-go-type": "corev1alpha1.Uuid",
+                  "x-go-type": "core.Uuid",
                   "x-go-type-import": {
-                    "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                    "name": "corev1alpha1"
+                    "path": "github.com/meshery/schemas/models/core",
+                    "name": "core"
                   },
                   "x-oapi-codegen-extra-tags": {
                     "db": "badge_id",
@@ -10313,10 +10317,10 @@ const AcademySchema: Record<string, unknown> = {
                       "type": "string",
                       "format": "uuid",
                       "description": "ID of the badge to be awarded on completion of this curricula",
-                      "x-go-type": "corev1alpha1.Uuid",
+                      "x-go-type": "core.Uuid",
                       "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                        "name": "corev1alpha1"
+                        "path": "github.com/meshery/schemas/models/core",
+                        "name": "core"
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "badge_id",
@@ -11661,13 +11665,13 @@ const AcademySchema: Record<string, unknown> = {
             "required": [
               "score",
               "passed",
-              "totalMarks",
-              "passPercentage",
+              "total_marks",
+              "pass_percentage",
               "quiz",
-              "attemptedAt",
+              "attempted_at",
               "attempts",
-              "percentageScored",
-              "correctSubmissions"
+              "percentage_scored",
+              "correct_submissions"
             ],
             "properties": {
               "score": {
@@ -11676,18 +11680,18 @@ const AcademySchema: Record<string, unknown> = {
               "passed": {
                 "type": "boolean"
               },
-              "percentageScored": {
+              "percentage_scored": {
                 "type": "number",
                 "format": "float"
               },
-              "totalMarks": {
+              "total_marks": {
                 "type": "integer"
               },
-              "passPercentage": {
+              "pass_percentage": {
                 "type": "number",
                 "format": "float"
               },
-              "correctSubmissions": {
+              "correct_submissions": {
                 "type": "object",
                 "additionalProperties": {
                   "type": "boolean"
@@ -11712,17 +11716,17 @@ const AcademySchema: Record<string, unknown> = {
                   "final",
                   "lastmod",
                   "draft",
-                  "filePath",
-                  "passPercentage",
-                  "timeLimit",
-                  "maxAttempts",
+                  "file_path",
+                  "pass_percentage",
+                  "time_limit",
+                  "max_attempts",
                   "questions",
-                  "totalQuestions",
-                  "totalQuestionsInBank",
-                  "totalQuestionSets",
-                  "totalMarks",
+                  "total_questions",
+                  "total_questions_in_bank",
+                  "total_question_sets",
+                  "total_marks",
                   "prerequisites",
-                  "nextPage"
+                  "next_page"
                 ],
                 "properties": {
                   "id": {
@@ -11781,18 +11785,18 @@ const AcademySchema: Record<string, unknown> = {
                   "draft": {
                     "type": "boolean"
                   },
-                  "filePath": {
+                  "file_path": {
                     "type": "string"
                   },
-                  "passPercentage": {
+                  "pass_percentage": {
                     "type": "number",
                     "format": "float"
                   },
-                  "timeLimit": {
+                  "time_limit": {
                     "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
                     "type": "string"
                   },
-                  "maxAttempts": {
+                  "max_attempts": {
                     "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
                     "type": "integer"
                   },
@@ -11867,16 +11871,16 @@ const AcademySchema: Record<string, unknown> = {
                       }
                     }
                   },
-                  "totalQuestions": {
+                  "total_questions": {
                     "type": "integer"
                   },
-                  "totalQuestionsInBank": {
+                  "total_questions_in_bank": {
                     "type": "integer"
                   },
-                  "totalQuestionSets": {
+                  "total_question_sets": {
                     "type": "integer"
                   },
-                  "totalMarks": {
+                  "total_marks": {
                     "type": "integer"
                   },
                   "prerequisites": {
@@ -11930,7 +11934,7 @@ const AcademySchema: Record<string, unknown> = {
                       }
                     }
                   },
-                  "nextPage": {
+                  "next_page": {
                     "x-go-type": "Parent",
                     "type": "object",
                     "required": [
@@ -11956,7 +11960,7 @@ const AcademySchema: Record<string, unknown> = {
                   }
                 }
               },
-              "attemptedAt": {
+              "attempted_at": {
                 "type": "string",
                 "format": "date-time"
               },
@@ -11976,13 +11980,13 @@ const AcademySchema: Record<string, unknown> = {
           "required": [
             "score",
             "passed",
-            "totalMarks",
-            "passPercentage",
+            "total_marks",
+            "pass_percentage",
             "quiz",
-            "attemptedAt",
+            "attempted_at",
             "attempts",
-            "percentageScored",
-            "correctSubmissions"
+            "percentage_scored",
+            "correct_submissions"
           ],
           "properties": {
             "score": {
@@ -11991,18 +11995,18 @@ const AcademySchema: Record<string, unknown> = {
             "passed": {
               "type": "boolean"
             },
-            "percentageScored": {
+            "percentage_scored": {
               "type": "number",
               "format": "float"
             },
-            "totalMarks": {
+            "total_marks": {
               "type": "integer"
             },
-            "passPercentage": {
+            "pass_percentage": {
               "type": "number",
               "format": "float"
             },
-            "correctSubmissions": {
+            "correct_submissions": {
               "type": "object",
               "additionalProperties": {
                 "type": "boolean"
@@ -12027,17 +12031,17 @@ const AcademySchema: Record<string, unknown> = {
                 "final",
                 "lastmod",
                 "draft",
-                "filePath",
-                "passPercentage",
-                "timeLimit",
-                "maxAttempts",
+                "file_path",
+                "pass_percentage",
+                "time_limit",
+                "max_attempts",
                 "questions",
-                "totalQuestions",
-                "totalQuestionsInBank",
-                "totalQuestionSets",
-                "totalMarks",
+                "total_questions",
+                "total_questions_in_bank",
+                "total_question_sets",
+                "total_marks",
                 "prerequisites",
-                "nextPage"
+                "next_page"
               ],
               "properties": {
                 "id": {
@@ -12096,18 +12100,18 @@ const AcademySchema: Record<string, unknown> = {
                 "draft": {
                   "type": "boolean"
                 },
-                "filePath": {
+                "file_path": {
                   "type": "string"
                 },
-                "passPercentage": {
+                "pass_percentage": {
                   "type": "number",
                   "format": "float"
                 },
-                "timeLimit": {
+                "time_limit": {
                   "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
                   "type": "string"
                 },
-                "maxAttempts": {
+                "max_attempts": {
                   "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
                   "type": "integer"
                 },
@@ -12182,16 +12186,16 @@ const AcademySchema: Record<string, unknown> = {
                     }
                   }
                 },
-                "totalQuestions": {
+                "total_questions": {
                   "type": "integer"
                 },
-                "totalQuestionsInBank": {
+                "total_questions_in_bank": {
                   "type": "integer"
                 },
-                "totalQuestionSets": {
+                "total_question_sets": {
                   "type": "integer"
                 },
-                "totalMarks": {
+                "total_marks": {
                   "type": "integer"
                 },
                 "prerequisites": {
@@ -12245,7 +12249,7 @@ const AcademySchema: Record<string, unknown> = {
                     }
                   }
                 },
-                "nextPage": {
+                "next_page": {
                   "x-go-type": "Parent",
                   "type": "object",
                   "required": [
@@ -12271,7 +12275,7 @@ const AcademySchema: Record<string, unknown> = {
                 }
               }
             },
-            "attemptedAt": {
+            "attempted_at": {
               "type": "string",
               "format": "date-time"
             },
@@ -12659,13 +12663,13 @@ const AcademySchema: Record<string, unknown> = {
               "required": [
                 "score",
                 "passed",
-                "totalMarks",
-                "passPercentage",
+                "total_marks",
+                "pass_percentage",
                 "quiz",
-                "attemptedAt",
+                "attempted_at",
                 "attempts",
-                "percentageScored",
-                "correctSubmissions"
+                "percentage_scored",
+                "correct_submissions"
               ],
               "properties": {
                 "score": {
@@ -12674,18 +12678,18 @@ const AcademySchema: Record<string, unknown> = {
                 "passed": {
                   "type": "boolean"
                 },
-                "percentageScored": {
+                "percentage_scored": {
                   "type": "number",
                   "format": "float"
                 },
-                "totalMarks": {
+                "total_marks": {
                   "type": "integer"
                 },
-                "passPercentage": {
+                "pass_percentage": {
                   "type": "number",
                   "format": "float"
                 },
-                "correctSubmissions": {
+                "correct_submissions": {
                   "type": "object",
                   "additionalProperties": {
                     "type": "boolean"
@@ -12710,17 +12714,17 @@ const AcademySchema: Record<string, unknown> = {
                     "final",
                     "lastmod",
                     "draft",
-                    "filePath",
-                    "passPercentage",
-                    "timeLimit",
-                    "maxAttempts",
+                    "file_path",
+                    "pass_percentage",
+                    "time_limit",
+                    "max_attempts",
                     "questions",
-                    "totalQuestions",
-                    "totalQuestionsInBank",
-                    "totalQuestionSets",
-                    "totalMarks",
+                    "total_questions",
+                    "total_questions_in_bank",
+                    "total_question_sets",
+                    "total_marks",
                     "prerequisites",
-                    "nextPage"
+                    "next_page"
                   ],
                   "properties": {
                     "id": {
@@ -12779,18 +12783,18 @@ const AcademySchema: Record<string, unknown> = {
                     "draft": {
                       "type": "boolean"
                     },
-                    "filePath": {
+                    "file_path": {
                       "type": "string"
                     },
-                    "passPercentage": {
+                    "pass_percentage": {
                       "type": "number",
                       "format": "float"
                     },
-                    "timeLimit": {
+                    "time_limit": {
                       "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
                       "type": "string"
                     },
-                    "maxAttempts": {
+                    "max_attempts": {
                       "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
                       "type": "integer"
                     },
@@ -12865,16 +12869,16 @@ const AcademySchema: Record<string, unknown> = {
                         }
                       }
                     },
-                    "totalQuestions": {
+                    "total_questions": {
                       "type": "integer"
                     },
-                    "totalQuestionsInBank": {
+                    "total_questions_in_bank": {
                       "type": "integer"
                     },
-                    "totalQuestionSets": {
+                    "total_question_sets": {
                       "type": "integer"
                     },
-                    "totalMarks": {
+                    "total_marks": {
                       "type": "integer"
                     },
                     "prerequisites": {
@@ -12928,7 +12932,7 @@ const AcademySchema: Record<string, unknown> = {
                         }
                       }
                     },
-                    "nextPage": {
+                    "next_page": {
                       "x-go-type": "Parent",
                       "type": "object",
                       "required": [
@@ -12954,7 +12958,7 @@ const AcademySchema: Record<string, unknown> = {
                     }
                   }
                 },
-                "attemptedAt": {
+                "attempted_at": {
                   "type": "string",
                   "format": "date-time"
                 },
@@ -13130,17 +13134,17 @@ const AcademySchema: Record<string, unknown> = {
           "final",
           "lastmod",
           "draft",
-          "filePath",
-          "passPercentage",
-          "timeLimit",
-          "maxAttempts",
+          "file_path",
+          "pass_percentage",
+          "time_limit",
+          "max_attempts",
           "questions",
-          "totalQuestions",
-          "totalQuestionsInBank",
-          "totalQuestionSets",
-          "totalMarks",
+          "total_questions",
+          "total_questions_in_bank",
+          "total_question_sets",
+          "total_marks",
           "prerequisites",
-          "nextPage"
+          "next_page"
         ],
         "properties": {
           "id": {
@@ -13199,18 +13203,18 @@ const AcademySchema: Record<string, unknown> = {
           "draft": {
             "type": "boolean"
           },
-          "filePath": {
+          "file_path": {
             "type": "string"
           },
-          "passPercentage": {
+          "pass_percentage": {
             "type": "number",
             "format": "float"
           },
-          "timeLimit": {
+          "time_limit": {
             "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
             "type": "string"
           },
-          "maxAttempts": {
+          "max_attempts": {
             "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
             "type": "integer"
           },
@@ -13285,16 +13289,16 @@ const AcademySchema: Record<string, unknown> = {
               }
             }
           },
-          "totalQuestions": {
+          "total_questions": {
             "type": "integer"
           },
-          "totalQuestionsInBank": {
+          "total_questions_in_bank": {
             "type": "integer"
           },
-          "totalQuestionSets": {
+          "total_question_sets": {
             "type": "integer"
           },
-          "totalMarks": {
+          "total_marks": {
             "type": "integer"
           },
           "prerequisites": {
@@ -13348,7 +13352,7 @@ const AcademySchema: Record<string, unknown> = {
               }
             }
           },
-          "nextPage": {
+          "next_page": {
             "x-go-type": "Parent",
             "type": "object",
             "required": [
@@ -13783,13 +13787,13 @@ const AcademySchema: Record<string, unknown> = {
             "required": [
               "score",
               "passed",
-              "totalMarks",
-              "passPercentage",
+              "total_marks",
+              "pass_percentage",
               "quiz",
-              "attemptedAt",
+              "attempted_at",
               "attempts",
-              "percentageScored",
-              "correctSubmissions"
+              "percentage_scored",
+              "correct_submissions"
             ],
             "properties": {
               "score": {
@@ -13798,18 +13802,18 @@ const AcademySchema: Record<string, unknown> = {
               "passed": {
                 "type": "boolean"
               },
-              "percentageScored": {
+              "percentage_scored": {
                 "type": "number",
                 "format": "float"
               },
-              "totalMarks": {
+              "total_marks": {
                 "type": "integer"
               },
-              "passPercentage": {
+              "pass_percentage": {
                 "type": "number",
                 "format": "float"
               },
-              "correctSubmissions": {
+              "correct_submissions": {
                 "type": "object",
                 "additionalProperties": {
                   "type": "boolean"
@@ -13834,17 +13838,17 @@ const AcademySchema: Record<string, unknown> = {
                   "final",
                   "lastmod",
                   "draft",
-                  "filePath",
-                  "passPercentage",
-                  "timeLimit",
-                  "maxAttempts",
+                  "file_path",
+                  "pass_percentage",
+                  "time_limit",
+                  "max_attempts",
                   "questions",
-                  "totalQuestions",
-                  "totalQuestionsInBank",
-                  "totalQuestionSets",
-                  "totalMarks",
+                  "total_questions",
+                  "total_questions_in_bank",
+                  "total_question_sets",
+                  "total_marks",
                   "prerequisites",
-                  "nextPage"
+                  "next_page"
                 ],
                 "properties": {
                   "id": {
@@ -13903,18 +13907,18 @@ const AcademySchema: Record<string, unknown> = {
                   "draft": {
                     "type": "boolean"
                   },
-                  "filePath": {
+                  "file_path": {
                     "type": "string"
                   },
-                  "passPercentage": {
+                  "pass_percentage": {
                     "type": "number",
                     "format": "float"
                   },
-                  "timeLimit": {
+                  "time_limit": {
                     "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
                     "type": "string"
                   },
-                  "maxAttempts": {
+                  "max_attempts": {
                     "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
                     "type": "integer"
                   },
@@ -13989,16 +13993,16 @@ const AcademySchema: Record<string, unknown> = {
                       }
                     }
                   },
-                  "totalQuestions": {
+                  "total_questions": {
                     "type": "integer"
                   },
-                  "totalQuestionsInBank": {
+                  "total_questions_in_bank": {
                     "type": "integer"
                   },
-                  "totalQuestionSets": {
+                  "total_question_sets": {
                     "type": "integer"
                   },
-                  "totalMarks": {
+                  "total_marks": {
                     "type": "integer"
                   },
                   "prerequisites": {
@@ -14052,7 +14056,7 @@ const AcademySchema: Record<string, unknown> = {
                       }
                     }
                   },
-                  "nextPage": {
+                  "next_page": {
                     "x-go-type": "Parent",
                     "type": "object",
                     "required": [
@@ -14078,7 +14082,7 @@ const AcademySchema: Record<string, unknown> = {
                   }
                 }
               },
-              "attemptedAt": {
+              "attempted_at": {
                 "type": "string",
                 "format": "date-time"
               },
@@ -14109,17 +14113,17 @@ const AcademySchema: Record<string, unknown> = {
               "final",
               "lastmod",
               "draft",
-              "filePath",
-              "passPercentage",
-              "timeLimit",
-              "maxAttempts",
+              "file_path",
+              "pass_percentage",
+              "time_limit",
+              "max_attempts",
               "questions",
-              "totalQuestions",
-              "totalQuestionsInBank",
-              "totalQuestionSets",
-              "totalMarks",
+              "total_questions",
+              "total_questions_in_bank",
+              "total_question_sets",
+              "total_marks",
               "prerequisites",
-              "nextPage"
+              "next_page"
             ],
             "properties": {
               "id": {
@@ -14178,18 +14182,18 @@ const AcademySchema: Record<string, unknown> = {
               "draft": {
                 "type": "boolean"
               },
-              "filePath": {
+              "file_path": {
                 "type": "string"
               },
-              "passPercentage": {
+              "pass_percentage": {
                 "type": "number",
                 "format": "float"
               },
-              "timeLimit": {
+              "time_limit": {
                 "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
                 "type": "string"
               },
-              "maxAttempts": {
+              "max_attempts": {
                 "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
                 "type": "integer"
               },
@@ -14264,16 +14268,16 @@ const AcademySchema: Record<string, unknown> = {
                   }
                 }
               },
-              "totalQuestions": {
+              "total_questions": {
                 "type": "integer"
               },
-              "totalQuestionsInBank": {
+              "total_questions_in_bank": {
                 "type": "integer"
               },
-              "totalQuestionSets": {
+              "total_question_sets": {
                 "type": "integer"
               },
-              "totalMarks": {
+              "total_marks": {
                 "type": "integer"
               },
               "prerequisites": {
@@ -14327,7 +14331,7 @@ const AcademySchema: Record<string, unknown> = {
                   }
                 }
               },
-              "nextPage": {
+              "next_page": {
                 "x-go-type": "Parent",
                 "type": "object",
                 "required": [
@@ -14361,13 +14365,13 @@ const AcademySchema: Record<string, unknown> = {
         "required": [
           "score",
           "passed",
-          "totalMarks",
-          "passPercentage",
+          "total_marks",
+          "pass_percentage",
           "quiz",
-          "attemptedAt",
+          "attempted_at",
           "attempts",
-          "percentageScored",
-          "correctSubmissions"
+          "percentage_scored",
+          "correct_submissions"
         ],
         "properties": {
           "score": {
@@ -14376,18 +14380,18 @@ const AcademySchema: Record<string, unknown> = {
           "passed": {
             "type": "boolean"
           },
-          "percentageScored": {
+          "percentage_scored": {
             "type": "number",
             "format": "float"
           },
-          "totalMarks": {
+          "total_marks": {
             "type": "integer"
           },
-          "passPercentage": {
+          "pass_percentage": {
             "type": "number",
             "format": "float"
           },
-          "correctSubmissions": {
+          "correct_submissions": {
             "type": "object",
             "additionalProperties": {
               "type": "boolean"
@@ -14412,17 +14416,17 @@ const AcademySchema: Record<string, unknown> = {
               "final",
               "lastmod",
               "draft",
-              "filePath",
-              "passPercentage",
-              "timeLimit",
-              "maxAttempts",
+              "file_path",
+              "pass_percentage",
+              "time_limit",
+              "max_attempts",
               "questions",
-              "totalQuestions",
-              "totalQuestionsInBank",
-              "totalQuestionSets",
-              "totalMarks",
+              "total_questions",
+              "total_questions_in_bank",
+              "total_question_sets",
+              "total_marks",
               "prerequisites",
-              "nextPage"
+              "next_page"
             ],
             "properties": {
               "id": {
@@ -14481,18 +14485,18 @@ const AcademySchema: Record<string, unknown> = {
               "draft": {
                 "type": "boolean"
               },
-              "filePath": {
+              "file_path": {
                 "type": "string"
               },
-              "passPercentage": {
+              "pass_percentage": {
                 "type": "number",
                 "format": "float"
               },
-              "timeLimit": {
+              "time_limit": {
                 "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
                 "type": "string"
               },
-              "maxAttempts": {
+              "max_attempts": {
                 "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
                 "type": "integer"
               },
@@ -14567,16 +14571,16 @@ const AcademySchema: Record<string, unknown> = {
                   }
                 }
               },
-              "totalQuestions": {
+              "total_questions": {
                 "type": "integer"
               },
-              "totalQuestionsInBank": {
+              "total_questions_in_bank": {
                 "type": "integer"
               },
-              "totalQuestionSets": {
+              "total_question_sets": {
                 "type": "integer"
               },
-              "totalMarks": {
+              "total_marks": {
                 "type": "integer"
               },
               "prerequisites": {
@@ -14630,7 +14634,7 @@ const AcademySchema: Record<string, unknown> = {
                   }
                 }
               },
-              "nextPage": {
+              "next_page": {
                 "x-go-type": "Parent",
                 "type": "object",
                 "required": [
@@ -14656,7 +14660,7 @@ const AcademySchema: Record<string, unknown> = {
               }
             }
           },
-          "attemptedAt": {
+          "attempted_at": {
             "type": "string",
             "format": "date-time"
           },
@@ -14791,7 +14795,7 @@ const AcademySchema: Record<string, unknown> = {
         "required": [
           "pagesize",
           "page",
-          "contentType",
+          "content_type",
           "status"
         ],
         "properties": {
@@ -14801,7 +14805,7 @@ const AcademySchema: Record<string, unknown> = {
           "page": {
             "type": "integer"
           },
-          "contentType": {
+          "content_type": {
             "type": "array",
             "items": {
               "type": "string"
@@ -15015,13 +15019,13 @@ const AcademySchema: Record<string, unknown> = {
                   "required": [
                     "score",
                     "passed",
-                    "totalMarks",
-                    "passPercentage",
+                    "total_marks",
+                    "pass_percentage",
                     "quiz",
-                    "attemptedAt",
+                    "attempted_at",
                     "attempts",
-                    "percentageScored",
-                    "correctSubmissions"
+                    "percentage_scored",
+                    "correct_submissions"
                   ],
                   "properties": {
                     "score": {
@@ -15030,18 +15034,18 @@ const AcademySchema: Record<string, unknown> = {
                     "passed": {
                       "type": "boolean"
                     },
-                    "percentageScored": {
+                    "percentage_scored": {
                       "type": "number",
                       "format": "float"
                     },
-                    "totalMarks": {
+                    "total_marks": {
                       "type": "integer"
                     },
-                    "passPercentage": {
+                    "pass_percentage": {
                       "type": "number",
                       "format": "float"
                     },
-                    "correctSubmissions": {
+                    "correct_submissions": {
                       "type": "object",
                       "additionalProperties": {
                         "type": "boolean"
@@ -15066,17 +15070,17 @@ const AcademySchema: Record<string, unknown> = {
                         "final",
                         "lastmod",
                         "draft",
-                        "filePath",
-                        "passPercentage",
-                        "timeLimit",
-                        "maxAttempts",
+                        "file_path",
+                        "pass_percentage",
+                        "time_limit",
+                        "max_attempts",
                         "questions",
-                        "totalQuestions",
-                        "totalQuestionsInBank",
-                        "totalQuestionSets",
-                        "totalMarks",
+                        "total_questions",
+                        "total_questions_in_bank",
+                        "total_question_sets",
+                        "total_marks",
                         "prerequisites",
-                        "nextPage"
+                        "next_page"
                       ],
                       "properties": {
                         "id": {
@@ -15135,18 +15139,18 @@ const AcademySchema: Record<string, unknown> = {
                         "draft": {
                           "type": "boolean"
                         },
-                        "filePath": {
+                        "file_path": {
                           "type": "string"
                         },
-                        "passPercentage": {
+                        "pass_percentage": {
                           "type": "number",
                           "format": "float"
                         },
-                        "timeLimit": {
+                        "time_limit": {
                           "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
                           "type": "string"
                         },
-                        "maxAttempts": {
+                        "max_attempts": {
                           "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
                           "type": "integer"
                         },
@@ -15221,16 +15225,16 @@ const AcademySchema: Record<string, unknown> = {
                             }
                           }
                         },
-                        "totalQuestions": {
+                        "total_questions": {
                           "type": "integer"
                         },
-                        "totalQuestionsInBank": {
+                        "total_questions_in_bank": {
                           "type": "integer"
                         },
-                        "totalQuestionSets": {
+                        "total_question_sets": {
                           "type": "integer"
                         },
-                        "totalMarks": {
+                        "total_marks": {
                           "type": "integer"
                         },
                         "prerequisites": {
@@ -15284,7 +15288,7 @@ const AcademySchema: Record<string, unknown> = {
                             }
                           }
                         },
-                        "nextPage": {
+                        "next_page": {
                           "x-go-type": "Parent",
                           "type": "object",
                           "required": [
@@ -15310,7 +15314,7 @@ const AcademySchema: Record<string, unknown> = {
                         }
                       }
                     },
-                    "attemptedAt": {
+                    "attempted_at": {
                       "type": "string",
                       "format": "date-time"
                     },

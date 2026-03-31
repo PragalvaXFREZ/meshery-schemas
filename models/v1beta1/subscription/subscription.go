@@ -4,7 +4,7 @@
 package subscription
 
 import (
-	corev1alpha1 "github.com/meshery/schemas/models/v1alpha1/core"
+	core "github.com/meshery/schemas/models/core"
 	planv1beta1 "github.com/meshery/schemas/models/v1beta1/plan"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
@@ -106,25 +106,25 @@ type PaymentProcessor string
 type Subscription struct {
 	// BillingId Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe
 	BillingId string                   `db:"billing_id" json:"billing_id" yaml:"billing_id"`
-	CreatedAt corev1alpha1.Time        `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	DeletedAt corev1alpha1.SqlNullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
-	EndDate   corev1alpha1.Time        `db:"end_date" json:"end_date,omitempty" yaml:"end_date,omitempty"`
+	CreatedAt core.Time        `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	DeletedAt core.SqlNullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	EndDate   core.Time        `db:"end_date" json:"end_date,omitempty" yaml:"end_date,omitempty"`
 
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID corev1alpha1.Uuid `db:"id" json:"id" yaml:"id"`
+	ID core.Uuid `db:"id" json:"id" yaml:"id"`
 
 	// OrgId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	OrgId corev1alpha1.Uuid  `db:"org_id" json:"org_id" yaml:"org_id"`
+	OrgId core.Uuid  `db:"org_id" json:"org_id" yaml:"org_id"`
 	Plan  *planv1beta1.Plan `fk_id:"PlanId" belongs_to:"plans" json:"plan,omitempty" yaml:"plan,omitempty"`
 
 	// PlanId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	PlanId    corev1alpha1.Uuid `db:"plan_id" json:"plan_id" yaml:"plan_id"`
+	PlanId    core.Uuid `db:"plan_id" json:"plan_id" yaml:"plan_id"`
 	Quantity  int               `db:"quantity" json:"quantity" yaml:"quantity"`
-	StartDate corev1alpha1.Time `db:"start_date" json:"start_date,omitempty" yaml:"start_date,omitempty"`
+	StartDate core.Time `db:"start_date" json:"start_date,omitempty" yaml:"start_date,omitempty"`
 
 	// Status Possible statuses of a Stripe subscription.
 	Status    SubscriptionStatus `db:"status" json:"status" yaml:"status"`
-	UpdatedAt corev1alpha1.Time  `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	UpdatedAt core.Time  `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 }
 
 // SubscriptionPage defines model for SubscriptionPage.
@@ -147,10 +147,10 @@ type UpdateUsersRequest struct {
 // UpgradeSubscriptionRequest defines model for UpgradeSubscriptionRequest.
 type UpgradeSubscriptionRequest struct {
 	// NewPlanId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	NewPlanId *corev1alpha1.Uuid `json:"newPlanId,omitempty" yaml:"newPlanId,omitempty"`
+	NewPlanId *core.Uuid `json:"newPlanId,omitempty" yaml:"newPlanId,omitempty"`
 
 	// OldPlanId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	OldPlanId *corev1alpha1.Uuid `json:"oldPlanId,omitempty" yaml:"oldPlanId,omitempty"`
+	OldPlanId *core.Uuid `json:"oldPlanId,omitempty" yaml:"oldPlanId,omitempty"`
 }
 
 // WebhookEvent Payload for webhook events from payment processors

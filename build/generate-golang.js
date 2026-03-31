@@ -41,6 +41,39 @@ const { writeGeneratedHelperFile } = require("./lib/generated-go-helpers");
  * Add YAML struct tags alongside JSON ones in generated Go file
  * @param {string} filePath - Path to Go file
  */
+/**
+ * Remove self-referential type aliases like "type NullTime = NullTime".
+ * These occur when x-go-type references a type defined manually in the
+ * same package (e.g., core.NullTime in models/core/).
+ */
+function removeSelfReferentialAliases(filePath) {
+  let content = fs.readFileSync(filePath, "utf-8");
+  const selfRefPattern = /^type (\w+) = \1\s*$/gm;
+  const cleaned = content.replace(selfRefPattern, "// type $1 — defined in manual helper file");
+  if (cleaned !== content) {
+    fs.writeFileSync(filePath, cleaned);
+  }
+}
+
+/**
+ * Ensure required Go imports are present. When oapi-codegen inlines
+ * x-go-type values like uuid.UUID, it may omit the package import
+ * in the consuming file.
+ */
+function ensureRequiredImports(filePath) {
+  let content = fs.readFileSync(filePath, "utf-8");
+  const needs = [];
+  if (/\buuid\.UUID\b/.test(content) && !content.includes('"github.com/gofrs/uuid"')) {
+    needs.push('\t"github.com/gofrs/uuid"');
+  }
+  if (needs.length === 0) return;
+  // Insert into the import block that follows the package declaration.
+  // Match the first "import (" ... ")" block only, not arbitrary ")".
+  const importBlockRe = /(import\s*\([\s\S]*?)(\n\))/;
+  content = content.replace(importBlockRe, `$1\n${needs.join("\n")}$2`);
+  fs.writeFileSync(filePath, content);
+}
+
 function addYamlTags(filePath) {
   let content = fs.readFileSync(filePath, "utf-8");
 
@@ -1080,8 +1113,22 @@ function getPackageKey(pkg) {
   return `${pkg.version}/${pkg.dirName}`;
 }
 
+/**
+ * Go import overrides for packages where the Go models live at a
+ * different path than the schema version would imply.
+ */
+const GO_IMPORT_OVERRIDES = {
+  // Core types are unversioned — all versions resolve to models/core.
+  "v1alpha1/core": "github.com/meshery/schemas/models/core",
+  "v1beta1/core": "github.com/meshery/schemas/models/core",
+  "v1beta2/core": "github.com/meshery/schemas/models/core",
+  "v1beta1/capability": "github.com/meshery/schemas/models/v1alpha1/capability",
+  "v1beta2/catalog": "github.com/meshery/schemas/models/v1alpha2/catalog",
+};
+
 function getPackageImportPath(pkg) {
-  return `github.com/meshery/schemas/models/${pkg.version}/${pkg.name}`;
+  const key = `${pkg.version}/${pkg.dirName}`;
+  return GO_IMPORT_OVERRIDES[key] || `github.com/meshery/schemas/models/${pkg.version}/${pkg.name}`;
 }
 
 function findPackageForFile(filePath) {
@@ -1422,10 +1469,14 @@ async function generateGoModels(pkg) {
     // Add YAML struct tags and restore any schema-declared extra tags that
     // oapi-codegen omits for referenced object fields.
     addYamlTags(outputPath);
+    // Remove self-referential type aliases (type X = X) that occur when
+    // x-go-type references a type defined manually in the same package.
+    removeSelfReferentialAliases(outputPath);
     addSchemaExtraTags(outputPath, inputPath);
     rewriteExternalRefAliases(outputPath, inputPath);
     validateReadableImportAliases(outputPath);
     addCompatibilityParameterAliases(outputPath, inputPath);
+    ensureRequiredImports(outputPath);
     validateGeneratedDbTags(outputPath, inputPath);
     validateGeneratedJsonTags(outputPath, inputPath);
     writeGeneratedHelperFile(pkg, outputDir);
@@ -1484,7 +1535,12 @@ async function main() {
             .filter(Boolean),
         )
       : null;
+    const excludeFromGo = new Set(config.excludeFromGoGeneration || []);
     const schemaPackages = config.getSchemaPackages().filter((pkg) => {
+      const packageKey = `${pkg.version}/${pkg.dirName}`;
+      if (excludeFromGo.has(packageKey)) {
+        return false;
+      }
       if (!packageFilter) {
         return true;
       }
@@ -1492,7 +1548,7 @@ async function main() {
       return (
         packageFilter.has(pkg.name) ||
         packageFilter.has(pkg.dirName) ||
-        packageFilter.has(`${pkg.version}/${pkg.dirName}`)
+        packageFilter.has(packageKey)
       );
     });
     logger.info(`Discovered ${schemaPackages.length} schema packages`);

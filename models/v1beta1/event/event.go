@@ -7,17 +7,17 @@ import (
 	"encoding/json"
 	"fmt"
 
-	corev1alpha1 "github.com/meshery/schemas/models/v1alpha1/core"
+	core "github.com/meshery/schemas/models/core"
 )
 
 // BulkDeleteRequest defines model for BulkDeleteRequest.
 type BulkDeleteRequest struct {
-	Ids []corev1alpha1.Uuid `json:"ids" yaml:"ids"`
+	Ids []core.Uuid `json:"ids" yaml:"ids"`
 }
 
 // BulkUpdateStatusRequest defines model for BulkUpdateStatusRequest.
 type BulkUpdateStatusRequest struct {
-	Ids    []corev1alpha1.Uuid `json:"ids" yaml:"ids"`
+	Ids    []core.Uuid `json:"ids" yaml:"ids"`
 	Status string              `json:"status" yaml:"status"`
 }
 
@@ -32,18 +32,18 @@ type EventResult struct {
 	Category *string `json:"category,omitempty" yaml:"category,omitempty"`
 
 	// CreatedAt Timestamp when the resource was created.
-	CreatedAt   corev1alpha1.CreatedAt `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt   core.CreatedAt `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	Description *string                `json:"description,omitempty" yaml:"description,omitempty"`
 
 	// Email email
-	Email     corev1alpha1.Email `json:"email,omitempty" yaml:"email,omitempty"`
+	Email     core.Email `json:"email,omitempty" yaml:"email,omitempty"`
 	FirstName *string            `json:"firstName,omitempty" yaml:"firstName,omitempty"`
 	LastName  *string            `json:"lastName,omitempty" yaml:"lastName,omitempty"`
 
 	// Provider One of (x-oapi-codegen-extra-tags-cloud, github, google)
-	Provider corev1alpha1.Provider `json:"provider,omitempty" yaml:"provider,omitempty"`
-	SystemID corev1alpha1.SystemId `db:"system_id" json:"system_id,omitempty" yaml:"system_id,omitempty"`
-	UserID   corev1alpha1.UserUuid `db:"user_id" json:"user_id" yaml:"user_id"`
+	Provider core.Provider `json:"provider,omitempty" yaml:"provider,omitempty"`
+	SystemID core.SystemId `db:"system_id" json:"system_id,omitempty" yaml:"system_id,omitempty"`
+	UserID   core.UserUuid `db:"user_id" json:"user_id" yaml:"user_id"`
 }
 
 // EventSummary defines model for EventSummary.
@@ -72,9 +72,9 @@ type EventsAggregate struct {
 // EventsPage defines model for EventsPage.
 type EventsPage struct {
 	Data       *[]EventResult      `json:"data,omitempty" yaml:"data,omitempty"`
-	Page       corev1alpha1.Number `json:"page,omitempty" yaml:"page,omitempty"`
-	PageSize   corev1alpha1.Number `json:"page_size,omitempty" yaml:"page_size,omitempty"`
-	TotalCount corev1alpha1.Number `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+	Page       core.Number `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize   core.Number `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	TotalCount core.Number `json:"total_count,omitempty" yaml:"total_count,omitempty"`
 }
 
 // UpdateEventStatusRequest defines model for UpdateEventStatusRequest.
@@ -101,7 +101,7 @@ type Pagesize = string
 type Search = string
 
 // WorkspaceId defines model for workspaceId.
-type WorkspaceId = corev1alpha1.WorkspaceId
+type WorkspaceId = core.WorkspaceId
 
 // Getter for additional properties for EventsAggregate. Returns the specified
 // element and whether it was found

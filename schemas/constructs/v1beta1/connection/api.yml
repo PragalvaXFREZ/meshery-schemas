@@ -2,6 +2,8 @@ openapi: 3.0.0
 info:
   title: Connection API
   description: API for managing Meshery connections - managed and unmanaged resources tracked by Meshery.
+  x-deprecated: true
+  x-superseded-by: v1beta2
   version: v1beta1
   contact:
     name: Meshery Maintainers
@@ -388,8 +390,6 @@ components:
         sub_type:
           type: string
           description: Connection sub-type
-          x-oapi-codegen-extra-tags:
-            json: "sub_type"
         credentialSecret:
           type: object
           description: Credential secret data

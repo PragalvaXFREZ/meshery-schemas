@@ -7,9 +7,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	corev1alpha1 "github.com/meshery/schemas/models/v1alpha1/core"
-	catalogv1alpha2 "github.com/meshery/schemas/models/v1alpha2/catalog"
+	core "github.com/meshery/schemas/models/core"
 	relationship "github.com/meshery/schemas/models/v1alpha3/relationship"
+	catalogv1beta1 "github.com/meshery/schemas/models/v1beta1/catalog"
 	component "github.com/meshery/schemas/models/v1beta1/component"
 )
 
@@ -53,8 +53,8 @@ type CatalogRequestsPage struct {
 
 // DeletePatternModel defines model for DeletePatternModel.
 type DeletePatternModel struct {
-	ID   corev1alpha1.Id   `json:"id,omitempty" yaml:"id,omitempty"`
-	Name corev1alpha1.Text `json:"name,omitempty" yaml:"name,omitempty"`
+	ID   core.Id   `json:"id,omitempty" yaml:"id,omitempty"`
+	Name core.Text `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
 // MesheryFilter defines model for MesheryFilter.
@@ -62,17 +62,17 @@ type MesheryFilter map[string]interface{}
 
 // MesheryPattern defines model for MesheryPattern.
 type MesheryPattern struct {
-	CatalogData *catalogv1alpha2.CatalogData `json:"catalogData,omitempty" yaml:"catalogData,omitempty"`
-	CreatedAt   corev1alpha1.Time         `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	ID          corev1alpha1.Id           `json:"id,omitempty" yaml:"id,omitempty"`
-	Location    corev1alpha1.MapObject    `json:"location,omitempty" yaml:"location,omitempty"`
-	Name        corev1alpha1.Text         `json:"name,omitempty" yaml:"name,omitempty"`
+	CatalogData *catalogv1beta1.CatalogData `json:"catalogData,omitempty" yaml:"catalogData,omitempty"`
+	CreatedAt   core.Time         `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	ID          core.Id           `json:"id,omitempty" yaml:"id,omitempty"`
+	Location    core.MapObject    `json:"location,omitempty" yaml:"location,omitempty"`
+	Name        core.Text         `json:"name,omitempty" yaml:"name,omitempty"`
 
 	// PatternFile Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.
 	PatternFile *PatternFile      `json:"patternFile,omitempty" yaml:"patternFile,omitempty"`
-	UpdatedAt   corev1alpha1.Time `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
-	UserId      corev1alpha1.Id   `json:"user_id,omitempty" yaml:"user_id,omitempty"`
-	Visibility  corev1alpha1.Text `json:"visibility,omitempty" yaml:"visibility,omitempty"`
+	UpdatedAt   core.Time `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	UserId      core.Id   `json:"user_id,omitempty" yaml:"user_id,omitempty"`
+	Visibility  core.Text `json:"visibility,omitempty" yaml:"visibility,omitempty"`
 }
 
 // MesheryPatternDeleteRequestBody defines model for MesheryPatternDeleteRequestBody.
@@ -107,10 +107,10 @@ type MesheryPatternPage struct {
 // MesheryPatternRequestBody defines model for MesheryPatternRequestBody.
 type MesheryPatternRequestBody struct {
 	Name        *string               `json:"name,omitempty" yaml:"name,omitempty"`
-	Path        corev1alpha1.Text     `json:"path,omitempty" yaml:"path,omitempty"`
+	Path        core.Text     `json:"path,omitempty" yaml:"path,omitempty"`
 	PatternData *MesheryPattern       `json:"patternData,omitempty" yaml:"patternData,omitempty"`
 	Save        *bool                 `json:"save,omitempty" yaml:"save,omitempty"`
-	Url         corev1alpha1.Endpoint `json:"url,omitempty" yaml:"url,omitempty"`
+	Url         core.Endpoint `json:"url,omitempty" yaml:"url,omitempty"`
 }
 
 // MesheryView defines model for MesheryView.
@@ -127,16 +127,16 @@ type MesheryViewPage struct {
 // PatternFile Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.
 type PatternFile struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID corev1alpha1.Uuid `json:"id" yaml:"id"`
+	ID core.Uuid `json:"id" yaml:"id"`
 
 	// Name Name of the design; a descriptive, but concise title for the design document.
 	Name string `json:"name" yaml:"name"`
 
 	// SchemaVersion API version of the object, optionally prefixed with an API group (e.g. "group.example.io/v1beta1" or bare "v1beta1").
-	SchemaVersion corev1alpha1.VersionString `json:"schemaVersion" yaml:"schemaVersion"`
+	SchemaVersion core.VersionString `json:"schemaVersion" yaml:"schemaVersion"`
 
 	// Version A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'.
-	Version  corev1alpha1.SemverString `json:"version" yaml:"version"`
+	Version  core.SemverString `json:"version" yaml:"version"`
 	Metadata *PatternFile_Metadata     `json:"metadata,omitempty" yaml:"metadata,omitempty"`
 
 	// Components A list of one or more component declarations.
@@ -152,8 +152,8 @@ type PatternFile struct {
 // PatternFile_Metadata defines model for PatternFile.Metadata.
 type PatternFile_Metadata struct {
 	// ResolvedAliases Map of resolved aliases present in the design
-	ResolvedAliases      *map[string]corev1alpha1.ResolvedAlias `json:"resolvedAliases,omitempty" yaml:"resolvedAliases,omitempty"`
-	AdditionalProperties map[string]interface{}                 `json:"-" yaml:"-"`
+	ResolvedAliases      *map[string]core.ResolvedAlias `json:"resolvedAliases,omitempty" yaml:"resolvedAliases,omitempty"`
+	AdditionalProperties map[string]interface{}         `json:"-" yaml:"-"`
 }
 
 // ResourceAccessActorsResponse defines model for ResourceAccessActorsResponse.
@@ -165,7 +165,7 @@ type ResourceAccessActorsResponse struct {
 type ResourceAccessMapping map[string]interface{}
 
 // Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-type Id = corev1alpha1.Uuid
+type Id = core.Uuid
 
 // Order defines model for order.
 type Order = string

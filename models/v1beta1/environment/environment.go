@@ -6,16 +6,15 @@ package environment
 import (
 	"github.com/gofrs/uuid"
 	"github.com/meshery/schemas/models/core"
-	corev1alpha1 "github.com/meshery/schemas/models/v1alpha1/core"
 )
 
 // Environment Environments allow you to logically group related Connections and their associated Credentials. Learn more at https://docs.meshery.io/concepts/logical/environments
 type Environment struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID corev1alpha1.Uuid `db:"id" json:"id" yaml:"id"`
+	ID core.Uuid `db:"id" json:"id" yaml:"id"`
 
 	// SchemaVersion API version of the object, optionally prefixed with an API group (e.g. "group.example.io/v1beta1" or bare "v1beta1").
-	SchemaVersion corev1alpha1.VersionString `gorm:"-" db:"-" json:"schemaVersion" yaml:"schemaVersion"`
+	SchemaVersion core.VersionString `gorm:"-" db:"-" json:"schemaVersion" yaml:"schemaVersion"`
 
 	// Name Environment name
 	Name string `db:"name" json:"name" yaml:"name"`
@@ -24,19 +23,19 @@ type Environment struct {
 	Description string `db:"description" json:"description" yaml:"description"`
 
 	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	OrganizationID corev1alpha1.Uuid `db:"organization_id" json:"organization_id" yaml:"organization_id"`
+	OrganizationID core.Uuid `db:"organization_id" json:"organization_id" yaml:"organization_id"`
 
 	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Owner *corev1alpha1.Uuid `db:"owner" json:"owner,omitempty" yaml:"owner"`
+	Owner *core.Uuid `db:"owner" json:"owner,omitempty" yaml:"owner"`
 
 	// CreatedAt Timestamp when the resource was created.
-	CreatedAt corev1alpha1.CreatedAt `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt core.CreatedAt `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
 
 	// Metadata Additional metadata associated with the environment.
 	Metadata core.Map `db:"metadata" json:"metadata,omitempty" yaml:"metadata"`
 
 	// UpdatedAt Timestamp when the resource was updated.
-	UpdatedAt corev1alpha1.UpdatedAt `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	UpdatedAt core.UpdatedAt `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
 	DeletedAt core.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at"`
@@ -45,13 +44,13 @@ type Environment struct {
 // EnvironmentConnectionMapping defines model for EnvironmentConnectionMapping.
 type EnvironmentConnectionMapping struct {
 	ConnectionId uuid.UUID         `db:"connection_id" json:"connection_id" yaml:"connection_id"`
-	CreatedAt    corev1alpha1.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt    core.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt     corev1alpha1.NullTime  `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	DeletedAt     core.NullTime  `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 	EnvironmentId uuid.UUID              `db:"environment_id" json:"environment_id" yaml:"environment_id"`
-	ID            corev1alpha1.GeneralId `db:"id" json:"id" yaml:"id"`
-	UpdatedAt     corev1alpha1.Time      `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	ID            core.GeneralId `db:"id" json:"id" yaml:"id"`
+	UpdatedAt     core.Time      `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 }
 
 // EnvironmentConnectionsPage defines model for EnvironmentConnectionsPage.
@@ -65,22 +64,22 @@ type EnvironmentConnectionsPage struct {
 // EnvironmentPage defines model for EnvironmentPage.
 type EnvironmentPage struct {
 	Environments []Environment       `json:"environments,omitempty" yaml:"environments,omitempty"`
-	Page         corev1alpha1.Number `json:"page,omitempty" yaml:"page,omitempty"`
-	PageSize     corev1alpha1.Number `json:"page_size,omitempty" yaml:"page_size,omitempty"`
-	TotalCount   corev1alpha1.Number `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+	Page         core.Number `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize     core.Number `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	TotalCount   core.Number `json:"total_count,omitempty" yaml:"total_count,omitempty"`
 }
 
 // EnvironmentPayload defines model for EnvironmentPayload.
 type EnvironmentPayload struct {
-	Description corev1alpha1.Text `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        corev1alpha1.Text `json:"name" yaml:"name"`
+	Description core.Text `json:"description,omitempty" yaml:"description,omitempty"`
+	Name        core.Text `json:"name" yaml:"name"`
 
 	// OrgId Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
 	OrgId string `json:"organization_id" yaml:"organization_id"`
 }
 
 // EnvironmentId defines model for environmentId.
-type EnvironmentId = corev1alpha1.Id
+type EnvironmentId = core.Id
 
 // Order defines model for order.
 type Order = string

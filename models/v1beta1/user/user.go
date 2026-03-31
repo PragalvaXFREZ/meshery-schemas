@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/meshery/schemas/models/core"
-	corev1alpha1 "github.com/meshery/schemas/models/v1alpha1/core"
 	openapi_types "github.com/oapi-codegen/runtime/types"
+	"github.com/gofrs/uuid"
 )
 
 // Defines values for UserRoleNames.
@@ -140,7 +140,7 @@ type Social struct {
 
 // User Represents a user in Layer5 Cloud (Meshery)
 type User struct {
-	AcceptedTermsAt corev1alpha1.Time `db:"accepted_terms_at" json:"accepted_terms_at" yaml:"accepted_terms_at,omitempty"`
+	AcceptedTermsAt core.Time `db:"accepted_terms_at" json:"accepted_terms_at" yaml:"accepted_terms_at,omitempty"`
 
 	// AvatarUrl URL to user's avatar image
 	AvatarUrl *string `db:"avatar_url" json:"avatar_url" yaml:"avatar_url"`
@@ -150,21 +150,21 @@ type User struct {
 
 	// Country User's country information stored as JSONB
 	Country   core.Map          `db:"country" json:"country" yaml:"country"`
-	CreatedAt corev1alpha1.Time `db:"created_at" json:"created_at" yaml:"created_at"`
+	CreatedAt core.Time `db:"created_at" json:"created_at" yaml:"created_at"`
 
 	// DeletedAt Timestamp when the user record was soft-deleted (null if not deleted)
 	DeletedAt *core.NullTime `db:"deleted_at" json:"deleted_at" yaml:"deleted_at"`
 
 	// Email User's email address
 	Email          openapi_types.Email `db:"email" json:"email" yaml:"email"`
-	FirstLoginTime corev1alpha1.Time   `db:"first_login_time" json:"first_login_time" yaml:"first_login_time,omitempty"`
+	FirstLoginTime core.Time   `db:"first_login_time" json:"first_login_time" yaml:"first_login_time,omitempty"`
 
 	// FirstName User's first name
 	FirstName string `db:"first_name" json:"first_name" yaml:"first_name"`
 
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID            corev1alpha1.Uuid `db:"id" json:"id" yaml:"id"`
-	LastLoginTime corev1alpha1.Time `db:"last_login_time" json:"last_login_time" yaml:"last_login_time"`
+	ID            core.Uuid `db:"id" json:"id" yaml:"id"`
+	LastLoginTime core.Time `db:"last_login_time" json:"last_login_time" yaml:"last_login_time"`
 
 	// LastName User's last name
 	LastName string `db:"last_name" json:"last_name" yaml:"last_name"`
@@ -196,7 +196,7 @@ type User struct {
 		TeamsWithRoles *[]map[string]interface{} `db:"teams_with_roles" json:"teams_with_roles" yaml:"teams_with_roles"`
 		TotalCount     *int                      `db:"total_count" json:"total_count" yaml:"total_count"`
 	} `db:"teams" json:"teams" yaml:"teams"`
-	UpdatedAt corev1alpha1.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
+	UpdatedAt core.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
 
 	// UserId User identifier (username or external ID)
 	UserId string `db:"user_id" json:"user_id" yaml:"user_id"`
@@ -229,7 +229,7 @@ type Filter = string
 
 // Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 // Id defines model for id.
-type Id = corev1alpha1.OrganizationId
+type Id = uuid.UUID
 
 // Order defines model for order.
 type Order = string
@@ -244,4 +244,4 @@ type Pagesize = string
 type Search = string
 
 // TeamId defines model for teamId.
-type TeamId = corev1alpha1.TeamId
+type TeamId = core.TeamId

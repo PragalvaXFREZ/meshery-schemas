@@ -44,6 +44,8 @@
  *   Rule 31 — Response descriptions and inline response message text must not include the word "successfully".
  *   Rule 32 — DB-backed property names must exactly match snake_case db tags.
  *   Rule 33 — Pagination envelopes must use page, page_size, total_count.
+ *   Rule 34 — Template file values must match schema property types.
+ *   Rule 35 — x-go-type alias must match x-go-type-import.name, and import path must match alias.
  *
  * USAGE:
  *   node build/validate-schemas.js          # exits 0 if no blocking violations found
@@ -88,6 +90,7 @@ const DB_MIRRORED_FIELDS = new Set([
   "updated_at",
   "deleted_at",
   "user_id",
+  "org_id",
   "organization_id",
   "environment_id",
   "workspace_id",
@@ -99,6 +102,11 @@ const DB_MIRRORED_FIELDS = new Set([
   "operation_id",
   "view_id",
   "general_id",
+  "invite_id",
+  "content_id",
+  "badge_id",
+  "plan_id",
+  "access_expires_at",
   "avatar_url",
   "accepted_terms_at",
   "page_size",
@@ -243,6 +251,26 @@ function hasScreamingIdToken(s) {
 }
 
 /**
+ * Detects common suffixes that are incorrectly all-lowercase in a camelCase name.
+ * e.g. "workspaceid" should be "workspaceId", "pageurl" should be "pageUrl".
+ *
+ * Known safe words excluded: valid, grid, hybrid, liquid, solid, acid, vivid,
+ * timid, rapid, humid, lucid, fluid, etc. The approach requires a known
+ * compound-word prefix pattern rather than matching all words ending in "id".
+ */
+const KNOWN_LOWERCASE_SUFFIX_VIOLATIONS = new Set([
+  "userid", "orgid", "teamid", "workspaceid", "modelid", "designid",
+  "connectionid", "environmentid", "credentialid", "subscriptionid",
+  "invitationid", "tokenid", "eventid", "keyid", "roleid", "badgeid",
+  "planid", "schemaid", "registrantid", "componentid", "categoryid",
+  "pageurl", "avatarurl", "snapshoturl", "callbackurl", "redirecturl",
+]);
+function hasLowercaseSuffix(s) {
+  // Only match the exact all-lowercase form — "orgid" not "orgId"
+  return KNOWN_LOWERCASE_SUFFIX_VIOLATIONS.has(s);
+}
+
+/**
  * Convert a property name to its expected camelCase form with correct "Id" suffix.
  * Handles snake_case, PascalCase, and SCREAMING_CASE "ID" suffix all at once.
  */
@@ -274,13 +302,29 @@ function getDbTagValue(definition) {
   return getTagBaseValue(getExtraTags(definition)?.db);
 }
 
+/**
+ * Extract the column name from a GORM tag. Handles patterns like:
+ * - gorm: "column:model_id"
+ * - gorm: "index:...,column:model_id"
+ * Returns the column name or null.
+ */
+function getGormColumnValue(definition) {
+  const gormTag = getExtraTags(definition)?.gorm;
+  if (typeof gormTag !== "string") return null;
+  const match = gormTag.match(/column\s*:\s*([a-z_][a-z0-9_]*)/);
+  return match ? match[1] : null;
+}
+
 function getJsonTagValue(definition) {
   return getTagBaseValue(getExtraTags(definition)?.json);
 }
 
 function isDbBackedSnakeCaseProperty(name, definition) {
   const dbTag = getDbTagValue(definition);
-  return Boolean(dbTag && DB_TAG_PATTERN.test(dbTag) && hasUnderscore(dbTag) && name === dbTag);
+  if (dbTag && DB_TAG_PATTERN.test(dbTag) && hasUnderscore(dbTag) && name === dbTag) return true;
+  const gormCol = getGormColumnValue(definition);
+  if (gormCol && DB_TAG_PATTERN.test(gormCol) && hasUnderscore(gormCol) && name === gormCol) return true;
+  return false;
 }
 
 function isAllowedSnakeCaseProperty(name, definition) {
@@ -299,6 +343,18 @@ function getCamelCaseIssues(name, { allowDbMirrored = false, definition = null }
   }
   if (hasScreamingIdToken(name)) {
     issues.push('uses "ID" token (must be "Id")');
+  }
+  if (hasLowercaseSuffix(name)) {
+    // Derive the correct camelCase form from the known violation
+    const suffixes = ["ids", "id", "url", "uri"];
+    const lc = name.toLowerCase();
+    for (const suffix of suffixes) {
+      if (lc.endsWith(suffix)) {
+        const corrected = name.slice(0, -suffix.length) + suffix.charAt(0).toUpperCase() + suffix.slice(1);
+        issues.push(`has all-lowercase suffix "${suffix}" (must be "${corrected}")`);
+        break;
+      }
+    }
   }
   if (/^[0-9]/.test(name)) {
     issues.push("starts with a digit");
@@ -346,6 +402,7 @@ function loadBaselineYamlDoc(filePath) {
     const source = execFileSync("git", ["show", `${enumBaselineRef}:${relativeFile}`], {
       cwd: ROOT,
       encoding: "utf8",
+      stdio: ["pipe", "pipe", "ignore"],
     });
     doc = yaml.load(source);
   } catch (e) {
@@ -669,20 +726,28 @@ function validateDbBackedPropertyTree(filePath, scope, schema) {
       if (!propDef || typeof propDef !== "object") continue;
 
       const dbValue = getDbTagValue(propDef);
+      const gormCol = getGormColumnValue(propDef);
+      const columnName = dbValue || gormCol;
       const jsonValue = getJsonTagValue(propDef);
-      if (dbValue && DB_TAG_PATTERN.test(dbValue) && hasUnderscore(dbValue) && propName !== dbValue) {
+
+      // If property name differs from column name but json tag already matches the column,
+      // this is a deliberate semantic alias (e.g. registrantId with json:"connection_id") — skip.
+      const jsonMatchesColumn = jsonValue && jsonValue !== "-" && jsonValue === columnName;
+      if (columnName && DB_TAG_PATTERN.test(columnName) && hasUnderscore(columnName) && propName !== columnName && !jsonMatchesColumn) {
+        const tagSource = dbValue ? "db" : "gorm column";
         warn(
           filePath,
-          `Schema "${scope}" — property "${propName}" maps to database column "${dbValue}". ` +
+          `Schema "${scope}" — property "${propName}" maps to database column "${columnName}" (via ${tagSource} tag). ` +
             `DB-backed property names are stable wire-format fields and must use the exact snake_case db name. ` +
-            `Rename the schema property to "${dbValue}" or introduce a new API version for a full casing migration.`,
+            `Rename the schema property to "${columnName}" or introduce a new API version for a full casing migration.`,
         );
       }
 
-      if (dbValue && DB_TAG_PATTERN.test(dbValue) && hasUnderscore(dbValue) && jsonValue && jsonValue !== "-" && jsonValue !== dbValue) {
+      if (columnName && DB_TAG_PATTERN.test(columnName) && hasUnderscore(columnName) && jsonValue && jsonValue !== "-" && jsonValue !== columnName) {
+        const tagSource = dbValue ? "db" : "gorm column";
         warn(
           filePath,
-          `Schema "${scope}" — property "${propName}" has json tag "${jsonValue}" but db tag "${dbValue}". ` +
+          `Schema "${scope}" — property "${propName}" has json tag "${jsonValue}" but ${tagSource} tag "${columnName}". ` +
             `DB-backed property names and JSON tags must both use the exact snake_case db name in this API version.`,
         );
       }
@@ -1121,6 +1186,115 @@ function checkPropsForCrossRefs(filePath, schemaName, properties) {
   }
 }
 
+// ─── Rule 35: x-go-type / x-go-type-import consistency ───────────────────────
+
+/**
+ * Validates that x-go-type, x-go-type-import.name, and x-go-type-import.path
+ * are mutually consistent on ALL properties — not just cross-construct refs.
+ *
+ * Catches:
+ * - x-go-type alias prefix doesn't match x-go-type-import.name
+ * - x-go-type-import.path doesn't contain the package matching the alias
+ */
+function validateGoTypeImportConsistency(filePath, doc) {
+  if (!doc?.components?.schemas) return;
+
+  function checkProps(schemaName, properties) {
+    if (!properties || typeof properties !== "object") return;
+
+    for (const [propName, propDef] of Object.entries(properties)) {
+      if (!propDef || typeof propDef !== "object") continue;
+
+      // Check the property itself and also items (for array types)
+      const targets = [propDef];
+      if (propDef.items && typeof propDef.items === "object") {
+        targets.push(propDef.items);
+      }
+
+      for (const target of targets) {
+        const goType = typeof target["x-go-type"] === "string" ? target["x-go-type"] : null;
+        const goImport = target["x-go-type-import"];
+        if (!goType || !goImport) continue;
+
+      const importName = typeof goImport.name === "string" ? goImport.name : null;
+      const importPath = typeof goImport.path === "string" ? goImport.path : null;
+
+      // Extract the alias prefix from x-go-type (e.g., "capabilityv1alpha1" from "capabilityv1alpha1.Capability")
+      // Also handle map types like "map[string]core.ResolvedAlias"
+      const typeStr = goType.replace(/^(?:map\[[^\]]*\]|\[\])*\*?/, "");
+      const dotIdx = typeStr.indexOf(".");
+      if (dotIdx <= 0) continue; // no package qualifier — skip (same-package type)
+
+      const aliasPrefix = typeStr.substring(0, dotIdx);
+
+      // Check: alias prefix must match import name
+      if (importName && aliasPrefix !== importName) {
+        warn(
+          filePath,
+          `Schema "${schemaName}" — property "${propName}" has x-go-type alias "${aliasPrefix}" ` +
+            `but x-go-type-import.name is "${importName}". These must match.`,
+        );
+      }
+
+      // Check: import path's last segment should be derivable from the alias
+      // e.g., alias "capabilityv1alpha1" with path ".../models/v1alpha1/capability" is valid
+      // but alias "capabilityv1alpha1" with path ".../models/v1beta1/capability" is suspicious
+      if (importPath && importName) {
+        const pathParts = importPath.split("/");
+        const lastSegment = pathParts[pathParts.length - 1];
+        // The alias typically encodes package+version: "capabilityv1alpha1" → "capability" + "v1alpha1"
+        const versionMatch = importName.match(/(v\d+(?:alpha|beta)\d*)$/);
+        const baseFromAlias = importName.replace(/v\d+(?:alpha|beta)\d*$/, "");
+
+        // Check package name matches
+        if (baseFromAlias && lastSegment !== baseFromAlias && !lastSegment.startsWith(baseFromAlias)) {
+          warn(
+            filePath,
+            `Schema "${schemaName}" — property "${propName}" has x-go-type-import alias "${importName}" ` +
+              `but import path ends with "${lastSegment}". The path's package name should match ` +
+              `the alias base "${baseFromAlias}".`,
+          );
+        }
+
+        // Check version in alias matches version in path
+        // e.g., alias "capabilityv1alpha1" should have "v1alpha1" in the path
+        if (versionMatch && baseFromAlias !== importName) {
+          const aliasVersion = versionMatch[1];
+          if (!importPath.includes(`/${aliasVersion}/`)) {
+            warn(
+              filePath,
+              `Schema "${schemaName}" — property "${propName}" has x-go-type-import alias "${importName}" ` +
+                `(version ${aliasVersion}) but import path "${importPath}" does not contain "/${aliasVersion}/". ` +
+                `The alias version and import path version must match.`,
+            );
+          }
+        }
+      }
+      } // end for target of targets
+    }
+  }
+
+  for (const [schemaName, schemaDef] of Object.entries(doc.components.schemas)) {
+    if (!schemaDef || typeof schemaDef !== "object") continue;
+    checkProps(schemaName, schemaDef.properties);
+    for (const combiner of ["allOf", "oneOf", "anyOf"]) {
+      if (Array.isArray(schemaDef[combiner])) {
+        for (const sub of schemaDef[combiner]) {
+          checkProps(schemaName, sub?.properties);
+        }
+      }
+    }
+  }
+}
+
+// Also check entity yaml files (they may have x-go-type annotations)
+function validateGoTypeImportConsistencyForEntity(filePath, doc) {
+  if (!doc || typeof doc !== "object" || !doc.properties) return;
+
+  const fakeSchemas = { "(entity root)": doc };
+  validateGoTypeImportConsistency(filePath, { components: { schemas: fakeSchemas } });
+}
+
 // ─── Rule 17: core.Map must pair with x-go-type-skip-optional-pointer ────────
 
 function validateCoreMapAnnotation(filePath, doc) {
@@ -1184,8 +1358,7 @@ function validateTemplateFiles(constructDir, constructName) {
       (f) =>
         /\.ya?ml$/.test(f) &&
         f !== "api.yml" &&
-        !f.includes("_template") &&
-        !f.includes("_page"),
+        !f.includes("_template"),
     );
 
   if (entitySchemaFiles.length === 0) {
@@ -1223,6 +1396,85 @@ function validateTemplateFiles(constructDir, constructName) {
       `Construct "${constructName}" has template file(s) at root level: ${rootFiles.join(", ")}. ` +
         `Template files must be inside the templates/ subdirectory.`,
     );
+  }
+}
+
+// ─── Rule 34: template values must match schema property types ────────────────
+
+/**
+ * Validates that JSON/YAML template files use the correct default value types
+ * matching their corresponding entity schema properties. Catches mismatches like
+ * using {} (object) where the schema declares a string or array.
+ */
+function validateTemplateTypes(constructDir) {
+  const templatesDir = path.join(constructDir, "templates");
+  if (!fs.existsSync(templatesDir)) return;
+
+  // Find entity schemas in construct root
+  const entitySchemas = fs.readdirSync(constructDir).filter(
+    (f) => f.endsWith(".yaml") && f !== "api.yml" && !f.includes("_template"),
+  );
+
+  for (const schemaFile of entitySchemas) {
+    const schemaPath = path.join(constructDir, schemaFile);
+    const schema = loadYamlDoc(schemaPath);
+    if (!schema || !schema.properties) continue;
+
+    const baseName = schemaFile.replace(".yaml", "");
+    const templateFiles = fs.readdirSync(templatesDir).filter(
+      (f) => f.includes(baseName + "_template"),
+    );
+
+    for (const tmplFile of templateFiles) {
+      const tmplPath = path.join(templatesDir, tmplFile);
+      let template;
+      try {
+        if (tmplFile.endsWith(".json")) {
+          template = JSON.parse(fs.readFileSync(tmplPath, "utf-8"));
+        } else {
+          template = yaml.load(fs.readFileSync(tmplPath, "utf-8"));
+        }
+      } catch {
+        continue;
+      }
+      if (!template || typeof template !== "object") continue;
+
+      for (const [key, value] of Object.entries(template)) {
+        const prop = schema.properties[key];
+        if (!prop) continue;
+        // Use explicit type only. Properties with $ref are skipped because
+        // the ref target may be any type (string, object, array) and cannot
+        // be determined without resolving. Rule 34 validates explicit types only.
+        if (!prop.type) continue;
+        const propType = prop.type;
+        if (value === null) continue; // null is a valid default for nullable fields
+
+        const isArray = Array.isArray(value);
+        const jsType = isArray ? "array" : typeof value;
+
+        if (propType === "string" && jsType === "object") {
+          warn(
+            tmplPath,
+            `Template property "${key}" is an object but schema declares type: string. ` +
+              `Use an empty string "" as the default value.`,
+          );
+        }
+        if (propType === "array" && jsType === "object" && !isArray) {
+          warn(
+            tmplPath,
+            `Template property "${key}" is an object {} but schema declares type: array. ` +
+              `Use an empty array [] as the default value.`,
+          );
+        }
+        if ((propType === "integer" || propType === "number") && jsType === "string") {
+          warn(
+            tmplPath,
+            `Template property "${key}" is a string but schema declares type: ${propType}. ` +
+              `Use 0 as the default value.`,
+          );
+        }
+      }
+    }
   }
 }
 
@@ -1835,7 +2087,8 @@ function collectSchemaFingerprints(filePath, doc) {
  * e.g. "schemas/constructs/v1beta1/academy/api.yml" → "academy"
  */
 function extractConstructName(filePath) {
-  const match = filePath.match(/schemas\/constructs\/[^/]+\/([^/]+)\//);
+  const normalized = filePath.split(path.sep).join("/");
+  const match = normalized.match(/schemas\/constructs\/[^/]+\/([^/]+)\//);
   return match ? match[1] : filePath;
 }
 
@@ -1975,19 +2228,14 @@ function walk(dir) {
 
       const constructDir = path.join(versionDir, construct.name);
 
-      // Skip deprecated constructs in strict mode. They are superseded
-      // by a newer API version and kept only for backward compatibility.
-      if (strictConsistency) {
-        const apiCheck = path.join(constructDir, "api.yml");
-        if (fs.existsSync(apiCheck)) {
-          try {
-            const checkDoc = yaml.load(fs.readFileSync(apiCheck, "utf-8"));
-            if (checkDoc?.info?.["x-deprecated"] === true) {
-              continue;
-            }
-          } catch (e) {
-            // parse error — proceed with validation to surface it
-          }
+      // Skip deprecated constructs entirely. They are superseded by a
+      // newer API version and frozen for backward compatibility. Validating
+      // them would surface pre-existing issues that must NOT be fixed
+      // (fixing them would break the v1beta1 wire format).
+      {
+        const checkDoc = loadYamlDoc(path.join(constructDir, "api.yml"));
+        if (checkDoc?.info?.["x-deprecated"] === true) {
+          continue;
         }
       }
 
@@ -1996,13 +2244,12 @@ function walk(dir) {
         if (
           file.endsWith(".yaml") &&
           file !== "api.yml" &&
-          !file.includes("_template") &&
-          !file.includes("_page")
+          !file.includes("_template")
         ) {
           const entityPath = path.join(constructDir, file);
           validateEntitySchema(entityPath);
 
-          // Rule 20: entity completeness
+          // Rule 20: entity completeness + Rule 32 on entity files with components
           let entityDoc;
           try {
             entityDoc = yaml.load(fs.readFileSync(entityPath, "utf-8"));
@@ -2011,12 +2258,26 @@ function walk(dir) {
           }
           if (entityDoc) {
             validateEntityCompleteness(entityPath, entityDoc);
+            // Entity files may use different root structures (plain JSON
+            // Schema with type: "object", or OpenAPI with components.schemas).
+            // Run DB-backed property name checks on all entity files regardless
+            // of structure, since validateEntitySchema only reaches Rule 32
+            // for plain JSON Schema entities.
+            validateDbBackedPropertyNames(entityPath, entityDoc);
+            // Rule 35: x-go-type / x-go-type-import consistency
+            validateGoTypeImportConsistencyForEntity(entityPath, entityDoc);
+            if (entityDoc.components?.schemas) {
+              validateGoTypeImportConsistency(entityPath, entityDoc);
+            }
           }
         }
       }
 
       // Rule 18: template files
       validateTemplateFiles(constructDir, construct.name);
+
+      // Rule 34: template value types
+      validateTemplateTypes(constructDir);
 
       // Rules 2–17, 19, 21: check api.yml
       const apiYml = path.join(constructDir, "api.yml");
@@ -2042,6 +2303,7 @@ function walk(dir) {
           validateInfoFields(apiYml, doc);
           validateXInternal(apiYml, doc);
           validateCrossConstructRefs(apiYml, doc);
+          validateGoTypeImportConsistency(apiYml, doc);
           validateCoreMapAnnotation(apiYml, doc);
           validateNoUnnecessaryAllOf(apiYml, doc);
           validateGetResponseSchemas(apiYml, doc);

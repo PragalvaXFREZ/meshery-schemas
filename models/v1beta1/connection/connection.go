@@ -5,7 +5,6 @@ package connection
 
 import (
 	"github.com/meshery/schemas/models/core"
-	corev1alpha1 "github.com/meshery/schemas/models/v1alpha1/core"
 	environmentv1beta1 "github.com/meshery/schemas/models/v1beta1/environment"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
@@ -85,13 +84,13 @@ func (e ConnectionStatusValue) Valid() bool {
 // Connection Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
 type Connection struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID corev1alpha1.Uuid `db:"id" json:"id" yaml:"id"`
+	ID core.Uuid `db:"id" json:"id" yaml:"id"`
 
 	// Name Connection Name
 	Name string `db:"name" json:"name" yaml:"name"`
 
 	// CredentialId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	CredentialID *corev1alpha1.Uuid `db:"credential_id" json:"credential_id,omitempty" yaml:"credential_id"`
+	CredentialID *core.Uuid `db:"credential_id" json:"credential_id,omitempty" yaml:"credential_id"`
 
 	// Type Connection Type (platform, telemetry, collaboration)
 	Type string `db:"type" json:"type" yaml:"type"`
@@ -109,18 +108,18 @@ type Connection struct {
 	Status ConnectionStatus `db:"status" json:"status" yaml:"status"`
 
 	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	UserID    *corev1alpha1.Uuid `db:"user_id" json:"user_id,omitempty" yaml:"user_id"`
-	CreatedAt corev1alpha1.Time  `db:"created_at" json:"created_at,omitempty" yaml:"created_at"`
-	UpdatedAt corev1alpha1.Time  `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at"`
+	UserID    *core.Uuid `db:"user_id" json:"user_id,omitempty" yaml:"user_id"`
+	CreatedAt core.Time  `db:"created_at" json:"created_at,omitempty" yaml:"created_at"`
+	UpdatedAt core.Time  `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at"`
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt corev1alpha1.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at"`
+	DeletedAt core.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at"`
 
 	// Environments Associated environments for this connection
 	Environments []*environmentv1beta1.Environment `db:"-" gorm:"-" json:"environments,omitempty" yaml:"environments"`
 
 	// SchemaVersion API version of the object, optionally prefixed with an API group (e.g. "group.example.io/v1beta1" or bare "v1beta1").
-	SchemaVersion corev1alpha1.VersionString `gorm:"-" db:"-" json:"schemaVersion" yaml:"schemaVersion"`
+	SchemaVersion core.VersionString `gorm:"-" db:"-" json:"schemaVersion" yaml:"schemaVersion"`
 }
 
 // ConnectionStatus Connection Status
@@ -168,7 +167,7 @@ type ConnectionPayload struct {
 	Status string `json:"status" yaml:"status"`
 
 	// SubType Connection sub-type
-	SubType string `json:"subType" yaml:"subType"`
+	SubType string `json:"sub_type" yaml:"sub_type"`
 
 	// Type Connection type
 	Type string `json:"type" yaml:"type"`

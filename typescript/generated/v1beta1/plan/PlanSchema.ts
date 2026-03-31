@@ -8,6 +8,8 @@ const PlanSchema: Record<string, unknown> = {
   "info": {
     "title": "Plan",
     "description": "OpenAPI schema for subscription plan management in Meshery Cloud.",
+    "x-deprecated": true,
+    "x-superseded-by": "v1beta2",
     "version": "v1beta1",
     "contact": {
       "name": "Meshery Maintainers",
@@ -41,24 +43,6 @@ const PlanSchema: Record<string, unknown> = {
           "Plans"
         ],
         "summary": "Get all plans supported by the system",
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "description": "Get responses by page",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "pagesize",
-            "in": "query",
-            "description": "Get responses by pagesize",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "Plans response",
@@ -235,24 +219,6 @@ const PlanSchema: Record<string, unknown> = {
               "type": "string"
             }
           }
-        }
-      }
-    },
-    "parameters": {
-      "page": {
-        "name": "page",
-        "in": "query",
-        "description": "Get responses by page",
-        "schema": {
-          "type": "string"
-        }
-      },
-      "pagesize": {
-        "name": "pagesize",
-        "in": "query",
-        "description": "Get responses by pagesize",
-        "schema": {
-          "type": "string"
         }
       }
     },

@@ -4,16 +4,16 @@
 package key
 
 import (
-	corev1alpha1 "github.com/meshery/schemas/models/v1alpha1/core"
+	meshcore "github.com/meshery/schemas/models/core"
 )
 
 // Key Represents an authorization key used for access control.
 type Key struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID corev1alpha1.Uuid `db:"id" json:"id" yaml:"id"`
+	ID meshcore.Uuid `db:"id" json:"id" yaml:"id"`
 
 	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Owner corev1alpha1.Uuid `db:"owner" json:"owner" yaml:"owner"`
+	Owner meshcore.Uuid `db:"owner" json:"owner" yaml:"owner"`
 
 	// Function Operation permitted by the key.
 	Function string `db:"function" json:"function" yaml:"function"`
@@ -28,27 +28,27 @@ type Key struct {
 	Description string `db:"description" json:"description" yaml:"description"`
 
 	// CreatedAt Timestamp when the resource was created.
-	CreatedAt corev1alpha1.CreatedAt `db:"created_at" json:"created_at" yaml:"created_at"`
+	CreatedAt meshcore.CreatedAt `db:"created_at" json:"created_at" yaml:"created_at"`
 
 	// UpdatedAt Timestamp when the resource was updated.
-	UpdatedAt corev1alpha1.UpdatedAt `db:"updated_at" json:"updated_at" yaml:"updated_at"`
+	UpdatedAt meshcore.UpdatedAt `db:"updated_at" json:"updated_at" yaml:"updated_at"`
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt corev1alpha1.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	DeletedAt meshcore.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 }
 
 // KeyPage defines model for KeyPage.
 type KeyPage struct {
-	Page       corev1alpha1.Number `json:"page" yaml:"page"`
-	PageSize   corev1alpha1.Number `json:"page_size" yaml:"page_size"`
-	TotalCount corev1alpha1.Number `json:"total_count" yaml:"total_count"`
+	Page       meshcore.Number `json:"page" yaml:"page"`
+	PageSize   meshcore.Number `json:"page_size" yaml:"page_size"`
+	TotalCount meshcore.Number `json:"total_count" yaml:"total_count"`
 	Keys       []Key               `json:"keys" yaml:"keys"`
 }
 
 // KeyPayload Payload for creating or updating a key.
 type KeyPayload struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID *corev1alpha1.Uuid `json:"id,omitempty" yaml:"id,omitempty"`
+	ID *meshcore.Uuid `json:"id,omitempty" yaml:"id,omitempty"`
 
 	// Function Operation permitted by the key.
 	Function *string `json:"function,omitempty" yaml:"function,omitempty"`
@@ -64,13 +64,13 @@ type KeyPayload struct {
 }
 
 // KeyId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-type KeyId = corev1alpha1.Uuid
+type KeyId = meshcore.Uuid
 
 // Order defines model for order.
 type Order = string
 
 // OrgId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-type OrgId = corev1alpha1.Uuid
+type OrgId = meshcore.Uuid
 
 // Page defines model for page.
 type Page = string

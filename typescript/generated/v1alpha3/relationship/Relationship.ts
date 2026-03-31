@@ -241,7 +241,7 @@ export interface components {
       };
       /**
        * Format: uuid
-       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+       * @description Foreign key reference to the model
        */
       modelId?: string;
       /** @description Optional. Assigns the policy to be used for the evaluation of the relationship. Deprecation Notice: In the future, this property is either to be removed or to it is to be an array of optional policy $refs. */

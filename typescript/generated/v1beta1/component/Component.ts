@@ -638,7 +638,7 @@ export interface components {
        * @description Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
        * @default [
        *   {
-       *     "schemaVersion": "capability.meshery.io/v1alpha1",
+       *     "schemaVersion": "capability.meshery.io/v1beta1",
        *     "version": "0.7.0",
        *     "displayName": "Performance Test",
        *     "description": "Initiate a performance test. Meshery will execute the load generation, collect metrics, and present the results.",
@@ -653,7 +653,7 @@ export interface components {
        *     "metadata": null
        *   },
        *   {
-       *     "schemaVersion": "capability.meshery.io/v1alpha1",
+       *     "schemaVersion": "capability.meshery.io/v1beta1",
        *     "version": "0.7.0",
        *     "displayName": "Workload Configuration",
        *     "description": "Configure the workload specific setting of a component",
@@ -668,7 +668,7 @@ export interface components {
        *     "metadata": null
        *   },
        *   {
-       *     "schemaVersion": "capability.meshery.io/v1alpha1",
+       *     "schemaVersion": "capability.meshery.io/v1beta1",
        *     "version": "0.7.0",
        *     "displayName": "Labels and Annotations Configuration",
        *     "description": "Configure Labels And Annotations for  the component ",
@@ -683,7 +683,7 @@ export interface components {
        *     "metadata": null
        *   },
        *   {
-       *     "schemaVersion": "capability.meshery.io/v1alpha1",
+       *     "schemaVersion": "capability.meshery.io/v1beta1",
        *     "version": "0.7.0",
        *     "displayName": "Relationships",
        *     "description": "View relationships for the component",
@@ -699,7 +699,7 @@ export interface components {
        *     "metadata": null
        *   },
        *   {
-       *     "schemaVersion": "capability.meshery.io/v1alpha1",
+       *     "schemaVersion": "capability.meshery.io/v1beta1",
        *     "version": "0.7.0",
        *     "displayName": "Json Schema",
        *     "description": "View Component Definition ",
@@ -715,7 +715,7 @@ export interface components {
        *     "metadata": null
        *   },
        *   {
-       *     "schemaVersion": "capability.meshery.io/v1alpha1",
+       *     "schemaVersion": "capability.meshery.io/v1beta1",
        *     "version": "0.7.0",
        *     "displayName": "Styling",
        *     "description": "Configure the visual styles for the component",
@@ -730,7 +730,7 @@ export interface components {
        *     "metadata": null
        *   },
        *   {
-       *     "schemaVersion": "capability.meshery.io/v1alpha1",
+       *     "schemaVersion": "capability.meshery.io/v1beta1",
        *     "version": "0.7.0",
        *     "displayName": "Change Shape",
        *     "description": "Change the shape of the component",
@@ -745,7 +745,7 @@ export interface components {
        *     "metadata": null
        *   },
        *   {
-       *     "schemaVersion": "capability.meshery.io/v1alpha1",
+       *     "schemaVersion": "capability.meshery.io/v1beta1",
        *     "version": "0.7.0",
        *     "displayName": "Compound Drag And Drop",
        *     "description": "Drag and Drop a component into a parent component in graph view",

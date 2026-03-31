@@ -8,6 +8,8 @@ const ComponentSchema: Record<string, unknown> = {
   "info": {
     "title": "Component",
     "description": "OpenAPI schema for component definitions in Meshery.",
+    "x-deprecated": true,
+    "x-superseded-by": "v1beta2",
     "version": "v1beta1",
     "contact": {
       "name": "Meshery Maintainers",
@@ -938,7 +940,7 @@ const ComponentSchema: Record<string, unknown> = {
                           ],
                           "key": "",
                           "kind": "mutate",
-                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                          "schemaVersion": "capability.meshery.io/v1beta1",
                           "status": "enabled",
                           "subType": "",
                           "type": "style",
@@ -952,7 +954,7 @@ const ComponentSchema: Record<string, unknown> = {
                           ],
                           "key": "",
                           "kind": "mutate",
-                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                          "schemaVersion": "capability.meshery.io/v1beta1",
                           "status": "enabled",
                           "subType": "shape",
                           "type": "style",
@@ -966,7 +968,7 @@ const ComponentSchema: Record<string, unknown> = {
                           ],
                           "key": "",
                           "kind": "interaction",
-                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                          "schemaVersion": "capability.meshery.io/v1beta1",
                           "status": "enabled",
                           "subType": "compoundDnd",
                           "type": "graph",
@@ -980,7 +982,7 @@ const ComponentSchema: Record<string, unknown> = {
                           ],
                           "key": "",
                           "kind": "mutate",
-                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                          "schemaVersion": "capability.meshery.io/v1beta1",
                           "status": "enabled",
                           "subType": "body-text",
                           "type": "style",
@@ -1320,10 +1322,10 @@ const ComponentSchema: Record<string, unknown> = {
               "yaml": "styles",
               "json": "styles"
             },
-            "x-go-type": "corev1alpha1.ComponentStyles",
+            "x-go-type": "core.ComponentStyles",
             "x-go-type-import": {
-              "path": "github.com/meshery/schemas/models/v1alpha1/core",
-              "name": "corev1alpha1"
+              "path": "github.com/meshery/schemas/models/core",
+              "name": "core"
             },
             "x-order": 8,
             "type": "object",
@@ -1836,7 +1838,7 @@ const ComponentSchema: Record<string, unknown> = {
                   ],
                   "key": "",
                   "kind": "mutate",
-                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                  "schemaVersion": "capability.meshery.io/v1beta1",
                   "status": "enabled",
                   "subType": "",
                   "type": "style",
@@ -1850,7 +1852,7 @@ const ComponentSchema: Record<string, unknown> = {
                   ],
                   "key": "",
                   "kind": "mutate",
-                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                  "schemaVersion": "capability.meshery.io/v1beta1",
                   "status": "enabled",
                   "subType": "shape",
                   "type": "style",
@@ -1864,7 +1866,7 @@ const ComponentSchema: Record<string, unknown> = {
                   ],
                   "key": "",
                   "kind": "interaction",
-                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                  "schemaVersion": "capability.meshery.io/v1beta1",
                   "status": "enabled",
                   "subType": "compoundDnd",
                   "type": "graph",
@@ -1878,7 +1880,7 @@ const ComponentSchema: Record<string, unknown> = {
                   ],
                   "key": "",
                   "kind": "mutate",
-                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                  "schemaVersion": "capability.meshery.io/v1beta1",
                   "status": "enabled",
                   "subType": "body-text",
                   "type": "style",
@@ -1893,7 +1895,7 @@ const ComponentSchema: Record<string, unknown> = {
             },
             "default": [
               {
-                "schemaVersion": "capability.meshery.io/v1alpha1",
+                "schemaVersion": "capability.meshery.io/v1beta1",
                 "version": "0.7.0",
                 "displayName": "Performance Test",
                 "description": "Initiate a performance test. Meshery will execute the load generation, collect metrics, and present the results.",
@@ -1908,7 +1910,7 @@ const ComponentSchema: Record<string, unknown> = {
                 "metadata": null
               },
               {
-                "schemaVersion": "capability.meshery.io/v1alpha1",
+                "schemaVersion": "capability.meshery.io/v1beta1",
                 "version": "0.7.0",
                 "displayName": "Workload Configuration",
                 "description": "Configure the workload specific setting of a component",
@@ -1923,7 +1925,7 @@ const ComponentSchema: Record<string, unknown> = {
                 "metadata": null
               },
               {
-                "schemaVersion": "capability.meshery.io/v1alpha1",
+                "schemaVersion": "capability.meshery.io/v1beta1",
                 "version": "0.7.0",
                 "displayName": "Labels and Annotations Configuration",
                 "description": "Configure Labels And Annotations for  the component ",
@@ -1938,7 +1940,7 @@ const ComponentSchema: Record<string, unknown> = {
                 "metadata": null
               },
               {
-                "schemaVersion": "capability.meshery.io/v1alpha1",
+                "schemaVersion": "capability.meshery.io/v1beta1",
                 "version": "0.7.0",
                 "displayName": "Relationships",
                 "description": "View relationships for the component",
@@ -1954,7 +1956,7 @@ const ComponentSchema: Record<string, unknown> = {
                 "metadata": null
               },
               {
-                "schemaVersion": "capability.meshery.io/v1alpha1",
+                "schemaVersion": "capability.meshery.io/v1beta1",
                 "version": "0.7.0",
                 "displayName": "Json Schema",
                 "description": "View Component Definition ",
@@ -1970,7 +1972,7 @@ const ComponentSchema: Record<string, unknown> = {
                 "metadata": null
               },
               {
-                "schemaVersion": "capability.meshery.io/v1alpha1",
+                "schemaVersion": "capability.meshery.io/v1beta1",
                 "version": "0.7.0",
                 "displayName": "Styling",
                 "description": "Configure the visual styles for the component",
@@ -1985,7 +1987,7 @@ const ComponentSchema: Record<string, unknown> = {
                 "metadata": null
               },
               {
-                "schemaVersion": "capability.meshery.io/v1alpha1",
+                "schemaVersion": "capability.meshery.io/v1beta1",
                 "version": "0.7.0",
                 "displayName": "Change Shape",
                 "description": "Change the shape of the component",
@@ -2000,7 +2002,7 @@ const ComponentSchema: Record<string, unknown> = {
                 "metadata": null
               },
               {
-                "schemaVersion": "capability.meshery.io/v1alpha1",
+                "schemaVersion": "capability.meshery.io/v1beta1",
                 "version": "0.7.0",
                 "displayName": "Compound Drag And Drop",
                 "description": "Drag and Drop a component into a parent component in graph view",

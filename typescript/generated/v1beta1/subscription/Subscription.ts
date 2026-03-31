@@ -302,7 +302,7 @@ export interface paths {
       };
     };
   };
-  "/api/entitlement/subscriptions/{subscriptionId}/upgrade-preview": {
+  "/api/entitlement/subscriptions/{subscriptionId}/upgradePreview": {
     post: {
       parameters: {
         path: {

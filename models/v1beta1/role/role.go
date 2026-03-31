@@ -4,7 +4,7 @@
 package role
 
 import (
-	corev1alpha1 "github.com/meshery/schemas/models/v1alpha1/core"
+	meshcore "github.com/meshery/schemas/models/core"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
@@ -20,7 +20,7 @@ type Preference struct {
 // Role Role definition for Layer5 Cloud (Meshery).
 type Role struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID *corev1alpha1.Uuid `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
+	ID *meshcore.Uuid `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
 
 	// RoleName Unique name of the role.
 	RoleName string `db:"role_name" json:"role_name" yaml:"role_name"`
@@ -29,13 +29,13 @@ type Role struct {
 	Description string `db:"description" json:"description" yaml:"description"`
 
 	// CreatedAt Timestamp when the resource was created.
-	CreatedAt corev1alpha1.CreatedAt `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt meshcore.CreatedAt `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
 
 	// UpdatedAt Timestamp when the resource was updated.
-	UpdatedAt corev1alpha1.UpdatedAt `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	UpdatedAt meshcore.UpdatedAt `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt corev1alpha1.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	DeletedAt meshcore.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 }
 
 // RoleHolderRequest Request body for assigning a role to a user.
@@ -50,22 +50,22 @@ type RoleHolderRequest struct {
 // RolesKeychainsMapping Mapping between a role and a keychain.
 type RolesKeychainsMapping struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID corev1alpha1.Uuid `db:"id" json:"id" yaml:"id"`
+	ID meshcore.Uuid `db:"id" json:"id" yaml:"id"`
 
 	// KeychainId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	KeychainId corev1alpha1.Uuid `db:"keychain_id" json:"keychain_id" yaml:"keychain_id"`
+	KeychainId meshcore.Uuid `db:"keychain_id" json:"keychain_id" yaml:"keychain_id"`
 
 	// RoleId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	RoleId corev1alpha1.Uuid `db:"role_id" json:"role_id" yaml:"role_id"`
+	RoleId meshcore.Uuid `db:"role_id" json:"role_id" yaml:"role_id"`
 
 	// CreatedAt Timestamp when the resource was created.
-	CreatedAt corev1alpha1.CreatedAt `db:"created_at" json:"created_at" yaml:"created_at"`
+	CreatedAt meshcore.CreatedAt `db:"created_at" json:"created_at" yaml:"created_at"`
 
 	// UpdatedAt Timestamp when the resource was updated.
-	UpdatedAt corev1alpha1.UpdatedAt `db:"updated_at" json:"updated_at" yaml:"updated_at"`
+	UpdatedAt meshcore.UpdatedAt `db:"updated_at" json:"updated_at" yaml:"updated_at"`
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt corev1alpha1.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	DeletedAt meshcore.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 }
 
 // RolesPage A paginated list of roles.
@@ -84,21 +84,21 @@ type RolesPage struct {
 // UserRoleUpdateRequest Request to update role assignments for a user.
 type UserRoleUpdateRequest struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID *corev1alpha1.Uuid `json:"id,omitempty" yaml:"id,omitempty"`
+	ID *meshcore.Uuid `json:"id,omitempty" yaml:"id,omitempty"`
 
 	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	UserId    *corev1alpha1.Uuid   `json:"user_id,omitempty" yaml:"user_id,omitempty"`
+	UserId    *meshcore.Uuid   `json:"user_id,omitempty" yaml:"user_id,omitempty"`
 	Username  *string              `json:"username,omitempty" yaml:"username,omitempty"`
 	Email     *openapi_types.Email `json:"email,omitempty" yaml:"email,omitempty"`
 	FirstName *string              `json:"firstName,omitempty" yaml:"firstName,omitempty"`
 	LastName  *string              `json:"lastName,omitempty" yaml:"lastName,omitempty"`
 	Status    *string              `json:"status,omitempty" yaml:"status,omitempty"`
 	RoleNames *[]string            `json:"roleNames,omitempty" yaml:"roleNames,omitempty"`
-	CreatedAt corev1alpha1.Time    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	UpdatedAt corev1alpha1.Time    `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	CreatedAt meshcore.Time    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	UpdatedAt meshcore.Time    `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt corev1alpha1.NullTime `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	DeletedAt meshcore.NullTime `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 }
 
 // All defines model for all.
@@ -106,13 +106,13 @@ type All = bool
 
 // Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 // Id defines model for id.
-type Id = corev1alpha1.Uuid
+type Id = meshcore.Uuid
 
 // Order defines model for order.
 type Order = string
 
 // OrgId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-type OrgId = corev1alpha1.Uuid
+type OrgId = meshcore.Uuid
 
 // Page defines model for page.
 type Page = string
@@ -121,7 +121,7 @@ type Page = string
 type Pagesize = string
 
 // RoleId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-type RoleId = corev1alpha1.Uuid
+type RoleId = meshcore.Uuid
 
 // Search defines model for search.
 type Search = string
@@ -130,4 +130,4 @@ type Search = string
 type Selector = string
 
 // TeamId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-type TeamId = corev1alpha1.Uuid
+type TeamId = meshcore.Uuid

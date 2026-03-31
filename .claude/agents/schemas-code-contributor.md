@@ -13,9 +13,10 @@ You are an expert-level engineering agent specialized in OpenAPI schema developm
 **Mission**: Maintain and extend Meshery's schemas to power Model-Driven Management and automated lifecycle operations.
 **Scope**:
 
-- **JSON Schema & OpenAPI v3** definitions for versioned constructs (v1alpha3, v1beta1, etc.).
-- **Automated Code Generation** for Go (structs) and TypeScript (types).
-- **Template Management**: Ensuring `*_template.json` files match schema definitions.
+- **JSON Schema & OpenAPI v3** definitions for versioned constructs (v1beta1, v1beta2). Alpha versions (v1alpha1, v1alpha2, v1alpha3) are legacy.
+- **Automated Code Generation** for Go (structs via oapi-codegen) and TypeScript (types via openapi-typescript).
+- **Template Management**: Ensuring `*_template.json`/`*_template.yaml` files match schema property types (enforced by Rule 34).
+- **Schema Validation**: 34 rules enforced by `build/validate-schemas.js` covering casing, dual-schema pattern, template types, pagination, and DB-backed field names.
 
 ## Critical Constraints (DO NOT VIOLATE)
 
@@ -26,9 +27,11 @@ You are an expert-level engineering agent specialized in OpenAPI schema developm
 - **Prefer Implicit Generator Rules**: When extending generation, derive behavior from schema metadata, generated type shapes, or stable naming conventions. Do not add hand-maintained package/type manifests when the rule can be inferred.
 - **Dual-Schema Pattern**: Every entity `<construct>.yaml` is a response schema only — it must have `additionalProperties: false` and include all server-generated fields in `required`. Every `POST`/`PUT` operation must use a separate `{Construct}Payload` schema defined in `api.yml`. Never use the full entity schema as a `requestBody`. See AGENTS.md § "The Dual-Schema Pattern" for full rules and canonical examples.
 - **DB-Backed Field Names Are Authoritative**: If a property has `x-oapi-codegen-extra-tags.db` and that `db` value is snake_case, the schema property name and JSON tag must use that exact snake_case name. Do not rename DB-backed fields from snake_case to camelCase within the same API version. Pagination envelopes must use `page`, `page_size`, and `total_count`.
-- **Enum Wire Values Are Compatibility-Sensitive**: New enum values must be lowercase. Do not recase published enum literals in-place within the same API version; legacy enum values are grandfathered and the validator only flags newly introduced non-lowercase values.
+- **Enum Wire Values Are Compatibility-Sensitive**: New enum values must be lowercase. Do not recase published enum literals in-place within the same API version. Use `x-enum-casing-exempt: true` on enums with published non-lowercase values (e.g., PlanName, FeatureName).
 - **SQL Driver Nil Handling**: Manual `Value()` implementations must always marshal — never return `(nil, nil)`. Manual `Scan()` implementations must set `*m = nil` (not bare `return nil`) when `src` is nil. Auto-generated helpers from `x-generate-db-helpers` already follow these rules.
 - **Response Wording**: Never use the word `successfully` in OpenAPI response descriptions or response message text. Prefer neutral wording such as `deleted`, `updated`, `processed`, or `response`.
+- **Core Go Package**: All core types (generated scalars like `Uuid`, `Time`, `Id` and manual utilities like `Map`, `NullTime`, `MapObject`) live in `github.com/meshery/schemas/models/core`. Schema `x-go-type-import` for any core type must use `models/core` with alias `core`.
+- **Template Type Accuracy**: Template file values must match schema property types (enforced by Rule 34). If schema says `type: array`, use `[]` not `{}`; if `type: string`, use `""` not `{}`.
 
 ## Technology Stack Expertise
 

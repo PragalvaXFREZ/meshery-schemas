@@ -5,7 +5,7 @@ package feature
 
 import (
 	"github.com/gofrs/uuid"
-	corev1alpha1 "github.com/meshery/schemas/models/v1alpha1/core"
+	core "github.com/meshery/schemas/models/core"
 	planv1beta1 "github.com/meshery/schemas/models/v1beta1/plan"
 )
 
@@ -41,21 +41,21 @@ func (e FeatureName) Valid() bool {
 
 // Feature defines model for Feature.
 type Feature struct {
-	CreatedAt corev1alpha1.Time `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt core.Time `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
 
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID corev1alpha1.Uuid `db:"id" json:"id" yaml:"id"`
+	ID core.Uuid `db:"id" json:"id" yaml:"id"`
 
 	// Name Enumeration of possible feature types
 	Name *FeatureName       `db:"name" json:"name,omitempty" yaml:"name,omitempty"`
 	Plan *planv1beta1.Plan `fk_id:"PlanId" belongs_to:"plans" json:"plan,omitempty" yaml:"plan,omitempty"`
 
 	// PlanId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	PlanId corev1alpha1.Uuid `db:"plan_id" json:"plan_id" yaml:"plan_id"`
+	PlanId core.Uuid `db:"plan_id" json:"plan_id" yaml:"plan_id"`
 
 	// Quantity Quantity of the feature allowed, use 9999999999 for unlimited
 	Quantity  float32           `db:"quantity" json:"quantity" yaml:"quantity"`
-	UpdatedAt corev1alpha1.Time `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	UpdatedAt core.Time `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 }
 
 // FeatureName Enumeration of possible feature types

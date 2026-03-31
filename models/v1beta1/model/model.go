@@ -7,8 +7,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	core "github.com/meshery/schemas/models/core"
 	capabilityv1alpha1 "github.com/meshery/schemas/models/v1alpha1/capability"
-	corev1alpha1 "github.com/meshery/schemas/models/v1alpha1/core"
 	categoryv1beta1 "github.com/meshery/schemas/models/v1beta1/category"
 	connectionv1beta1 "github.com/meshery/schemas/models/v1beta1/connection"
 	subcategoryv1beta1 "github.com/meshery/schemas/models/v1beta1/subcategory"
@@ -122,19 +122,19 @@ type MeshModelModelsPage struct {
 // Model Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).
 type Model struct {
 	// Version A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'.
-	Version corev1alpha1.SemverString `json:"version" yaml:"version"`
+	Version core.SemverString `json:"version" yaml:"version"`
 }
 
 // ModelDefinition Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.
 type ModelDefinition struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID corev1alpha1.Uuid `json:"id" yaml:"id"`
+	ID core.Uuid `json:"id" yaml:"id"`
 
 	// SchemaVersion API version of the object, optionally prefixed with an API group (e.g. "group.example.io/v1beta1" or bare "v1beta1").
-	SchemaVersion corev1alpha1.VersionString `json:"schemaVersion" yaml:"schemaVersion"`
+	SchemaVersion core.VersionString `json:"schemaVersion" yaml:"schemaVersion"`
 
 	// Version A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'.
-	Version corev1alpha1.SemverString `json:"version" yaml:"version"`
+	Version core.SemverString `json:"version" yaml:"version"`
 
 	// Name The unique name for the model within the scope of a registrant.
 	Name string `json:"name" yaml:"name"`
@@ -153,13 +153,13 @@ type ModelDefinition struct {
 	Status ModelDefinitionStatus `json:"status" yaml:"status"`
 
 	// CategoryId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	CategoryId corev1alpha1.Uuid `gorm:"categoryID" json:"-" yaml:"-"`
+	CategoryId core.Uuid `gorm:"categoryID" json:"-" yaml:"-"`
 
 	// Registrant Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
 	Registrant connectionv1beta1.Connection `gorm:"foreignKey:RegistrantId;references:ID" json:"registrant" yaml:"registrant"`
 
 	// RegistrantId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	RegistrantId corev1alpha1.Uuid `gorm:"column:connection_id" json:"connection_id" yaml:"connection_id"`
+	RegistrantId core.Uuid `gorm:"column:connection_id" json:"connection_id" yaml:"connection_id"`
 
 	// Category Category of the model.
 	Category categoryv1beta1.CategoryDefinition `gorm:"foreignKey:CategoryId;references:ID" json:"category" yaml:"category"`
@@ -180,10 +180,10 @@ type ModelDefinition struct {
 	RelationshipsCount int `gorm:"-" json:"relationships_count" yaml:"relationships_count"`
 
 	// CreatedAt Timestamp when the resource was created.
-	CreatedAt corev1alpha1.CreatedAt `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt core.CreatedAt `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
 
 	// UpdatedAt Timestamp when the resource was updated.
-	UpdatedAt     corev1alpha1.UpdatedAt `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	UpdatedAt     core.UpdatedAt `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 	Components    interface{}            `gorm:"-" json:"components" yaml:"components"`
 	Relationships interface{}            `gorm:"-" json:"relationships" yaml:"relationships"`
 }
@@ -219,7 +219,7 @@ type ModelDefinition_Metadata struct {
 	SvgComplete *string `json:"svgComplete" yaml:"svgComplete"`
 
 	// Shape The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
-	Shape                *corev1alpha1.Shape    `json:"shape,omitempty" yaml:"shape,omitempty"`
+	Shape                *core.Shape    `json:"shape,omitempty" yaml:"shape,omitempty"`
 	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
 }
 
@@ -229,7 +229,7 @@ type ModelReference struct {
 	DisplayName string `json:"displayName" yaml:"displayName"`
 
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID corev1alpha1.Uuid `json:"id" yaml:"id"`
+	ID core.Uuid `json:"id" yaml:"id"`
 
 	// Model Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).
 	Model Model `json:"model" yaml:"model"`
@@ -239,7 +239,7 @@ type ModelReference struct {
 	Registrant RegistrantReference `json:"registrant" yaml:"registrant"`
 
 	// Version A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'.
-	Version corev1alpha1.SemverString `json:"version" yaml:"version"`
+	Version core.SemverString `json:"version" yaml:"version"`
 }
 
 // RegistrantReference defines model for RegistrantReference.

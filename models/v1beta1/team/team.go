@@ -5,13 +5,12 @@ package team
 
 import (
 	"github.com/meshery/schemas/models/core"
-	corev1alpha1 "github.com/meshery/schemas/models/v1alpha1/core"
 )
 
 // Team A Team is a group of one or more users. Teams are often used as a grouping mechanism for assigning permissions, whether in the context of an organization, a workspace, or some other domain within Meshery. Learn more at https://docs.meshery.io/concepts/logical/teams
 type Team struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID corev1alpha1.Uuid `db:"id" json:"id" yaml:"id"`
+	ID core.Uuid `db:"id" json:"id" yaml:"id"`
 
 	// Name Team name
 	Name string `db:"name" json:"name" yaml:"name"`
@@ -20,15 +19,15 @@ type Team struct {
 	Description *string `db:"description" json:"description,omitempty" yaml:"description"`
 
 	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Owner *corev1alpha1.Uuid `db:"owner" json:"owner,omitempty" yaml:"owner"`
+	Owner *core.Uuid `db:"owner" json:"owner,omitempty" yaml:"owner"`
 
 	// Metadata Additional metadata for the team
 	Metadata  core.Map          `db:"metadata" json:"metadata,omitempty" yaml:"metadata"`
-	CreatedAt corev1alpha1.Time `db:"created_at" json:"created_at,omitempty" yaml:"created_at"`
-	UpdatedAt corev1alpha1.Time `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at"`
+	CreatedAt core.Time `db:"created_at" json:"created_at,omitempty" yaml:"created_at"`
+	UpdatedAt core.Time `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at"`
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt corev1alpha1.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at"`
+	DeletedAt core.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at"`
 }
 
 // TeamMember defines model for TeamMember.
@@ -44,54 +43,54 @@ type TeamMembersPage struct {
 
 // TeamPage Paginated list of teams
 type TeamPage struct {
-	Page       corev1alpha1.Number `json:"page,omitempty" yaml:"page,omitempty"`
-	PageSize   corev1alpha1.Number `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	Page       core.Number `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize   core.Number `json:"page_size,omitempty" yaml:"page_size,omitempty"`
 	Teams      []Team              `json:"teams,omitempty" yaml:"teams,omitempty"`
-	TotalCount corev1alpha1.Number `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+	TotalCount core.Number `json:"total_count,omitempty" yaml:"total_count,omitempty"`
 }
 
 // TeamPayload Payload for creating a new team
 type TeamPayload struct {
-	Description corev1alpha1.Text `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        corev1alpha1.Text `json:"name" yaml:"name"`
+	Description core.Text `json:"description,omitempty" yaml:"description,omitempty"`
+	Name        core.Text `json:"name" yaml:"name"`
 }
 
 // TeamUpdatePayload Payload for updating an existing team
 type TeamUpdatePayload struct {
-	Description corev1alpha1.Text `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        corev1alpha1.Text `json:"name,omitempty" yaml:"name,omitempty"`
+	Description core.Text `json:"description,omitempty" yaml:"description,omitempty"`
+	Name        core.Text `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
 // TeamsUsersMapping Mapping between teams and users
 type TeamsUsersMapping struct {
 	// CreatedAt Timestamp when the resource was created.
-	CreatedAt corev1alpha1.CreatedAt `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt core.CreatedAt `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt corev1alpha1.NullTime  `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
-	ID        corev1alpha1.GeneralId `db:"id" json:"id" yaml:"id"`
-	TeamId    corev1alpha1.TeamId    `db:"team_id" json:"team_id" yaml:"team_id"`
+	DeletedAt core.NullTime  `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	ID        core.GeneralId `db:"id" json:"id" yaml:"id"`
+	TeamId    core.TeamId    `db:"team_id" json:"team_id" yaml:"team_id"`
 
 	// UpdatedAt Timestamp when the resource was updated.
-	UpdatedAt corev1alpha1.UpdatedAt `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	UpdatedAt core.UpdatedAt `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 
 	// UserId user's email or username
-	UserId corev1alpha1.UserId `db:"user_id" json:"user_id,omitempty" yaml:"user_id,omitempty"`
+	UserId core.UserId `db:"user_id" json:"user_id,omitempty" yaml:"user_id,omitempty"`
 }
 
 // TeamsUsersMappingPage Paginated list of team-user mappings
 type TeamsUsersMappingPage struct {
-	Page              corev1alpha1.Number `json:"page,omitempty" yaml:"page,omitempty"`
-	PageSize          corev1alpha1.Number `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	Page              core.Number `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize          core.Number `json:"page_size,omitempty" yaml:"page_size,omitempty"`
 	TeamsUsersMapping []TeamsUsersMapping `json:"teamsUsersMapping,omitempty" yaml:"teamsUsersMapping,omitempty"`
-	TotalCount        corev1alpha1.Number `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+	TotalCount        core.Number `json:"total_count,omitempty" yaml:"total_count,omitempty"`
 }
 
 // Order defines model for order.
 type Order = string
 
 // OrgId defines model for orgId.
-type OrgId = corev1alpha1.OrganizationId
+type OrgId = core.OrganizationId
 
 // Page defines model for page.
 type Page = string
@@ -103,4 +102,4 @@ type Pagesize = string
 type Search = string
 
 // TeamId defines model for teamId.
-type TeamId = corev1alpha1.TeamId
+type TeamId = core.TeamId

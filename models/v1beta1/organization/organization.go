@@ -4,7 +4,7 @@
 package organization
 
 import (
-	corev1alpha1 "github.com/meshery/schemas/models/v1alpha1/core"
+	core "github.com/meshery/schemas/models/core"
 )
 
 // Defines values for OrgTeamActionPayloadAction.
@@ -43,7 +43,7 @@ type AvailableTeam struct {
 	CreatedAt   Time                   `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	DeletedAt   NullableTime           `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 	Description Text                   `json:"description,omitempty" yaml:"description,omitempty"`
-	ID          corev1alpha1.GeneralId `db:"id" json:"id" yaml:"id"`
+	ID          core.GeneralId `db:"id" json:"id" yaml:"id"`
 	Metadata    MapObject              `json:"metadata,omitempty" yaml:"metadata,omitempty"`
 	Name        Text                   `json:"name,omitempty" yaml:"name,omitempty"`
 	Owner       Text                   `json:"owner,omitempty" yaml:"owner,omitempty"`
@@ -68,10 +68,10 @@ type Logo struct {
 }
 
 // MapObject defines model for MapObject.
-type MapObject = corev1alpha1.MapObject
+type MapObject = core.MapObject
 
 // NullableTime defines model for NullableTime.
-type NullableTime = corev1alpha1.SqlNullTime
+type NullableTime = core.SqlNullTime
 
 // OrgMetadata defines model for OrgMetadata.
 type OrgMetadata struct {
@@ -143,9 +143,9 @@ type Preferences struct {
 type TeamsOrganizationsMapping struct {
 	CreatedAt Time                        `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	DeletedAt NullableTime                `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
-	ID        corev1alpha1.GeneralId      `db:"id" json:"id" yaml:"id"`
-	OrgId     corev1alpha1.OrganizationId `db:"org_id" json:"org_id" yaml:"org_id"`
-	TeamId    corev1alpha1.TeamId         `db:"team_id" json:"team_id" yaml:"team_id"`
+	ID        core.GeneralId      `db:"id" json:"id" yaml:"id"`
+	OrgId     core.OrganizationId `db:"org_id" json:"org_id" yaml:"org_id"`
+	TeamId    core.TeamId         `db:"team_id" json:"team_id" yaml:"team_id"`
 	UpdatedAt Time                        `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 }
 
@@ -166,7 +166,7 @@ type TeamsPage struct {
 }
 
 // Text defines model for Text.
-type Text = corev1alpha1.Text
+type Text = core.Text
 
 // Theme defines model for Theme.
 type Theme struct {
@@ -176,10 +176,10 @@ type Theme struct {
 }
 
 // Time defines model for Time.
-type Time = corev1alpha1.Time
+type Time = core.Time
 
 // UUID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-type UUID = corev1alpha1.Uuid
+type UUID = core.Uuid
 
 // All defines model for all.
 type All = bool
@@ -188,7 +188,7 @@ type All = bool
 type Order = string
 
 // OrgId defines model for orgId.
-type OrgId = corev1alpha1.OrganizationId
+type OrgId = core.OrganizationId
 
 // Page defines model for page.
 type Page = string
@@ -200,4 +200,4 @@ type Pagesize = string
 type Search = string
 
 // TeamId defines model for teamId.
-type TeamId = corev1alpha1.TeamId
+type TeamId = core.TeamId

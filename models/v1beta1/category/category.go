@@ -4,7 +4,7 @@
 package category
 
 import (
-	corev1alpha1 "github.com/meshery/schemas/models/v1alpha1/core"
+	core "github.com/meshery/schemas/models/core"
 )
 
 // Defines values for CategoryDefinitionName.
@@ -67,7 +67,7 @@ func (e CategoryDefinitionName) Valid() bool {
 // CategoryDefinition Category of the model.
 type CategoryDefinition struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID corev1alpha1.Uuid `json:"id" yaml:"id"`
+	ID core.Uuid `json:"id" yaml:"id"`
 
 	// Name The category of the model that determines the main grouping.
 	Name CategoryDefinitionName `gorm:"name" json:"name" yaml:"name"`

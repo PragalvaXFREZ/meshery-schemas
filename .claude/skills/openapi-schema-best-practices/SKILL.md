@@ -722,7 +722,7 @@ make
 
 ### What the validator enforces
 
-The validator (`build/validate-schemas.js`) checks 30 rules covering every naming convention, structural requirement, code-generation annotation, and API design principle. By default, violations fail the build (exit 1). Use `--warn` to report violations without failing (exit 0).
+The validator (`build/validate-schemas.js`) checks 34 rules covering every naming convention, structural requirement, code-generation annotation, template accuracy, and API design principle. By default, blocking violations fail the build (exit 1). Use `--warn` to report advisories without failing (exit 0). Deprecated constructs (`x-deprecated: true`) are skipped entirely.
 
 **Naming rules (1-11):**
 - `additionalProperties: false` on entity schemas
@@ -760,7 +760,13 @@ The validator (`build/validate-schemas.js`) checks 30 rules covering every namin
 - Duplicate schema structures across constructs detected (should use `$ref`)
 - Success response schemas with inline array items (3+ properties) should use `$ref`
 
-**DB-mirrored allowlist**: `created_at`, `updated_at`, `deleted_at`, `user_id`, `organization_id`, `environment_id`, `workspace_id`, `team_id`, `design_id`, `credential_id`, `connection_id`, `system_id`, `operation_id`, `view_id`, `general_id`, `avatar_url`, `accepted_terms_at`. Only these may use snake_case.
+**Additional rules (31-34):**
+- Response descriptions must not include the word "successfully"
+- DB-backed property names must exactly match snake_case db tags (also checks `gorm: column:` tags)
+- Pagination envelopes must use `page_size` and `total_count` (not `pageSize`/`totalCount`)
+- Template file values must match schema property types (Rule 34: catches `{}` where schema says `string`/`array`)
+
+**DB-mirrored allowlist**: `created_at`, `updated_at`, `deleted_at`, `user_id`, `org_id`, `organization_id`, `environment_id`, `workspace_id`, `team_id`, `design_id`, `credential_id`, `connection_id`, `system_id`, `operation_id`, `view_id`, `general_id`, `invite_id`, `content_id`, `badge_id`, `plan_id`, `access_expires_at`, `avatar_url`, `accepted_terms_at`. Only these may use snake_case.
 
 ## Related resources
 

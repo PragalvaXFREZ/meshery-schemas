@@ -146,6 +146,7 @@ const ModelSchema: Record<string, unknown> = {
                   "uploadType": {
                     "type": "string",
                     "title": "Upload method",
+                    "x-enum-casing-exempt": true,
                     "enum": [
                       "file",
                       "urlImport",
@@ -1149,7 +1150,7 @@ const ModelSchema: Record<string, unknown> = {
                       ],
                       "key": "",
                       "kind": "mutate",
-                      "schemaVersion": "capability.meshery.io/v1alpha1",
+                      "schemaVersion": "capability.meshery.io/v1beta1",
                       "status": "enabled",
                       "subType": "",
                       "type": "style",
@@ -1163,7 +1164,7 @@ const ModelSchema: Record<string, unknown> = {
                       ],
                       "key": "",
                       "kind": "mutate",
-                      "schemaVersion": "capability.meshery.io/v1alpha1",
+                      "schemaVersion": "capability.meshery.io/v1beta1",
                       "status": "enabled",
                       "subType": "shape",
                       "type": "style",
@@ -1177,7 +1178,7 @@ const ModelSchema: Record<string, unknown> = {
                       ],
                       "key": "",
                       "kind": "interaction",
-                      "schemaVersion": "capability.meshery.io/v1alpha1",
+                      "schemaVersion": "capability.meshery.io/v1beta1",
                       "status": "enabled",
                       "subType": "compoundDnd",
                       "type": "graph",
@@ -1191,7 +1192,7 @@ const ModelSchema: Record<string, unknown> = {
                       ],
                       "key": "",
                       "kind": "mutate",
-                      "schemaVersion": "capability.meshery.io/v1alpha1",
+                      "schemaVersion": "capability.meshery.io/v1beta1",
                       "status": "enabled",
                       "subType": "body-text",
                       "type": "style",
@@ -1626,6 +1627,7 @@ const ModelSchema: Record<string, unknown> = {
           "uploadType": {
             "type": "string",
             "title": "Upload method",
+            "x-enum-casing-exempt": true,
             "enum": [
               "file",
               "urlImport",

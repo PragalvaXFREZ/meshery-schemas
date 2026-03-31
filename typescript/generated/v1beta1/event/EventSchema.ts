@@ -8,6 +8,8 @@ const EventSchema: Record<string, unknown> = {
   "info": {
     "title": "Events",
     "description": "OpenAPI schema for Meshery events and system notifications.",
+    "x-deprecated": true,
+    "x-superseded-by": "v1beta2",
     "version": "v1beta1",
     "contact": {
       "name": "Meshery Maintainers",

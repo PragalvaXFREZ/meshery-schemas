@@ -8,6 +8,8 @@ const PatternSchema: Record<string, unknown> = {
   "info": {
     "title": "Design",
     "description": "OpenAPI schema for managing Meshery designs and infrastructure patterns.",
+    "x-deprecated": true,
+    "x-superseded-by": "v1beta2",
     "version": "v1beta1",
     "contact": {
       "name": "Meshery Maintainers",
@@ -149,12 +151,13 @@ const PatternSchema: Record<string, unknown> = {
                         "type": "object",
                         "properties": {
                           "catalogData": {
-                            "x-go-type": "catalogv1alpha2.CatalogData",
+                            "x-go-type": "catalogv1beta1.CatalogData",
                             "x-go-type-import": {
-                              "path": "github.com/meshery/schemas/models/v1alpha2/catalog",
-                              "name": "catalogv1alpha2"
+                              "path": "github.com/meshery/schemas/models/v1beta1/catalog",
+                              "name": "catalogv1beta1"
                             },
                             "type": "object",
+                            "additionalProperties": false,
                             "properties": {
                               "publishedVersion": {
                                 "description": "Tracks the specific content version that has been made available in the Catalog.",
@@ -316,10 +319,10 @@ const PatternSchema: Record<string, unknown> = {
                                   "resolvedAliases": {
                                     "description": "Map of resolved aliases present in the design",
                                     "type": "object",
-                                    "x-go-type": "map[string]corev1alpha1.ResolvedAlias",
+                                    "x-go-type": "map[string]core.ResolvedAlias",
                                     "x-go-type-import": {
-                                      "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                                      "name": "corev1alpha1"
+                                      "path": "github.com/meshery/schemas/models/core",
+                                      "name": "core"
                                     },
                                     "additionalProperties": {
                                       "description": "An resolved alias is an component that acts as an ref/pointer to a field in another component, resolvedAlias are aware of there immediate parents and completely resolved parents also",
@@ -1326,7 +1329,7 @@ const PatternSchema: Record<string, unknown> = {
                                                         ],
                                                         "key": "",
                                                         "kind": "mutate",
-                                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                                         "status": "enabled",
                                                         "subType": "",
                                                         "type": "style",
@@ -1340,7 +1343,7 @@ const PatternSchema: Record<string, unknown> = {
                                                         ],
                                                         "key": "",
                                                         "kind": "mutate",
-                                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                                         "status": "enabled",
                                                         "subType": "shape",
                                                         "type": "style",
@@ -1354,7 +1357,7 @@ const PatternSchema: Record<string, unknown> = {
                                                         ],
                                                         "key": "",
                                                         "kind": "interaction",
-                                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                                         "status": "enabled",
                                                         "subType": "compoundDnd",
                                                         "type": "graph",
@@ -1368,7 +1371,7 @@ const PatternSchema: Record<string, unknown> = {
                                                         ],
                                                         "key": "",
                                                         "kind": "mutate",
-                                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                                         "status": "enabled",
                                                         "subType": "body-text",
                                                         "type": "style",
@@ -1708,10 +1711,10 @@ const PatternSchema: Record<string, unknown> = {
                                             "yaml": "styles",
                                             "json": "styles"
                                           },
-                                          "x-go-type": "corev1alpha1.ComponentStyles",
+                                          "x-go-type": "core.ComponentStyles",
                                           "x-go-type-import": {
-                                            "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                                            "name": "corev1alpha1"
+                                            "path": "github.com/meshery/schemas/models/core",
+                                            "name": "core"
                                           },
                                           "x-order": 8,
                                           "type": "object",
@@ -2224,7 +2227,7 @@ const PatternSchema: Record<string, unknown> = {
                                                 ],
                                                 "key": "",
                                                 "kind": "mutate",
-                                                "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                "schemaVersion": "capability.meshery.io/v1beta1",
                                                 "status": "enabled",
                                                 "subType": "",
                                                 "type": "style",
@@ -2238,7 +2241,7 @@ const PatternSchema: Record<string, unknown> = {
                                                 ],
                                                 "key": "",
                                                 "kind": "mutate",
-                                                "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                "schemaVersion": "capability.meshery.io/v1beta1",
                                                 "status": "enabled",
                                                 "subType": "shape",
                                                 "type": "style",
@@ -2252,7 +2255,7 @@ const PatternSchema: Record<string, unknown> = {
                                                 ],
                                                 "key": "",
                                                 "kind": "interaction",
-                                                "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                "schemaVersion": "capability.meshery.io/v1beta1",
                                                 "status": "enabled",
                                                 "subType": "compoundDnd",
                                                 "type": "graph",
@@ -2266,7 +2269,7 @@ const PatternSchema: Record<string, unknown> = {
                                                 ],
                                                 "key": "",
                                                 "kind": "mutate",
-                                                "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                "schemaVersion": "capability.meshery.io/v1beta1",
                                                 "status": "enabled",
                                                 "subType": "body-text",
                                                 "type": "style",
@@ -2281,7 +2284,7 @@ const PatternSchema: Record<string, unknown> = {
                                           },
                                           "default": [
                                             {
-                                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                                              "schemaVersion": "capability.meshery.io/v1beta1",
                                               "version": "0.7.0",
                                               "displayName": "Performance Test",
                                               "description": "Initiate a performance test. Meshery will execute the load generation, collect metrics, and present the results.",
@@ -2296,7 +2299,7 @@ const PatternSchema: Record<string, unknown> = {
                                               "metadata": null
                                             },
                                             {
-                                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                                              "schemaVersion": "capability.meshery.io/v1beta1",
                                               "version": "0.7.0",
                                               "displayName": "Workload Configuration",
                                               "description": "Configure the workload specific setting of a component",
@@ -2311,7 +2314,7 @@ const PatternSchema: Record<string, unknown> = {
                                               "metadata": null
                                             },
                                             {
-                                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                                              "schemaVersion": "capability.meshery.io/v1beta1",
                                               "version": "0.7.0",
                                               "displayName": "Labels and Annotations Configuration",
                                               "description": "Configure Labels And Annotations for  the component ",
@@ -2326,7 +2329,7 @@ const PatternSchema: Record<string, unknown> = {
                                               "metadata": null
                                             },
                                             {
-                                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                                              "schemaVersion": "capability.meshery.io/v1beta1",
                                               "version": "0.7.0",
                                               "displayName": "Relationships",
                                               "description": "View relationships for the component",
@@ -2342,7 +2345,7 @@ const PatternSchema: Record<string, unknown> = {
                                               "metadata": null
                                             },
                                             {
-                                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                                              "schemaVersion": "capability.meshery.io/v1beta1",
                                               "version": "0.7.0",
                                               "displayName": "Json Schema",
                                               "description": "View Component Definition ",
@@ -2358,7 +2361,7 @@ const PatternSchema: Record<string, unknown> = {
                                               "metadata": null
                                             },
                                             {
-                                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                                              "schemaVersion": "capability.meshery.io/v1beta1",
                                               "version": "0.7.0",
                                               "displayName": "Styling",
                                               "description": "Configure the visual styles for the component",
@@ -2373,7 +2376,7 @@ const PatternSchema: Record<string, unknown> = {
                                               "metadata": null
                                             },
                                             {
-                                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                                              "schemaVersion": "capability.meshery.io/v1beta1",
                                               "version": "0.7.0",
                                               "displayName": "Change Shape",
                                               "description": "Change the shape of the component",
@@ -2388,7 +2391,7 @@ const PatternSchema: Record<string, unknown> = {
                                               "metadata": null
                                             },
                                             {
-                                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                                              "schemaVersion": "capability.meshery.io/v1beta1",
                                               "version": "0.7.0",
                                               "displayName": "Compound Drag And Drop",
                                               "description": "Drag and Drop a component into a parent component in graph view",
@@ -2698,9 +2701,9 @@ const PatternSchema: Record<string, unknown> = {
                                           "description": "Capabilities associated with the relationship.",
                                           "x-order": 2,
                                           "items": {
-                                            "x-go-type": "capabilityv1alpha1.Capability",
+                                            "x-go-type": "capabilityv1beta1.Capability",
                                             "x-go-type-import": {
-                                              "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                              "path": "github.com/meshery/schemas/models/v1beta1/capability",
                                               "name": "capabilityv1alpha1"
                                             },
                                             "$id": "https://schemas.meshery.io/capability.yaml",
@@ -2831,7 +2834,7 @@ const PatternSchema: Record<string, unknown> = {
                                                 ],
                                                 "key": "",
                                                 "kind": "mutate",
-                                                "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                "schemaVersion": "capability.meshery.io/v1beta1",
                                                 "status": "enabled",
                                                 "subType": "",
                                                 "type": "style",
@@ -2845,7 +2848,7 @@ const PatternSchema: Record<string, unknown> = {
                                                 ],
                                                 "key": "",
                                                 "kind": "mutate",
-                                                "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                "schemaVersion": "capability.meshery.io/v1beta1",
                                                 "status": "enabled",
                                                 "subType": "shape",
                                                 "type": "style",
@@ -2859,7 +2862,7 @@ const PatternSchema: Record<string, unknown> = {
                                                 ],
                                                 "key": "",
                                                 "kind": "interaction",
-                                                "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                "schemaVersion": "capability.meshery.io/v1beta1",
                                                 "status": "enabled",
                                                 "subType": "compoundDnd",
                                                 "type": "graph",
@@ -2873,7 +2876,7 @@ const PatternSchema: Record<string, unknown> = {
                                                 ],
                                                 "key": "",
                                                 "kind": "mutate",
-                                                "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                "schemaVersion": "capability.meshery.io/v1beta1",
                                                 "status": "enabled",
                                                 "subType": "body-text",
                                                 "type": "style",
@@ -4942,12 +4945,13 @@ const PatternSchema: Record<string, unknown> = {
                     "type": "object",
                     "properties": {
                       "catalogData": {
-                        "x-go-type": "catalogv1alpha2.CatalogData",
+                        "x-go-type": "catalogv1beta1.CatalogData",
                         "x-go-type-import": {
-                          "path": "github.com/meshery/schemas/models/v1alpha2/catalog",
-                          "name": "catalogv1alpha2"
+                          "path": "github.com/meshery/schemas/models/v1beta1/catalog",
+                          "name": "catalogv1beta1"
                         },
                         "type": "object",
+                        "additionalProperties": false,
                         "properties": {
                           "publishedVersion": {
                             "description": "Tracks the specific content version that has been made available in the Catalog.",
@@ -5109,10 +5113,10 @@ const PatternSchema: Record<string, unknown> = {
                               "resolvedAliases": {
                                 "description": "Map of resolved aliases present in the design",
                                 "type": "object",
-                                "x-go-type": "map[string]corev1alpha1.ResolvedAlias",
+                                "x-go-type": "map[string]core.ResolvedAlias",
                                 "x-go-type-import": {
-                                  "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                                  "name": "corev1alpha1"
+                                  "path": "github.com/meshery/schemas/models/core",
+                                  "name": "core"
                                 },
                                 "additionalProperties": {
                                   "description": "An resolved alias is an component that acts as an ref/pointer to a field in another component, resolvedAlias are aware of there immediate parents and completely resolved parents also",
@@ -6119,7 +6123,7 @@ const PatternSchema: Record<string, unknown> = {
                                                     ],
                                                     "key": "",
                                                     "kind": "mutate",
-                                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                                     "status": "enabled",
                                                     "subType": "",
                                                     "type": "style",
@@ -6133,7 +6137,7 @@ const PatternSchema: Record<string, unknown> = {
                                                     ],
                                                     "key": "",
                                                     "kind": "mutate",
-                                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                                     "status": "enabled",
                                                     "subType": "shape",
                                                     "type": "style",
@@ -6147,7 +6151,7 @@ const PatternSchema: Record<string, unknown> = {
                                                     ],
                                                     "key": "",
                                                     "kind": "interaction",
-                                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                                     "status": "enabled",
                                                     "subType": "compoundDnd",
                                                     "type": "graph",
@@ -6161,7 +6165,7 @@ const PatternSchema: Record<string, unknown> = {
                                                     ],
                                                     "key": "",
                                                     "kind": "mutate",
-                                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                                     "status": "enabled",
                                                     "subType": "body-text",
                                                     "type": "style",
@@ -6501,10 +6505,10 @@ const PatternSchema: Record<string, unknown> = {
                                         "yaml": "styles",
                                         "json": "styles"
                                       },
-                                      "x-go-type": "corev1alpha1.ComponentStyles",
+                                      "x-go-type": "core.ComponentStyles",
                                       "x-go-type-import": {
-                                        "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                                        "name": "corev1alpha1"
+                                        "path": "github.com/meshery/schemas/models/core",
+                                        "name": "core"
                                       },
                                       "x-order": 8,
                                       "type": "object",
@@ -7017,7 +7021,7 @@ const PatternSchema: Record<string, unknown> = {
                                             ],
                                             "key": "",
                                             "kind": "mutate",
-                                            "schemaVersion": "capability.meshery.io/v1alpha1",
+                                            "schemaVersion": "capability.meshery.io/v1beta1",
                                             "status": "enabled",
                                             "subType": "",
                                             "type": "style",
@@ -7031,7 +7035,7 @@ const PatternSchema: Record<string, unknown> = {
                                             ],
                                             "key": "",
                                             "kind": "mutate",
-                                            "schemaVersion": "capability.meshery.io/v1alpha1",
+                                            "schemaVersion": "capability.meshery.io/v1beta1",
                                             "status": "enabled",
                                             "subType": "shape",
                                             "type": "style",
@@ -7045,7 +7049,7 @@ const PatternSchema: Record<string, unknown> = {
                                             ],
                                             "key": "",
                                             "kind": "interaction",
-                                            "schemaVersion": "capability.meshery.io/v1alpha1",
+                                            "schemaVersion": "capability.meshery.io/v1beta1",
                                             "status": "enabled",
                                             "subType": "compoundDnd",
                                             "type": "graph",
@@ -7059,7 +7063,7 @@ const PatternSchema: Record<string, unknown> = {
                                             ],
                                             "key": "",
                                             "kind": "mutate",
-                                            "schemaVersion": "capability.meshery.io/v1alpha1",
+                                            "schemaVersion": "capability.meshery.io/v1beta1",
                                             "status": "enabled",
                                             "subType": "body-text",
                                             "type": "style",
@@ -7074,7 +7078,7 @@ const PatternSchema: Record<string, unknown> = {
                                       },
                                       "default": [
                                         {
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "version": "0.7.0",
                                           "displayName": "Performance Test",
                                           "description": "Initiate a performance test. Meshery will execute the load generation, collect metrics, and present the results.",
@@ -7089,7 +7093,7 @@ const PatternSchema: Record<string, unknown> = {
                                           "metadata": null
                                         },
                                         {
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "version": "0.7.0",
                                           "displayName": "Workload Configuration",
                                           "description": "Configure the workload specific setting of a component",
@@ -7104,7 +7108,7 @@ const PatternSchema: Record<string, unknown> = {
                                           "metadata": null
                                         },
                                         {
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "version": "0.7.0",
                                           "displayName": "Labels and Annotations Configuration",
                                           "description": "Configure Labels And Annotations for  the component ",
@@ -7119,7 +7123,7 @@ const PatternSchema: Record<string, unknown> = {
                                           "metadata": null
                                         },
                                         {
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "version": "0.7.0",
                                           "displayName": "Relationships",
                                           "description": "View relationships for the component",
@@ -7135,7 +7139,7 @@ const PatternSchema: Record<string, unknown> = {
                                           "metadata": null
                                         },
                                         {
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "version": "0.7.0",
                                           "displayName": "Json Schema",
                                           "description": "View Component Definition ",
@@ -7151,7 +7155,7 @@ const PatternSchema: Record<string, unknown> = {
                                           "metadata": null
                                         },
                                         {
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "version": "0.7.0",
                                           "displayName": "Styling",
                                           "description": "Configure the visual styles for the component",
@@ -7166,7 +7170,7 @@ const PatternSchema: Record<string, unknown> = {
                                           "metadata": null
                                         },
                                         {
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "version": "0.7.0",
                                           "displayName": "Change Shape",
                                           "description": "Change the shape of the component",
@@ -7181,7 +7185,7 @@ const PatternSchema: Record<string, unknown> = {
                                           "metadata": null
                                         },
                                         {
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "version": "0.7.0",
                                           "displayName": "Compound Drag And Drop",
                                           "description": "Drag and Drop a component into a parent component in graph view",
@@ -7491,9 +7495,9 @@ const PatternSchema: Record<string, unknown> = {
                                       "description": "Capabilities associated with the relationship.",
                                       "x-order": 2,
                                       "items": {
-                                        "x-go-type": "capabilityv1alpha1.Capability",
+                                        "x-go-type": "capabilityv1beta1.Capability",
                                         "x-go-type-import": {
-                                          "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                          "path": "github.com/meshery/schemas/models/v1beta1/capability",
                                           "name": "capabilityv1alpha1"
                                         },
                                         "$id": "https://schemas.meshery.io/capability.yaml",
@@ -7624,7 +7628,7 @@ const PatternSchema: Record<string, unknown> = {
                                             ],
                                             "key": "",
                                             "kind": "mutate",
-                                            "schemaVersion": "capability.meshery.io/v1alpha1",
+                                            "schemaVersion": "capability.meshery.io/v1beta1",
                                             "status": "enabled",
                                             "subType": "",
                                             "type": "style",
@@ -7638,7 +7642,7 @@ const PatternSchema: Record<string, unknown> = {
                                             ],
                                             "key": "",
                                             "kind": "mutate",
-                                            "schemaVersion": "capability.meshery.io/v1alpha1",
+                                            "schemaVersion": "capability.meshery.io/v1beta1",
                                             "status": "enabled",
                                             "subType": "shape",
                                             "type": "style",
@@ -7652,7 +7656,7 @@ const PatternSchema: Record<string, unknown> = {
                                             ],
                                             "key": "",
                                             "kind": "interaction",
-                                            "schemaVersion": "capability.meshery.io/v1alpha1",
+                                            "schemaVersion": "capability.meshery.io/v1beta1",
                                             "status": "enabled",
                                             "subType": "compoundDnd",
                                             "type": "graph",
@@ -7666,7 +7670,7 @@ const PatternSchema: Record<string, unknown> = {
                                             ],
                                             "key": "",
                                             "kind": "mutate",
-                                            "schemaVersion": "capability.meshery.io/v1alpha1",
+                                            "schemaVersion": "capability.meshery.io/v1beta1",
                                             "status": "enabled",
                                             "subType": "body-text",
                                             "type": "style",
@@ -9702,12 +9706,13 @@ const PatternSchema: Record<string, unknown> = {
                   "type": "object",
                   "properties": {
                     "catalogData": {
-                      "x-go-type": "catalogv1alpha2.CatalogData",
+                      "x-go-type": "catalogv1beta1.CatalogData",
                       "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/v1alpha2/catalog",
-                        "name": "catalogv1alpha2"
+                        "path": "github.com/meshery/schemas/models/v1beta1/catalog",
+                        "name": "catalogv1beta1"
                       },
                       "type": "object",
+                      "additionalProperties": false,
                       "properties": {
                         "publishedVersion": {
                           "description": "Tracks the specific content version that has been made available in the Catalog.",
@@ -9869,10 +9874,10 @@ const PatternSchema: Record<string, unknown> = {
                             "resolvedAliases": {
                               "description": "Map of resolved aliases present in the design",
                               "type": "object",
-                              "x-go-type": "map[string]corev1alpha1.ResolvedAlias",
+                              "x-go-type": "map[string]core.ResolvedAlias",
                               "x-go-type-import": {
-                                "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                                "name": "corev1alpha1"
+                                "path": "github.com/meshery/schemas/models/core",
+                                "name": "core"
                               },
                               "additionalProperties": {
                                 "description": "An resolved alias is an component that acts as an ref/pointer to a field in another component, resolvedAlias are aware of there immediate parents and completely resolved parents also",
@@ -10879,7 +10884,7 @@ const PatternSchema: Record<string, unknown> = {
                                                   ],
                                                   "key": "",
                                                   "kind": "mutate",
-                                                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                  "schemaVersion": "capability.meshery.io/v1beta1",
                                                   "status": "enabled",
                                                   "subType": "",
                                                   "type": "style",
@@ -10893,7 +10898,7 @@ const PatternSchema: Record<string, unknown> = {
                                                   ],
                                                   "key": "",
                                                   "kind": "mutate",
-                                                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                  "schemaVersion": "capability.meshery.io/v1beta1",
                                                   "status": "enabled",
                                                   "subType": "shape",
                                                   "type": "style",
@@ -10907,7 +10912,7 @@ const PatternSchema: Record<string, unknown> = {
                                                   ],
                                                   "key": "",
                                                   "kind": "interaction",
-                                                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                  "schemaVersion": "capability.meshery.io/v1beta1",
                                                   "status": "enabled",
                                                   "subType": "compoundDnd",
                                                   "type": "graph",
@@ -10921,7 +10926,7 @@ const PatternSchema: Record<string, unknown> = {
                                                   ],
                                                   "key": "",
                                                   "kind": "mutate",
-                                                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                  "schemaVersion": "capability.meshery.io/v1beta1",
                                                   "status": "enabled",
                                                   "subType": "body-text",
                                                   "type": "style",
@@ -11261,10 +11266,10 @@ const PatternSchema: Record<string, unknown> = {
                                       "yaml": "styles",
                                       "json": "styles"
                                     },
-                                    "x-go-type": "corev1alpha1.ComponentStyles",
+                                    "x-go-type": "core.ComponentStyles",
                                     "x-go-type-import": {
-                                      "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                                      "name": "corev1alpha1"
+                                      "path": "github.com/meshery/schemas/models/core",
+                                      "name": "core"
                                     },
                                     "x-order": 8,
                                     "type": "object",
@@ -11777,7 +11782,7 @@ const PatternSchema: Record<string, unknown> = {
                                           ],
                                           "key": "",
                                           "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "status": "enabled",
                                           "subType": "",
                                           "type": "style",
@@ -11791,7 +11796,7 @@ const PatternSchema: Record<string, unknown> = {
                                           ],
                                           "key": "",
                                           "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "status": "enabled",
                                           "subType": "shape",
                                           "type": "style",
@@ -11805,7 +11810,7 @@ const PatternSchema: Record<string, unknown> = {
                                           ],
                                           "key": "",
                                           "kind": "interaction",
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "status": "enabled",
                                           "subType": "compoundDnd",
                                           "type": "graph",
@@ -11819,7 +11824,7 @@ const PatternSchema: Record<string, unknown> = {
                                           ],
                                           "key": "",
                                           "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "status": "enabled",
                                           "subType": "body-text",
                                           "type": "style",
@@ -11834,7 +11839,7 @@ const PatternSchema: Record<string, unknown> = {
                                     },
                                     "default": [
                                       {
-                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                         "version": "0.7.0",
                                         "displayName": "Performance Test",
                                         "description": "Initiate a performance test. Meshery will execute the load generation, collect metrics, and present the results.",
@@ -11849,7 +11854,7 @@ const PatternSchema: Record<string, unknown> = {
                                         "metadata": null
                                       },
                                       {
-                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                         "version": "0.7.0",
                                         "displayName": "Workload Configuration",
                                         "description": "Configure the workload specific setting of a component",
@@ -11864,7 +11869,7 @@ const PatternSchema: Record<string, unknown> = {
                                         "metadata": null
                                       },
                                       {
-                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                         "version": "0.7.0",
                                         "displayName": "Labels and Annotations Configuration",
                                         "description": "Configure Labels And Annotations for  the component ",
@@ -11879,7 +11884,7 @@ const PatternSchema: Record<string, unknown> = {
                                         "metadata": null
                                       },
                                       {
-                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                         "version": "0.7.0",
                                         "displayName": "Relationships",
                                         "description": "View relationships for the component",
@@ -11895,7 +11900,7 @@ const PatternSchema: Record<string, unknown> = {
                                         "metadata": null
                                       },
                                       {
-                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                         "version": "0.7.0",
                                         "displayName": "Json Schema",
                                         "description": "View Component Definition ",
@@ -11911,7 +11916,7 @@ const PatternSchema: Record<string, unknown> = {
                                         "metadata": null
                                       },
                                       {
-                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                         "version": "0.7.0",
                                         "displayName": "Styling",
                                         "description": "Configure the visual styles for the component",
@@ -11926,7 +11931,7 @@ const PatternSchema: Record<string, unknown> = {
                                         "metadata": null
                                       },
                                       {
-                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                         "version": "0.7.0",
                                         "displayName": "Change Shape",
                                         "description": "Change the shape of the component",
@@ -11941,7 +11946,7 @@ const PatternSchema: Record<string, unknown> = {
                                         "metadata": null
                                       },
                                       {
-                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                         "version": "0.7.0",
                                         "displayName": "Compound Drag And Drop",
                                         "description": "Drag and Drop a component into a parent component in graph view",
@@ -12251,9 +12256,9 @@ const PatternSchema: Record<string, unknown> = {
                                     "description": "Capabilities associated with the relationship.",
                                     "x-order": 2,
                                     "items": {
-                                      "x-go-type": "capabilityv1alpha1.Capability",
+                                      "x-go-type": "capabilityv1beta1.Capability",
                                       "x-go-type-import": {
-                                        "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                        "path": "github.com/meshery/schemas/models/v1beta1/capability",
                                         "name": "capabilityv1alpha1"
                                       },
                                       "$id": "https://schemas.meshery.io/capability.yaml",
@@ -12384,7 +12389,7 @@ const PatternSchema: Record<string, unknown> = {
                                           ],
                                           "key": "",
                                           "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "status": "enabled",
                                           "subType": "",
                                           "type": "style",
@@ -12398,7 +12403,7 @@ const PatternSchema: Record<string, unknown> = {
                                           ],
                                           "key": "",
                                           "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "status": "enabled",
                                           "subType": "shape",
                                           "type": "style",
@@ -12412,7 +12417,7 @@ const PatternSchema: Record<string, unknown> = {
                                           ],
                                           "key": "",
                                           "kind": "interaction",
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "status": "enabled",
                                           "subType": "compoundDnd",
                                           "type": "graph",
@@ -12426,7 +12431,7 @@ const PatternSchema: Record<string, unknown> = {
                                           ],
                                           "key": "",
                                           "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "status": "enabled",
                                           "subType": "body-text",
                                           "type": "style",
@@ -14833,12 +14838,13 @@ const PatternSchema: Record<string, unknown> = {
                   "type": "object",
                   "properties": {
                     "catalogData": {
-                      "x-go-type": "catalogv1alpha2.CatalogData",
+                      "x-go-type": "catalogv1beta1.CatalogData",
                       "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/v1alpha2/catalog",
-                        "name": "catalogv1alpha2"
+                        "path": "github.com/meshery/schemas/models/v1beta1/catalog",
+                        "name": "catalogv1beta1"
                       },
                       "type": "object",
+                      "additionalProperties": false,
                       "properties": {
                         "publishedVersion": {
                           "description": "Tracks the specific content version that has been made available in the Catalog.",
@@ -15000,10 +15006,10 @@ const PatternSchema: Record<string, unknown> = {
                             "resolvedAliases": {
                               "description": "Map of resolved aliases present in the design",
                               "type": "object",
-                              "x-go-type": "map[string]corev1alpha1.ResolvedAlias",
+                              "x-go-type": "map[string]core.ResolvedAlias",
                               "x-go-type-import": {
-                                "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                                "name": "corev1alpha1"
+                                "path": "github.com/meshery/schemas/models/core",
+                                "name": "core"
                               },
                               "additionalProperties": {
                                 "description": "An resolved alias is an component that acts as an ref/pointer to a field in another component, resolvedAlias are aware of there immediate parents and completely resolved parents also",
@@ -16010,7 +16016,7 @@ const PatternSchema: Record<string, unknown> = {
                                                   ],
                                                   "key": "",
                                                   "kind": "mutate",
-                                                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                  "schemaVersion": "capability.meshery.io/v1beta1",
                                                   "status": "enabled",
                                                   "subType": "",
                                                   "type": "style",
@@ -16024,7 +16030,7 @@ const PatternSchema: Record<string, unknown> = {
                                                   ],
                                                   "key": "",
                                                   "kind": "mutate",
-                                                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                  "schemaVersion": "capability.meshery.io/v1beta1",
                                                   "status": "enabled",
                                                   "subType": "shape",
                                                   "type": "style",
@@ -16038,7 +16044,7 @@ const PatternSchema: Record<string, unknown> = {
                                                   ],
                                                   "key": "",
                                                   "kind": "interaction",
-                                                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                  "schemaVersion": "capability.meshery.io/v1beta1",
                                                   "status": "enabled",
                                                   "subType": "compoundDnd",
                                                   "type": "graph",
@@ -16052,7 +16058,7 @@ const PatternSchema: Record<string, unknown> = {
                                                   ],
                                                   "key": "",
                                                   "kind": "mutate",
-                                                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                  "schemaVersion": "capability.meshery.io/v1beta1",
                                                   "status": "enabled",
                                                   "subType": "body-text",
                                                   "type": "style",
@@ -16392,10 +16398,10 @@ const PatternSchema: Record<string, unknown> = {
                                       "yaml": "styles",
                                       "json": "styles"
                                     },
-                                    "x-go-type": "corev1alpha1.ComponentStyles",
+                                    "x-go-type": "core.ComponentStyles",
                                     "x-go-type-import": {
-                                      "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                                      "name": "corev1alpha1"
+                                      "path": "github.com/meshery/schemas/models/core",
+                                      "name": "core"
                                     },
                                     "x-order": 8,
                                     "type": "object",
@@ -16908,7 +16914,7 @@ const PatternSchema: Record<string, unknown> = {
                                           ],
                                           "key": "",
                                           "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "status": "enabled",
                                           "subType": "",
                                           "type": "style",
@@ -16922,7 +16928,7 @@ const PatternSchema: Record<string, unknown> = {
                                           ],
                                           "key": "",
                                           "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "status": "enabled",
                                           "subType": "shape",
                                           "type": "style",
@@ -16936,7 +16942,7 @@ const PatternSchema: Record<string, unknown> = {
                                           ],
                                           "key": "",
                                           "kind": "interaction",
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "status": "enabled",
                                           "subType": "compoundDnd",
                                           "type": "graph",
@@ -16950,7 +16956,7 @@ const PatternSchema: Record<string, unknown> = {
                                           ],
                                           "key": "",
                                           "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "status": "enabled",
                                           "subType": "body-text",
                                           "type": "style",
@@ -16965,7 +16971,7 @@ const PatternSchema: Record<string, unknown> = {
                                     },
                                     "default": [
                                       {
-                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                         "version": "0.7.0",
                                         "displayName": "Performance Test",
                                         "description": "Initiate a performance test. Meshery will execute the load generation, collect metrics, and present the results.",
@@ -16980,7 +16986,7 @@ const PatternSchema: Record<string, unknown> = {
                                         "metadata": null
                                       },
                                       {
-                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                         "version": "0.7.0",
                                         "displayName": "Workload Configuration",
                                         "description": "Configure the workload specific setting of a component",
@@ -16995,7 +17001,7 @@ const PatternSchema: Record<string, unknown> = {
                                         "metadata": null
                                       },
                                       {
-                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                         "version": "0.7.0",
                                         "displayName": "Labels and Annotations Configuration",
                                         "description": "Configure Labels And Annotations for  the component ",
@@ -17010,7 +17016,7 @@ const PatternSchema: Record<string, unknown> = {
                                         "metadata": null
                                       },
                                       {
-                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                         "version": "0.7.0",
                                         "displayName": "Relationships",
                                         "description": "View relationships for the component",
@@ -17026,7 +17032,7 @@ const PatternSchema: Record<string, unknown> = {
                                         "metadata": null
                                       },
                                       {
-                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                         "version": "0.7.0",
                                         "displayName": "Json Schema",
                                         "description": "View Component Definition ",
@@ -17042,7 +17048,7 @@ const PatternSchema: Record<string, unknown> = {
                                         "metadata": null
                                       },
                                       {
-                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                         "version": "0.7.0",
                                         "displayName": "Styling",
                                         "description": "Configure the visual styles for the component",
@@ -17057,7 +17063,7 @@ const PatternSchema: Record<string, unknown> = {
                                         "metadata": null
                                       },
                                       {
-                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                         "version": "0.7.0",
                                         "displayName": "Change Shape",
                                         "description": "Change the shape of the component",
@@ -17072,7 +17078,7 @@ const PatternSchema: Record<string, unknown> = {
                                         "metadata": null
                                       },
                                       {
-                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                         "version": "0.7.0",
                                         "displayName": "Compound Drag And Drop",
                                         "description": "Drag and Drop a component into a parent component in graph view",
@@ -17382,9 +17388,9 @@ const PatternSchema: Record<string, unknown> = {
                                     "description": "Capabilities associated with the relationship.",
                                     "x-order": 2,
                                     "items": {
-                                      "x-go-type": "capabilityv1alpha1.Capability",
+                                      "x-go-type": "capabilityv1beta1.Capability",
                                       "x-go-type-import": {
-                                        "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                        "path": "github.com/meshery/schemas/models/v1beta1/capability",
                                         "name": "capabilityv1alpha1"
                                       },
                                       "$id": "https://schemas.meshery.io/capability.yaml",
@@ -17515,7 +17521,7 @@ const PatternSchema: Record<string, unknown> = {
                                           ],
                                           "key": "",
                                           "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "status": "enabled",
                                           "subType": "",
                                           "type": "style",
@@ -17529,7 +17535,7 @@ const PatternSchema: Record<string, unknown> = {
                                           ],
                                           "key": "",
                                           "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "status": "enabled",
                                           "subType": "shape",
                                           "type": "style",
@@ -17543,7 +17549,7 @@ const PatternSchema: Record<string, unknown> = {
                                           ],
                                           "key": "",
                                           "kind": "interaction",
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "status": "enabled",
                                           "subType": "compoundDnd",
                                           "type": "graph",
@@ -17557,7 +17563,7 @@ const PatternSchema: Record<string, unknown> = {
                                           ],
                                           "key": "",
                                           "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "status": "enabled",
                                           "subType": "body-text",
                                           "type": "style",
@@ -19701,12 +19707,13 @@ const PatternSchema: Record<string, unknown> = {
                   "type": "object",
                   "properties": {
                     "catalogData": {
-                      "x-go-type": "catalogv1alpha2.CatalogData",
+                      "x-go-type": "catalogv1beta1.CatalogData",
                       "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/v1alpha2/catalog",
-                        "name": "catalogv1alpha2"
+                        "path": "github.com/meshery/schemas/models/v1beta1/catalog",
+                        "name": "catalogv1beta1"
                       },
                       "type": "object",
+                      "additionalProperties": false,
                       "properties": {
                         "publishedVersion": {
                           "description": "Tracks the specific content version that has been made available in the Catalog.",
@@ -19868,10 +19875,10 @@ const PatternSchema: Record<string, unknown> = {
                             "resolvedAliases": {
                               "description": "Map of resolved aliases present in the design",
                               "type": "object",
-                              "x-go-type": "map[string]corev1alpha1.ResolvedAlias",
+                              "x-go-type": "map[string]core.ResolvedAlias",
                               "x-go-type-import": {
-                                "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                                "name": "corev1alpha1"
+                                "path": "github.com/meshery/schemas/models/core",
+                                "name": "core"
                               },
                               "additionalProperties": {
                                 "description": "An resolved alias is an component that acts as an ref/pointer to a field in another component, resolvedAlias are aware of there immediate parents and completely resolved parents also",
@@ -20878,7 +20885,7 @@ const PatternSchema: Record<string, unknown> = {
                                                   ],
                                                   "key": "",
                                                   "kind": "mutate",
-                                                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                  "schemaVersion": "capability.meshery.io/v1beta1",
                                                   "status": "enabled",
                                                   "subType": "",
                                                   "type": "style",
@@ -20892,7 +20899,7 @@ const PatternSchema: Record<string, unknown> = {
                                                   ],
                                                   "key": "",
                                                   "kind": "mutate",
-                                                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                  "schemaVersion": "capability.meshery.io/v1beta1",
                                                   "status": "enabled",
                                                   "subType": "shape",
                                                   "type": "style",
@@ -20906,7 +20913,7 @@ const PatternSchema: Record<string, unknown> = {
                                                   ],
                                                   "key": "",
                                                   "kind": "interaction",
-                                                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                  "schemaVersion": "capability.meshery.io/v1beta1",
                                                   "status": "enabled",
                                                   "subType": "compoundDnd",
                                                   "type": "graph",
@@ -20920,7 +20927,7 @@ const PatternSchema: Record<string, unknown> = {
                                                   ],
                                                   "key": "",
                                                   "kind": "mutate",
-                                                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                  "schemaVersion": "capability.meshery.io/v1beta1",
                                                   "status": "enabled",
                                                   "subType": "body-text",
                                                   "type": "style",
@@ -21260,10 +21267,10 @@ const PatternSchema: Record<string, unknown> = {
                                       "yaml": "styles",
                                       "json": "styles"
                                     },
-                                    "x-go-type": "corev1alpha1.ComponentStyles",
+                                    "x-go-type": "core.ComponentStyles",
                                     "x-go-type-import": {
-                                      "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                                      "name": "corev1alpha1"
+                                      "path": "github.com/meshery/schemas/models/core",
+                                      "name": "core"
                                     },
                                     "x-order": 8,
                                     "type": "object",
@@ -21776,7 +21783,7 @@ const PatternSchema: Record<string, unknown> = {
                                           ],
                                           "key": "",
                                           "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "status": "enabled",
                                           "subType": "",
                                           "type": "style",
@@ -21790,7 +21797,7 @@ const PatternSchema: Record<string, unknown> = {
                                           ],
                                           "key": "",
                                           "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "status": "enabled",
                                           "subType": "shape",
                                           "type": "style",
@@ -21804,7 +21811,7 @@ const PatternSchema: Record<string, unknown> = {
                                           ],
                                           "key": "",
                                           "kind": "interaction",
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "status": "enabled",
                                           "subType": "compoundDnd",
                                           "type": "graph",
@@ -21818,7 +21825,7 @@ const PatternSchema: Record<string, unknown> = {
                                           ],
                                           "key": "",
                                           "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "status": "enabled",
                                           "subType": "body-text",
                                           "type": "style",
@@ -21833,7 +21840,7 @@ const PatternSchema: Record<string, unknown> = {
                                     },
                                     "default": [
                                       {
-                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                         "version": "0.7.0",
                                         "displayName": "Performance Test",
                                         "description": "Initiate a performance test. Meshery will execute the load generation, collect metrics, and present the results.",
@@ -21848,7 +21855,7 @@ const PatternSchema: Record<string, unknown> = {
                                         "metadata": null
                                       },
                                       {
-                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                         "version": "0.7.0",
                                         "displayName": "Workload Configuration",
                                         "description": "Configure the workload specific setting of a component",
@@ -21863,7 +21870,7 @@ const PatternSchema: Record<string, unknown> = {
                                         "metadata": null
                                       },
                                       {
-                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                         "version": "0.7.0",
                                         "displayName": "Labels and Annotations Configuration",
                                         "description": "Configure Labels And Annotations for  the component ",
@@ -21878,7 +21885,7 @@ const PatternSchema: Record<string, unknown> = {
                                         "metadata": null
                                       },
                                       {
-                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                         "version": "0.7.0",
                                         "displayName": "Relationships",
                                         "description": "View relationships for the component",
@@ -21894,7 +21901,7 @@ const PatternSchema: Record<string, unknown> = {
                                         "metadata": null
                                       },
                                       {
-                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                         "version": "0.7.0",
                                         "displayName": "Json Schema",
                                         "description": "View Component Definition ",
@@ -21910,7 +21917,7 @@ const PatternSchema: Record<string, unknown> = {
                                         "metadata": null
                                       },
                                       {
-                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                         "version": "0.7.0",
                                         "displayName": "Styling",
                                         "description": "Configure the visual styles for the component",
@@ -21925,7 +21932,7 @@ const PatternSchema: Record<string, unknown> = {
                                         "metadata": null
                                       },
                                       {
-                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                         "version": "0.7.0",
                                         "displayName": "Change Shape",
                                         "description": "Change the shape of the component",
@@ -21940,7 +21947,7 @@ const PatternSchema: Record<string, unknown> = {
                                         "metadata": null
                                       },
                                       {
-                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                         "version": "0.7.0",
                                         "displayName": "Compound Drag And Drop",
                                         "description": "Drag and Drop a component into a parent component in graph view",
@@ -22250,9 +22257,9 @@ const PatternSchema: Record<string, unknown> = {
                                     "description": "Capabilities associated with the relationship.",
                                     "x-order": 2,
                                     "items": {
-                                      "x-go-type": "capabilityv1alpha1.Capability",
+                                      "x-go-type": "capabilityv1beta1.Capability",
                                       "x-go-type-import": {
-                                        "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                        "path": "github.com/meshery/schemas/models/v1beta1/capability",
                                         "name": "capabilityv1alpha1"
                                       },
                                       "$id": "https://schemas.meshery.io/capability.yaml",
@@ -22383,7 +22390,7 @@ const PatternSchema: Record<string, unknown> = {
                                           ],
                                           "key": "",
                                           "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "status": "enabled",
                                           "subType": "",
                                           "type": "style",
@@ -22397,7 +22404,7 @@ const PatternSchema: Record<string, unknown> = {
                                           ],
                                           "key": "",
                                           "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "status": "enabled",
                                           "subType": "shape",
                                           "type": "style",
@@ -22411,7 +22418,7 @@ const PatternSchema: Record<string, unknown> = {
                                           ],
                                           "key": "",
                                           "kind": "interaction",
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "status": "enabled",
                                           "subType": "compoundDnd",
                                           "type": "graph",
@@ -22425,7 +22432,7 @@ const PatternSchema: Record<string, unknown> = {
                                           ],
                                           "key": "",
                                           "kind": "mutate",
-                                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                                          "schemaVersion": "capability.meshery.io/v1beta1",
                                           "status": "enabled",
                                           "subType": "body-text",
                                           "type": "style",
@@ -24886,12 +24893,13 @@ const PatternSchema: Record<string, unknown> = {
                         "type": "object",
                         "properties": {
                           "catalogData": {
-                            "x-go-type": "catalogv1alpha2.CatalogData",
+                            "x-go-type": "catalogv1beta1.CatalogData",
                             "x-go-type-import": {
-                              "path": "github.com/meshery/schemas/models/v1alpha2/catalog",
-                              "name": "catalogv1alpha2"
+                              "path": "github.com/meshery/schemas/models/v1beta1/catalog",
+                              "name": "catalogv1beta1"
                             },
                             "type": "object",
+                            "additionalProperties": false,
                             "properties": {
                               "publishedVersion": {
                                 "description": "Tracks the specific content version that has been made available in the Catalog.",
@@ -25053,10 +25061,10 @@ const PatternSchema: Record<string, unknown> = {
                                   "resolvedAliases": {
                                     "description": "Map of resolved aliases present in the design",
                                     "type": "object",
-                                    "x-go-type": "map[string]corev1alpha1.ResolvedAlias",
+                                    "x-go-type": "map[string]core.ResolvedAlias",
                                     "x-go-type-import": {
-                                      "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                                      "name": "corev1alpha1"
+                                      "path": "github.com/meshery/schemas/models/core",
+                                      "name": "core"
                                     },
                                     "additionalProperties": {
                                       "description": "An resolved alias is an component that acts as an ref/pointer to a field in another component, resolvedAlias are aware of there immediate parents and completely resolved parents also",
@@ -26063,7 +26071,7 @@ const PatternSchema: Record<string, unknown> = {
                                                         ],
                                                         "key": "",
                                                         "kind": "mutate",
-                                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                                         "status": "enabled",
                                                         "subType": "",
                                                         "type": "style",
@@ -26077,7 +26085,7 @@ const PatternSchema: Record<string, unknown> = {
                                                         ],
                                                         "key": "",
                                                         "kind": "mutate",
-                                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                                         "status": "enabled",
                                                         "subType": "shape",
                                                         "type": "style",
@@ -26091,7 +26099,7 @@ const PatternSchema: Record<string, unknown> = {
                                                         ],
                                                         "key": "",
                                                         "kind": "interaction",
-                                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                                         "status": "enabled",
                                                         "subType": "compoundDnd",
                                                         "type": "graph",
@@ -26105,7 +26113,7 @@ const PatternSchema: Record<string, unknown> = {
                                                         ],
                                                         "key": "",
                                                         "kind": "mutate",
-                                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                                         "status": "enabled",
                                                         "subType": "body-text",
                                                         "type": "style",
@@ -26445,10 +26453,10 @@ const PatternSchema: Record<string, unknown> = {
                                             "yaml": "styles",
                                             "json": "styles"
                                           },
-                                          "x-go-type": "corev1alpha1.ComponentStyles",
+                                          "x-go-type": "core.ComponentStyles",
                                           "x-go-type-import": {
-                                            "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                                            "name": "corev1alpha1"
+                                            "path": "github.com/meshery/schemas/models/core",
+                                            "name": "core"
                                           },
                                           "x-order": 8,
                                           "type": "object",
@@ -26961,7 +26969,7 @@ const PatternSchema: Record<string, unknown> = {
                                                 ],
                                                 "key": "",
                                                 "kind": "mutate",
-                                                "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                "schemaVersion": "capability.meshery.io/v1beta1",
                                                 "status": "enabled",
                                                 "subType": "",
                                                 "type": "style",
@@ -26975,7 +26983,7 @@ const PatternSchema: Record<string, unknown> = {
                                                 ],
                                                 "key": "",
                                                 "kind": "mutate",
-                                                "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                "schemaVersion": "capability.meshery.io/v1beta1",
                                                 "status": "enabled",
                                                 "subType": "shape",
                                                 "type": "style",
@@ -26989,7 +26997,7 @@ const PatternSchema: Record<string, unknown> = {
                                                 ],
                                                 "key": "",
                                                 "kind": "interaction",
-                                                "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                "schemaVersion": "capability.meshery.io/v1beta1",
                                                 "status": "enabled",
                                                 "subType": "compoundDnd",
                                                 "type": "graph",
@@ -27003,7 +27011,7 @@ const PatternSchema: Record<string, unknown> = {
                                                 ],
                                                 "key": "",
                                                 "kind": "mutate",
-                                                "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                "schemaVersion": "capability.meshery.io/v1beta1",
                                                 "status": "enabled",
                                                 "subType": "body-text",
                                                 "type": "style",
@@ -27018,7 +27026,7 @@ const PatternSchema: Record<string, unknown> = {
                                           },
                                           "default": [
                                             {
-                                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                                              "schemaVersion": "capability.meshery.io/v1beta1",
                                               "version": "0.7.0",
                                               "displayName": "Performance Test",
                                               "description": "Initiate a performance test. Meshery will execute the load generation, collect metrics, and present the results.",
@@ -27033,7 +27041,7 @@ const PatternSchema: Record<string, unknown> = {
                                               "metadata": null
                                             },
                                             {
-                                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                                              "schemaVersion": "capability.meshery.io/v1beta1",
                                               "version": "0.7.0",
                                               "displayName": "Workload Configuration",
                                               "description": "Configure the workload specific setting of a component",
@@ -27048,7 +27056,7 @@ const PatternSchema: Record<string, unknown> = {
                                               "metadata": null
                                             },
                                             {
-                                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                                              "schemaVersion": "capability.meshery.io/v1beta1",
                                               "version": "0.7.0",
                                               "displayName": "Labels and Annotations Configuration",
                                               "description": "Configure Labels And Annotations for  the component ",
@@ -27063,7 +27071,7 @@ const PatternSchema: Record<string, unknown> = {
                                               "metadata": null
                                             },
                                             {
-                                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                                              "schemaVersion": "capability.meshery.io/v1beta1",
                                               "version": "0.7.0",
                                               "displayName": "Relationships",
                                               "description": "View relationships for the component",
@@ -27079,7 +27087,7 @@ const PatternSchema: Record<string, unknown> = {
                                               "metadata": null
                                             },
                                             {
-                                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                                              "schemaVersion": "capability.meshery.io/v1beta1",
                                               "version": "0.7.0",
                                               "displayName": "Json Schema",
                                               "description": "View Component Definition ",
@@ -27095,7 +27103,7 @@ const PatternSchema: Record<string, unknown> = {
                                               "metadata": null
                                             },
                                             {
-                                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                                              "schemaVersion": "capability.meshery.io/v1beta1",
                                               "version": "0.7.0",
                                               "displayName": "Styling",
                                               "description": "Configure the visual styles for the component",
@@ -27110,7 +27118,7 @@ const PatternSchema: Record<string, unknown> = {
                                               "metadata": null
                                             },
                                             {
-                                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                                              "schemaVersion": "capability.meshery.io/v1beta1",
                                               "version": "0.7.0",
                                               "displayName": "Change Shape",
                                               "description": "Change the shape of the component",
@@ -27125,7 +27133,7 @@ const PatternSchema: Record<string, unknown> = {
                                               "metadata": null
                                             },
                                             {
-                                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                                              "schemaVersion": "capability.meshery.io/v1beta1",
                                               "version": "0.7.0",
                                               "displayName": "Compound Drag And Drop",
                                               "description": "Drag and Drop a component into a parent component in graph view",
@@ -27435,9 +27443,9 @@ const PatternSchema: Record<string, unknown> = {
                                           "description": "Capabilities associated with the relationship.",
                                           "x-order": 2,
                                           "items": {
-                                            "x-go-type": "capabilityv1alpha1.Capability",
+                                            "x-go-type": "capabilityv1beta1.Capability",
                                             "x-go-type-import": {
-                                              "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                              "path": "github.com/meshery/schemas/models/v1beta1/capability",
                                               "name": "capabilityv1alpha1"
                                             },
                                             "$id": "https://schemas.meshery.io/capability.yaml",
@@ -27568,7 +27576,7 @@ const PatternSchema: Record<string, unknown> = {
                                                 ],
                                                 "key": "",
                                                 "kind": "mutate",
-                                                "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                "schemaVersion": "capability.meshery.io/v1beta1",
                                                 "status": "enabled",
                                                 "subType": "",
                                                 "type": "style",
@@ -27582,7 +27590,7 @@ const PatternSchema: Record<string, unknown> = {
                                                 ],
                                                 "key": "",
                                                 "kind": "mutate",
-                                                "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                "schemaVersion": "capability.meshery.io/v1beta1",
                                                 "status": "enabled",
                                                 "subType": "shape",
                                                 "type": "style",
@@ -27596,7 +27604,7 @@ const PatternSchema: Record<string, unknown> = {
                                                 ],
                                                 "key": "",
                                                 "kind": "interaction",
-                                                "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                "schemaVersion": "capability.meshery.io/v1beta1",
                                                 "status": "enabled",
                                                 "subType": "compoundDnd",
                                                 "type": "graph",
@@ -27610,7 +27618,7 @@ const PatternSchema: Record<string, unknown> = {
                                                 ],
                                                 "key": "",
                                                 "kind": "mutate",
-                                                "schemaVersion": "capability.meshery.io/v1alpha1",
+                                                "schemaVersion": "capability.meshery.io/v1beta1",
                                                 "status": "enabled",
                                                 "subType": "body-text",
                                                 "type": "style",
@@ -30988,10 +30996,10 @@ const PatternSchema: Record<string, unknown> = {
               "resolvedAliases": {
                 "description": "Map of resolved aliases present in the design",
                 "type": "object",
-                "x-go-type": "map[string]corev1alpha1.ResolvedAlias",
+                "x-go-type": "map[string]core.ResolvedAlias",
                 "x-go-type-import": {
-                  "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                  "name": "corev1alpha1"
+                  "path": "github.com/meshery/schemas/models/core",
+                  "name": "core"
                 },
                 "additionalProperties": {
                   "description": "An resolved alias is an component that acts as an ref/pointer to a field in another component, resolvedAlias are aware of there immediate parents and completely resolved parents also",
@@ -31998,7 +32006,7 @@ const PatternSchema: Record<string, unknown> = {
                                     ],
                                     "key": "",
                                     "kind": "mutate",
-                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                     "status": "enabled",
                                     "subType": "",
                                     "type": "style",
@@ -32012,7 +32020,7 @@ const PatternSchema: Record<string, unknown> = {
                                     ],
                                     "key": "",
                                     "kind": "mutate",
-                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                     "status": "enabled",
                                     "subType": "shape",
                                     "type": "style",
@@ -32026,7 +32034,7 @@ const PatternSchema: Record<string, unknown> = {
                                     ],
                                     "key": "",
                                     "kind": "interaction",
-                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                     "status": "enabled",
                                     "subType": "compoundDnd",
                                     "type": "graph",
@@ -32040,7 +32048,7 @@ const PatternSchema: Record<string, unknown> = {
                                     ],
                                     "key": "",
                                     "kind": "mutate",
-                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                     "status": "enabled",
                                     "subType": "body-text",
                                     "type": "style",
@@ -32380,10 +32388,10 @@ const PatternSchema: Record<string, unknown> = {
                         "yaml": "styles",
                         "json": "styles"
                       },
-                      "x-go-type": "corev1alpha1.ComponentStyles",
+                      "x-go-type": "core.ComponentStyles",
                       "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                        "name": "corev1alpha1"
+                        "path": "github.com/meshery/schemas/models/core",
+                        "name": "core"
                       },
                       "x-order": 8,
                       "type": "object",
@@ -32896,7 +32904,7 @@ const PatternSchema: Record<string, unknown> = {
                             ],
                             "key": "",
                             "kind": "mutate",
-                            "schemaVersion": "capability.meshery.io/v1alpha1",
+                            "schemaVersion": "capability.meshery.io/v1beta1",
                             "status": "enabled",
                             "subType": "",
                             "type": "style",
@@ -32910,7 +32918,7 @@ const PatternSchema: Record<string, unknown> = {
                             ],
                             "key": "",
                             "kind": "mutate",
-                            "schemaVersion": "capability.meshery.io/v1alpha1",
+                            "schemaVersion": "capability.meshery.io/v1beta1",
                             "status": "enabled",
                             "subType": "shape",
                             "type": "style",
@@ -32924,7 +32932,7 @@ const PatternSchema: Record<string, unknown> = {
                             ],
                             "key": "",
                             "kind": "interaction",
-                            "schemaVersion": "capability.meshery.io/v1alpha1",
+                            "schemaVersion": "capability.meshery.io/v1beta1",
                             "status": "enabled",
                             "subType": "compoundDnd",
                             "type": "graph",
@@ -32938,7 +32946,7 @@ const PatternSchema: Record<string, unknown> = {
                             ],
                             "key": "",
                             "kind": "mutate",
-                            "schemaVersion": "capability.meshery.io/v1alpha1",
+                            "schemaVersion": "capability.meshery.io/v1beta1",
                             "status": "enabled",
                             "subType": "body-text",
                             "type": "style",
@@ -32953,7 +32961,7 @@ const PatternSchema: Record<string, unknown> = {
                       },
                       "default": [
                         {
-                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                          "schemaVersion": "capability.meshery.io/v1beta1",
                           "version": "0.7.0",
                           "displayName": "Performance Test",
                           "description": "Initiate a performance test. Meshery will execute the load generation, collect metrics, and present the results.",
@@ -32968,7 +32976,7 @@ const PatternSchema: Record<string, unknown> = {
                           "metadata": null
                         },
                         {
-                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                          "schemaVersion": "capability.meshery.io/v1beta1",
                           "version": "0.7.0",
                           "displayName": "Workload Configuration",
                           "description": "Configure the workload specific setting of a component",
@@ -32983,7 +32991,7 @@ const PatternSchema: Record<string, unknown> = {
                           "metadata": null
                         },
                         {
-                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                          "schemaVersion": "capability.meshery.io/v1beta1",
                           "version": "0.7.0",
                           "displayName": "Labels and Annotations Configuration",
                           "description": "Configure Labels And Annotations for  the component ",
@@ -32998,7 +33006,7 @@ const PatternSchema: Record<string, unknown> = {
                           "metadata": null
                         },
                         {
-                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                          "schemaVersion": "capability.meshery.io/v1beta1",
                           "version": "0.7.0",
                           "displayName": "Relationships",
                           "description": "View relationships for the component",
@@ -33014,7 +33022,7 @@ const PatternSchema: Record<string, unknown> = {
                           "metadata": null
                         },
                         {
-                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                          "schemaVersion": "capability.meshery.io/v1beta1",
                           "version": "0.7.0",
                           "displayName": "Json Schema",
                           "description": "View Component Definition ",
@@ -33030,7 +33038,7 @@ const PatternSchema: Record<string, unknown> = {
                           "metadata": null
                         },
                         {
-                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                          "schemaVersion": "capability.meshery.io/v1beta1",
                           "version": "0.7.0",
                           "displayName": "Styling",
                           "description": "Configure the visual styles for the component",
@@ -33045,7 +33053,7 @@ const PatternSchema: Record<string, unknown> = {
                           "metadata": null
                         },
                         {
-                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                          "schemaVersion": "capability.meshery.io/v1beta1",
                           "version": "0.7.0",
                           "displayName": "Change Shape",
                           "description": "Change the shape of the component",
@@ -33060,7 +33068,7 @@ const PatternSchema: Record<string, unknown> = {
                           "metadata": null
                         },
                         {
-                          "schemaVersion": "capability.meshery.io/v1alpha1",
+                          "schemaVersion": "capability.meshery.io/v1beta1",
                           "version": "0.7.0",
                           "displayName": "Compound Drag And Drop",
                           "description": "Drag and Drop a component into a parent component in graph view",
@@ -33370,9 +33378,9 @@ const PatternSchema: Record<string, unknown> = {
                       "description": "Capabilities associated with the relationship.",
                       "x-order": 2,
                       "items": {
-                        "x-go-type": "capabilityv1alpha1.Capability",
+                        "x-go-type": "capabilityv1beta1.Capability",
                         "x-go-type-import": {
-                          "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                          "path": "github.com/meshery/schemas/models/v1beta1/capability",
                           "name": "capabilityv1alpha1"
                         },
                         "$id": "https://schemas.meshery.io/capability.yaml",
@@ -33503,7 +33511,7 @@ const PatternSchema: Record<string, unknown> = {
                             ],
                             "key": "",
                             "kind": "mutate",
-                            "schemaVersion": "capability.meshery.io/v1alpha1",
+                            "schemaVersion": "capability.meshery.io/v1beta1",
                             "status": "enabled",
                             "subType": "",
                             "type": "style",
@@ -33517,7 +33525,7 @@ const PatternSchema: Record<string, unknown> = {
                             ],
                             "key": "",
                             "kind": "mutate",
-                            "schemaVersion": "capability.meshery.io/v1alpha1",
+                            "schemaVersion": "capability.meshery.io/v1beta1",
                             "status": "enabled",
                             "subType": "shape",
                             "type": "style",
@@ -33531,7 +33539,7 @@ const PatternSchema: Record<string, unknown> = {
                             ],
                             "key": "",
                             "kind": "interaction",
-                            "schemaVersion": "capability.meshery.io/v1alpha1",
+                            "schemaVersion": "capability.meshery.io/v1beta1",
                             "status": "enabled",
                             "subType": "compoundDnd",
                             "type": "graph",
@@ -33545,7 +33553,7 @@ const PatternSchema: Record<string, unknown> = {
                             ],
                             "key": "",
                             "kind": "mutate",
-                            "schemaVersion": "capability.meshery.io/v1alpha1",
+                            "schemaVersion": "capability.meshery.io/v1beta1",
                             "status": "enabled",
                             "subType": "body-text",
                             "type": "style",
@@ -35538,12 +35546,13 @@ const PatternSchema: Record<string, unknown> = {
         "type": "object",
         "properties": {
           "catalogData": {
-            "x-go-type": "catalogv1alpha2.CatalogData",
+            "x-go-type": "catalogv1beta1.CatalogData",
             "x-go-type-import": {
-              "path": "github.com/meshery/schemas/models/v1alpha2/catalog",
-              "name": "catalogv1alpha2"
+              "path": "github.com/meshery/schemas/models/v1beta1/catalog",
+              "name": "catalogv1beta1"
             },
             "type": "object",
+            "additionalProperties": false,
             "properties": {
               "publishedVersion": {
                 "description": "Tracks the specific content version that has been made available in the Catalog.",
@@ -35705,10 +35714,10 @@ const PatternSchema: Record<string, unknown> = {
                   "resolvedAliases": {
                     "description": "Map of resolved aliases present in the design",
                     "type": "object",
-                    "x-go-type": "map[string]corev1alpha1.ResolvedAlias",
+                    "x-go-type": "map[string]core.ResolvedAlias",
                     "x-go-type-import": {
-                      "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                      "name": "corev1alpha1"
+                      "path": "github.com/meshery/schemas/models/core",
+                      "name": "core"
                     },
                     "additionalProperties": {
                       "description": "An resolved alias is an component that acts as an ref/pointer to a field in another component, resolvedAlias are aware of there immediate parents and completely resolved parents also",
@@ -36715,7 +36724,7 @@ const PatternSchema: Record<string, unknown> = {
                                         ],
                                         "key": "",
                                         "kind": "mutate",
-                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                         "status": "enabled",
                                         "subType": "",
                                         "type": "style",
@@ -36729,7 +36738,7 @@ const PatternSchema: Record<string, unknown> = {
                                         ],
                                         "key": "",
                                         "kind": "mutate",
-                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                         "status": "enabled",
                                         "subType": "shape",
                                         "type": "style",
@@ -36743,7 +36752,7 @@ const PatternSchema: Record<string, unknown> = {
                                         ],
                                         "key": "",
                                         "kind": "interaction",
-                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                         "status": "enabled",
                                         "subType": "compoundDnd",
                                         "type": "graph",
@@ -36757,7 +36766,7 @@ const PatternSchema: Record<string, unknown> = {
                                         ],
                                         "key": "",
                                         "kind": "mutate",
-                                        "schemaVersion": "capability.meshery.io/v1alpha1",
+                                        "schemaVersion": "capability.meshery.io/v1beta1",
                                         "status": "enabled",
                                         "subType": "body-text",
                                         "type": "style",
@@ -37097,10 +37106,10 @@ const PatternSchema: Record<string, unknown> = {
                             "yaml": "styles",
                             "json": "styles"
                           },
-                          "x-go-type": "corev1alpha1.ComponentStyles",
+                          "x-go-type": "core.ComponentStyles",
                           "x-go-type-import": {
-                            "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                            "name": "corev1alpha1"
+                            "path": "github.com/meshery/schemas/models/core",
+                            "name": "core"
                           },
                           "x-order": 8,
                           "type": "object",
@@ -37613,7 +37622,7 @@ const PatternSchema: Record<string, unknown> = {
                                 ],
                                 "key": "",
                                 "kind": "mutate",
-                                "schemaVersion": "capability.meshery.io/v1alpha1",
+                                "schemaVersion": "capability.meshery.io/v1beta1",
                                 "status": "enabled",
                                 "subType": "",
                                 "type": "style",
@@ -37627,7 +37636,7 @@ const PatternSchema: Record<string, unknown> = {
                                 ],
                                 "key": "",
                                 "kind": "mutate",
-                                "schemaVersion": "capability.meshery.io/v1alpha1",
+                                "schemaVersion": "capability.meshery.io/v1beta1",
                                 "status": "enabled",
                                 "subType": "shape",
                                 "type": "style",
@@ -37641,7 +37650,7 @@ const PatternSchema: Record<string, unknown> = {
                                 ],
                                 "key": "",
                                 "kind": "interaction",
-                                "schemaVersion": "capability.meshery.io/v1alpha1",
+                                "schemaVersion": "capability.meshery.io/v1beta1",
                                 "status": "enabled",
                                 "subType": "compoundDnd",
                                 "type": "graph",
@@ -37655,7 +37664,7 @@ const PatternSchema: Record<string, unknown> = {
                                 ],
                                 "key": "",
                                 "kind": "mutate",
-                                "schemaVersion": "capability.meshery.io/v1alpha1",
+                                "schemaVersion": "capability.meshery.io/v1beta1",
                                 "status": "enabled",
                                 "subType": "body-text",
                                 "type": "style",
@@ -37670,7 +37679,7 @@ const PatternSchema: Record<string, unknown> = {
                           },
                           "default": [
                             {
-                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                              "schemaVersion": "capability.meshery.io/v1beta1",
                               "version": "0.7.0",
                               "displayName": "Performance Test",
                               "description": "Initiate a performance test. Meshery will execute the load generation, collect metrics, and present the results.",
@@ -37685,7 +37694,7 @@ const PatternSchema: Record<string, unknown> = {
                               "metadata": null
                             },
                             {
-                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                              "schemaVersion": "capability.meshery.io/v1beta1",
                               "version": "0.7.0",
                               "displayName": "Workload Configuration",
                               "description": "Configure the workload specific setting of a component",
@@ -37700,7 +37709,7 @@ const PatternSchema: Record<string, unknown> = {
                               "metadata": null
                             },
                             {
-                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                              "schemaVersion": "capability.meshery.io/v1beta1",
                               "version": "0.7.0",
                               "displayName": "Labels and Annotations Configuration",
                               "description": "Configure Labels And Annotations for  the component ",
@@ -37715,7 +37724,7 @@ const PatternSchema: Record<string, unknown> = {
                               "metadata": null
                             },
                             {
-                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                              "schemaVersion": "capability.meshery.io/v1beta1",
                               "version": "0.7.0",
                               "displayName": "Relationships",
                               "description": "View relationships for the component",
@@ -37731,7 +37740,7 @@ const PatternSchema: Record<string, unknown> = {
                               "metadata": null
                             },
                             {
-                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                              "schemaVersion": "capability.meshery.io/v1beta1",
                               "version": "0.7.0",
                               "displayName": "Json Schema",
                               "description": "View Component Definition ",
@@ -37747,7 +37756,7 @@ const PatternSchema: Record<string, unknown> = {
                               "metadata": null
                             },
                             {
-                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                              "schemaVersion": "capability.meshery.io/v1beta1",
                               "version": "0.7.0",
                               "displayName": "Styling",
                               "description": "Configure the visual styles for the component",
@@ -37762,7 +37771,7 @@ const PatternSchema: Record<string, unknown> = {
                               "metadata": null
                             },
                             {
-                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                              "schemaVersion": "capability.meshery.io/v1beta1",
                               "version": "0.7.0",
                               "displayName": "Change Shape",
                               "description": "Change the shape of the component",
@@ -37777,7 +37786,7 @@ const PatternSchema: Record<string, unknown> = {
                               "metadata": null
                             },
                             {
-                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                              "schemaVersion": "capability.meshery.io/v1beta1",
                               "version": "0.7.0",
                               "displayName": "Compound Drag And Drop",
                               "description": "Drag and Drop a component into a parent component in graph view",
@@ -38087,9 +38096,9 @@ const PatternSchema: Record<string, unknown> = {
                           "description": "Capabilities associated with the relationship.",
                           "x-order": 2,
                           "items": {
-                            "x-go-type": "capabilityv1alpha1.Capability",
+                            "x-go-type": "capabilityv1beta1.Capability",
                             "x-go-type-import": {
-                              "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                              "path": "github.com/meshery/schemas/models/v1beta1/capability",
                               "name": "capabilityv1alpha1"
                             },
                             "$id": "https://schemas.meshery.io/capability.yaml",
@@ -38220,7 +38229,7 @@ const PatternSchema: Record<string, unknown> = {
                                 ],
                                 "key": "",
                                 "kind": "mutate",
-                                "schemaVersion": "capability.meshery.io/v1alpha1",
+                                "schemaVersion": "capability.meshery.io/v1beta1",
                                 "status": "enabled",
                                 "subType": "",
                                 "type": "style",
@@ -38234,7 +38243,7 @@ const PatternSchema: Record<string, unknown> = {
                                 ],
                                 "key": "",
                                 "kind": "mutate",
-                                "schemaVersion": "capability.meshery.io/v1alpha1",
+                                "schemaVersion": "capability.meshery.io/v1beta1",
                                 "status": "enabled",
                                 "subType": "shape",
                                 "type": "style",
@@ -38248,7 +38257,7 @@ const PatternSchema: Record<string, unknown> = {
                                 ],
                                 "key": "",
                                 "kind": "interaction",
-                                "schemaVersion": "capability.meshery.io/v1alpha1",
+                                "schemaVersion": "capability.meshery.io/v1beta1",
                                 "status": "enabled",
                                 "subType": "compoundDnd",
                                 "type": "graph",
@@ -38262,7 +38271,7 @@ const PatternSchema: Record<string, unknown> = {
                                 ],
                                 "key": "",
                                 "kind": "mutate",
-                                "schemaVersion": "capability.meshery.io/v1alpha1",
+                                "schemaVersion": "capability.meshery.io/v1beta1",
                                 "status": "enabled",
                                 "subType": "body-text",
                                 "type": "style",
@@ -40287,12 +40296,13 @@ const PatternSchema: Record<string, unknown> = {
               "type": "object",
               "properties": {
                 "catalogData": {
-                  "x-go-type": "catalogv1alpha2.CatalogData",
+                  "x-go-type": "catalogv1beta1.CatalogData",
                   "x-go-type-import": {
-                    "path": "github.com/meshery/schemas/models/v1alpha2/catalog",
-                    "name": "catalogv1alpha2"
+                    "path": "github.com/meshery/schemas/models/v1beta1/catalog",
+                    "name": "catalogv1beta1"
                   },
                   "type": "object",
+                  "additionalProperties": false,
                   "properties": {
                     "publishedVersion": {
                       "description": "Tracks the specific content version that has been made available in the Catalog.",
@@ -40454,10 +40464,10 @@ const PatternSchema: Record<string, unknown> = {
                         "resolvedAliases": {
                           "description": "Map of resolved aliases present in the design",
                           "type": "object",
-                          "x-go-type": "map[string]corev1alpha1.ResolvedAlias",
+                          "x-go-type": "map[string]core.ResolvedAlias",
                           "x-go-type-import": {
-                            "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                            "name": "corev1alpha1"
+                            "path": "github.com/meshery/schemas/models/core",
+                            "name": "core"
                           },
                           "additionalProperties": {
                             "description": "An resolved alias is an component that acts as an ref/pointer to a field in another component, resolvedAlias are aware of there immediate parents and completely resolved parents also",
@@ -41464,7 +41474,7 @@ const PatternSchema: Record<string, unknown> = {
                                               ],
                                               "key": "",
                                               "kind": "mutate",
-                                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                                              "schemaVersion": "capability.meshery.io/v1beta1",
                                               "status": "enabled",
                                               "subType": "",
                                               "type": "style",
@@ -41478,7 +41488,7 @@ const PatternSchema: Record<string, unknown> = {
                                               ],
                                               "key": "",
                                               "kind": "mutate",
-                                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                                              "schemaVersion": "capability.meshery.io/v1beta1",
                                               "status": "enabled",
                                               "subType": "shape",
                                               "type": "style",
@@ -41492,7 +41502,7 @@ const PatternSchema: Record<string, unknown> = {
                                               ],
                                               "key": "",
                                               "kind": "interaction",
-                                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                                              "schemaVersion": "capability.meshery.io/v1beta1",
                                               "status": "enabled",
                                               "subType": "compoundDnd",
                                               "type": "graph",
@@ -41506,7 +41516,7 @@ const PatternSchema: Record<string, unknown> = {
                                               ],
                                               "key": "",
                                               "kind": "mutate",
-                                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                                              "schemaVersion": "capability.meshery.io/v1beta1",
                                               "status": "enabled",
                                               "subType": "body-text",
                                               "type": "style",
@@ -41846,10 +41856,10 @@ const PatternSchema: Record<string, unknown> = {
                                   "yaml": "styles",
                                   "json": "styles"
                                 },
-                                "x-go-type": "corev1alpha1.ComponentStyles",
+                                "x-go-type": "core.ComponentStyles",
                                 "x-go-type-import": {
-                                  "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                                  "name": "corev1alpha1"
+                                  "path": "github.com/meshery/schemas/models/core",
+                                  "name": "core"
                                 },
                                 "x-order": 8,
                                 "type": "object",
@@ -42362,7 +42372,7 @@ const PatternSchema: Record<string, unknown> = {
                                       ],
                                       "key": "",
                                       "kind": "mutate",
-                                      "schemaVersion": "capability.meshery.io/v1alpha1",
+                                      "schemaVersion": "capability.meshery.io/v1beta1",
                                       "status": "enabled",
                                       "subType": "",
                                       "type": "style",
@@ -42376,7 +42386,7 @@ const PatternSchema: Record<string, unknown> = {
                                       ],
                                       "key": "",
                                       "kind": "mutate",
-                                      "schemaVersion": "capability.meshery.io/v1alpha1",
+                                      "schemaVersion": "capability.meshery.io/v1beta1",
                                       "status": "enabled",
                                       "subType": "shape",
                                       "type": "style",
@@ -42390,7 +42400,7 @@ const PatternSchema: Record<string, unknown> = {
                                       ],
                                       "key": "",
                                       "kind": "interaction",
-                                      "schemaVersion": "capability.meshery.io/v1alpha1",
+                                      "schemaVersion": "capability.meshery.io/v1beta1",
                                       "status": "enabled",
                                       "subType": "compoundDnd",
                                       "type": "graph",
@@ -42404,7 +42414,7 @@ const PatternSchema: Record<string, unknown> = {
                                       ],
                                       "key": "",
                                       "kind": "mutate",
-                                      "schemaVersion": "capability.meshery.io/v1alpha1",
+                                      "schemaVersion": "capability.meshery.io/v1beta1",
                                       "status": "enabled",
                                       "subType": "body-text",
                                       "type": "style",
@@ -42419,7 +42429,7 @@ const PatternSchema: Record<string, unknown> = {
                                 },
                                 "default": [
                                   {
-                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                     "version": "0.7.0",
                                     "displayName": "Performance Test",
                                     "description": "Initiate a performance test. Meshery will execute the load generation, collect metrics, and present the results.",
@@ -42434,7 +42444,7 @@ const PatternSchema: Record<string, unknown> = {
                                     "metadata": null
                                   },
                                   {
-                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                     "version": "0.7.0",
                                     "displayName": "Workload Configuration",
                                     "description": "Configure the workload specific setting of a component",
@@ -42449,7 +42459,7 @@ const PatternSchema: Record<string, unknown> = {
                                     "metadata": null
                                   },
                                   {
-                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                     "version": "0.7.0",
                                     "displayName": "Labels and Annotations Configuration",
                                     "description": "Configure Labels And Annotations for  the component ",
@@ -42464,7 +42474,7 @@ const PatternSchema: Record<string, unknown> = {
                                     "metadata": null
                                   },
                                   {
-                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                     "version": "0.7.0",
                                     "displayName": "Relationships",
                                     "description": "View relationships for the component",
@@ -42480,7 +42490,7 @@ const PatternSchema: Record<string, unknown> = {
                                     "metadata": null
                                   },
                                   {
-                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                     "version": "0.7.0",
                                     "displayName": "Json Schema",
                                     "description": "View Component Definition ",
@@ -42496,7 +42506,7 @@ const PatternSchema: Record<string, unknown> = {
                                     "metadata": null
                                   },
                                   {
-                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                     "version": "0.7.0",
                                     "displayName": "Styling",
                                     "description": "Configure the visual styles for the component",
@@ -42511,7 +42521,7 @@ const PatternSchema: Record<string, unknown> = {
                                     "metadata": null
                                   },
                                   {
-                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                     "version": "0.7.0",
                                     "displayName": "Change Shape",
                                     "description": "Change the shape of the component",
@@ -42526,7 +42536,7 @@ const PatternSchema: Record<string, unknown> = {
                                     "metadata": null
                                   },
                                   {
-                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                     "version": "0.7.0",
                                     "displayName": "Compound Drag And Drop",
                                     "description": "Drag and Drop a component into a parent component in graph view",
@@ -42836,9 +42846,9 @@ const PatternSchema: Record<string, unknown> = {
                                 "description": "Capabilities associated with the relationship.",
                                 "x-order": 2,
                                 "items": {
-                                  "x-go-type": "capabilityv1alpha1.Capability",
+                                  "x-go-type": "capabilityv1beta1.Capability",
                                   "x-go-type-import": {
-                                    "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                    "path": "github.com/meshery/schemas/models/v1beta1/capability",
                                     "name": "capabilityv1alpha1"
                                   },
                                   "$id": "https://schemas.meshery.io/capability.yaml",
@@ -42969,7 +42979,7 @@ const PatternSchema: Record<string, unknown> = {
                                       ],
                                       "key": "",
                                       "kind": "mutate",
-                                      "schemaVersion": "capability.meshery.io/v1alpha1",
+                                      "schemaVersion": "capability.meshery.io/v1beta1",
                                       "status": "enabled",
                                       "subType": "",
                                       "type": "style",
@@ -42983,7 +42993,7 @@ const PatternSchema: Record<string, unknown> = {
                                       ],
                                       "key": "",
                                       "kind": "mutate",
-                                      "schemaVersion": "capability.meshery.io/v1alpha1",
+                                      "schemaVersion": "capability.meshery.io/v1beta1",
                                       "status": "enabled",
                                       "subType": "shape",
                                       "type": "style",
@@ -42997,7 +43007,7 @@ const PatternSchema: Record<string, unknown> = {
                                       ],
                                       "key": "",
                                       "kind": "interaction",
-                                      "schemaVersion": "capability.meshery.io/v1alpha1",
+                                      "schemaVersion": "capability.meshery.io/v1beta1",
                                       "status": "enabled",
                                       "subType": "compoundDnd",
                                       "type": "graph",
@@ -43011,7 +43021,7 @@ const PatternSchema: Record<string, unknown> = {
                                       ],
                                       "key": "",
                                       "kind": "mutate",
-                                      "schemaVersion": "capability.meshery.io/v1alpha1",
+                                      "schemaVersion": "capability.meshery.io/v1beta1",
                                       "status": "enabled",
                                       "subType": "body-text",
                                       "type": "style",
@@ -45068,12 +45078,13 @@ const PatternSchema: Record<string, unknown> = {
             "type": "object",
             "properties": {
               "catalogData": {
-                "x-go-type": "catalogv1alpha2.CatalogData",
+                "x-go-type": "catalogv1beta1.CatalogData",
                 "x-go-type-import": {
-                  "path": "github.com/meshery/schemas/models/v1alpha2/catalog",
-                  "name": "catalogv1alpha2"
+                  "path": "github.com/meshery/schemas/models/v1beta1/catalog",
+                  "name": "catalogv1beta1"
                 },
                 "type": "object",
+                "additionalProperties": false,
                 "properties": {
                   "publishedVersion": {
                     "description": "Tracks the specific content version that has been made available in the Catalog.",
@@ -45235,10 +45246,10 @@ const PatternSchema: Record<string, unknown> = {
                       "resolvedAliases": {
                         "description": "Map of resolved aliases present in the design",
                         "type": "object",
-                        "x-go-type": "map[string]corev1alpha1.ResolvedAlias",
+                        "x-go-type": "map[string]core.ResolvedAlias",
                         "x-go-type-import": {
-                          "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                          "name": "corev1alpha1"
+                          "path": "github.com/meshery/schemas/models/core",
+                          "name": "core"
                         },
                         "additionalProperties": {
                           "description": "An resolved alias is an component that acts as an ref/pointer to a field in another component, resolvedAlias are aware of there immediate parents and completely resolved parents also",
@@ -46245,7 +46256,7 @@ const PatternSchema: Record<string, unknown> = {
                                             ],
                                             "key": "",
                                             "kind": "mutate",
-                                            "schemaVersion": "capability.meshery.io/v1alpha1",
+                                            "schemaVersion": "capability.meshery.io/v1beta1",
                                             "status": "enabled",
                                             "subType": "",
                                             "type": "style",
@@ -46259,7 +46270,7 @@ const PatternSchema: Record<string, unknown> = {
                                             ],
                                             "key": "",
                                             "kind": "mutate",
-                                            "schemaVersion": "capability.meshery.io/v1alpha1",
+                                            "schemaVersion": "capability.meshery.io/v1beta1",
                                             "status": "enabled",
                                             "subType": "shape",
                                             "type": "style",
@@ -46273,7 +46284,7 @@ const PatternSchema: Record<string, unknown> = {
                                             ],
                                             "key": "",
                                             "kind": "interaction",
-                                            "schemaVersion": "capability.meshery.io/v1alpha1",
+                                            "schemaVersion": "capability.meshery.io/v1beta1",
                                             "status": "enabled",
                                             "subType": "compoundDnd",
                                             "type": "graph",
@@ -46287,7 +46298,7 @@ const PatternSchema: Record<string, unknown> = {
                                             ],
                                             "key": "",
                                             "kind": "mutate",
-                                            "schemaVersion": "capability.meshery.io/v1alpha1",
+                                            "schemaVersion": "capability.meshery.io/v1beta1",
                                             "status": "enabled",
                                             "subType": "body-text",
                                             "type": "style",
@@ -46627,10 +46638,10 @@ const PatternSchema: Record<string, unknown> = {
                                 "yaml": "styles",
                                 "json": "styles"
                               },
-                              "x-go-type": "corev1alpha1.ComponentStyles",
+                              "x-go-type": "core.ComponentStyles",
                               "x-go-type-import": {
-                                "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                                "name": "corev1alpha1"
+                                "path": "github.com/meshery/schemas/models/core",
+                                "name": "core"
                               },
                               "x-order": 8,
                               "type": "object",
@@ -47143,7 +47154,7 @@ const PatternSchema: Record<string, unknown> = {
                                     ],
                                     "key": "",
                                     "kind": "mutate",
-                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                     "status": "enabled",
                                     "subType": "",
                                     "type": "style",
@@ -47157,7 +47168,7 @@ const PatternSchema: Record<string, unknown> = {
                                     ],
                                     "key": "",
                                     "kind": "mutate",
-                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                     "status": "enabled",
                                     "subType": "shape",
                                     "type": "style",
@@ -47171,7 +47182,7 @@ const PatternSchema: Record<string, unknown> = {
                                     ],
                                     "key": "",
                                     "kind": "interaction",
-                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                     "status": "enabled",
                                     "subType": "compoundDnd",
                                     "type": "graph",
@@ -47185,7 +47196,7 @@ const PatternSchema: Record<string, unknown> = {
                                     ],
                                     "key": "",
                                     "kind": "mutate",
-                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                     "status": "enabled",
                                     "subType": "body-text",
                                     "type": "style",
@@ -47200,7 +47211,7 @@ const PatternSchema: Record<string, unknown> = {
                               },
                               "default": [
                                 {
-                                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                                  "schemaVersion": "capability.meshery.io/v1beta1",
                                   "version": "0.7.0",
                                   "displayName": "Performance Test",
                                   "description": "Initiate a performance test. Meshery will execute the load generation, collect metrics, and present the results.",
@@ -47215,7 +47226,7 @@ const PatternSchema: Record<string, unknown> = {
                                   "metadata": null
                                 },
                                 {
-                                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                                  "schemaVersion": "capability.meshery.io/v1beta1",
                                   "version": "0.7.0",
                                   "displayName": "Workload Configuration",
                                   "description": "Configure the workload specific setting of a component",
@@ -47230,7 +47241,7 @@ const PatternSchema: Record<string, unknown> = {
                                   "metadata": null
                                 },
                                 {
-                                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                                  "schemaVersion": "capability.meshery.io/v1beta1",
                                   "version": "0.7.0",
                                   "displayName": "Labels and Annotations Configuration",
                                   "description": "Configure Labels And Annotations for  the component ",
@@ -47245,7 +47256,7 @@ const PatternSchema: Record<string, unknown> = {
                                   "metadata": null
                                 },
                                 {
-                                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                                  "schemaVersion": "capability.meshery.io/v1beta1",
                                   "version": "0.7.0",
                                   "displayName": "Relationships",
                                   "description": "View relationships for the component",
@@ -47261,7 +47272,7 @@ const PatternSchema: Record<string, unknown> = {
                                   "metadata": null
                                 },
                                 {
-                                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                                  "schemaVersion": "capability.meshery.io/v1beta1",
                                   "version": "0.7.0",
                                   "displayName": "Json Schema",
                                   "description": "View Component Definition ",
@@ -47277,7 +47288,7 @@ const PatternSchema: Record<string, unknown> = {
                                   "metadata": null
                                 },
                                 {
-                                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                                  "schemaVersion": "capability.meshery.io/v1beta1",
                                   "version": "0.7.0",
                                   "displayName": "Styling",
                                   "description": "Configure the visual styles for the component",
@@ -47292,7 +47303,7 @@ const PatternSchema: Record<string, unknown> = {
                                   "metadata": null
                                 },
                                 {
-                                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                                  "schemaVersion": "capability.meshery.io/v1beta1",
                                   "version": "0.7.0",
                                   "displayName": "Change Shape",
                                   "description": "Change the shape of the component",
@@ -47307,7 +47318,7 @@ const PatternSchema: Record<string, unknown> = {
                                   "metadata": null
                                 },
                                 {
-                                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                                  "schemaVersion": "capability.meshery.io/v1beta1",
                                   "version": "0.7.0",
                                   "displayName": "Compound Drag And Drop",
                                   "description": "Drag and Drop a component into a parent component in graph view",
@@ -47617,9 +47628,9 @@ const PatternSchema: Record<string, unknown> = {
                               "description": "Capabilities associated with the relationship.",
                               "x-order": 2,
                               "items": {
-                                "x-go-type": "capabilityv1alpha1.Capability",
+                                "x-go-type": "capabilityv1beta1.Capability",
                                 "x-go-type-import": {
-                                  "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                  "path": "github.com/meshery/schemas/models/v1beta1/capability",
                                   "name": "capabilityv1alpha1"
                                 },
                                 "$id": "https://schemas.meshery.io/capability.yaml",
@@ -47750,7 +47761,7 @@ const PatternSchema: Record<string, unknown> = {
                                     ],
                                     "key": "",
                                     "kind": "mutate",
-                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                     "status": "enabled",
                                     "subType": "",
                                     "type": "style",
@@ -47764,7 +47775,7 @@ const PatternSchema: Record<string, unknown> = {
                                     ],
                                     "key": "",
                                     "kind": "mutate",
-                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                     "status": "enabled",
                                     "subType": "shape",
                                     "type": "style",
@@ -47778,7 +47789,7 @@ const PatternSchema: Record<string, unknown> = {
                                     ],
                                     "key": "",
                                     "kind": "interaction",
-                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                     "status": "enabled",
                                     "subType": "compoundDnd",
                                     "type": "graph",
@@ -47792,7 +47803,7 @@ const PatternSchema: Record<string, unknown> = {
                                     ],
                                     "key": "",
                                     "kind": "mutate",
-                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                     "status": "enabled",
                                     "subType": "body-text",
                                     "type": "style",
@@ -49881,12 +49892,13 @@ const PatternSchema: Record<string, unknown> = {
               "type": "object",
               "properties": {
                 "catalogData": {
-                  "x-go-type": "catalogv1alpha2.CatalogData",
+                  "x-go-type": "catalogv1beta1.CatalogData",
                   "x-go-type-import": {
-                    "path": "github.com/meshery/schemas/models/v1alpha2/catalog",
-                    "name": "catalogv1alpha2"
+                    "path": "github.com/meshery/schemas/models/v1beta1/catalog",
+                    "name": "catalogv1beta1"
                   },
                   "type": "object",
+                  "additionalProperties": false,
                   "properties": {
                     "publishedVersion": {
                       "description": "Tracks the specific content version that has been made available in the Catalog.",
@@ -50048,10 +50060,10 @@ const PatternSchema: Record<string, unknown> = {
                         "resolvedAliases": {
                           "description": "Map of resolved aliases present in the design",
                           "type": "object",
-                          "x-go-type": "map[string]corev1alpha1.ResolvedAlias",
+                          "x-go-type": "map[string]core.ResolvedAlias",
                           "x-go-type-import": {
-                            "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                            "name": "corev1alpha1"
+                            "path": "github.com/meshery/schemas/models/core",
+                            "name": "core"
                           },
                           "additionalProperties": {
                             "description": "An resolved alias is an component that acts as an ref/pointer to a field in another component, resolvedAlias are aware of there immediate parents and completely resolved parents also",
@@ -51058,7 +51070,7 @@ const PatternSchema: Record<string, unknown> = {
                                               ],
                                               "key": "",
                                               "kind": "mutate",
-                                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                                              "schemaVersion": "capability.meshery.io/v1beta1",
                                               "status": "enabled",
                                               "subType": "",
                                               "type": "style",
@@ -51072,7 +51084,7 @@ const PatternSchema: Record<string, unknown> = {
                                               ],
                                               "key": "",
                                               "kind": "mutate",
-                                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                                              "schemaVersion": "capability.meshery.io/v1beta1",
                                               "status": "enabled",
                                               "subType": "shape",
                                               "type": "style",
@@ -51086,7 +51098,7 @@ const PatternSchema: Record<string, unknown> = {
                                               ],
                                               "key": "",
                                               "kind": "interaction",
-                                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                                              "schemaVersion": "capability.meshery.io/v1beta1",
                                               "status": "enabled",
                                               "subType": "compoundDnd",
                                               "type": "graph",
@@ -51100,7 +51112,7 @@ const PatternSchema: Record<string, unknown> = {
                                               ],
                                               "key": "",
                                               "kind": "mutate",
-                                              "schemaVersion": "capability.meshery.io/v1alpha1",
+                                              "schemaVersion": "capability.meshery.io/v1beta1",
                                               "status": "enabled",
                                               "subType": "body-text",
                                               "type": "style",
@@ -51440,10 +51452,10 @@ const PatternSchema: Record<string, unknown> = {
                                   "yaml": "styles",
                                   "json": "styles"
                                 },
-                                "x-go-type": "corev1alpha1.ComponentStyles",
+                                "x-go-type": "core.ComponentStyles",
                                 "x-go-type-import": {
-                                  "path": "github.com/meshery/schemas/models/v1alpha1/core",
-                                  "name": "corev1alpha1"
+                                  "path": "github.com/meshery/schemas/models/core",
+                                  "name": "core"
                                 },
                                 "x-order": 8,
                                 "type": "object",
@@ -51956,7 +51968,7 @@ const PatternSchema: Record<string, unknown> = {
                                       ],
                                       "key": "",
                                       "kind": "mutate",
-                                      "schemaVersion": "capability.meshery.io/v1alpha1",
+                                      "schemaVersion": "capability.meshery.io/v1beta1",
                                       "status": "enabled",
                                       "subType": "",
                                       "type": "style",
@@ -51970,7 +51982,7 @@ const PatternSchema: Record<string, unknown> = {
                                       ],
                                       "key": "",
                                       "kind": "mutate",
-                                      "schemaVersion": "capability.meshery.io/v1alpha1",
+                                      "schemaVersion": "capability.meshery.io/v1beta1",
                                       "status": "enabled",
                                       "subType": "shape",
                                       "type": "style",
@@ -51984,7 +51996,7 @@ const PatternSchema: Record<string, unknown> = {
                                       ],
                                       "key": "",
                                       "kind": "interaction",
-                                      "schemaVersion": "capability.meshery.io/v1alpha1",
+                                      "schemaVersion": "capability.meshery.io/v1beta1",
                                       "status": "enabled",
                                       "subType": "compoundDnd",
                                       "type": "graph",
@@ -51998,7 +52010,7 @@ const PatternSchema: Record<string, unknown> = {
                                       ],
                                       "key": "",
                                       "kind": "mutate",
-                                      "schemaVersion": "capability.meshery.io/v1alpha1",
+                                      "schemaVersion": "capability.meshery.io/v1beta1",
                                       "status": "enabled",
                                       "subType": "body-text",
                                       "type": "style",
@@ -52013,7 +52025,7 @@ const PatternSchema: Record<string, unknown> = {
                                 },
                                 "default": [
                                   {
-                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                     "version": "0.7.0",
                                     "displayName": "Performance Test",
                                     "description": "Initiate a performance test. Meshery will execute the load generation, collect metrics, and present the results.",
@@ -52028,7 +52040,7 @@ const PatternSchema: Record<string, unknown> = {
                                     "metadata": null
                                   },
                                   {
-                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                     "version": "0.7.0",
                                     "displayName": "Workload Configuration",
                                     "description": "Configure the workload specific setting of a component",
@@ -52043,7 +52055,7 @@ const PatternSchema: Record<string, unknown> = {
                                     "metadata": null
                                   },
                                   {
-                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                     "version": "0.7.0",
                                     "displayName": "Labels and Annotations Configuration",
                                     "description": "Configure Labels And Annotations for  the component ",
@@ -52058,7 +52070,7 @@ const PatternSchema: Record<string, unknown> = {
                                     "metadata": null
                                   },
                                   {
-                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                     "version": "0.7.0",
                                     "displayName": "Relationships",
                                     "description": "View relationships for the component",
@@ -52074,7 +52086,7 @@ const PatternSchema: Record<string, unknown> = {
                                     "metadata": null
                                   },
                                   {
-                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                     "version": "0.7.0",
                                     "displayName": "Json Schema",
                                     "description": "View Component Definition ",
@@ -52090,7 +52102,7 @@ const PatternSchema: Record<string, unknown> = {
                                     "metadata": null
                                   },
                                   {
-                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                     "version": "0.7.0",
                                     "displayName": "Styling",
                                     "description": "Configure the visual styles for the component",
@@ -52105,7 +52117,7 @@ const PatternSchema: Record<string, unknown> = {
                                     "metadata": null
                                   },
                                   {
-                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                     "version": "0.7.0",
                                     "displayName": "Change Shape",
                                     "description": "Change the shape of the component",
@@ -52120,7 +52132,7 @@ const PatternSchema: Record<string, unknown> = {
                                     "metadata": null
                                   },
                                   {
-                                    "schemaVersion": "capability.meshery.io/v1alpha1",
+                                    "schemaVersion": "capability.meshery.io/v1beta1",
                                     "version": "0.7.0",
                                     "displayName": "Compound Drag And Drop",
                                     "description": "Drag and Drop a component into a parent component in graph view",
@@ -52430,9 +52442,9 @@ const PatternSchema: Record<string, unknown> = {
                                 "description": "Capabilities associated with the relationship.",
                                 "x-order": 2,
                                 "items": {
-                                  "x-go-type": "capabilityv1alpha1.Capability",
+                                  "x-go-type": "capabilityv1beta1.Capability",
                                   "x-go-type-import": {
-                                    "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                    "path": "github.com/meshery/schemas/models/v1beta1/capability",
                                     "name": "capabilityv1alpha1"
                                   },
                                   "$id": "https://schemas.meshery.io/capability.yaml",
@@ -52563,7 +52575,7 @@ const PatternSchema: Record<string, unknown> = {
                                       ],
                                       "key": "",
                                       "kind": "mutate",
-                                      "schemaVersion": "capability.meshery.io/v1alpha1",
+                                      "schemaVersion": "capability.meshery.io/v1beta1",
                                       "status": "enabled",
                                       "subType": "",
                                       "type": "style",
@@ -52577,7 +52589,7 @@ const PatternSchema: Record<string, unknown> = {
                                       ],
                                       "key": "",
                                       "kind": "mutate",
-                                      "schemaVersion": "capability.meshery.io/v1alpha1",
+                                      "schemaVersion": "capability.meshery.io/v1beta1",
                                       "status": "enabled",
                                       "subType": "shape",
                                       "type": "style",
@@ -52591,7 +52603,7 @@ const PatternSchema: Record<string, unknown> = {
                                       ],
                                       "key": "",
                                       "kind": "interaction",
-                                      "schemaVersion": "capability.meshery.io/v1alpha1",
+                                      "schemaVersion": "capability.meshery.io/v1beta1",
                                       "status": "enabled",
                                       "subType": "compoundDnd",
                                       "type": "graph",
@@ -52605,7 +52617,7 @@ const PatternSchema: Record<string, unknown> = {
                                       ],
                                       "key": "",
                                       "kind": "mutate",
-                                      "schemaVersion": "capability.meshery.io/v1alpha1",
+                                      "schemaVersion": "capability.meshery.io/v1beta1",
                                       "status": "enabled",
                                       "subType": "body-text",
                                       "type": "style",

@@ -1,0 +1,28 @@
+type: object
+additionalProperties: false
+description: EventResult entity schema.
+properties:
+  user_id:
+    $ref: ../core/api.yml#/components/schemas/UserUuid
+  system_id:
+    $ref: ../core/api.yml#/components/schemas/SystemId
+  category:
+    type: string
+  action:
+    type: string
+  description:
+    type: string
+  firstName:
+    type: string
+  lastName:
+    type: string
+  email:
+    $ref: ../core/api.yml#/components/schemas/Email
+  provider:
+    $ref: ../core/api.yml#/components/schemas/Provider
+  created_at:
+    $ref: ../core/api.yml#/components/schemas/CreatedAt
+required:
+- user_id
+- category
+- action

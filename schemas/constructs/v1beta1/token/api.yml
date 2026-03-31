@@ -2,6 +2,8 @@ openapi: 3.0.0
 info:
   title: token
   description: Documentation for Meshery Cloud REST APIs for user tokens and sessions
+  x-deprecated: true
+  x-superseded-by: v1beta2
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io

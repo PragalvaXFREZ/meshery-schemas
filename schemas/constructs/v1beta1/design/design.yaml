@@ -30,10 +30,10 @@ properties:
       resolvedAliases:
         description: Map of resolved aliases present in the design
         type: object
-        x-go-type: map[string]corev1beta1.ResolvedAlias
+        x-go-type: map[string]core.ResolvedAlias
         x-go-type-import:
-          path: github.com/meshery/schemas/models/v1beta1/core
-          name: corev1beta1
+          path: github.com/meshery/schemas/models/core
+          name: core
         additionalProperties:
           $ref: ../core/api.yml#/components/schemas/ResolvedAlias
   components:
@@ -57,7 +57,7 @@ properties:
     x-order: 8
     x-go-type: "[]*relationship.RelationshipDefinition"
     x-go-type-import:
-      path: github.com/meshery/schemas/models/v1beta1/relationship
+      path: github.com/meshery/schemas/models/v1alpha3/relationship
       name: relationship
     items:
       allOf:

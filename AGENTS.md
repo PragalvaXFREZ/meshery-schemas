@@ -308,6 +308,17 @@ case nil:
 
 ---
 
+## Intentional Design Decisions (Do Not Flag)
+
+These patterns are deliberate. Do not suggest changes during code review:
+
+1. **`SqlNullTime` vs `NullTime`** — Some entities use `SqlNullTime` for backward compatibility with v1beta1 and downstream GORM/Pop consumers. Do not suggest switching unless the entire entity is being migrated.
+2. **Core Go package** — All core types (both generated scalars like `Uuid`, `Time`, `Id` and manual utilities like `Map`, `NullTime`, `MapObject`) live in a single package: `github.com/meshery/schemas/models/core`. Generator output path overrides and Go import overrides map all schema core versions (`v1alpha1/core`, `v1beta1/core`, `v1beta2/core`) to this single package. Schema `x-go-type-import` for any core type must use `models/core` with alias `core`.
+3. **`x-enum-casing-exempt: true`** — Enums with this annotation contain published values that will never be lowercased (e.g., `PlanName`, `FeatureName`). Do not suggest lowercasing.
+4. **`page_size` / `total_count`** — Pagination envelope fields use snake_case as a published API contract, not because they are database-backed. Do not suggest `pageSize`/`totalCount`.
+5. **Deprecated v1beta1 constructs** — Files with `x-deprecated: true` are kept for backward compatibility. Known casing violations are fixed in v1beta2. Do not flag issues in deprecated constructs.
+6. **Same field name, different casing across constructs** — A property like `subType` may be camelCase in one construct (not DB-backed) and `sub_type` in another (DB-backed with `db: "sub_type"`). Both are correct. Casing is determined per-property by whether it maps to a database column in that specific construct, not by what other constructs use.
+
 ## Common Mistakes to Avoid
 
 1. ❌ Hand-editing generated Go code in `models/` directory
@@ -330,6 +341,8 @@ case nil:
 18. ❌ Using SCREAMING\_CASE path parameters (`{orgID}`, `{roleID}`) — always camelCase with `Id` suffix (`{orgId}`, `{roleId}`)
 19. ❌ Using `DELETE` with a request body for bulk operations — use `POST /api/{resources}/delete` instead
 20. ❌ Returning 200 from a `POST` that exclusively creates a new resource — use 201
+21. ❌ Using all-lowercase `id`/`url` suffixes in parameter names — always capitalize (`workspaceId`, not `workspaceid`; `pageUrl`, not `pageurl`)
+22. ❌ Template files with wrong value types — if schema says `type: array`, use `[]` not `{}`; if `type: string`, use `""` not `{}`
 
 ## Checklist for Schema Changes
 
