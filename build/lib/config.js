@@ -74,6 +74,10 @@ const excludeFromGoGeneration = [
   // $ref resolution but don't need their own Go packages.
   "v1beta1/core",
   "v1beta2/core",
+  // v1beta2/catalog: Go models live at models/v1alpha2/catalog (the
+  // promoted source). Generating at models/v1beta2/catalog would create
+  // a duplicate source of truth.
+  "v1beta2/catalog",
 ];
 
 /**

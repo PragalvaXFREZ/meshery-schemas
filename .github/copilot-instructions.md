@@ -8,9 +8,13 @@ The following patterns are intentional and should not be flagged as issues durin
 
 Some entities (e.g., `Subscription.deleted_at`) use `SqlNullTime` instead of `NullTime`. This is intentional for backward compatibility with v1beta1 entities and downstream GORM/Pop consumers. Do not suggest switching to `NullTime` unless the entire entity is being migrated.
 
-### 2. Unversioned `models/core` import path
+### 2. Two core Go packages
 
-Go type imports for shared utility types (`Map`, `NullTime`, `MapObject`, helpers) reference `github.com/meshery/schemas/models/core`. This is a manual utility package that provides SQL driver implementations and conversion helpers used by ALL versioned model packages. It is deliberately not version-scoped because these types do not change between API versions. Do not suggest versioning this path.
+There are two distinct core packages — do not confuse them:
+- `github.com/meshery/schemas/models/core` — manual utility types (`Map`, `NullTime`, `MapObject`, SQL helpers). Unversioned. Used via `x-go-type: core.Map`.
+- `github.com/meshery/schemas/models/v1alpha1/core` — generated types (`Uuid`, `Time`, `Id`, etc.) from oapi-codegen. Used via `x-go-type: "corev1alpha1.Uuid"` with alias `corev1alpha1`.
+
+When a schema property uses `x-go-type` for a generated type like `Uuid`, the import path must be `models/v1alpha1/core` (not `models/core`). When it uses a utility type like `Map`, the import path must be `models/core` (not versioned).
 
 ### 3. `x-enum-casing-exempt: true`
 
