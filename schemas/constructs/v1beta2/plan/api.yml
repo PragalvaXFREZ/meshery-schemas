@@ -159,9 +159,11 @@ components:
 
     PlanCadence:
       type: string
+      # DB enum: none, monthly, annually
       enum:
+        - none
         - monthly
-        - yearly
+        - annually
 
     PlanUnit:
       type: string
