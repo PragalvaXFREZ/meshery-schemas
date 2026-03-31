@@ -2484,9 +2484,9 @@ const EvaluationSchema: Record<string, unknown> = {
                                   "description": "Capabilities associated with the relationship.",
                                   "x-order": 2,
                                   "items": {
-                                    "x-go-type": "capabilityv1beta1.Capability",
+                                    "x-go-type": "capabilityv1alpha1.Capability",
                                     "x-go-type-import": {
-                                      "path": "github.com/meshery/schemas/models/v1beta1/capability",
+                                      "path": "github.com/meshery/schemas/models/v1alpha1/capability",
                                       "name": "capabilityv1alpha1"
                                     },
                                     "$id": "https://schemas.meshery.io/capability.yaml",
@@ -7126,9 +7126,9 @@ const EvaluationSchema: Record<string, unknown> = {
                                     "description": "Capabilities associated with the relationship.",
                                     "x-order": 2,
                                     "items": {
-                                      "x-go-type": "capabilityv1beta1.Capability",
+                                      "x-go-type": "capabilityv1alpha1.Capability",
                                       "x-go-type-import": {
-                                        "path": "github.com/meshery/schemas/models/v1beta1/capability",
+                                        "path": "github.com/meshery/schemas/models/v1alpha1/capability",
                                         "name": "capabilityv1alpha1"
                                       },
                                       "$id": "https://schemas.meshery.io/capability.yaml",
@@ -11821,9 +11821,9 @@ const EvaluationSchema: Record<string, unknown> = {
                           "description": "Capabilities associated with the relationship.",
                           "x-order": 2,
                           "items": {
-                            "x-go-type": "capabilityv1beta1.Capability",
+                            "x-go-type": "capabilityv1alpha1.Capability",
                             "x-go-type-import": {
-                              "path": "github.com/meshery/schemas/models/v1beta1/capability",
+                              "path": "github.com/meshery/schemas/models/v1alpha1/capability",
                               "name": "capabilityv1alpha1"
                             },
                             "$id": "https://schemas.meshery.io/capability.yaml",
@@ -16455,9 +16455,9 @@ const EvaluationSchema: Record<string, unknown> = {
                           "description": "Capabilities associated with the relationship.",
                           "x-order": 2,
                           "items": {
-                            "x-go-type": "capabilityv1beta1.Capability",
+                            "x-go-type": "capabilityv1alpha1.Capability",
                             "x-go-type-import": {
-                              "path": "github.com/meshery/schemas/models/v1beta1/capability",
+                              "path": "github.com/meshery/schemas/models/v1alpha1/capability",
                               "name": "capabilityv1alpha1"
                             },
                             "$id": "https://schemas.meshery.io/capability.yaml",
