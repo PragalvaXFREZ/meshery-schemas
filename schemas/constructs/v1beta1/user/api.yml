@@ -196,6 +196,7 @@ components:
           x-oapi-codegen-extra-tags:
             db: "user_id"
             json: "user_id"
+          format: uuid
         provider:
           type: string
           maxLength: 100
@@ -398,14 +399,21 @@ components:
       properties:
         page:
           type: integer
+          description: Current page number of the result set.
+          minimum: 0
         page_size:
           type: integer
+          description: Number of items per page.
+          minimum: 1
         total_count:
           type: integer
+          description: Total number of items available.
+          minimum: 0
         data:
           type: array
           items:
             $ref: "#/components/schemas/User"
+          description: The data of the userspageforadmin.
 
     UsersPageForNonAdmin:
       type: object
@@ -413,14 +421,21 @@ components:
       properties:
         page:
           type: integer
+          description: Current page number of the result set.
+          minimum: 0
         page_size:
           type: integer
+          description: Number of items per page.
+          minimum: 1
         total_count:
           type: integer
+          description: Total number of items available.
+          minimum: 0
         data:
           type: array
           items:
             $ref: "#/components/schemas/User"
+          description: The data of the userspagefornonadmin.
 
     Preference:
       x-generate-db-helpers: true
@@ -441,6 +456,7 @@ components:
           items:
             x-go-type: Adapter
             $ref: "#/components/schemas/Adapter"
+          description: The mesh adapters of the preference.
         grafana:
           x-go-type: Grafana
           $ref: "#/components/schemas/Grafana"
@@ -452,26 +468,36 @@ components:
           $ref: "#/components/schemas/LoadTestPreferences"
         anonymousUsageStats:
           type: boolean
+          description: The anonymous usage stats of the preference.
         anonymousPerfResults:
           type: boolean
+          description: The anonymous perf results of the preference.
         updated_at:
           type: string
           format: date-time
+          description: Timestamp of when the resource was last updated.
         dashboardPreferences:
           type: object
           additionalProperties: true
+          description: The dashboard preferences of the preference.
         selectedOrganizationId:
           type: string
+          description: ID of the associated selectedOrganization.
+          maxLength: 500
+          format: uuid
         selectedWorkspaceForOrganizations:
           type: object
           additionalProperties:
             type: string
+          description: The selected workspace for organizations of the preference.
         usersExtensionPreferences:
           type: object
           additionalProperties: true
+          description: The users extension preferences of the preference.
         remoteProviderPreferences:
           type: object
           additionalProperties: true
+          description: The remote provider preferences of the preference.
 
     Adapter:
       type: object
@@ -482,12 +508,17 @@ components:
       properties:
         grafanaURL:
           type: string
+          description: The grafana u r l of the grafana.
+          maxLength: 500
         grafanaAPIKey:
           type: string
+          description: The grafana a p i key of the grafana.
+          maxLength: 500
         selectedBoardsConfigs:
           type: array
           items:
             $ref: "#/components/schemas/SelectedGrafanaConfig"
+          description: The selected boards configs of the grafana.
 
     SelectedGrafanaConfig:
       type: object
@@ -498,10 +529,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Panel"
+          description: The panels of the selectedgrafanaconfig.
         templateVars:
           type: array
           items:
             type: string
+          description: The template vars of the selectedgrafanaconfig.
 
     GrafanaBoard:
       type: object
@@ -516,10 +549,13 @@ components:
       properties:
         prometheusURL:
           type: string
+          description: The prometheus u r l of the prometheus.
+          maxLength: 500
         selectedPrometheusBoardsConfigs:
           type: array
           items:
             $ref: "#/components/schemas/SelectedGrafanaConfig"
+          description: The selected prometheus boards configs of the prometheus.
 
     LoadTestPreferences:
       type: object
@@ -527,15 +563,19 @@ components:
         c:
           type: integer
           description: Concurrent requests
+          minimum: 0
         qps:
           type: integer
           description: Queries per second
+          minimum: 0
         t:
           type: string
           description: Duration
+          maxLength: 500
         gen:
           type: string
           description: Load generator
+          maxLength: 500
 
     Social:
       description: "Various online profiles associated with the user account, like GitHub, LinkedIn, X, and so on."
@@ -544,9 +584,11 @@ components:
         site:
           type: string
           maxLength: 50
+          description: The site of the social.
         link:
           type: string
           format: uri
+          description: The link of the social.
       required: ["site", "link"]
 
     # UsersPage:

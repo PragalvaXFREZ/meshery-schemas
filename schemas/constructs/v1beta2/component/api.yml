@@ -24,14 +24,17 @@ components:
           type: string
           description: "Version of the component produced by the registrant. Example: APIVersion of a Kubernetes Pod."
           x-order: 1
+          maxLength: 500
         kind:
           type: string
           description: "The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'."
           x-order: 2
+          maxLength: 255
         schema:
           type: string
           description: "JSON schema of the object as defined by the registrant."
           x-order: 3
+          maxLength: 500
       required:
         - version
         - kind

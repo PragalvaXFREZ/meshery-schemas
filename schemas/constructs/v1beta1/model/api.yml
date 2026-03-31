@@ -173,6 +173,7 @@ components:
         register:
           type: boolean
           nullable: false
+          description: The register of the importrequest.
 
     ImportBody:
       oneOf:
@@ -245,12 +246,19 @@ components:
       properties:
         page:
           type: integer
+          description: Current page number of the result set.
+          minimum: 0
         page_size:
           type: integer
+          description: Number of items per page.
+          minimum: 1
         total_count:
           type: integer
+          description: Total number of items available.
+          minimum: 0
         models:
           type: array
           items:
             type: object
             additionalProperties: true
+          description: The models of the meshmodelmodelspage.

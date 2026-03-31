@@ -353,7 +353,8 @@ const EnvironmentSchema: Record<string, unknown> = {
               "db": "environment_id",
               "json": "environment_id"
             },
-            "x-go-type-skip-optional-pointer": true
+            "x-go-type-skip-optional-pointer": true,
+            "description": "ID of the associated environment."
           },
           "connection_id": {
             "type": "string",
@@ -366,7 +367,8 @@ const EnvironmentSchema: Record<string, unknown> = {
               "db": "connection_id",
               "json": "connection_id"
             },
-            "x-go-type-skip-optional-pointer": true
+            "x-go-type-skip-optional-pointer": true,
+            "description": "ID of the associated connection."
           },
           "created_at": {
             "type": "string",
@@ -410,7 +412,9 @@ const EnvironmentSchema: Record<string, unknown> = {
             "x-go-name": "OrgId",
             "x-oapi-codegen-extra-tags": {
               "json": "organization_id"
-            }
+            },
+            "maxLength": 500,
+            "format": "uuid"
           }
         },
         "required": [
@@ -605,7 +609,8 @@ const EnvironmentSchema: Record<string, unknown> = {
                   "x-go-type-skip-optional-pointer": true
                 }
               }
-            }
+            },
+            "description": "Environments associated with this resource."
           }
         }
       },
@@ -613,20 +618,27 @@ const EnvironmentSchema: Record<string, unknown> = {
         "type": "object",
         "properties": {
           "page": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Current page number of the result set.",
+            "minimum": 0
           },
           "page_size": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Number of items per page.",
+            "minimum": 1
           },
           "total_count": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Total number of items available.",
+            "minimum": 0
           },
           "connections": {
             "type": "array",
             "items": {
               "type": "object",
               "additionalProperties": true
-            }
+            },
+            "description": "The connections of the environmentconnectionspage."
           }
         }
       }
@@ -656,7 +668,9 @@ const EnvironmentSchema: Record<string, unknown> = {
                   "x-go-name": "OrgId",
                   "x-oapi-codegen-extra-tags": {
                     "json": "organization_id"
-                  }
+                  },
+                  "maxLength": 500,
+                  "format": "uuid"
                 }
               },
               "required": [
@@ -702,7 +716,9 @@ const EnvironmentSchema: Record<string, unknown> = {
                     "x-go-name": "OrgId",
                     "x-oapi-codegen-extra-tags": {
                       "json": "organization_id"
-                    }
+                    },
+                    "maxLength": 500,
+                    "format": "uuid"
                   }
                 },
                 "required": [
@@ -1165,7 +1181,8 @@ const EnvironmentSchema: Record<string, unknown> = {
                             "x-go-type-skip-optional-pointer": true
                           }
                         }
-                      }
+                      },
+                      "description": "Environments associated with this resource."
                     }
                   }
                 }
@@ -1420,7 +1437,8 @@ const EnvironmentSchema: Record<string, unknown> = {
                             "x-go-type-skip-optional-pointer": true
                           }
                         }
-                      }
+                      },
+                      "description": "Environments associated with this resource."
                     }
                   }
                 }
@@ -1516,7 +1534,9 @@ const EnvironmentSchema: Record<string, unknown> = {
                     "x-go-name": "OrgId",
                     "x-oapi-codegen-extra-tags": {
                       "json": "organization_id"
-                    }
+                    },
+                    "maxLength": 500,
+                    "format": "uuid"
                   }
                 },
                 "required": [
@@ -1719,7 +1739,8 @@ const EnvironmentSchema: Record<string, unknown> = {
                             "x-go-type-skip-optional-pointer": true
                           }
                         }
-                      }
+                      },
+                      "description": "Environments associated with this resource."
                     }
                   }
                 }
@@ -1911,20 +1932,27 @@ const EnvironmentSchema: Record<string, unknown> = {
                   "type": "object",
                   "properties": {
                     "page": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "Current page number of the result set.",
+                      "minimum": 0
                     },
                     "page_size": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "Number of items per page.",
+                      "minimum": 1
                     },
                     "total_count": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "Total number of items available.",
+                      "minimum": 0
                     },
                     "connections": {
                       "type": "array",
                       "items": {
                         "type": "object",
                         "additionalProperties": true
-                      }
+                      },
+                      "description": "The connections of the environmentconnectionspage."
                     }
                   }
                 }

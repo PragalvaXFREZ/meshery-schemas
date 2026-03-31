@@ -61,6 +61,7 @@ export interface components {
     };
     /** @description A paginated list of tokens. */
     TokenPage: {
+      /** @description The tokens of the tokenpage. */
       tokens: {
         /**
          * Format: uuid
@@ -177,6 +178,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
+            /** @description The tokens of the tokenpage. */
             tokens: {
               /**
                * Format: uuid
@@ -249,6 +251,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
+            /** @description The tokens of the tokenpage. */
             tokens: {
               /**
                * Format: uuid
@@ -325,6 +328,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
+            /** @description The tokens of the tokenpage. */
             tokens: {
               /**
                * Format: uuid
@@ -471,6 +475,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
+            /** @description The tokens of the tokenpage. */
             tokens: {
               /**
                * Format: uuid

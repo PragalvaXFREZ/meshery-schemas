@@ -30,6 +30,7 @@ export interface paths {
           content: {
             "application/json": {
               /**
+               * Format: uuid
                * @description Id of the Curricula
                * @example 923458-3490394-934893
                */
@@ -107,6 +108,7 @@ export interface paths {
                 permalink: string;
                 certificate?: {
                   /**
+                   * Format: uuid
                    * @description Unique identifier for the certificate
                    * @example 1234567890abcdef
                    */
@@ -117,6 +119,7 @@ export interface paths {
                    */
                   orgId: string;
                   /**
+                   * Format: uuid
                    * @description ID of the recipient (user) who received the certificate
                    * @example 1234567890abcdef
                    */
@@ -178,6 +181,7 @@ export interface paths {
                 /** @description List of children items in the top-level curricula */
                 children?: {
                   /**
+                   * Format: uuid
                    * @description Unique identifier for the course
                    * @example 1234567890abcdef
                    */
@@ -282,7 +286,10 @@ export interface paths {
                * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                */
               org_id: string;
-              /** @description ID of the course content */
+              /**
+               * Format: uuid
+               * @description ID of the course content
+               */
               content_id: string;
               /**
                * Format: uuid
@@ -312,6 +319,7 @@ export interface paths {
               /** @description Issued certificate for completing the curricula under registration */
               certificate: {
                 /**
+                 * Format: uuid
                  * @description Unique identifier for the certificate
                  * @example 1234567890abcdef
                  */
@@ -322,6 +330,7 @@ export interface paths {
                  */
                 orgId: string;
                 /**
+                 * Format: uuid
                  * @description ID of the recipient (user) who received the certificate
                  * @example 1234567890abcdef
                  */
@@ -481,6 +490,7 @@ export interface components {
       permalink: string;
       certificate?: {
         /**
+         * Format: uuid
          * @description Unique identifier for the certificate
          * @example 1234567890abcdef
          */
@@ -491,6 +501,7 @@ export interface components {
          */
         orgId: string;
         /**
+         * Format: uuid
          * @description ID of the recipient (user) who received the certificate
          * @example 1234567890abcdef
          */
@@ -552,6 +563,7 @@ export interface components {
       /** @description List of children items in the top-level curricula */
       children?: {
         /**
+         * Format: uuid
          * @description Unique identifier for the course
          * @example 1234567890abcdef
          */
@@ -595,7 +607,10 @@ export interface components {
     /** @description Expiry time for curricula access */
     AcademyCurriculaAccessExpiresAt: string;
     RegisterToAcademyContentRequest: {
-      /** @description ID of the academy content to register for */
+      /**
+       * Format: uuid
+       * @description ID of the academy content to register for
+       */
       contentId: string;
       /**
        * Format: uuid
@@ -616,6 +631,7 @@ export interface components {
     /** @description AcademyCurricula entity schema. */
     AcademyCurricula: {
       /**
+       * Format: uuid
        * @description Id of the Curricula
        * @example 923458-3490394-934893
        */
@@ -693,6 +709,7 @@ export interface components {
         permalink: string;
         certificate?: {
           /**
+           * Format: uuid
            * @description Unique identifier for the certificate
            * @example 1234567890abcdef
            */
@@ -703,6 +720,7 @@ export interface components {
            */
           orgId: string;
           /**
+           * Format: uuid
            * @description ID of the recipient (user) who received the certificate
            * @example 1234567890abcdef
            */
@@ -764,6 +782,7 @@ export interface components {
         /** @description List of children items in the top-level curricula */
         children?: {
           /**
+           * Format: uuid
            * @description Unique identifier for the course
            * @example 1234567890abcdef
            */
@@ -807,6 +826,7 @@ export interface components {
     };
     SingleAcademyCurriculaResponse: {
       /**
+       * Format: uuid
        * @description Id of the Curricula
        * @example 923458-3490394-934893
        */
@@ -884,6 +904,7 @@ export interface components {
         permalink: string;
         certificate?: {
           /**
+           * Format: uuid
            * @description Unique identifier for the certificate
            * @example 1234567890abcdef
            */
@@ -894,6 +915,7 @@ export interface components {
            */
           orgId: string;
           /**
+           * Format: uuid
            * @description ID of the recipient (user) who received the certificate
            * @example 1234567890abcdef
            */
@@ -955,6 +977,7 @@ export interface components {
         /** @description List of children items in the top-level curricula */
         children?: {
           /**
+           * Format: uuid
            * @description Unique identifier for the course
            * @example 1234567890abcdef
            */
@@ -1015,8 +1038,12 @@ export interface components {
         name: string;
         /** @description Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
         description: string;
+        /** @description The emails of the invitation. */
         emails: string[];
-        /** @description ID of the organization to which the user is invited */
+        /**
+         * Format: uuid
+         * @description ID of the organization to which the user is invited
+         */
         org_id: string;
         /**
          * Format: date-time
@@ -1027,7 +1054,9 @@ export interface components {
         quota?: number;
         /** @description List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
         accepted_by: string[];
+        /** @description The roles of the invitation. */
         roles: string[];
+        /** @description The teams of the invitation. */
         teams: string[];
         /**
          * @description Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
@@ -1117,6 +1146,7 @@ export interface components {
         permalink: string;
         certificate?: {
           /**
+           * Format: uuid
            * @description Unique identifier for the certificate
            * @example 1234567890abcdef
            */
@@ -1127,6 +1157,7 @@ export interface components {
            */
           orgId: string;
           /**
+           * Format: uuid
            * @description ID of the recipient (user) who received the certificate
            * @example 1234567890abcdef
            */
@@ -1188,6 +1219,7 @@ export interface components {
         /** @description List of children items in the top-level curricula */
         children?: {
           /**
+           * Format: uuid
            * @description Unique identifier for the course
            * @example 1234567890abcdef
            */
@@ -1231,6 +1263,7 @@ export interface components {
     };
     AcademyCurriculaWithMetrics: {
       /**
+       * Format: uuid
        * @description Id of the Curricula
        * @example 923458-3490394-934893
        */
@@ -1308,6 +1341,7 @@ export interface components {
         permalink: string;
         certificate?: {
           /**
+           * Format: uuid
            * @description Unique identifier for the certificate
            * @example 1234567890abcdef
            */
@@ -1318,6 +1352,7 @@ export interface components {
            */
           orgId: string;
           /**
+           * Format: uuid
            * @description ID of the recipient (user) who received the certificate
            * @example 1234567890abcdef
            */
@@ -1379,6 +1414,7 @@ export interface components {
         /** @description List of children items in the top-level curricula */
         children?: {
           /**
+           * Format: uuid
            * @description Unique identifier for the course
            * @example 1234567890abcdef
            */
@@ -1428,8 +1464,10 @@ export interface components {
        * @example 7
        */
       total: number;
+      /** @description The data of the academycurriculalistresponse. */
       data: {
         /**
+         * Format: uuid
          * @description Id of the Curricula
          * @example 923458-3490394-934893
          */
@@ -1507,6 +1545,7 @@ export interface components {
           permalink: string;
           certificate?: {
             /**
+             * Format: uuid
              * @description Unique identifier for the certificate
              * @example 1234567890abcdef
              */
@@ -1517,6 +1556,7 @@ export interface components {
              */
             orgId: string;
             /**
+             * Format: uuid
              * @description ID of the recipient (user) who received the certificate
              * @example 1234567890abcdef
              */
@@ -1578,6 +1618,7 @@ export interface components {
           /** @description List of children items in the top-level curricula */
           children?: {
             /**
+             * Format: uuid
              * @description Unique identifier for the course
              * @example 1234567890abcdef
              */
@@ -1626,8 +1667,10 @@ export interface components {
        * @example 7
        */
       total: number;
+      /** @description The data of the academycurriculawithmetricslistresponse. */
       data: ({
         /**
+         * Format: uuid
          * @description Id of the Curricula
          * @example 923458-3490394-934893
          */
@@ -1705,6 +1748,7 @@ export interface components {
           permalink: string;
           certificate?: {
             /**
+             * Format: uuid
              * @description Unique identifier for the certificate
              * @example 1234567890abcdef
              */
@@ -1715,6 +1759,7 @@ export interface components {
              */
             orgId: string;
             /**
+             * Format: uuid
              * @description ID of the recipient (user) who received the certificate
              * @example 1234567890abcdef
              */
@@ -1776,6 +1821,7 @@ export interface components {
           /** @description List of children items in the top-level curricula */
           children?: {
             /**
+             * Format: uuid
              * @description Unique identifier for the course
              * @example 1234567890abcdef
              */
@@ -1850,6 +1896,7 @@ export interface components {
       permalink: string;
       certificate?: {
         /**
+         * Format: uuid
          * @description Unique identifier for the certificate
          * @example 1234567890abcdef
          */
@@ -1860,6 +1907,7 @@ export interface components {
          */
         orgId: string;
         /**
+         * Format: uuid
          * @description ID of the recipient (user) who received the certificate
          * @example 1234567890abcdef
          */
@@ -1921,6 +1969,7 @@ export interface components {
       /** @description List of children items in the top-level curricula */
       children?: {
         /**
+         * Format: uuid
          * @description Unique identifier for the course
          * @example 1234567890abcdef
          */
@@ -1991,6 +2040,7 @@ export interface components {
       permalink: string;
       certificate?: {
         /**
+         * Format: uuid
          * @description Unique identifier for the certificate
          * @example 1234567890abcdef
          */
@@ -2001,6 +2051,7 @@ export interface components {
          */
         orgId: string;
         /**
+         * Format: uuid
          * @description ID of the recipient (user) who received the certificate
          * @example 1234567890abcdef
          */
@@ -2062,6 +2113,7 @@ export interface components {
       /** @description List of children items in the top-level curricula */
       children?: {
         /**
+         * Format: uuid
          * @description Unique identifier for the course
          * @example 1234567890abcdef
          */
@@ -2124,6 +2176,7 @@ export interface components {
     };
     Certificate: {
       /**
+       * Format: uuid
        * @description Unique identifier for the certificate
        * @example 1234567890abcdef
        */
@@ -2134,6 +2187,7 @@ export interface components {
        */
       orgId: string;
       /**
+       * Format: uuid
        * @description ID of the recipient (user) who received the certificate
        * @example 1234567890abcdef
        */
@@ -2222,6 +2276,7 @@ export interface components {
       permalink: string;
       certificate?: {
         /**
+         * Format: uuid
          * @description Unique identifier for the certificate
          * @example 1234567890abcdef
          */
@@ -2232,6 +2287,7 @@ export interface components {
          */
         orgId: string;
         /**
+         * Format: uuid
          * @description ID of the recipient (user) who received the certificate
          * @example 1234567890abcdef
          */
@@ -2293,6 +2349,7 @@ export interface components {
       /** @description List of children items in the top-level curricula */
       children?: {
         /**
+         * Format: uuid
          * @description Unique identifier for the course
          * @example 1234567890abcdef
          */
@@ -2353,7 +2410,10 @@ export interface components {
        * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
        */
       org_id: string;
-      /** @description ID of the course content */
+      /**
+       * Format: uuid
+       * @description ID of the course content
+       */
       content_id: string;
       /**
        * Format: uuid
@@ -2383,6 +2443,7 @@ export interface components {
       /** @description Issued certificate for completing the curricula under registration */
       certificate: {
         /**
+         * Format: uuid
          * @description Unique identifier for the certificate
          * @example 1234567890abcdef
          */
@@ -2393,6 +2454,7 @@ export interface components {
          */
         orgId: string;
         /**
+         * Format: uuid
          * @description ID of the recipient (user) who received the certificate
          * @example 1234567890abcdef
          */
@@ -2457,17 +2519,32 @@ export interface components {
     /** @description Test submissions made by the user (map of test IDs to Submissions) */
     AllTestSubmissionsForCurricula: {
       [key: string]: {
+        /** @description The score of the quizevaluationresult. */
         score: number;
+        /** @description The passed of the quizevaluationresult. */
         passed: boolean;
-        /** Format: float */
+        /**
+         * Format: float
+         * @description The percentage scored of the quizevaluationresult.
+         */
         percentageScored: number;
+        /** @description The total marks of the quizevaluationresult. */
         totalMarks: number;
-        /** Format: float */
+        /**
+         * Format: float
+         * @description The pass percentage of the quizevaluationresult.
+         */
         passPercentage: number;
+        /** @description The correct submissions of the quizevaluationresult. */
         correctSubmissions: { [key: string]: boolean };
         quiz: {
+          /**
+           * Format: uuid
+           * @description Quiz ID.
+           */
           id: string;
           /**
+           * Format: uuid
            * @description Organization ID that owns this quiz
            * @example layer5
            */
@@ -2477,28 +2554,53 @@ export interface components {
            * @example true
            */
           final: boolean;
+          /** @description The title of the quiz. */
           title: string;
+          /** @description Description of the quiz. */
           description: string;
+          /** @description The slug of the quiz. */
           slug: string;
+          /** @description The rel permalink of the quiz. */
           relPermalink: string;
+          /** @description The permalink of the quiz. */
           permalink: string;
+          /** @description Type of the resource. */
           type: string;
+          /** @description The section of the quiz. */
           section: string;
+          /** @description The layout of the quiz. */
           layout: string;
-          /** Format: date */
+          /**
+           * Format: date
+           * @description The date of the quiz.
+           */
           date: string;
-          /** Format: date */
+          /**
+           * Format: date
+           * @description The lastmod of the quiz.
+           */
           lastmod: string;
+          /** @description The draft of the quiz. */
           draft: boolean;
+          /** @description The file path of the quiz. */
           filePath: string;
-          /** Format: float */
+          /**
+           * Format: float
+           * @description The pass percentage of the quiz.
+           */
           passPercentage: number;
           /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
           timeLimit: number;
           /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
           maxAttempts: number;
+          /** @description The questions of the quiz. */
           questions: {
+            /**
+             * Format: uuid
+             * @description Question ID.
+             */
             id: string;
+            /** @description The text of the question. */
             text: string;
             /** @enum {string} */
             type:
@@ -2506,56 +2608,111 @@ export interface components {
               | "single-answer"
               | "short-answer"
               | "essay";
+            /** @description The marks of the question. */
             marks: number;
+            /** @description The multiple answers of the question. */
             multipleAnswers?: boolean;
+            /** @description The options of the question. */
             options: {
+              /**
+               * Format: uuid
+               * @description QuestionOption ID.
+               */
               id: string;
+              /** @description The text of the questionoption. */
               text: string;
+              /** @description The is correct of the questionoption. */
               isCorrect: boolean;
             }[];
+            /** @description The correct answer of the question. */
             correctAnswer: string;
           }[];
+          /** @description The total questions of the quiz. */
           totalQuestions: number;
+          /** @description The total questions in bank of the quiz. */
           totalQuestionsInBank: number;
+          /** @description The total question sets of the quiz. */
           totalQuestionSets: number;
+          /** @description The total marks of the quiz. */
           totalMarks: number;
+          /** @description The prerequisites of the quiz. */
           prerequisites: {
+            /**
+             * Format: uuid
+             * @description Parent ID.
+             */
             id: string;
+            /** @description The title of the parent. */
             title: string;
+            /** @description The rel permalink of the parent. */
             relPermalink: string;
+            /** @description Type of the resource. */
             type: string;
           }[];
           parent?: {
+            /**
+             * Format: uuid
+             * @description Parent ID.
+             */
             id: string;
+            /** @description The title of the parent. */
             title: string;
+            /** @description The rel permalink of the parent. */
             relPermalink: string;
+            /** @description Type of the resource. */
             type: string;
           };
           nextPage: {
+            /**
+             * Format: uuid
+             * @description Parent ID.
+             */
             id: string;
+            /** @description The title of the parent. */
             title: string;
+            /** @description The rel permalink of the parent. */
             relPermalink: string;
+            /** @description Type of the resource. */
             type: string;
           };
         };
-        /** Format: date-time */
+        /**
+         * Format: date-time
+         * @description The attempted at of the quizevaluationresult.
+         */
         attemptedAt: string;
+        /** @description The attempts of the quizevaluationresult. */
         attempts: number;
       }[];
     };
     /** @description Test submissions made by the user (array of QuizEvaluationResult) */
     TestSubmissions: {
+      /** @description The score of the quizevaluationresult. */
       score: number;
+      /** @description The passed of the quizevaluationresult. */
       passed: boolean;
-      /** Format: float */
+      /**
+       * Format: float
+       * @description The percentage scored of the quizevaluationresult.
+       */
       percentageScored: number;
+      /** @description The total marks of the quizevaluationresult. */
       totalMarks: number;
-      /** Format: float */
+      /**
+       * Format: float
+       * @description The pass percentage of the quizevaluationresult.
+       */
       passPercentage: number;
+      /** @description The correct submissions of the quizevaluationresult. */
       correctSubmissions: { [key: string]: boolean };
       quiz: {
+        /**
+         * Format: uuid
+         * @description Quiz ID.
+         */
         id: string;
         /**
+         * Format: uuid
          * @description Organization ID that owns this quiz
          * @example layer5
          */
@@ -2565,69 +2722,135 @@ export interface components {
          * @example true
          */
         final: boolean;
+        /** @description The title of the quiz. */
         title: string;
+        /** @description Description of the quiz. */
         description: string;
+        /** @description The slug of the quiz. */
         slug: string;
+        /** @description The rel permalink of the quiz. */
         relPermalink: string;
+        /** @description The permalink of the quiz. */
         permalink: string;
+        /** @description Type of the resource. */
         type: string;
+        /** @description The section of the quiz. */
         section: string;
+        /** @description The layout of the quiz. */
         layout: string;
-        /** Format: date */
+        /**
+         * Format: date
+         * @description The date of the quiz.
+         */
         date: string;
-        /** Format: date */
+        /**
+         * Format: date
+         * @description The lastmod of the quiz.
+         */
         lastmod: string;
+        /** @description The draft of the quiz. */
         draft: boolean;
+        /** @description The file path of the quiz. */
         filePath: string;
-        /** Format: float */
+        /**
+         * Format: float
+         * @description The pass percentage of the quiz.
+         */
         passPercentage: number;
         /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
         timeLimit: number;
         /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
         maxAttempts: number;
+        /** @description The questions of the quiz. */
         questions: {
+          /**
+           * Format: uuid
+           * @description Question ID.
+           */
           id: string;
+          /** @description The text of the question. */
           text: string;
           /** @enum {string} */
           type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
+          /** @description The marks of the question. */
           marks: number;
+          /** @description The multiple answers of the question. */
           multipleAnswers?: boolean;
+          /** @description The options of the question. */
           options: {
+            /**
+             * Format: uuid
+             * @description QuestionOption ID.
+             */
             id: string;
+            /** @description The text of the questionoption. */
             text: string;
+            /** @description The is correct of the questionoption. */
             isCorrect: boolean;
           }[];
+          /** @description The correct answer of the question. */
           correctAnswer: string;
         }[];
+        /** @description The total questions of the quiz. */
         totalQuestions: number;
+        /** @description The total questions in bank of the quiz. */
         totalQuestionsInBank: number;
+        /** @description The total question sets of the quiz. */
         totalQuestionSets: number;
+        /** @description The total marks of the quiz. */
         totalMarks: number;
+        /** @description The prerequisites of the quiz. */
         prerequisites: {
+          /**
+           * Format: uuid
+           * @description Parent ID.
+           */
           id: string;
+          /** @description The title of the parent. */
           title: string;
+          /** @description The rel permalink of the parent. */
           relPermalink: string;
+          /** @description Type of the resource. */
           type: string;
         }[];
         parent?: {
+          /**
+           * Format: uuid
+           * @description Parent ID.
+           */
           id: string;
+          /** @description The title of the parent. */
           title: string;
+          /** @description The rel permalink of the parent. */
           relPermalink: string;
+          /** @description Type of the resource. */
           type: string;
         };
         nextPage: {
+          /**
+           * Format: uuid
+           * @description Parent ID.
+           */
           id: string;
+          /** @description The title of the parent. */
           title: string;
+          /** @description The rel permalink of the parent. */
           relPermalink: string;
+          /** @description Type of the resource. */
           type: string;
         };
       };
-      /** Format: date-time */
+      /**
+       * Format: date-time
+       * @description The attempted at of the quizevaluationresult.
+       */
       attemptedAt: string;
+      /** @description The attempts of the quizevaluationresult. */
       attempts: number;
     }[];
     ChildNode: {
       /**
+       * Format: uuid
        * @description Unique identifier for the course
        * @example 1234567890abcdef
        */
@@ -2673,6 +2896,7 @@ export interface components {
        * @example 7
        */
       total: number;
+      /** @description The data of the academyregistrationslistresponse. */
       data: {
         /**
          * Format: uuid
@@ -2684,7 +2908,10 @@ export interface components {
          * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
          */
         org_id: string;
-        /** @description ID of the course content */
+        /**
+         * Format: uuid
+         * @description ID of the course content
+         */
         content_id: string;
         /**
          * Format: uuid
@@ -2714,6 +2941,7 @@ export interface components {
         /** @description Issued certificate for completing the curricula under registration */
         certificate: {
           /**
+           * Format: uuid
            * @description Unique identifier for the certificate
            * @example 1234567890abcdef
            */
@@ -2724,6 +2952,7 @@ export interface components {
            */
           orgId: string;
           /**
+           * Format: uuid
            * @description ID of the recipient (user) who received the certificate
            * @example 1234567890abcdef
            */
@@ -2787,35 +3016,66 @@ export interface components {
       }[];
     };
     CurriculaCurrentItemData: {
+      /**
+       * Format: uuid
+       * @description CurriculaCurrentItemData ID.
+       */
       id: string;
-      /** Format: date-time */
+      /**
+       * Format: date-time
+       * @description The last opened of the curriculacurrentitemdata.
+       */
       lastOpened: string;
       /** @enum {string} */
       contentType: "learning-path" | "challenge" | "certification";
     };
     CurriculaProgressTracker: {
+      /** @description The current item of the curriculaprogresstracker. */
       currentItem: {
         [key: string]: {
+          /**
+           * Format: uuid
+           * @description CurriculaCurrentItemData ID.
+           */
           id: string;
-          /** Format: date-time */
+          /**
+           * Format: date-time
+           * @description The last opened of the curriculacurrentitemdata.
+           */
           lastOpened: string;
           /** @enum {string} */
           contentType: "learning-path" | "challenge" | "certification";
         };
       };
+      /** @description The grades of the curriculaprogresstracker. */
       grades: {
         [key: string]: {
+          /** @description The score of the quizevaluationresult. */
           score: number;
+          /** @description The passed of the quizevaluationresult. */
           passed: boolean;
-          /** Format: float */
+          /**
+           * Format: float
+           * @description The percentage scored of the quizevaluationresult.
+           */
           percentageScored: number;
+          /** @description The total marks of the quizevaluationresult. */
           totalMarks: number;
-          /** Format: float */
+          /**
+           * Format: float
+           * @description The pass percentage of the quizevaluationresult.
+           */
           passPercentage: number;
+          /** @description The correct submissions of the quizevaluationresult. */
           correctSubmissions: { [key: string]: boolean };
           quiz: {
+            /**
+             * Format: uuid
+             * @description Quiz ID.
+             */
             id: string;
             /**
+             * Format: uuid
              * @description Organization ID that owns this quiz
              * @example layer5
              */
@@ -2825,28 +3085,53 @@ export interface components {
              * @example true
              */
             final: boolean;
+            /** @description The title of the quiz. */
             title: string;
+            /** @description Description of the quiz. */
             description: string;
+            /** @description The slug of the quiz. */
             slug: string;
+            /** @description The rel permalink of the quiz. */
             relPermalink: string;
+            /** @description The permalink of the quiz. */
             permalink: string;
+            /** @description Type of the resource. */
             type: string;
+            /** @description The section of the quiz. */
             section: string;
+            /** @description The layout of the quiz. */
             layout: string;
-            /** Format: date */
+            /**
+             * Format: date
+             * @description The date of the quiz.
+             */
             date: string;
-            /** Format: date */
+            /**
+             * Format: date
+             * @description The lastmod of the quiz.
+             */
             lastmod: string;
+            /** @description The draft of the quiz. */
             draft: boolean;
+            /** @description The file path of the quiz. */
             filePath: string;
-            /** Format: float */
+            /**
+             * Format: float
+             * @description The pass percentage of the quiz.
+             */
             passPercentage: number;
             /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
             timeLimit: number;
             /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
             maxAttempts: number;
+            /** @description The questions of the quiz. */
             questions: {
+              /**
+               * Format: uuid
+               * @description Question ID.
+               */
               id: string;
+              /** @description The text of the question. */
               text: string;
               /** @enum {string} */
               type:
@@ -2854,40 +3139,80 @@ export interface components {
                 | "single-answer"
                 | "short-answer"
                 | "essay";
+              /** @description The marks of the question. */
               marks: number;
+              /** @description The multiple answers of the question. */
               multipleAnswers?: boolean;
+              /** @description The options of the question. */
               options: {
+                /**
+                 * Format: uuid
+                 * @description QuestionOption ID.
+                 */
                 id: string;
+                /** @description The text of the questionoption. */
                 text: string;
+                /** @description The is correct of the questionoption. */
                 isCorrect: boolean;
               }[];
+              /** @description The correct answer of the question. */
               correctAnswer: string;
             }[];
+            /** @description The total questions of the quiz. */
             totalQuestions: number;
+            /** @description The total questions in bank of the quiz. */
             totalQuestionsInBank: number;
+            /** @description The total question sets of the quiz. */
             totalQuestionSets: number;
+            /** @description The total marks of the quiz. */
             totalMarks: number;
+            /** @description The prerequisites of the quiz. */
             prerequisites: {
+              /**
+               * Format: uuid
+               * @description Parent ID.
+               */
               id: string;
+              /** @description The title of the parent. */
               title: string;
+              /** @description The rel permalink of the parent. */
               relPermalink: string;
+              /** @description Type of the resource. */
               type: string;
             }[];
             parent?: {
+              /**
+               * Format: uuid
+               * @description Parent ID.
+               */
               id: string;
+              /** @description The title of the parent. */
               title: string;
+              /** @description The rel permalink of the parent. */
               relPermalink: string;
+              /** @description Type of the resource. */
               type: string;
             };
             nextPage: {
+              /**
+               * Format: uuid
+               * @description Parent ID.
+               */
               id: string;
+              /** @description The title of the parent. */
               title: string;
+              /** @description The rel permalink of the parent. */
               relPermalink: string;
+              /** @description Type of the resource. */
               type: string;
             };
           };
-          /** Format: date-time */
+          /**
+           * Format: date-time
+           * @description The attempted at of the quizevaluationresult.
+           */
           attemptedAt: string;
+          /** @description The attempts of the quizevaluationresult. */
           attempts: number;
         };
       };
@@ -2902,14 +3227,24 @@ export interface components {
            */
           completedAt: string;
           itemData: {
+            /**
+             * Format: uuid
+             * @description Parent ID.
+             */
             id: string;
+            /** @description The title of the parent. */
             title: string;
+            /** @description The rel permalink of the parent. */
             relPermalink: string;
+            /** @description Type of the resource. */
             type: string;
           };
         };
       };
-      /** Format: date-time */
+      /**
+       * Format: date-time
+       * @description The completed of the curriculaprogresstracker.
+       */
       completed: string;
     };
     ProgressItemCompleted: {
@@ -2919,9 +3254,16 @@ export interface components {
        */
       completedAt: string;
       itemData: {
+        /**
+         * Format: uuid
+         * @description Parent ID.
+         */
         id: string;
+        /** @description The title of the parent. */
         title: string;
+        /** @description The rel permalink of the parent. */
         relPermalink: string;
+        /** @description Type of the resource. */
         type: string;
       };
     };
@@ -2929,20 +3271,34 @@ export interface components {
       /** @enum {string} */
       contentType: "learning-path" | "challenge" | "certification";
       itemData: {
+        /**
+         * Format: uuid
+         * @description CurriculaCurrentItemData ID.
+         */
         id: string;
-        /** Format: date-time */
+        /**
+         * Format: date-time
+         * @description The last opened of the curriculacurrentitemdata.
+         */
         lastOpened: string;
         /** @enum {string} */
         contentType: "learning-path" | "challenge" | "certification";
       };
     };
     ErrorResponse: {
+      /** @description The error of the errorresponse. */
       error?: string;
+      /** @description The details of the errorresponse. */
       details?: string;
     };
     Quiz: {
+      /**
+       * Format: uuid
+       * @description Quiz ID.
+       */
       id: string;
       /**
+       * Format: uuid
        * @description Organization ID that owns this quiz
        * @example layer5
        */
@@ -2952,67 +3308,135 @@ export interface components {
        * @example true
        */
       final: boolean;
+      /** @description The title of the quiz. */
       title: string;
+      /** @description Description of the quiz. */
       description: string;
+      /** @description The slug of the quiz. */
       slug: string;
+      /** @description The rel permalink of the quiz. */
       relPermalink: string;
+      /** @description The permalink of the quiz. */
       permalink: string;
+      /** @description Type of the resource. */
       type: string;
+      /** @description The section of the quiz. */
       section: string;
+      /** @description The layout of the quiz. */
       layout: string;
-      /** Format: date */
+      /**
+       * Format: date
+       * @description The date of the quiz.
+       */
       date: string;
-      /** Format: date */
+      /**
+       * Format: date
+       * @description The lastmod of the quiz.
+       */
       lastmod: string;
+      /** @description The draft of the quiz. */
       draft: boolean;
+      /** @description The file path of the quiz. */
       filePath: string;
-      /** Format: float */
+      /**
+       * Format: float
+       * @description The pass percentage of the quiz.
+       */
       passPercentage: number;
       /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
       timeLimit: number;
       /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
       maxAttempts: number;
+      /** @description The questions of the quiz. */
       questions: {
+        /**
+         * Format: uuid
+         * @description Question ID.
+         */
         id: string;
+        /** @description The text of the question. */
         text: string;
         /** @enum {string} */
         type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
+        /** @description The marks of the question. */
         marks: number;
+        /** @description The multiple answers of the question. */
         multipleAnswers?: boolean;
+        /** @description The options of the question. */
         options: {
+          /**
+           * Format: uuid
+           * @description QuestionOption ID.
+           */
           id: string;
+          /** @description The text of the questionoption. */
           text: string;
+          /** @description The is correct of the questionoption. */
           isCorrect: boolean;
         }[];
+        /** @description The correct answer of the question. */
         correctAnswer: string;
       }[];
+      /** @description The total questions of the quiz. */
       totalQuestions: number;
+      /** @description The total questions in bank of the quiz. */
       totalQuestionsInBank: number;
+      /** @description The total question sets of the quiz. */
       totalQuestionSets: number;
+      /** @description The total marks of the quiz. */
       totalMarks: number;
+      /** @description The prerequisites of the quiz. */
       prerequisites: {
+        /**
+         * Format: uuid
+         * @description Parent ID.
+         */
         id: string;
+        /** @description The title of the parent. */
         title: string;
+        /** @description The rel permalink of the parent. */
         relPermalink: string;
+        /** @description Type of the resource. */
         type: string;
       }[];
       parent?: {
+        /**
+         * Format: uuid
+         * @description Parent ID.
+         */
         id: string;
+        /** @description The title of the parent. */
         title: string;
+        /** @description The rel permalink of the parent. */
         relPermalink: string;
+        /** @description Type of the resource. */
         type: string;
       };
       nextPage: {
+        /**
+         * Format: uuid
+         * @description Parent ID.
+         */
         id: string;
+        /** @description The title of the parent. */
         title: string;
+        /** @description The rel permalink of the parent. */
         relPermalink: string;
+        /** @description Type of the resource. */
         type: string;
       };
     };
     Parent: {
+      /**
+       * Format: uuid
+       * @description Parent ID.
+       */
       id: string;
+      /** @description The title of the parent. */
       title: string;
+      /** @description The rel permalink of the parent. */
       relPermalink: string;
+      /** @description Type of the resource. */
       type: string;
     };
     /** @enum {string} */
@@ -3022,26 +3446,52 @@ export interface components {
       | "short-answer"
       | "essay";
     Question: {
+      /**
+       * Format: uuid
+       * @description Question ID.
+       */
       id: string;
+      /** @description The text of the question. */
       text: string;
       /** @enum {string} */
       type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
+      /** @description The marks of the question. */
       marks: number;
+      /** @description The multiple answers of the question. */
       multipleAnswers?: boolean;
+      /** @description The options of the question. */
       options: {
+        /**
+         * Format: uuid
+         * @description QuestionOption ID.
+         */
         id: string;
+        /** @description The text of the questionoption. */
         text: string;
+        /** @description The is correct of the questionoption. */
         isCorrect: boolean;
       }[];
+      /** @description The correct answer of the question. */
       correctAnswer: string;
     };
     QuestionOption: {
+      /**
+       * Format: uuid
+       * @description QuestionOption ID.
+       */
       id: string;
+      /** @description The text of the questionoption. */
       text: string;
+      /** @description The is correct of the questionoption. */
       isCorrect: boolean;
     };
     StartTestRequest: {
+      /** @description The test abs path of the starttestrequest. */
       testAbsPath: string;
+      /**
+       * Format: uuid
+       * @description ID of the associated registration.
+       */
       registrationId: string;
     };
     QuizSubmission: {
@@ -3050,18 +3500,46 @@ export interface components {
        * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
        */
       testSessionId: string;
+      /** @description The quiz abs path of the quizsubmission. */
       quizAbsPath: string;
+      /**
+       * Format: uuid
+       * @description ID of the associated registration.
+       */
       registrationId: string;
+      /**
+       * Format: uuid
+       * @description ID of the user who owns or created this resource.
+       */
       user_id: string;
+      /** @description The answers of the quizsubmission. */
       answers: {
+        /**
+         * Format: uuid
+         * @description ID of the associated question.
+         */
         questionId: string;
+        /**
+         * Format: uuid
+         * @description ID of the associated selectedOption.
+         */
         selectedOptionId: { [key: string]: boolean };
+        /** @description The answer text of the submittedanswer. */
         answerText: string;
       }[];
     };
     SubmittedAnswer: {
+      /**
+       * Format: uuid
+       * @description ID of the associated question.
+       */
       questionId: string;
+      /**
+       * Format: uuid
+       * @description ID of the associated selectedOption.
+       */
       selectedOptionId: { [key: string]: boolean };
+      /** @description The answer text of the submittedanswer. */
       answerText: string;
     };
     /** @enum {string} */
@@ -3077,6 +3555,7 @@ export interface components {
        * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
        */
       registration_id: string;
+      /** @description The test abs path of the testsubmission. */
       test_abs_path: string;
       /**
        * Format: uuid
@@ -3098,7 +3577,10 @@ export interface components {
        * @description Timestamp when the resource was deleted.
        */
       deleted_at?: string;
-      /** Format: date-time */
+      /**
+       * Format: date-time
+       * @description The submitted at of the testsubmission.
+       */
       submitted_at?: string;
       submission_data?: {
         /**
@@ -3106,12 +3588,31 @@ export interface components {
          * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
          */
         testSessionId: string;
+        /** @description The quiz abs path of the quizsubmission. */
         quizAbsPath: string;
+        /**
+         * Format: uuid
+         * @description ID of the associated registration.
+         */
         registrationId: string;
+        /**
+         * Format: uuid
+         * @description ID of the user who owns or created this resource.
+         */
         user_id: string;
+        /** @description The answers of the quizsubmission. */
         answers: {
+          /**
+           * Format: uuid
+           * @description ID of the associated question.
+           */
           questionId: string;
+          /**
+           * Format: uuid
+           * @description ID of the associated selectedOption.
+           */
           selectedOptionId: { [key: string]: boolean };
+          /** @description The answer text of the submittedanswer. */
           answerText: string;
         }[];
       };
@@ -3123,17 +3624,32 @@ export interface components {
       /** @enum {string} */
       status: "not-attempted" | "failed" | "passed";
       result?: {
+        /** @description The score of the quizevaluationresult. */
         score: number;
+        /** @description The passed of the quizevaluationresult. */
         passed: boolean;
-        /** Format: float */
+        /**
+         * Format: float
+         * @description The percentage scored of the quizevaluationresult.
+         */
         percentageScored: number;
+        /** @description The total marks of the quizevaluationresult. */
         totalMarks: number;
-        /** Format: float */
+        /**
+         * Format: float
+         * @description The pass percentage of the quizevaluationresult.
+         */
         passPercentage: number;
+        /** @description The correct submissions of the quizevaluationresult. */
         correctSubmissions: { [key: string]: boolean };
         quiz: {
+          /**
+           * Format: uuid
+           * @description Quiz ID.
+           */
           id: string;
           /**
+           * Format: uuid
            * @description Organization ID that owns this quiz
            * @example layer5
            */
@@ -3143,28 +3659,53 @@ export interface components {
            * @example true
            */
           final: boolean;
+          /** @description The title of the quiz. */
           title: string;
+          /** @description Description of the quiz. */
           description: string;
+          /** @description The slug of the quiz. */
           slug: string;
+          /** @description The rel permalink of the quiz. */
           relPermalink: string;
+          /** @description The permalink of the quiz. */
           permalink: string;
+          /** @description Type of the resource. */
           type: string;
+          /** @description The section of the quiz. */
           section: string;
+          /** @description The layout of the quiz. */
           layout: string;
-          /** Format: date */
+          /**
+           * Format: date
+           * @description The date of the quiz.
+           */
           date: string;
-          /** Format: date */
+          /**
+           * Format: date
+           * @description The lastmod of the quiz.
+           */
           lastmod: string;
+          /** @description The draft of the quiz. */
           draft: boolean;
+          /** @description The file path of the quiz. */
           filePath: string;
-          /** Format: float */
+          /**
+           * Format: float
+           * @description The pass percentage of the quiz.
+           */
           passPercentage: number;
           /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
           timeLimit: number;
           /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
           maxAttempts: number;
+          /** @description The questions of the quiz. */
           questions: {
+            /**
+             * Format: uuid
+             * @description Question ID.
+             */
             id: string;
+            /** @description The text of the question. */
             text: string;
             /** @enum {string} */
             type:
@@ -3172,45 +3713,90 @@ export interface components {
               | "single-answer"
               | "short-answer"
               | "essay";
+            /** @description The marks of the question. */
             marks: number;
+            /** @description The multiple answers of the question. */
             multipleAnswers?: boolean;
+            /** @description The options of the question. */
             options: {
+              /**
+               * Format: uuid
+               * @description QuestionOption ID.
+               */
               id: string;
+              /** @description The text of the questionoption. */
               text: string;
+              /** @description The is correct of the questionoption. */
               isCorrect: boolean;
             }[];
+            /** @description The correct answer of the question. */
             correctAnswer: string;
           }[];
+          /** @description The total questions of the quiz. */
           totalQuestions: number;
+          /** @description The total questions in bank of the quiz. */
           totalQuestionsInBank: number;
+          /** @description The total question sets of the quiz. */
           totalQuestionSets: number;
+          /** @description The total marks of the quiz. */
           totalMarks: number;
+          /** @description The prerequisites of the quiz. */
           prerequisites: {
+            /**
+             * Format: uuid
+             * @description Parent ID.
+             */
             id: string;
+            /** @description The title of the parent. */
             title: string;
+            /** @description The rel permalink of the parent. */
             relPermalink: string;
+            /** @description Type of the resource. */
             type: string;
           }[];
           parent?: {
+            /**
+             * Format: uuid
+             * @description Parent ID.
+             */
             id: string;
+            /** @description The title of the parent. */
             title: string;
+            /** @description The rel permalink of the parent. */
             relPermalink: string;
+            /** @description Type of the resource. */
             type: string;
           };
           nextPage: {
+            /**
+             * Format: uuid
+             * @description Parent ID.
+             */
             id: string;
+            /** @description The title of the parent. */
             title: string;
+            /** @description The rel permalink of the parent. */
             relPermalink: string;
+            /** @description Type of the resource. */
             type: string;
           };
         };
-        /** Format: date-time */
+        /**
+         * Format: date-time
+         * @description The attempted at of the quizevaluationresult.
+         */
         attemptedAt: string;
+        /** @description The attempts of the quizevaluationresult. */
         attempts: number;
       };
       test: {
+        /**
+         * Format: uuid
+         * @description Quiz ID.
+         */
         id: string;
         /**
+         * Format: uuid
          * @description Organization ID that owns this quiz
          * @example layer5
          */
@@ -3220,76 +3806,152 @@ export interface components {
          * @example true
          */
         final: boolean;
+        /** @description The title of the quiz. */
         title: string;
+        /** @description Description of the quiz. */
         description: string;
+        /** @description The slug of the quiz. */
         slug: string;
+        /** @description The rel permalink of the quiz. */
         relPermalink: string;
+        /** @description The permalink of the quiz. */
         permalink: string;
+        /** @description Type of the resource. */
         type: string;
+        /** @description The section of the quiz. */
         section: string;
+        /** @description The layout of the quiz. */
         layout: string;
-        /** Format: date */
+        /**
+         * Format: date
+         * @description The date of the quiz.
+         */
         date: string;
-        /** Format: date */
+        /**
+         * Format: date
+         * @description The lastmod of the quiz.
+         */
         lastmod: string;
+        /** @description The draft of the quiz. */
         draft: boolean;
+        /** @description The file path of the quiz. */
         filePath: string;
-        /** Format: float */
+        /**
+         * Format: float
+         * @description The pass percentage of the quiz.
+         */
         passPercentage: number;
         /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
         timeLimit: number;
         /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
         maxAttempts: number;
+        /** @description The questions of the quiz. */
         questions: {
+          /**
+           * Format: uuid
+           * @description Question ID.
+           */
           id: string;
+          /** @description The text of the question. */
           text: string;
           /** @enum {string} */
           type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
+          /** @description The marks of the question. */
           marks: number;
+          /** @description The multiple answers of the question. */
           multipleAnswers?: boolean;
+          /** @description The options of the question. */
           options: {
+            /**
+             * Format: uuid
+             * @description QuestionOption ID.
+             */
             id: string;
+            /** @description The text of the questionoption. */
             text: string;
+            /** @description The is correct of the questionoption. */
             isCorrect: boolean;
           }[];
+          /** @description The correct answer of the question. */
           correctAnswer: string;
         }[];
+        /** @description The total questions of the quiz. */
         totalQuestions: number;
+        /** @description The total questions in bank of the quiz. */
         totalQuestionsInBank: number;
+        /** @description The total question sets of the quiz. */
         totalQuestionSets: number;
+        /** @description The total marks of the quiz. */
         totalMarks: number;
+        /** @description The prerequisites of the quiz. */
         prerequisites: {
+          /**
+           * Format: uuid
+           * @description Parent ID.
+           */
           id: string;
+          /** @description The title of the parent. */
           title: string;
+          /** @description The rel permalink of the parent. */
           relPermalink: string;
+          /** @description Type of the resource. */
           type: string;
         }[];
         parent?: {
+          /**
+           * Format: uuid
+           * @description Parent ID.
+           */
           id: string;
+          /** @description The title of the parent. */
           title: string;
+          /** @description The rel permalink of the parent. */
           relPermalink: string;
+          /** @description Type of the resource. */
           type: string;
         };
         nextPage: {
+          /**
+           * Format: uuid
+           * @description Parent ID.
+           */
           id: string;
+          /** @description The title of the parent. */
           title: string;
+          /** @description The rel permalink of the parent. */
           relPermalink: string;
+          /** @description Type of the resource. */
           type: string;
         };
       };
     };
     QuizEvaluationResult: {
+      /** @description The score of the quizevaluationresult. */
       score: number;
+      /** @description The passed of the quizevaluationresult. */
       passed: boolean;
-      /** Format: float */
+      /**
+       * Format: float
+       * @description The percentage scored of the quizevaluationresult.
+       */
       percentageScored: number;
+      /** @description The total marks of the quizevaluationresult. */
       totalMarks: number;
-      /** Format: float */
+      /**
+       * Format: float
+       * @description The pass percentage of the quizevaluationresult.
+       */
       passPercentage: number;
+      /** @description The correct submissions of the quizevaluationresult. */
       correctSubmissions: { [key: string]: boolean };
       quiz: {
+        /**
+         * Format: uuid
+         * @description Quiz ID.
+         */
         id: string;
         /**
+         * Format: uuid
          * @description Organization ID that owns this quiz
          * @example layer5
          */
@@ -3299,65 +3961,130 @@ export interface components {
          * @example true
          */
         final: boolean;
+        /** @description The title of the quiz. */
         title: string;
+        /** @description Description of the quiz. */
         description: string;
+        /** @description The slug of the quiz. */
         slug: string;
+        /** @description The rel permalink of the quiz. */
         relPermalink: string;
+        /** @description The permalink of the quiz. */
         permalink: string;
+        /** @description Type of the resource. */
         type: string;
+        /** @description The section of the quiz. */
         section: string;
+        /** @description The layout of the quiz. */
         layout: string;
-        /** Format: date */
+        /**
+         * Format: date
+         * @description The date of the quiz.
+         */
         date: string;
-        /** Format: date */
+        /**
+         * Format: date
+         * @description The lastmod of the quiz.
+         */
         lastmod: string;
+        /** @description The draft of the quiz. */
         draft: boolean;
+        /** @description The file path of the quiz. */
         filePath: string;
-        /** Format: float */
+        /**
+         * Format: float
+         * @description The pass percentage of the quiz.
+         */
         passPercentage: number;
         /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
         timeLimit: number;
         /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
         maxAttempts: number;
+        /** @description The questions of the quiz. */
         questions: {
+          /**
+           * Format: uuid
+           * @description Question ID.
+           */
           id: string;
+          /** @description The text of the question. */
           text: string;
           /** @enum {string} */
           type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
+          /** @description The marks of the question. */
           marks: number;
+          /** @description The multiple answers of the question. */
           multipleAnswers?: boolean;
+          /** @description The options of the question. */
           options: {
+            /**
+             * Format: uuid
+             * @description QuestionOption ID.
+             */
             id: string;
+            /** @description The text of the questionoption. */
             text: string;
+            /** @description The is correct of the questionoption. */
             isCorrect: boolean;
           }[];
+          /** @description The correct answer of the question. */
           correctAnswer: string;
         }[];
+        /** @description The total questions of the quiz. */
         totalQuestions: number;
+        /** @description The total questions in bank of the quiz. */
         totalQuestionsInBank: number;
+        /** @description The total question sets of the quiz. */
         totalQuestionSets: number;
+        /** @description The total marks of the quiz. */
         totalMarks: number;
+        /** @description The prerequisites of the quiz. */
         prerequisites: {
+          /**
+           * Format: uuid
+           * @description Parent ID.
+           */
           id: string;
+          /** @description The title of the parent. */
           title: string;
+          /** @description The rel permalink of the parent. */
           relPermalink: string;
+          /** @description Type of the resource. */
           type: string;
         }[];
         parent?: {
+          /**
+           * Format: uuid
+           * @description Parent ID.
+           */
           id: string;
+          /** @description The title of the parent. */
           title: string;
+          /** @description The rel permalink of the parent. */
           relPermalink: string;
+          /** @description Type of the resource. */
           type: string;
         };
         nextPage: {
+          /**
+           * Format: uuid
+           * @description Parent ID.
+           */
           id: string;
+          /** @description The title of the parent. */
           title: string;
+          /** @description The rel permalink of the parent. */
           relPermalink: string;
+          /** @description Type of the resource. */
           type: string;
         };
       };
-      /** Format: date-time */
+      /**
+       * Format: date-time
+       * @description The attempted at of the quizevaluationresult.
+       */
       attemptedAt: string;
+      /** @description The attempts of the quizevaluationresult. */
       attempts: number;
     };
     UserRegistration: {
@@ -3411,12 +4138,17 @@ export interface components {
       total_count: number;
     };
     CurriculaRegistrationsFilter: {
+      /** @description The pagesize of the curricularegistrationsfilter. */
       pagesize: number;
+      /** @description Current page number of the result set. */
       page: number;
+      /** @description The content type of the curricularegistrationsfilter. */
       contentType: string[];
+      /** @description Current status of the resource. */
       status: string[];
     };
     CurriculaRegistrationsResponse: {
+      /** @description The data of the curricularegistrationsresponse. */
       data: {
         /** @description Title of the curricula */
         curricula_title: string;
@@ -3467,36 +4199,66 @@ export interface components {
          */
         total_count: number;
       }[];
-      /** Format: int64 */
+      /**
+       * Format: int64
+       * @description Total number of items available.
+       */
       total_count: number;
+      /** @description Number of items per page. */
       page_size: number;
+      /** @description Current page number of the result set. */
       page: number;
     };
     UpdateCurrentItemProgressResponse: {
+      /** @description The message of the updatecurrentitemprogressresponse. */
       message?: string;
       progressTracker?: {
+        /** @description The current item of the curriculaprogresstracker. */
         currentItem: {
           [key: string]: {
+            /**
+             * Format: uuid
+             * @description CurriculaCurrentItemData ID.
+             */
             id: string;
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description The last opened of the curriculacurrentitemdata.
+             */
             lastOpened: string;
             /** @enum {string} */
             contentType: "learning-path" | "challenge" | "certification";
           };
         };
+        /** @description The grades of the curriculaprogresstracker. */
         grades: {
           [key: string]: {
+            /** @description The score of the quizevaluationresult. */
             score: number;
+            /** @description The passed of the quizevaluationresult. */
             passed: boolean;
-            /** Format: float */
+            /**
+             * Format: float
+             * @description The percentage scored of the quizevaluationresult.
+             */
             percentageScored: number;
+            /** @description The total marks of the quizevaluationresult. */
             totalMarks: number;
-            /** Format: float */
+            /**
+             * Format: float
+             * @description The pass percentage of the quizevaluationresult.
+             */
             passPercentage: number;
+            /** @description The correct submissions of the quizevaluationresult. */
             correctSubmissions: { [key: string]: boolean };
             quiz: {
+              /**
+               * Format: uuid
+               * @description Quiz ID.
+               */
               id: string;
               /**
+               * Format: uuid
                * @description Organization ID that owns this quiz
                * @example layer5
                */
@@ -3506,28 +4268,53 @@ export interface components {
                * @example true
                */
               final: boolean;
+              /** @description The title of the quiz. */
               title: string;
+              /** @description Description of the quiz. */
               description: string;
+              /** @description The slug of the quiz. */
               slug: string;
+              /** @description The rel permalink of the quiz. */
               relPermalink: string;
+              /** @description The permalink of the quiz. */
               permalink: string;
+              /** @description Type of the resource. */
               type: string;
+              /** @description The section of the quiz. */
               section: string;
+              /** @description The layout of the quiz. */
               layout: string;
-              /** Format: date */
+              /**
+               * Format: date
+               * @description The date of the quiz.
+               */
               date: string;
-              /** Format: date */
+              /**
+               * Format: date
+               * @description The lastmod of the quiz.
+               */
               lastmod: string;
+              /** @description The draft of the quiz. */
               draft: boolean;
+              /** @description The file path of the quiz. */
               filePath: string;
-              /** Format: float */
+              /**
+               * Format: float
+               * @description The pass percentage of the quiz.
+               */
               passPercentage: number;
               /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
               timeLimit: number;
               /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
               maxAttempts: number;
+              /** @description The questions of the quiz. */
               questions: {
+                /**
+                 * Format: uuid
+                 * @description Question ID.
+                 */
                 id: string;
+                /** @description The text of the question. */
                 text: string;
                 /** @enum {string} */
                 type:
@@ -3535,40 +4322,80 @@ export interface components {
                   | "single-answer"
                   | "short-answer"
                   | "essay";
+                /** @description The marks of the question. */
                 marks: number;
+                /** @description The multiple answers of the question. */
                 multipleAnswers?: boolean;
+                /** @description The options of the question. */
                 options: {
+                  /**
+                   * Format: uuid
+                   * @description QuestionOption ID.
+                   */
                   id: string;
+                  /** @description The text of the questionoption. */
                   text: string;
+                  /** @description The is correct of the questionoption. */
                   isCorrect: boolean;
                 }[];
+                /** @description The correct answer of the question. */
                 correctAnswer: string;
               }[];
+              /** @description The total questions of the quiz. */
               totalQuestions: number;
+              /** @description The total questions in bank of the quiz. */
               totalQuestionsInBank: number;
+              /** @description The total question sets of the quiz. */
               totalQuestionSets: number;
+              /** @description The total marks of the quiz. */
               totalMarks: number;
+              /** @description The prerequisites of the quiz. */
               prerequisites: {
+                /**
+                 * Format: uuid
+                 * @description Parent ID.
+                 */
                 id: string;
+                /** @description The title of the parent. */
                 title: string;
+                /** @description The rel permalink of the parent. */
                 relPermalink: string;
+                /** @description Type of the resource. */
                 type: string;
               }[];
               parent?: {
+                /**
+                 * Format: uuid
+                 * @description Parent ID.
+                 */
                 id: string;
+                /** @description The title of the parent. */
                 title: string;
+                /** @description The rel permalink of the parent. */
                 relPermalink: string;
+                /** @description Type of the resource. */
                 type: string;
               };
               nextPage: {
+                /**
+                 * Format: uuid
+                 * @description Parent ID.
+                 */
                 id: string;
+                /** @description The title of the parent. */
                 title: string;
+                /** @description The rel permalink of the parent. */
                 relPermalink: string;
+                /** @description Type of the resource. */
                 type: string;
               };
             };
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description The attempted at of the quizevaluationresult.
+             */
             attemptedAt: string;
+            /** @description The attempts of the quizevaluationresult. */
             attempts: number;
           };
         };
@@ -3583,22 +4410,43 @@ export interface components {
              */
             completedAt: string;
             itemData: {
+              /**
+               * Format: uuid
+               * @description Parent ID.
+               */
               id: string;
+              /** @description The title of the parent. */
               title: string;
+              /** @description The rel permalink of the parent. */
               relPermalink: string;
+              /** @description Type of the resource. */
               type: string;
             };
           };
         };
-        /** Format: date-time */
+        /**
+         * Format: date-time
+         * @description The completed of the curriculaprogresstracker.
+         */
         completed: string;
       };
+      /**
+       * Format: uuid
+       * @description ID of the associated registration.
+       */
       registrationId?: string;
       /** @enum {string} */
       contentType?: "learning-path" | "challenge" | "certification";
       itemData?: {
+        /**
+         * Format: uuid
+         * @description CurriculaCurrentItemData ID.
+         */
         id: string;
-        /** Format: date-time */
+        /**
+         * Format: date-time
+         * @description The last opened of the curriculacurrentitemdata.
+         */
         lastOpened: string;
         /** @enum {string} */
         contentType: "learning-path" | "challenge" | "certification";
@@ -3658,8 +4506,10 @@ export interface operations {
              * @example 7
              */
             total: number;
+            /** @description The data of the academycurriculalistresponse. */
             data: {
               /**
+               * Format: uuid
                * @description Id of the Curricula
                * @example 923458-3490394-934893
                */
@@ -3737,6 +4587,7 @@ export interface operations {
                 permalink: string;
                 certificate?: {
                   /**
+                   * Format: uuid
                    * @description Unique identifier for the certificate
                    * @example 1234567890abcdef
                    */
@@ -3747,6 +4598,7 @@ export interface operations {
                    */
                   orgId: string;
                   /**
+                   * Format: uuid
                    * @description ID of the recipient (user) who received the certificate
                    * @example 1234567890abcdef
                    */
@@ -3808,6 +4660,7 @@ export interface operations {
                 /** @description List of children items in the top-level curricula */
                 children?: {
                   /**
+                   * Format: uuid
                    * @description Unique identifier for the course
                    * @example 1234567890abcdef
                    */
@@ -3902,8 +4755,10 @@ export interface operations {
              * @example 7
              */
             total: number;
+            /** @description The data of the academycurriculawithmetricslistresponse. */
             data: ({
               /**
+               * Format: uuid
                * @description Id of the Curricula
                * @example 923458-3490394-934893
                */
@@ -3981,6 +4836,7 @@ export interface operations {
                 permalink: string;
                 certificate?: {
                   /**
+                   * Format: uuid
                    * @description Unique identifier for the certificate
                    * @example 1234567890abcdef
                    */
@@ -3991,6 +4847,7 @@ export interface operations {
                    */
                   orgId: string;
                   /**
+                   * Format: uuid
                    * @description ID of the recipient (user) who received the certificate
                    * @example 1234567890abcdef
                    */
@@ -4052,6 +4909,7 @@ export interface operations {
                 /** @description List of children items in the top-level curricula */
                 children?: {
                   /**
+                   * Format: uuid
                    * @description Unique identifier for the course
                    * @example 1234567890abcdef
                    */
@@ -4118,6 +4976,7 @@ export interface operations {
         content: {
           "application/json": {
             /**
+             * Format: uuid
              * @description Id of the Curricula
              * @example 923458-3490394-934893
              */
@@ -4195,6 +5054,7 @@ export interface operations {
               permalink: string;
               certificate?: {
                 /**
+                 * Format: uuid
                  * @description Unique identifier for the certificate
                  * @example 1234567890abcdef
                  */
@@ -4205,6 +5065,7 @@ export interface operations {
                  */
                 orgId: string;
                 /**
+                 * Format: uuid
                  * @description ID of the recipient (user) who received the certificate
                  * @example 1234567890abcdef
                  */
@@ -4266,6 +5127,7 @@ export interface operations {
               /** @description List of children items in the top-level curricula */
               children?: {
                 /**
+                 * Format: uuid
                  * @description Unique identifier for the course
                  * @example 1234567890abcdef
                  */
@@ -4388,6 +5250,7 @@ export interface operations {
             permalink: string;
             certificate?: {
               /**
+               * Format: uuid
                * @description Unique identifier for the certificate
                * @example 1234567890abcdef
                */
@@ -4398,6 +5261,7 @@ export interface operations {
                */
               orgId: string;
               /**
+               * Format: uuid
                * @description ID of the recipient (user) who received the certificate
                * @example 1234567890abcdef
                */
@@ -4459,6 +5323,7 @@ export interface operations {
             /** @description List of children items in the top-level curricula */
             children?: {
               /**
+               * Format: uuid
                * @description Unique identifier for the course
                * @example 1234567890abcdef
                */
@@ -4519,7 +5384,10 @@ export interface operations {
              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             org_id: string;
-            /** @description ID of the course content */
+            /**
+             * Format: uuid
+             * @description ID of the course content
+             */
             content_id: string;
             /**
              * Format: uuid
@@ -4549,6 +5417,7 @@ export interface operations {
             /** @description Issued certificate for completing the curricula under registration */
             certificate: {
               /**
+               * Format: uuid
                * @description Unique identifier for the certificate
                * @example 1234567890abcdef
                */
@@ -4559,6 +5428,7 @@ export interface operations {
                */
               orgId: string;
               /**
+               * Format: uuid
                * @description ID of the recipient (user) who received the certificate
                * @example 1234567890abcdef
                */
@@ -4636,7 +5506,10 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": {
-          /** @description ID of the academy content to register for */
+          /**
+           * Format: uuid
+           * @description ID of the academy content to register for
+           */
           contentId: string;
           /**
            * Format: uuid
@@ -4671,7 +5544,10 @@ export interface operations {
              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             org_id: string;
-            /** @description ID of the course content */
+            /**
+             * Format: uuid
+             * @description ID of the course content
+             */
             content_id: string;
             /**
              * Format: uuid
@@ -4701,6 +5577,7 @@ export interface operations {
             /** @description Issued certificate for completing the curricula under registration */
             certificate: {
               /**
+               * Format: uuid
                * @description Unique identifier for the certificate
                * @example 1234567890abcdef
                */
@@ -4711,6 +5588,7 @@ export interface operations {
                */
               orgId: string;
               /**
+               * Format: uuid
                * @description ID of the recipient (user) who received the certificate
                * @example 1234567890abcdef
                */
@@ -4806,6 +5684,7 @@ export interface operations {
         content: {
           "application/json": {
             /**
+             * Format: uuid
              * @description Id of the Curricula
              * @example 923458-3490394-934893
              */
@@ -4883,6 +5762,7 @@ export interface operations {
               permalink: string;
               certificate?: {
                 /**
+                 * Format: uuid
                  * @description Unique identifier for the certificate
                  * @example 1234567890abcdef
                  */
@@ -4893,6 +5773,7 @@ export interface operations {
                  */
                 orgId: string;
                 /**
+                 * Format: uuid
                  * @description ID of the recipient (user) who received the certificate
                  * @example 1234567890abcdef
                  */
@@ -4954,6 +5835,7 @@ export interface operations {
               /** @description List of children items in the top-level curricula */
               children?: {
                 /**
+                 * Format: uuid
                  * @description Unique identifier for the course
                  * @example 1234567890abcdef
                  */
@@ -5014,8 +5896,12 @@ export interface operations {
               name: string;
               /** @description Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
               description: string;
+              /** @description The emails of the invitation. */
               emails: string[];
-              /** @description ID of the organization to which the user is invited */
+              /**
+               * Format: uuid
+               * @description ID of the organization to which the user is invited
+               */
               org_id: string;
               /**
                * Format: date-time
@@ -5026,7 +5912,9 @@ export interface operations {
               quota?: number;
               /** @description List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
               accepted_by: string[];
+              /** @description The roles of the invitation. */
               roles: string[];
+              /** @description The teams of the invitation. */
               teams: string[];
               /**
                * @description Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
@@ -5080,6 +5968,7 @@ export interface operations {
         content: {
           "application/json": {
             /**
+             * Format: uuid
              * @description Id of the Curricula
              * @example 923458-3490394-934893
              */
@@ -5157,6 +6046,7 @@ export interface operations {
               permalink: string;
               certificate?: {
                 /**
+                 * Format: uuid
                  * @description Unique identifier for the certificate
                  * @example 1234567890abcdef
                  */
@@ -5167,6 +6057,7 @@ export interface operations {
                  */
                 orgId: string;
                 /**
+                 * Format: uuid
                  * @description ID of the recipient (user) who received the certificate
                  * @example 1234567890abcdef
                  */
@@ -5228,6 +6119,7 @@ export interface operations {
               /** @description List of children items in the top-level curricula */
               children?: {
                 /**
+                 * Format: uuid
                  * @description Unique identifier for the course
                  * @example 1234567890abcdef
                  */
@@ -5288,8 +6180,12 @@ export interface operations {
               name: string;
               /** @description Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
               description: string;
+              /** @description The emails of the invitation. */
               emails: string[];
-              /** @description ID of the organization to which the user is invited */
+              /**
+               * Format: uuid
+               * @description ID of the organization to which the user is invited
+               */
               org_id: string;
               /**
                * Format: date-time
@@ -5300,7 +6196,9 @@ export interface operations {
               quota?: number;
               /** @description List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
               accepted_by: string[];
+              /** @description The roles of the invitation. */
               roles: string[];
+              /** @description The teams of the invitation. */
               teams: string[];
               /**
                * @description Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
@@ -5407,6 +6305,7 @@ export interface operations {
             permalink: string;
             certificate?: {
               /**
+               * Format: uuid
                * @description Unique identifier for the certificate
                * @example 1234567890abcdef
                */
@@ -5417,6 +6316,7 @@ export interface operations {
                */
               orgId: string;
               /**
+               * Format: uuid
                * @description ID of the recipient (user) who received the certificate
                * @example 1234567890abcdef
                */
@@ -5478,6 +6378,7 @@ export interface operations {
             /** @description List of children items in the top-level curricula */
             children?: {
               /**
+               * Format: uuid
                * @description Unique identifier for the course
                * @example 1234567890abcdef
                */
@@ -5559,30 +6460,55 @@ export interface operations {
       200: {
         content: {
           "application/json": {
+            /** @description The message of the updatecurrentitemprogressresponse. */
             message?: string;
             progressTracker?: {
+              /** @description The current item of the curriculaprogresstracker. */
               currentItem: {
                 [key: string]: {
+                  /**
+                   * Format: uuid
+                   * @description CurriculaCurrentItemData ID.
+                   */
                   id: string;
-                  /** Format: date-time */
+                  /**
+                   * Format: date-time
+                   * @description The last opened of the curriculacurrentitemdata.
+                   */
                   lastOpened: string;
                   /** @enum {string} */
                   contentType: "learning-path" | "challenge" | "certification";
                 };
               };
+              /** @description The grades of the curriculaprogresstracker. */
               grades: {
                 [key: string]: {
+                  /** @description The score of the quizevaluationresult. */
                   score: number;
+                  /** @description The passed of the quizevaluationresult. */
                   passed: boolean;
-                  /** Format: float */
+                  /**
+                   * Format: float
+                   * @description The percentage scored of the quizevaluationresult.
+                   */
                   percentageScored: number;
+                  /** @description The total marks of the quizevaluationresult. */
                   totalMarks: number;
-                  /** Format: float */
+                  /**
+                   * Format: float
+                   * @description The pass percentage of the quizevaluationresult.
+                   */
                   passPercentage: number;
+                  /** @description The correct submissions of the quizevaluationresult. */
                   correctSubmissions: { [key: string]: boolean };
                   quiz: {
+                    /**
+                     * Format: uuid
+                     * @description Quiz ID.
+                     */
                     id: string;
                     /**
+                     * Format: uuid
                      * @description Organization ID that owns this quiz
                      * @example layer5
                      */
@@ -5592,28 +6518,53 @@ export interface operations {
                      * @example true
                      */
                     final: boolean;
+                    /** @description The title of the quiz. */
                     title: string;
+                    /** @description Description of the quiz. */
                     description: string;
+                    /** @description The slug of the quiz. */
                     slug: string;
+                    /** @description The rel permalink of the quiz. */
                     relPermalink: string;
+                    /** @description The permalink of the quiz. */
                     permalink: string;
+                    /** @description Type of the resource. */
                     type: string;
+                    /** @description The section of the quiz. */
                     section: string;
+                    /** @description The layout of the quiz. */
                     layout: string;
-                    /** Format: date */
+                    /**
+                     * Format: date
+                     * @description The date of the quiz.
+                     */
                     date: string;
-                    /** Format: date */
+                    /**
+                     * Format: date
+                     * @description The lastmod of the quiz.
+                     */
                     lastmod: string;
+                    /** @description The draft of the quiz. */
                     draft: boolean;
+                    /** @description The file path of the quiz. */
                     filePath: string;
-                    /** Format: float */
+                    /**
+                     * Format: float
+                     * @description The pass percentage of the quiz.
+                     */
                     passPercentage: number;
                     /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
                     timeLimit: number;
                     /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
                     maxAttempts: number;
+                    /** @description The questions of the quiz. */
                     questions: {
+                      /**
+                       * Format: uuid
+                       * @description Question ID.
+                       */
                       id: string;
+                      /** @description The text of the question. */
                       text: string;
                       /** @enum {string} */
                       type:
@@ -5621,40 +6572,80 @@ export interface operations {
                         | "single-answer"
                         | "short-answer"
                         | "essay";
+                      /** @description The marks of the question. */
                       marks: number;
+                      /** @description The multiple answers of the question. */
                       multipleAnswers?: boolean;
+                      /** @description The options of the question. */
                       options: {
+                        /**
+                         * Format: uuid
+                         * @description QuestionOption ID.
+                         */
                         id: string;
+                        /** @description The text of the questionoption. */
                         text: string;
+                        /** @description The is correct of the questionoption. */
                         isCorrect: boolean;
                       }[];
+                      /** @description The correct answer of the question. */
                       correctAnswer: string;
                     }[];
+                    /** @description The total questions of the quiz. */
                     totalQuestions: number;
+                    /** @description The total questions in bank of the quiz. */
                     totalQuestionsInBank: number;
+                    /** @description The total question sets of the quiz. */
                     totalQuestionSets: number;
+                    /** @description The total marks of the quiz. */
                     totalMarks: number;
+                    /** @description The prerequisites of the quiz. */
                     prerequisites: {
+                      /**
+                       * Format: uuid
+                       * @description Parent ID.
+                       */
                       id: string;
+                      /** @description The title of the parent. */
                       title: string;
+                      /** @description The rel permalink of the parent. */
                       relPermalink: string;
+                      /** @description Type of the resource. */
                       type: string;
                     }[];
                     parent?: {
+                      /**
+                       * Format: uuid
+                       * @description Parent ID.
+                       */
                       id: string;
+                      /** @description The title of the parent. */
                       title: string;
+                      /** @description The rel permalink of the parent. */
                       relPermalink: string;
+                      /** @description Type of the resource. */
                       type: string;
                     };
                     nextPage: {
+                      /**
+                       * Format: uuid
+                       * @description Parent ID.
+                       */
                       id: string;
+                      /** @description The title of the parent. */
                       title: string;
+                      /** @description The rel permalink of the parent. */
                       relPermalink: string;
+                      /** @description Type of the resource. */
                       type: string;
                     };
                   };
-                  /** Format: date-time */
+                  /**
+                   * Format: date-time
+                   * @description The attempted at of the quizevaluationresult.
+                   */
                   attemptedAt: string;
+                  /** @description The attempts of the quizevaluationresult. */
                   attempts: number;
                 };
               };
@@ -5669,22 +6660,43 @@ export interface operations {
                    */
                   completedAt: string;
                   itemData: {
+                    /**
+                     * Format: uuid
+                     * @description Parent ID.
+                     */
                     id: string;
+                    /** @description The title of the parent. */
                     title: string;
+                    /** @description The rel permalink of the parent. */
                     relPermalink: string;
+                    /** @description Type of the resource. */
                     type: string;
                   };
                 };
               };
-              /** Format: date-time */
+              /**
+               * Format: date-time
+               * @description The completed of the curriculaprogresstracker.
+               */
               completed: string;
             };
+            /**
+             * Format: uuid
+             * @description ID of the associated registration.
+             */
             registrationId?: string;
             /** @enum {string} */
             contentType?: "learning-path" | "challenge" | "certification";
             itemData?: {
+              /**
+               * Format: uuid
+               * @description CurriculaCurrentItemData ID.
+               */
               id: string;
-              /** Format: date-time */
+              /**
+               * Format: date-time
+               * @description The last opened of the curriculacurrentitemdata.
+               */
               lastOpened: string;
               /** @enum {string} */
               contentType: "learning-path" | "challenge" | "certification";
@@ -5696,7 +6708,9 @@ export interface operations {
       400: {
         content: {
           "application/json": {
+            /** @description The error of the errorresponse. */
             error?: string;
+            /** @description The details of the errorresponse. */
             details?: string;
           };
         };
@@ -5717,7 +6731,9 @@ export interface operations {
       500: {
         content: {
           "application/json": {
+            /** @description The error of the errorresponse. */
             error?: string;
+            /** @description The details of the errorresponse. */
             details?: string;
           };
         };
@@ -5729,8 +6745,15 @@ export interface operations {
           /** @enum {string} */
           contentType: "learning-path" | "challenge" | "certification";
           itemData: {
+            /**
+             * Format: uuid
+             * @description CurriculaCurrentItemData ID.
+             */
             id: string;
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description The last opened of the curriculacurrentitemdata.
+             */
             lastOpened: string;
             /** @enum {string} */
             contentType: "learning-path" | "challenge" | "certification";
@@ -5752,8 +6775,13 @@ export interface operations {
       200: {
         content: {
           "application/json": {
+            /**
+             * Format: uuid
+             * @description Quiz ID.
+             */
             id: string;
             /**
+             * Format: uuid
              * @description Organization ID that owns this quiz
              * @example layer5
              */
@@ -5763,28 +6791,53 @@ export interface operations {
              * @example true
              */
             final: boolean;
+            /** @description The title of the quiz. */
             title: string;
+            /** @description Description of the quiz. */
             description: string;
+            /** @description The slug of the quiz. */
             slug: string;
+            /** @description The rel permalink of the quiz. */
             relPermalink: string;
+            /** @description The permalink of the quiz. */
             permalink: string;
+            /** @description Type of the resource. */
             type: string;
+            /** @description The section of the quiz. */
             section: string;
+            /** @description The layout of the quiz. */
             layout: string;
-            /** Format: date */
+            /**
+             * Format: date
+             * @description The date of the quiz.
+             */
             date: string;
-            /** Format: date */
+            /**
+             * Format: date
+             * @description The lastmod of the quiz.
+             */
             lastmod: string;
+            /** @description The draft of the quiz. */
             draft: boolean;
+            /** @description The file path of the quiz. */
             filePath: string;
-            /** Format: float */
+            /**
+             * Format: float
+             * @description The pass percentage of the quiz.
+             */
             passPercentage: number;
             /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
             timeLimit: number;
             /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
             maxAttempts: number;
+            /** @description The questions of the quiz. */
             questions: {
+              /**
+               * Format: uuid
+               * @description Question ID.
+               */
               id: string;
+              /** @description The text of the question. */
               text: string;
               /** @enum {string} */
               type:
@@ -5792,35 +6845,71 @@ export interface operations {
                 | "single-answer"
                 | "short-answer"
                 | "essay";
+              /** @description The marks of the question. */
               marks: number;
+              /** @description The multiple answers of the question. */
               multipleAnswers?: boolean;
+              /** @description The options of the question. */
               options: {
+                /**
+                 * Format: uuid
+                 * @description QuestionOption ID.
+                 */
                 id: string;
+                /** @description The text of the questionoption. */
                 text: string;
+                /** @description The is correct of the questionoption. */
                 isCorrect: boolean;
               }[];
+              /** @description The correct answer of the question. */
               correctAnswer: string;
             }[];
+            /** @description The total questions of the quiz. */
             totalQuestions: number;
+            /** @description The total questions in bank of the quiz. */
             totalQuestionsInBank: number;
+            /** @description The total question sets of the quiz. */
             totalQuestionSets: number;
+            /** @description The total marks of the quiz. */
             totalMarks: number;
+            /** @description The prerequisites of the quiz. */
             prerequisites: {
+              /**
+               * Format: uuid
+               * @description Parent ID.
+               */
               id: string;
+              /** @description The title of the parent. */
               title: string;
+              /** @description The rel permalink of the parent. */
               relPermalink: string;
+              /** @description Type of the resource. */
               type: string;
             }[];
             parent?: {
+              /**
+               * Format: uuid
+               * @description Parent ID.
+               */
               id: string;
+              /** @description The title of the parent. */
               title: string;
+              /** @description The rel permalink of the parent. */
               relPermalink: string;
+              /** @description Type of the resource. */
               type: string;
             };
             nextPage: {
+              /**
+               * Format: uuid
+               * @description Parent ID.
+               */
               id: string;
+              /** @description The title of the parent. */
               title: string;
+              /** @description The rel permalink of the parent. */
               relPermalink: string;
+              /** @description Type of the resource. */
               type: string;
             };
           };
@@ -5847,8 +6936,13 @@ export interface operations {
       200: {
         content: {
           "application/json": {
+            /**
+             * Format: uuid
+             * @description Quiz ID.
+             */
             id: string;
             /**
+             * Format: uuid
              * @description Organization ID that owns this quiz
              * @example layer5
              */
@@ -5858,28 +6952,53 @@ export interface operations {
              * @example true
              */
             final: boolean;
+            /** @description The title of the quiz. */
             title: string;
+            /** @description Description of the quiz. */
             description: string;
+            /** @description The slug of the quiz. */
             slug: string;
+            /** @description The rel permalink of the quiz. */
             relPermalink: string;
+            /** @description The permalink of the quiz. */
             permalink: string;
+            /** @description Type of the resource. */
             type: string;
+            /** @description The section of the quiz. */
             section: string;
+            /** @description The layout of the quiz. */
             layout: string;
-            /** Format: date */
+            /**
+             * Format: date
+             * @description The date of the quiz.
+             */
             date: string;
-            /** Format: date */
+            /**
+             * Format: date
+             * @description The lastmod of the quiz.
+             */
             lastmod: string;
+            /** @description The draft of the quiz. */
             draft: boolean;
+            /** @description The file path of the quiz. */
             filePath: string;
-            /** Format: float */
+            /**
+             * Format: float
+             * @description The pass percentage of the quiz.
+             */
             passPercentage: number;
             /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
             timeLimit: number;
             /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
             maxAttempts: number;
+            /** @description The questions of the quiz. */
             questions: {
+              /**
+               * Format: uuid
+               * @description Question ID.
+               */
               id: string;
+              /** @description The text of the question. */
               text: string;
               /** @enum {string} */
               type:
@@ -5887,35 +7006,71 @@ export interface operations {
                 | "single-answer"
                 | "short-answer"
                 | "essay";
+              /** @description The marks of the question. */
               marks: number;
+              /** @description The multiple answers of the question. */
               multipleAnswers?: boolean;
+              /** @description The options of the question. */
               options: {
+                /**
+                 * Format: uuid
+                 * @description QuestionOption ID.
+                 */
                 id: string;
+                /** @description The text of the questionoption. */
                 text: string;
+                /** @description The is correct of the questionoption. */
                 isCorrect: boolean;
               }[];
+              /** @description The correct answer of the question. */
               correctAnswer: string;
             }[];
+            /** @description The total questions of the quiz. */
             totalQuestions: number;
+            /** @description The total questions in bank of the quiz. */
             totalQuestionsInBank: number;
+            /** @description The total question sets of the quiz. */
             totalQuestionSets: number;
+            /** @description The total marks of the quiz. */
             totalMarks: number;
+            /** @description The prerequisites of the quiz. */
             prerequisites: {
+              /**
+               * Format: uuid
+               * @description Parent ID.
+               */
               id: string;
+              /** @description The title of the parent. */
               title: string;
+              /** @description The rel permalink of the parent. */
               relPermalink: string;
+              /** @description Type of the resource. */
               type: string;
             }[];
             parent?: {
+              /**
+               * Format: uuid
+               * @description Parent ID.
+               */
               id: string;
+              /** @description The title of the parent. */
               title: string;
+              /** @description The rel permalink of the parent. */
               relPermalink: string;
+              /** @description Type of the resource. */
               type: string;
             };
             nextPage: {
+              /**
+               * Format: uuid
+               * @description Parent ID.
+               */
               id: string;
+              /** @description The title of the parent. */
               title: string;
+              /** @description The rel permalink of the parent. */
               relPermalink: string;
+              /** @description Type of the resource. */
               type: string;
             };
           };
@@ -5937,7 +7092,12 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": {
+          /** @description The test abs path of the starttestrequest. */
           testAbsPath: string;
+          /**
+           * Format: uuid
+           * @description ID of the associated registration.
+           */
           registrationId: string;
         };
       };
@@ -5964,17 +7124,32 @@ export interface operations {
       200: {
         content: {
           "application/json": {
+            /** @description The score of the quizevaluationresult. */
             score: number;
+            /** @description The passed of the quizevaluationresult. */
             passed: boolean;
-            /** Format: float */
+            /**
+             * Format: float
+             * @description The percentage scored of the quizevaluationresult.
+             */
             percentageScored: number;
+            /** @description The total marks of the quizevaluationresult. */
             totalMarks: number;
-            /** Format: float */
+            /**
+             * Format: float
+             * @description The pass percentage of the quizevaluationresult.
+             */
             passPercentage: number;
+            /** @description The correct submissions of the quizevaluationresult. */
             correctSubmissions: { [key: string]: boolean };
             quiz: {
+              /**
+               * Format: uuid
+               * @description Quiz ID.
+               */
               id: string;
               /**
+               * Format: uuid
                * @description Organization ID that owns this quiz
                * @example layer5
                */
@@ -5984,28 +7159,53 @@ export interface operations {
                * @example true
                */
               final: boolean;
+              /** @description The title of the quiz. */
               title: string;
+              /** @description Description of the quiz. */
               description: string;
+              /** @description The slug of the quiz. */
               slug: string;
+              /** @description The rel permalink of the quiz. */
               relPermalink: string;
+              /** @description The permalink of the quiz. */
               permalink: string;
+              /** @description Type of the resource. */
               type: string;
+              /** @description The section of the quiz. */
               section: string;
+              /** @description The layout of the quiz. */
               layout: string;
-              /** Format: date */
+              /**
+               * Format: date
+               * @description The date of the quiz.
+               */
               date: string;
-              /** Format: date */
+              /**
+               * Format: date
+               * @description The lastmod of the quiz.
+               */
               lastmod: string;
+              /** @description The draft of the quiz. */
               draft: boolean;
+              /** @description The file path of the quiz. */
               filePath: string;
-              /** Format: float */
+              /**
+               * Format: float
+               * @description The pass percentage of the quiz.
+               */
               passPercentage: number;
               /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
               timeLimit: number;
               /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
               maxAttempts: number;
+              /** @description The questions of the quiz. */
               questions: {
+                /**
+                 * Format: uuid
+                 * @description Question ID.
+                 */
                 id: string;
+                /** @description The text of the question. */
                 text: string;
                 /** @enum {string} */
                 type:
@@ -6013,40 +7213,80 @@ export interface operations {
                   | "single-answer"
                   | "short-answer"
                   | "essay";
+                /** @description The marks of the question. */
                 marks: number;
+                /** @description The multiple answers of the question. */
                 multipleAnswers?: boolean;
+                /** @description The options of the question. */
                 options: {
+                  /**
+                   * Format: uuid
+                   * @description QuestionOption ID.
+                   */
                   id: string;
+                  /** @description The text of the questionoption. */
                   text: string;
+                  /** @description The is correct of the questionoption. */
                   isCorrect: boolean;
                 }[];
+                /** @description The correct answer of the question. */
                 correctAnswer: string;
               }[];
+              /** @description The total questions of the quiz. */
               totalQuestions: number;
+              /** @description The total questions in bank of the quiz. */
               totalQuestionsInBank: number;
+              /** @description The total question sets of the quiz. */
               totalQuestionSets: number;
+              /** @description The total marks of the quiz. */
               totalMarks: number;
+              /** @description The prerequisites of the quiz. */
               prerequisites: {
+                /**
+                 * Format: uuid
+                 * @description Parent ID.
+                 */
                 id: string;
+                /** @description The title of the parent. */
                 title: string;
+                /** @description The rel permalink of the parent. */
                 relPermalink: string;
+                /** @description Type of the resource. */
                 type: string;
               }[];
               parent?: {
+                /**
+                 * Format: uuid
+                 * @description Parent ID.
+                 */
                 id: string;
+                /** @description The title of the parent. */
                 title: string;
+                /** @description The rel permalink of the parent. */
                 relPermalink: string;
+                /** @description Type of the resource. */
                 type: string;
               };
               nextPage: {
+                /**
+                 * Format: uuid
+                 * @description Parent ID.
+                 */
                 id: string;
+                /** @description The title of the parent. */
                 title: string;
+                /** @description The rel permalink of the parent. */
                 relPermalink: string;
+                /** @description Type of the resource. */
                 type: string;
               };
             };
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description The attempted at of the quizevaluationresult.
+             */
             attemptedAt: string;
+            /** @description The attempts of the quizevaluationresult. */
             attempts: number;
           }[][];
         };
@@ -6071,17 +7311,32 @@ export interface operations {
       200: {
         content: {
           "application/json": {
+            /** @description The score of the quizevaluationresult. */
             score: number;
+            /** @description The passed of the quizevaluationresult. */
             passed: boolean;
-            /** Format: float */
+            /**
+             * Format: float
+             * @description The percentage scored of the quizevaluationresult.
+             */
             percentageScored: number;
+            /** @description The total marks of the quizevaluationresult. */
             totalMarks: number;
-            /** Format: float */
+            /**
+             * Format: float
+             * @description The pass percentage of the quizevaluationresult.
+             */
             passPercentage: number;
+            /** @description The correct submissions of the quizevaluationresult. */
             correctSubmissions: { [key: string]: boolean };
             quiz: {
+              /**
+               * Format: uuid
+               * @description Quiz ID.
+               */
               id: string;
               /**
+               * Format: uuid
                * @description Organization ID that owns this quiz
                * @example layer5
                */
@@ -6091,28 +7346,53 @@ export interface operations {
                * @example true
                */
               final: boolean;
+              /** @description The title of the quiz. */
               title: string;
+              /** @description Description of the quiz. */
               description: string;
+              /** @description The slug of the quiz. */
               slug: string;
+              /** @description The rel permalink of the quiz. */
               relPermalink: string;
+              /** @description The permalink of the quiz. */
               permalink: string;
+              /** @description Type of the resource. */
               type: string;
+              /** @description The section of the quiz. */
               section: string;
+              /** @description The layout of the quiz. */
               layout: string;
-              /** Format: date */
+              /**
+               * Format: date
+               * @description The date of the quiz.
+               */
               date: string;
-              /** Format: date */
+              /**
+               * Format: date
+               * @description The lastmod of the quiz.
+               */
               lastmod: string;
+              /** @description The draft of the quiz. */
               draft: boolean;
+              /** @description The file path of the quiz. */
               filePath: string;
-              /** Format: float */
+              /**
+               * Format: float
+               * @description The pass percentage of the quiz.
+               */
               passPercentage: number;
               /** @description Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
               timeLimit: number;
               /** @description Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
               maxAttempts: number;
+              /** @description The questions of the quiz. */
               questions: {
+                /**
+                 * Format: uuid
+                 * @description Question ID.
+                 */
                 id: string;
+                /** @description The text of the question. */
                 text: string;
                 /** @enum {string} */
                 type:
@@ -6120,40 +7400,80 @@ export interface operations {
                   | "single-answer"
                   | "short-answer"
                   | "essay";
+                /** @description The marks of the question. */
                 marks: number;
+                /** @description The multiple answers of the question. */
                 multipleAnswers?: boolean;
+                /** @description The options of the question. */
                 options: {
+                  /**
+                   * Format: uuid
+                   * @description QuestionOption ID.
+                   */
                   id: string;
+                  /** @description The text of the questionoption. */
                   text: string;
+                  /** @description The is correct of the questionoption. */
                   isCorrect: boolean;
                 }[];
+                /** @description The correct answer of the question. */
                 correctAnswer: string;
               }[];
+              /** @description The total questions of the quiz. */
               totalQuestions: number;
+              /** @description The total questions in bank of the quiz. */
               totalQuestionsInBank: number;
+              /** @description The total question sets of the quiz. */
               totalQuestionSets: number;
+              /** @description The total marks of the quiz. */
               totalMarks: number;
+              /** @description The prerequisites of the quiz. */
               prerequisites: {
+                /**
+                 * Format: uuid
+                 * @description Parent ID.
+                 */
                 id: string;
+                /** @description The title of the parent. */
                 title: string;
+                /** @description The rel permalink of the parent. */
                 relPermalink: string;
+                /** @description Type of the resource. */
                 type: string;
               }[];
               parent?: {
+                /**
+                 * Format: uuid
+                 * @description Parent ID.
+                 */
                 id: string;
+                /** @description The title of the parent. */
                 title: string;
+                /** @description The rel permalink of the parent. */
                 relPermalink: string;
+                /** @description Type of the resource. */
                 type: string;
               };
               nextPage: {
+                /**
+                 * Format: uuid
+                 * @description Parent ID.
+                 */
                 id: string;
+                /** @description The title of the parent. */
                 title: string;
+                /** @description The rel permalink of the parent. */
                 relPermalink: string;
+                /** @description Type of the resource. */
                 type: string;
               };
             };
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description The attempted at of the quizevaluationresult.
+             */
             attemptedAt: string;
+            /** @description The attempts of the quizevaluationresult. */
             attempts: number;
           };
         };
@@ -6162,7 +7482,9 @@ export interface operations {
       400: {
         content: {
           "application/json": {
+            /** @description The error of the errorresponse. */
             error?: string;
+            /** @description The details of the errorresponse. */
             details?: string;
           };
         };
@@ -6177,7 +7499,9 @@ export interface operations {
       500: {
         content: {
           "application/json": {
+            /** @description The error of the errorresponse. */
             error?: string;
+            /** @description The details of the errorresponse. */
             details?: string;
           };
         };
@@ -6191,12 +7515,31 @@ export interface operations {
            * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
            */
           testSessionId: string;
+          /** @description The quiz abs path of the quizsubmission. */
           quizAbsPath: string;
+          /**
+           * Format: uuid
+           * @description ID of the associated registration.
+           */
           registrationId: string;
+          /**
+           * Format: uuid
+           * @description ID of the user who owns or created this resource.
+           */
           user_id: string;
+          /** @description The answers of the quizsubmission. */
           answers: {
+            /**
+             * Format: uuid
+             * @description ID of the associated question.
+             */
             questionId: string;
+            /**
+             * Format: uuid
+             * @description ID of the associated selectedOption.
+             */
             selectedOptionId: { [key: string]: boolean };
+            /** @description The answer text of the submittedanswer. */
             answerText: string;
           }[];
         };
@@ -6243,6 +7586,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
+            /** @description The data of the curricularegistrationsresponse. */
             data: {
               /** @description Title of the curricula */
               curricula_title: string;
@@ -6293,9 +7637,14 @@ export interface operations {
                */
               total_count: number;
             }[];
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total number of items available.
+             */
             total_count: number;
+            /** @description Number of items per page. */
             page_size: number;
+            /** @description Current page number of the result set. */
             page: number;
           };
         };
@@ -6326,6 +7675,7 @@ export interface operations {
         content: {
           "application/json": {
             /**
+             * Format: uuid
              * @description Unique identifier for the certificate
              * @example 1234567890abcdef
              */
@@ -6336,6 +7686,7 @@ export interface operations {
              */
             orgId: string;
             /**
+             * Format: uuid
              * @description ID of the recipient (user) who received the certificate
              * @example 1234567890abcdef
              */

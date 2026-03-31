@@ -235,15 +235,22 @@ components:
         orgId:
           type: string
           description: Organization ID
+          maxLength: 500
+          format: uuid
         planId:
           type: string
           description: Price ID from the payment processor
+          maxLength: 500
+          format: uuid
         couponId:
           type: string
           description: Coupon ID to apply
+          maxLength: 500
+          format: uuid
         userCount:
           type: integer
           description: Number of users in the organization
+          minimum: 0
         email:
           type: string
           format: email
@@ -264,8 +271,13 @@ components:
       properties:
         subscriptionId:
           type: string
+          description: ID of the associated subscription.
+          maxLength: 500
+          format: uuid
         clientSecret:
           type: string
+          description: The client secret of the createsubscriptionresponse.
+          maxLength: 500
     UpdateUsersRequest:
       type: object
       properties:
@@ -277,6 +289,8 @@ components:
         subscriptionId:
           type: string
           description: Subscription ID from the payment processor
+          maxLength: 500
+          format: uuid
         paymentProcessor:
           $ref: '#/components/schemas/PaymentProcessor'
     WebhookEvent:
@@ -292,15 +306,22 @@ components:
       properties:
         page:
           type: integer
+          description: Current page number of the result set.
+          minimum: 0
         page_size:
           type: integer
+          description: Number of items per page.
+          minimum: 1
         total_count:
           type: integer
+          description: Total number of items available.
+          minimum: 0
         subscriptions:
           type: array
           items:
             $ref: '#/components/schemas/Subscription'
             x-go-type: Subscription
+          description: The subscriptions of the subscriptionpage.
     Subscription:
       $ref: ./subscription.yaml
     SubscriptionStatus:

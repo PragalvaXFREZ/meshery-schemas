@@ -82,6 +82,8 @@ components:
           type: string
           description: Name of the keychain.
           x-order: 1
+          minLength: 1
+          maxLength: 255
         owner:
           $ref: "../core/api.yml#/components/schemas/uuid"
           description: Owner of the keychain.
@@ -108,3 +110,4 @@ components:
           items:
             $ref: "#/components/schemas/Keychain"
           x-order: 4
+          description: The keychains of the keychainpage.

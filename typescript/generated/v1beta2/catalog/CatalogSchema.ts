@@ -28,7 +28,8 @@ const CatalogSchema: Record<string, unknown> = {
         "properties": {
           "publishedVersion": {
             "description": "Tracks the specific content version that has been made available in the Catalog.",
-            "type": "string"
+            "type": "string",
+            "maxLength": 500
           },
           "class": {
             "description": "Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability.",
@@ -46,7 +47,8 @@ const CatalogSchema: Record<string, unknown> = {
                 "const": "reference architecture",
                 "description": "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability."
               }
-            ]
+            ],
+            "maxLength": 500
           },
           "compatibility": {
             "type": "array",
@@ -64,7 +66,8 @@ const CatalogSchema: Record<string, unknown> = {
           "patternCaveats": {
             "type": "string",
             "title": "Caveats and Considerations",
-            "description": "Specific stipulations to consider and known behaviors to be aware of when using this design."
+            "description": "Specific stipulations to consider and known behaviors to be aware of when using this design.",
+            "maxLength": 500
           },
           "patternInfo": {
             "type": "string",

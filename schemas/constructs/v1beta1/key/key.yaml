@@ -31,24 +31,28 @@ properties:
     x-oapi-codegen-extra-tags:
       db: function
     x-order: 3
+    maxLength: 500
   category:
     type: string
     description: Category for the key.
     x-oapi-codegen-extra-tags:
       db: category
     x-order: 4
+    maxLength: 500
   subcategory:
     type: string
     description: Subcategory for the key.
     x-oapi-codegen-extra-tags:
       db: subcategory
     x-order: 5
+    maxLength: 500
   description:
     type: string
     description: Human readable description of the key.
     x-oapi-codegen-extra-tags:
       db: description
     x-order: 6
+    maxLength: 5000
   created_at:
     $ref: ../core/api.yml#/components/schemas/created_at
     x-order: 7

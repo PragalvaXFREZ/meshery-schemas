@@ -368,6 +368,7 @@ components:
           description: Total number of invitations available
           x-oapi-codegen-extra-tags:
             json: total
+          minimum: 0
     SignupRequest:
       type: object
       additionalProperties: true
@@ -376,14 +377,21 @@ components:
       properties:
         page:
           type: integer
+          description: Current page number of the result set.
+          minimum: 0
         page_size:
           type: integer
+          description: Number of items per page.
+          minimum: 1
         total_count:
           type: integer
+          description: Total number of items available.
+          minimum: 0
         data:
           type: array
           items:
             $ref: '#/components/schemas/SignupRequest'
+          description: The data of the signuprequestspage.
     InvitationPayload:
       type: object
       description: Payload for creating or updating an invitation.
@@ -417,9 +425,12 @@ components:
         name:
           type: string
           description: Name of the invitation.
+          minLength: 1
+          maxLength: 255
         description:
           type: string
           description: Description of the invitation.
+          maxLength: 5000
         emails:
           type: array
           x-go-type: pq.StringArray
@@ -429,12 +440,15 @@ components:
             type: string
             pattern: ^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}|@[a-zA-Z0-9.-]+\.[a-z]{2,})$
             x-go-type: string
+          description: The emails of the invitation.
         org_id:
           type: string
           description: ID of the organization to which the user is invited.
           x-oapi-codegen-extra-tags:
             db: org_id
             json: org_id
+          maxLength: 500
+          format: uuid
         expires_at:
           type: string
           format: date-time
@@ -445,6 +459,7 @@ components:
         quota:
           type: integer
           description: Quota for the invitation.
+          minimum: 0
         roles:
           type: array
           x-go-type: pq.StringArray
@@ -452,6 +467,7 @@ components:
             path: github.com/lib/pq
           items:
             type: string
+          description: The roles of the invitation.
         teams:
           type: array
           x-go-type: pq.StringArray
@@ -459,6 +475,7 @@ components:
             path: github.com/lib/pq
           items:
             type: string
+          description: The teams of the invitation.
         status:
           $ref: '#/components/schemas/InvitationStatus'
           x-go-type: InvitationStatus

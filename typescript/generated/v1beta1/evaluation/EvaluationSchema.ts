@@ -1034,7 +1034,8 @@ const EvaluationSchema: Record<string, unknown> = {
                                               },
                                               "description": {
                                                 "type": "string",
-                                                "description": "A written representation of the purpose and characteristics of the capability."
+                                                "description": "A written representation of the purpose and characteristics of the capability.",
+                                                "maxLength": 5000
                                               },
                                               "kind": {
                                                 "description": "Top-level categorization of the capability",
@@ -1302,7 +1303,8 @@ const EvaluationSchema: Record<string, unknown> = {
                                         "gorm": "-",
                                         "json": "relationships",
                                         "yaml": "relationships"
-                                      }
+                                      },
+                                      "description": "The relationships of the model."
                                     },
                                     "components": {
                                       "type": "array",
@@ -1311,7 +1313,8 @@ const EvaluationSchema: Record<string, unknown> = {
                                         "gorm": "-",
                                         "json": "components",
                                         "yaml": "components"
-                                      }
+                                      },
+                                      "description": "The components of the model."
                                     },
                                     "componentsCount": {
                                       "type": "integer",
@@ -1322,7 +1325,8 @@ const EvaluationSchema: Record<string, unknown> = {
                                         "yaml": "components_count",
                                         "gorm": "-"
                                       },
-                                      "default": 0
+                                      "default": 0,
+                                      "minimum": 0
                                     },
                                     "relationshipsCount": {
                                       "type": "integer",
@@ -1333,7 +1337,8 @@ const EvaluationSchema: Record<string, unknown> = {
                                         "json": "relationships_count",
                                         "yaml": "relationships_count"
                                       },
-                                      "default": 0
+                                      "default": 0,
+                                      "minimum": 0
                                     },
                                     "created_at": {
                                       "x-order": 14,
@@ -1932,7 +1937,8 @@ const EvaluationSchema: Record<string, unknown> = {
                                       },
                                       "description": {
                                         "type": "string",
-                                        "description": "A written representation of the purpose and characteristics of the capability."
+                                        "description": "A written representation of the purpose and characteristics of the capability.",
+                                        "maxLength": 5000
                                       },
                                       "kind": {
                                         "description": "Top-level categorization of the capability",
@@ -2539,7 +2545,8 @@ const EvaluationSchema: Record<string, unknown> = {
                                       },
                                       "description": {
                                         "type": "string",
-                                        "description": "A written representation of the purpose and characteristics of the capability."
+                                        "description": "A written representation of the purpose and characteristics of the capability.",
+                                        "maxLength": 5000
                                       },
                                       "kind": {
                                         "description": "Top-level categorization of the capability",
@@ -4659,7 +4666,8 @@ const EvaluationSchema: Record<string, unknown> = {
                         "type": "boolean",
                         "description": "If true, include detailed trace information in the response"
                       }
-                    }
+                    },
+                    "description": "The options of the evaluationrequest."
                   }
                 }
               }
@@ -4682,7 +4690,8 @@ const EvaluationSchema: Record<string, unknown> = {
                   "properties": {
                     "schemaVersion": {
                       "type": "string",
-                      "description": "Specifies the version of the schema to which the evaluation response conforms."
+                      "description": "Specifies the version of the schema to which the evaluation response conforms.",
+                      "maxLength": 500
                     },
                     "design": {
                       "x-go-type": "patternv1beta1.PatternFile",
@@ -5676,7 +5685,8 @@ const EvaluationSchema: Record<string, unknown> = {
                                                 },
                                                 "description": {
                                                   "type": "string",
-                                                  "description": "A written representation of the purpose and characteristics of the capability."
+                                                  "description": "A written representation of the purpose and characteristics of the capability.",
+                                                  "maxLength": 5000
                                                 },
                                                 "kind": {
                                                   "description": "Top-level categorization of the capability",
@@ -5944,7 +5954,8 @@ const EvaluationSchema: Record<string, unknown> = {
                                           "gorm": "-",
                                           "json": "relationships",
                                           "yaml": "relationships"
-                                        }
+                                        },
+                                        "description": "The relationships of the model."
                                       },
                                       "components": {
                                         "type": "array",
@@ -5953,7 +5964,8 @@ const EvaluationSchema: Record<string, unknown> = {
                                           "gorm": "-",
                                           "json": "components",
                                           "yaml": "components"
-                                        }
+                                        },
+                                        "description": "The components of the model."
                                       },
                                       "componentsCount": {
                                         "type": "integer",
@@ -5964,7 +5976,8 @@ const EvaluationSchema: Record<string, unknown> = {
                                           "yaml": "components_count",
                                           "gorm": "-"
                                         },
-                                        "default": 0
+                                        "default": 0,
+                                        "minimum": 0
                                       },
                                       "relationshipsCount": {
                                         "type": "integer",
@@ -5975,7 +5988,8 @@ const EvaluationSchema: Record<string, unknown> = {
                                           "json": "relationships_count",
                                           "yaml": "relationships_count"
                                         },
-                                        "default": 0
+                                        "default": 0,
+                                        "minimum": 0
                                       },
                                       "created_at": {
                                         "x-order": 14,
@@ -6574,7 +6588,8 @@ const EvaluationSchema: Record<string, unknown> = {
                                         },
                                         "description": {
                                           "type": "string",
-                                          "description": "A written representation of the purpose and characteristics of the capability."
+                                          "description": "A written representation of the purpose and characteristics of the capability.",
+                                          "maxLength": 5000
                                         },
                                         "kind": {
                                           "description": "Top-level categorization of the capability",
@@ -7181,7 +7196,8 @@ const EvaluationSchema: Record<string, unknown> = {
                                         },
                                         "description": {
                                           "type": "string",
-                                          "description": "A written representation of the purpose and characteristics of the capability."
+                                          "description": "A written representation of the purpose and characteristics of the capability.",
+                                          "maxLength": 5000
                                         },
                                         "kind": {
                                           "description": "Top-level categorization of the capability",
@@ -9293,7 +9309,8 @@ const EvaluationSchema: Record<string, unknown> = {
                     "evaluationHash": {
                       "type": "string",
                       "description": "Hash of the input parameters and configuration used for this evaluation. Useful for identifying duplicate evaluations or caching results.",
-                      "example": "a1b2c3d4e5f6g7h8i9j0"
+                      "example": "a1b2c3d4e5f6g7h8i9j0",
+                      "maxLength": 500
                     },
                     "timestamp": {
                       "type": "string",
@@ -9319,13 +9336,16 @@ const EvaluationSchema: Record<string, unknown> = {
                               "add_relationship",
                               "update_relationship",
                               "delete_relationship"
-                            ]
+                            ],
+                            "description": "The op of the action."
                           },
                           "value": {
-                            "type": "object"
+                            "type": "object",
+                            "description": "The value of the action."
                           }
                         }
-                      }
+                      },
+                      "description": "The actions of the evaluationresponse."
                     }
                   }
                 }
@@ -10371,7 +10391,8 @@ const EvaluationSchema: Record<string, unknown> = {
                                       },
                                       "description": {
                                         "type": "string",
-                                        "description": "A written representation of the purpose and characteristics of the capability."
+                                        "description": "A written representation of the purpose and characteristics of the capability.",
+                                        "maxLength": 5000
                                       },
                                       "kind": {
                                         "description": "Top-level categorization of the capability",
@@ -10639,7 +10660,8 @@ const EvaluationSchema: Record<string, unknown> = {
                                 "gorm": "-",
                                 "json": "relationships",
                                 "yaml": "relationships"
-                              }
+                              },
+                              "description": "The relationships of the model."
                             },
                             "components": {
                               "type": "array",
@@ -10648,7 +10670,8 @@ const EvaluationSchema: Record<string, unknown> = {
                                 "gorm": "-",
                                 "json": "components",
                                 "yaml": "components"
-                              }
+                              },
+                              "description": "The components of the model."
                             },
                             "componentsCount": {
                               "type": "integer",
@@ -10659,7 +10682,8 @@ const EvaluationSchema: Record<string, unknown> = {
                                 "yaml": "components_count",
                                 "gorm": "-"
                               },
-                              "default": 0
+                              "default": 0,
+                              "minimum": 0
                             },
                             "relationshipsCount": {
                               "type": "integer",
@@ -10670,7 +10694,8 @@ const EvaluationSchema: Record<string, unknown> = {
                                 "json": "relationships_count",
                                 "yaml": "relationships_count"
                               },
-                              "default": 0
+                              "default": 0,
+                              "minimum": 0
                             },
                             "created_at": {
                               "x-order": 14,
@@ -11269,7 +11294,8 @@ const EvaluationSchema: Record<string, unknown> = {
                               },
                               "description": {
                                 "type": "string",
-                                "description": "A written representation of the purpose and characteristics of the capability."
+                                "description": "A written representation of the purpose and characteristics of the capability.",
+                                "maxLength": 5000
                               },
                               "kind": {
                                 "description": "Top-level categorization of the capability",
@@ -11876,7 +11902,8 @@ const EvaluationSchema: Record<string, unknown> = {
                               },
                               "description": {
                                 "type": "string",
-                                "description": "A written representation of the purpose and characteristics of the capability."
+                                "description": "A written representation of the purpose and characteristics of the capability.",
+                                "maxLength": 5000
                               },
                               "kind": {
                                 "description": "Top-level categorization of the capability",
@@ -13996,7 +14023,8 @@ const EvaluationSchema: Record<string, unknown> = {
                 "type": "boolean",
                 "description": "If true, include detailed trace information in the response"
               }
-            }
+            },
+            "description": "The options of the evaluationrequest."
           }
         }
       },
@@ -14011,7 +14039,8 @@ const EvaluationSchema: Record<string, unknown> = {
         "properties": {
           "schemaVersion": {
             "type": "string",
-            "description": "Specifies the version of the schema to which the evaluation response conforms."
+            "description": "Specifies the version of the schema to which the evaluation response conforms.",
+            "maxLength": 500
           },
           "design": {
             "x-go-type": "patternv1beta1.PatternFile",
@@ -15005,7 +15034,8 @@ const EvaluationSchema: Record<string, unknown> = {
                                       },
                                       "description": {
                                         "type": "string",
-                                        "description": "A written representation of the purpose and characteristics of the capability."
+                                        "description": "A written representation of the purpose and characteristics of the capability.",
+                                        "maxLength": 5000
                                       },
                                       "kind": {
                                         "description": "Top-level categorization of the capability",
@@ -15273,7 +15303,8 @@ const EvaluationSchema: Record<string, unknown> = {
                                 "gorm": "-",
                                 "json": "relationships",
                                 "yaml": "relationships"
-                              }
+                              },
+                              "description": "The relationships of the model."
                             },
                             "components": {
                               "type": "array",
@@ -15282,7 +15313,8 @@ const EvaluationSchema: Record<string, unknown> = {
                                 "gorm": "-",
                                 "json": "components",
                                 "yaml": "components"
-                              }
+                              },
+                              "description": "The components of the model."
                             },
                             "componentsCount": {
                               "type": "integer",
@@ -15293,7 +15325,8 @@ const EvaluationSchema: Record<string, unknown> = {
                                 "yaml": "components_count",
                                 "gorm": "-"
                               },
-                              "default": 0
+                              "default": 0,
+                              "minimum": 0
                             },
                             "relationshipsCount": {
                               "type": "integer",
@@ -15304,7 +15337,8 @@ const EvaluationSchema: Record<string, unknown> = {
                                 "json": "relationships_count",
                                 "yaml": "relationships_count"
                               },
-                              "default": 0
+                              "default": 0,
+                              "minimum": 0
                             },
                             "created_at": {
                               "x-order": 14,
@@ -15903,7 +15937,8 @@ const EvaluationSchema: Record<string, unknown> = {
                               },
                               "description": {
                                 "type": "string",
-                                "description": "A written representation of the purpose and characteristics of the capability."
+                                "description": "A written representation of the purpose and characteristics of the capability.",
+                                "maxLength": 5000
                               },
                               "kind": {
                                 "description": "Top-level categorization of the capability",
@@ -16510,7 +16545,8 @@ const EvaluationSchema: Record<string, unknown> = {
                               },
                               "description": {
                                 "type": "string",
-                                "description": "A written representation of the purpose and characteristics of the capability."
+                                "description": "A written representation of the purpose and characteristics of the capability.",
+                                "maxLength": 5000
                               },
                               "kind": {
                                 "description": "Top-level categorization of the capability",
@@ -18622,7 +18658,8 @@ const EvaluationSchema: Record<string, unknown> = {
           "evaluationHash": {
             "type": "string",
             "description": "Hash of the input parameters and configuration used for this evaluation. Useful for identifying duplicate evaluations or caching results.",
-            "example": "a1b2c3d4e5f6g7h8i9j0"
+            "example": "a1b2c3d4e5f6g7h8i9j0",
+            "maxLength": 500
           },
           "timestamp": {
             "type": "string",
@@ -18648,13 +18685,16 @@ const EvaluationSchema: Record<string, unknown> = {
                     "add_relationship",
                     "update_relationship",
                     "delete_relationship"
-                  ]
+                  ],
+                  "description": "The op of the action."
                 },
                 "value": {
-                  "type": "object"
+                  "type": "object",
+                  "description": "The value of the action."
                 }
               }
-            }
+            },
+            "description": "The actions of the evaluationresponse."
           }
         }
       },
@@ -18675,10 +18715,12 @@ const EvaluationSchema: Record<string, unknown> = {
               "add_relationship",
               "update_relationship",
               "delete_relationship"
-            ]
+            ],
+            "description": "The op of the action."
           },
           "value": {
-            "type": "object"
+            "type": "object",
+            "description": "The value of the action."
           }
         }
       },
@@ -18689,7 +18731,8 @@ const EvaluationSchema: Record<string, unknown> = {
             "type": "string",
             "enum": [
               "update_component"
-            ]
+            ],
+            "description": "The op of the updatecomponentop."
           },
           "value": {
             "type": "object",
@@ -18717,7 +18760,8 @@ const EvaluationSchema: Record<string, unknown> = {
                 ],
                 "default": "replace"
               }
-            }
+            },
+            "description": "The value of the updatecomponentop."
           }
         }
       },
@@ -18728,7 +18772,8 @@ const EvaluationSchema: Record<string, unknown> = {
             "type": "string",
             "enum": [
               "update_component_configuration"
-            ]
+            ],
+            "description": "The op of the updatecomponentconfigurationop."
           },
           "value": {
             "type": "object",
@@ -18756,7 +18801,8 @@ const EvaluationSchema: Record<string, unknown> = {
                 ],
                 "default": "replace"
               }
-            }
+            },
+            "description": "The value of the updatecomponentconfigurationop."
           }
         }
       },
@@ -18767,7 +18813,8 @@ const EvaluationSchema: Record<string, unknown> = {
             "type": "string",
             "enum": [
               "delete_component"
-            ]
+            ],
+            "description": "The op of the deletecomponentop."
           },
           "value": {
             "type": "object",
@@ -18778,7 +18825,8 @@ const EvaluationSchema: Record<string, unknown> = {
               "id": {
                 "type": "string"
               }
-            }
+            },
+            "description": "The value of the deletecomponentop."
           }
         }
       },
@@ -18789,7 +18837,8 @@ const EvaluationSchema: Record<string, unknown> = {
             "type": "string",
             "enum": [
               "add_component"
-            ]
+            ],
+            "description": "The op of the addcomponentop."
           },
           "value": {
             "type": "object",
@@ -18801,7 +18850,8 @@ const EvaluationSchema: Record<string, unknown> = {
                 "type": "object",
                 "additionalProperties": true
               }
-            }
+            },
+            "description": "The value of the addcomponentop."
           }
         }
       },
@@ -18812,7 +18862,8 @@ const EvaluationSchema: Record<string, unknown> = {
             "type": "string",
             "enum": [
               "update_relationship"
-            ]
+            ],
+            "description": "The op of the updaterelationshipop."
           },
           "value": {
             "type": "object",
@@ -18832,7 +18883,8 @@ const EvaluationSchema: Record<string, unknown> = {
                 }
               },
               "value": {}
-            }
+            },
+            "description": "The value of the updaterelationshipop."
           }
         }
       },
@@ -18843,7 +18895,8 @@ const EvaluationSchema: Record<string, unknown> = {
             "type": "string",
             "enum": [
               "delete_relationship"
-            ]
+            ],
+            "description": "The op of the deleterelationshipop."
           },
           "value": {
             "type": "object",
@@ -18854,7 +18907,8 @@ const EvaluationSchema: Record<string, unknown> = {
               "id": {
                 "type": "string"
               }
-            }
+            },
+            "description": "The value of the deleterelationshipop."
           }
         }
       },
@@ -18865,7 +18919,8 @@ const EvaluationSchema: Record<string, unknown> = {
             "type": "string",
             "enum": [
               "add_relationship"
-            ]
+            ],
+            "description": "The op of the addrelationshipop."
           },
           "value": {
             "type": "object",
@@ -18877,7 +18932,8 @@ const EvaluationSchema: Record<string, unknown> = {
                 "type": "object",
                 "additionalProperties": true
               }
-            }
+            },
+            "description": "The value of the addrelationshipop."
           }
         }
       },

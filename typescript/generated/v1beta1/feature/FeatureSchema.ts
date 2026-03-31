@@ -215,7 +215,8 @@ const FeatureSchema: Record<string, unknown> = {
                         "description": "Quantity of the feature allowed, use 9999999999 for unlimited",
                         "x-oapi-codegen-extra-tags": {
                           "db": "quantity"
-                        }
+                        },
+                        "minimum": 0
                       },
                       "created_at": {
                         "x-oapi-codegen-extra-tags": {
@@ -473,7 +474,8 @@ const FeatureSchema: Record<string, unknown> = {
                         "description": "Quantity of the feature allowed, use 9999999999 for unlimited",
                         "x-oapi-codegen-extra-tags": {
                           "db": "quantity"
-                        }
+                        },
+                        "minimum": 0
                       },
                       "created_at": {
                         "x-oapi-codegen-extra-tags": {
@@ -736,7 +738,8 @@ const FeatureSchema: Record<string, unknown> = {
               "description": "Quantity of the feature allowed, use 9999999999 for unlimited",
               "x-oapi-codegen-extra-tags": {
                 "db": "quantity"
-              }
+              },
+              "minimum": 0
             },
             "created_at": {
               "x-oapi-codegen-extra-tags": {
@@ -937,7 +940,8 @@ const FeatureSchema: Record<string, unknown> = {
             "description": "Quantity of the feature allowed, use 9999999999 for unlimited",
             "x-oapi-codegen-extra-tags": {
               "db": "quantity"
-            }
+            },
+            "minimum": 0
           },
           "created_at": {
             "x-oapi-codegen-extra-tags": {

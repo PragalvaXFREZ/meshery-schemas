@@ -217,6 +217,7 @@ properties:
       gorm: "-"
       json: relationships
       yaml: relationships
+    description: The relationships of the model.
   components:
     type: array
     x-go-type: interface{}
@@ -224,6 +225,7 @@ properties:
       gorm: "-"
       json: components
       yaml: components
+    description: The components of the model.
   componentsCount:
     type: integer
     description: Number of components associated with the model.
@@ -233,6 +235,7 @@ properties:
       yaml: components_count
       gorm: "-"
     default: 0
+    minimum: 0
   relationshipsCount:
     type: integer
     description: Number of relationships associated with the model.
@@ -242,6 +245,7 @@ properties:
       json: relationships_count
       yaml: relationships_count
     default: 0
+    minimum: 0
   created_at:
     $ref: ../core/api.yml#/components/schemas/created_at
     x-order: 14

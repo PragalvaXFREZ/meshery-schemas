@@ -36,6 +36,7 @@ properties:
     type: integer
     x-oapi-codegen-extra-tags:
       db: quantity
+    minimum: 0
   start_date:
     $ref: ../core/api.yml#/components/schemas/Time
     x-oapi-codegen-extra-tags:
@@ -67,3 +68,5 @@ properties:
       in the billing system. eg Stripe
     x-oapi-codegen-extra-tags:
       db: billing_id
+    maxLength: 500
+    format: uuid

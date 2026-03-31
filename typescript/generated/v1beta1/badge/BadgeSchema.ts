@@ -171,7 +171,8 @@ const BadgeSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "label",
                         "json": "label"
-                      }
+                      },
+                      "maxLength": 500
                     },
                     "name": {
                       "type": "string",
@@ -180,7 +181,9 @@ const BadgeSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "name",
                         "json": "name"
-                      }
+                      },
+                      "minLength": 1,
+                      "maxLength": 255
                     },
                     "description": {
                       "type": "string",
@@ -189,7 +192,8 @@ const BadgeSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "description",
                         "json": "description"
-                      }
+                      },
+                      "maxLength": 5000
                     },
                     "image_url": {
                       "type": "string",
@@ -331,7 +335,8 @@ const BadgeSchema: Record<string, unknown> = {
                     "x-oapi-codegen-extra-tags": {
                       "db": "label",
                       "json": "label"
-                    }
+                    },
+                    "maxLength": 500
                   },
                   "name": {
                     "type": "string",
@@ -340,7 +345,9 @@ const BadgeSchema: Record<string, unknown> = {
                     "x-oapi-codegen-extra-tags": {
                       "db": "name",
                       "json": "name"
-                    }
+                    },
+                    "minLength": 1,
+                    "maxLength": 255
                   },
                   "description": {
                     "type": "string",
@@ -349,7 +356,8 @@ const BadgeSchema: Record<string, unknown> = {
                     "x-oapi-codegen-extra-tags": {
                       "db": "description",
                       "json": "description"
-                    }
+                    },
+                    "maxLength": 5000
                   },
                   "image_url": {
                     "type": "string",
@@ -419,7 +427,8 @@ const BadgeSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "label",
                         "json": "label"
-                      }
+                      },
+                      "maxLength": 500
                     },
                     "name": {
                       "type": "string",
@@ -428,7 +437,9 @@ const BadgeSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "name",
                         "json": "name"
-                      }
+                      },
+                      "minLength": 1,
+                      "maxLength": 255
                     },
                     "description": {
                       "type": "string",
@@ -437,7 +448,8 @@ const BadgeSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "description",
                         "json": "description"
-                      }
+                      },
+                      "maxLength": 5000
                     },
                     "image_url": {
                       "type": "string",
@@ -589,7 +601,8 @@ const BadgeSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "label",
                               "json": "label"
-                            }
+                            },
+                            "maxLength": 500
                           },
                           "name": {
                             "type": "string",
@@ -598,7 +611,9 @@ const BadgeSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "name",
                               "json": "name"
-                            }
+                            },
+                            "minLength": 1,
+                            "maxLength": 255
                           },
                           "description": {
                             "type": "string",
@@ -607,7 +622,8 @@ const BadgeSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "description",
                               "json": "description"
-                            }
+                            },
+                            "maxLength": 5000
                           },
                           "image_url": {
                             "type": "string",
@@ -654,7 +670,8 @@ const BadgeSchema: Record<string, unknown> = {
                             }
                           }
                         }
-                      }
+                      },
+                      "description": "The badges of the badgespage."
                     }
                   }
                 }
@@ -715,13 +732,18 @@ const BadgeSchema: Record<string, unknown> = {
                     "type": "array",
                     "items": {
                       "type": "string"
-                    }
+                    },
+                    "description": "The badges of the badgeassignment."
                   },
                   "user_id": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "ID of the user who owns or created this resource.",
+                    "maxLength": 500,
+                    "format": "uuid"
                   },
                   "notify": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "description": "The notify of the badgeassignment."
                   }
                 }
               }
@@ -870,7 +892,8 @@ const BadgeSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "label",
               "json": "label"
-            }
+            },
+            "maxLength": 500
           },
           "name": {
             "type": "string",
@@ -879,7 +902,9 @@ const BadgeSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "name",
               "json": "name"
-            }
+            },
+            "minLength": 1,
+            "maxLength": 255
           },
           "description": {
             "type": "string",
@@ -888,7 +913,8 @@ const BadgeSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "description",
               "json": "description"
-            }
+            },
+            "maxLength": 5000
           },
           "image_url": {
             "type": "string",
@@ -950,7 +976,8 @@ const BadgeSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "label",
               "json": "label"
-            }
+            },
+            "maxLength": 500
           },
           "name": {
             "type": "string",
@@ -959,7 +986,9 @@ const BadgeSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "name",
               "json": "name"
-            }
+            },
+            "minLength": 1,
+            "maxLength": 255
           },
           "description": {
             "type": "string",
@@ -968,7 +997,8 @@ const BadgeSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "description",
               "json": "description"
-            }
+            },
+            "maxLength": 5000
           },
           "image_url": {
             "type": "string",
@@ -1069,7 +1099,8 @@ const BadgeSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "label",
                     "json": "label"
-                  }
+                  },
+                  "maxLength": 500
                 },
                 "name": {
                   "type": "string",
@@ -1078,7 +1109,9 @@ const BadgeSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "name",
                     "json": "name"
-                  }
+                  },
+                  "minLength": 1,
+                  "maxLength": 255
                 },
                 "description": {
                   "type": "string",
@@ -1087,7 +1120,8 @@ const BadgeSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "description",
                     "json": "description"
-                  }
+                  },
+                  "maxLength": 5000
                 },
                 "image_url": {
                   "type": "string",
@@ -1134,7 +1168,8 @@ const BadgeSchema: Record<string, unknown> = {
                   }
                 }
               }
-            }
+            },
+            "description": "The badges of the badgespage."
           }
         }
       },
@@ -1145,13 +1180,18 @@ const BadgeSchema: Record<string, unknown> = {
             "type": "array",
             "items": {
               "type": "string"
-            }
+            },
+            "description": "The badges of the badgeassignment."
           },
           "user_id": {
-            "type": "string"
+            "type": "string",
+            "description": "ID of the user who owns or created this resource.",
+            "maxLength": 500,
+            "format": "uuid"
           },
           "notify": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "The notify of the badgeassignment."
           }
         }
       }

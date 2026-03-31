@@ -61,72 +61,108 @@ export interface components {
       action?: "delete";
     };
     Location: {
+      /** @description The svg of the location. */
       svg: string;
+      /** @description The location of the location. */
       location: string;
     };
     Logo: {
       desktopView: {
+        /** @description The svg of the location. */
         svg: string;
+        /** @description The location of the location. */
         location: string;
       };
       mobileView: {
+        /** @description The svg of the location. */
         svg: string;
+        /** @description The location of the location. */
         location: string;
       };
       darkDesktopView: {
+        /** @description The svg of the location. */
         svg: string;
+        /** @description The location of the location. */
         location: string;
       };
       darkMobileView: {
+        /** @description The svg of the location. */
         svg: string;
+        /** @description The location of the location. */
         location: string;
       };
     };
     Theme: {
+      /**
+       * Format: uuid
+       * @description Theme ID.
+       */
       id: string;
       logo: {
         desktopView: {
+          /** @description The svg of the location. */
           svg: string;
+          /** @description The location of the location. */
           location: string;
         };
         mobileView: {
+          /** @description The svg of the location. */
           svg: string;
+          /** @description The location of the location. */
           location: string;
         };
         darkDesktopView: {
+          /** @description The svg of the location. */
           svg: string;
+          /** @description The location of the location. */
           location: string;
         };
         darkMobileView: {
+          /** @description The svg of the location. */
           svg: string;
+          /** @description The location of the location. */
           location: string;
         };
       };
+      /** @description The vars of the theme. */
       vars?: { [key: string]: unknown };
     };
     /** @description Preferences specific to dashboard behavior */
     DashboardPrefs: { [key: string]: unknown };
     Preferences: {
       theme: {
+        /**
+         * Format: uuid
+         * @description Theme ID.
+         */
         id: string;
         logo: {
           desktopView: {
+            /** @description The svg of the location. */
             svg: string;
+            /** @description The location of the location. */
             location: string;
           };
           mobileView: {
+            /** @description The svg of the location. */
             svg: string;
+            /** @description The location of the location. */
             location: string;
           };
           darkDesktopView: {
+            /** @description The svg of the location. */
             svg: string;
+            /** @description The location of the location. */
             location: string;
           };
           darkMobileView: {
+            /** @description The svg of the location. */
             svg: string;
+            /** @description The location of the location. */
             location: string;
           };
         };
+        /** @description The vars of the theme. */
         vars?: { [key: string]: unknown };
       };
       /** @description Preferences specific to dashboard behavior */
@@ -135,25 +171,38 @@ export interface components {
     OrgMetadata: {
       preferences: {
         theme: {
+          /**
+           * Format: uuid
+           * @description Theme ID.
+           */
           id: string;
           logo: {
             desktopView: {
+              /** @description The svg of the location. */
               svg: string;
+              /** @description The location of the location. */
               location: string;
             };
             mobileView: {
+              /** @description The svg of the location. */
               svg: string;
+              /** @description The location of the location. */
               location: string;
             };
             darkDesktopView: {
+              /** @description The svg of the location. */
               svg: string;
+              /** @description The location of the location. */
               location: string;
             };
             darkMobileView: {
+              /** @description The svg of the location. */
               svg: string;
+              /** @description The location of the location. */
               location: string;
             };
           };
+          /** @description The vars of the theme. */
           vars?: { [key: string]: unknown };
         };
         /** @description Preferences specific to dashboard behavior */
@@ -166,9 +215,13 @@ export interface components {
        * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
        */
       id: string;
+      /** @description Name of the organization. */
       name: string;
+      /** @description The country of the organization. */
       country: string;
+      /** @description The region of the organization. */
       region: string;
+      /** @description Description of the organization. */
       description: string;
       /**
        * Format: uuid
@@ -178,25 +231,38 @@ export interface components {
       metadata: {
         preferences: {
           theme: {
+            /**
+             * Format: uuid
+             * @description Theme ID.
+             */
             id: string;
             logo: {
               desktopView: {
+                /** @description The svg of the location. */
                 svg: string;
+                /** @description The location of the location. */
                 location: string;
               };
               mobileView: {
+                /** @description The svg of the location. */
                 svg: string;
+                /** @description The location of the location. */
                 location: string;
               };
               darkDesktopView: {
+                /** @description The svg of the location. */
                 svg: string;
+                /** @description The location of the location. */
                 location: string;
               };
               darkMobileView: {
+                /** @description The svg of the location. */
                 svg: string;
+                /** @description The location of the location. */
                 location: string;
               };
             };
+            /** @description The vars of the theme. */
             vars?: { [key: string]: unknown };
           };
           /** @description Preferences specific to dashboard behavior */
@@ -209,6 +275,7 @@ export interface components {
       updated_at: string;
       /** Format: date-time */
       deleted_at?: string;
+      /** @description The domain of the organization. */
       domain?: string | null;
     };
     AvailableOrganization: {
@@ -225,25 +292,38 @@ export interface components {
       metadata?: {
         preferences: {
           theme: {
+            /**
+             * Format: uuid
+             * @description Theme ID.
+             */
             id: string;
             logo: {
               desktopView: {
+                /** @description The svg of the location. */
                 svg: string;
+                /** @description The location of the location. */
                 location: string;
               };
               mobileView: {
+                /** @description The svg of the location. */
                 svg: string;
+                /** @description The location of the location. */
                 location: string;
               };
               darkDesktopView: {
+                /** @description The svg of the location. */
                 svg: string;
+                /** @description The location of the location. */
                 location: string;
               };
               darkMobileView: {
+                /** @description The svg of the location. */
                 svg: string;
+                /** @description The location of the location. */
                 location: string;
               };
             };
+            /** @description The vars of the theme. */
             vars?: { [key: string]: unknown };
           };
           /** @description Preferences specific to dashboard behavior */
@@ -258,9 +338,13 @@ export interface components {
       deleted_at?: string;
     };
     OrganizationsPage: {
+      /** @description Current page number of the result set. */
       page?: number;
+      /** @description Number of items per page. */
       page_size?: number;
+      /** @description Total number of items available. */
       total_count?: number;
+      /** @description The organizations of the organizationspage. */
       organizations?: {
         /**
          * Format: uuid
@@ -275,25 +359,38 @@ export interface components {
         metadata?: {
           preferences: {
             theme: {
+              /**
+               * Format: uuid
+               * @description Theme ID.
+               */
               id: string;
               logo: {
                 desktopView: {
+                  /** @description The svg of the location. */
                   svg: string;
+                  /** @description The location of the location. */
                   location: string;
                 };
                 mobileView: {
+                  /** @description The svg of the location. */
                   svg: string;
+                  /** @description The location of the location. */
                   location: string;
                 };
                 darkDesktopView: {
+                  /** @description The svg of the location. */
                   svg: string;
+                  /** @description The location of the location. */
                   location: string;
                 };
                 darkMobileView: {
+                  /** @description The svg of the location. */
                   svg: string;
+                  /** @description The location of the location. */
                   location: string;
                 };
               };
+              /** @description The vars of the theme. */
               vars?: { [key: string]: unknown };
             };
             /** @description Preferences specific to dashboard behavior */
@@ -310,9 +407,13 @@ export interface components {
     };
     /** @description Single-organization wrapper used by current meshery-cloud organization handlers. */
     OrganizationPage: {
+      /** @description Current page number of the result set. */
       page?: number;
+      /** @description Number of items per page. */
       page_size?: number;
+      /** @description Total number of items available. */
       total_count?: number;
+      /** @description The organizations of the organizationpage. */
       organizations?: {
         /**
          * Format: uuid
@@ -327,25 +428,38 @@ export interface components {
         metadata?: {
           preferences: {
             theme: {
+              /**
+               * Format: uuid
+               * @description Theme ID.
+               */
               id: string;
               logo: {
                 desktopView: {
+                  /** @description The svg of the location. */
                   svg: string;
+                  /** @description The location of the location. */
                   location: string;
                 };
                 mobileView: {
+                  /** @description The svg of the location. */
                   svg: string;
+                  /** @description The location of the location. */
                   location: string;
                 };
                 darkDesktopView: {
+                  /** @description The svg of the location. */
                   svg: string;
+                  /** @description The location of the location. */
                   location: string;
                 };
                 darkMobileView: {
+                  /** @description The svg of the location. */
                   svg: string;
+                  /** @description The location of the location. */
                   location: string;
                 };
               };
+              /** @description The vars of the theme. */
               vars?: { [key: string]: unknown };
             };
             /** @description Preferences specific to dashboard behavior */
@@ -365,28 +479,42 @@ export interface components {
       country?: string;
       region?: string;
       description?: string;
+      /** @description The notify org update of the organization. */
       notifyOrgUpdate?: boolean;
       preferences?: {
         theme: {
+          /**
+           * Format: uuid
+           * @description Theme ID.
+           */
           id: string;
           logo: {
             desktopView: {
+              /** @description The svg of the location. */
               svg: string;
+              /** @description The location of the location. */
               location: string;
             };
             mobileView: {
+              /** @description The svg of the location. */
               svg: string;
+              /** @description The location of the location. */
               location: string;
             };
             darkDesktopView: {
+              /** @description The svg of the location. */
               svg: string;
+              /** @description The location of the location. */
               location: string;
             };
             darkMobileView: {
+              /** @description The svg of the location. */
               svg: string;
+              /** @description The location of the location. */
               location: string;
             };
           };
+          /** @description The vars of the theme. */
           vars?: { [key: string]: unknown };
         };
         /** @description Preferences specific to dashboard behavior */
@@ -408,9 +536,13 @@ export interface components {
       deleted_at?: string;
     };
     TeamsPage: {
+      /** @description Current page number of the result set. */
       page?: number;
+      /** @description Number of items per page. */
       page_size?: number;
+      /** @description Total number of items available. */
       total_count?: number;
+      /** @description The teams of the teamspage. */
       teams?: {
         /** Format: uuid */
         id?: string;
@@ -441,9 +573,13 @@ export interface components {
       deleted_at?: string;
     };
     TeamsOrganizationsMappingPage: {
+      /** @description Current page number of the result set. */
       page?: number;
+      /** @description Number of items per page. */
       page_size?: number;
+      /** @description Total number of items available. */
       total_count?: number;
+      /** @description The teams organizations mapping of the teamsorganizationsmappingpage. */
       teamsOrganizationsMapping?: {
         /** Format: uuid */
         id?: string;
@@ -509,28 +645,42 @@ export interface components {
           country?: string;
           region?: string;
           description?: string;
+          /** @description The notify org update of the organization. */
           notifyOrgUpdate?: boolean;
           preferences?: {
             theme: {
+              /**
+               * Format: uuid
+               * @description Theme ID.
+               */
               id: string;
               logo: {
                 desktopView: {
+                  /** @description The svg of the location. */
                   svg: string;
+                  /** @description The location of the location. */
                   location: string;
                 };
                 mobileView: {
+                  /** @description The svg of the location. */
                   svg: string;
+                  /** @description The location of the location. */
                   location: string;
                 };
                 darkDesktopView: {
+                  /** @description The svg of the location. */
                   svg: string;
+                  /** @description The location of the location. */
                   location: string;
                 };
                 darkMobileView: {
+                  /** @description The svg of the location. */
                   svg: string;
+                  /** @description The location of the location. */
                   location: string;
                 };
               };
+              /** @description The vars of the theme. */
               vars?: { [key: string]: unknown };
             };
             /** @description Preferences specific to dashboard behavior */
@@ -564,9 +714,13 @@ export interface operations {
       200: {
         content: {
           "application/json": {
+            /** @description Current page number of the result set. */
             page?: number;
+            /** @description Number of items per page. */
             page_size?: number;
+            /** @description Total number of items available. */
             total_count?: number;
+            /** @description The organizations of the organizationspage. */
             organizations?: {
               /**
                * Format: uuid
@@ -581,25 +735,38 @@ export interface operations {
               metadata?: {
                 preferences: {
                   theme: {
+                    /**
+                     * Format: uuid
+                     * @description Theme ID.
+                     */
                     id: string;
                     logo: {
                       desktopView: {
+                        /** @description The svg of the location. */
                         svg: string;
+                        /** @description The location of the location. */
                         location: string;
                       };
                       mobileView: {
+                        /** @description The svg of the location. */
                         svg: string;
+                        /** @description The location of the location. */
                         location: string;
                       };
                       darkDesktopView: {
+                        /** @description The svg of the location. */
                         svg: string;
+                        /** @description The location of the location. */
                         location: string;
                       };
                       darkMobileView: {
+                        /** @description The svg of the location. */
                         svg: string;
+                        /** @description The location of the location. */
                         location: string;
                       };
                     };
+                    /** @description The vars of the theme. */
                     vars?: { [key: string]: unknown };
                   };
                   /** @description Preferences specific to dashboard behavior */
@@ -639,9 +806,13 @@ export interface operations {
       201: {
         content: {
           "application/json": {
+            /** @description Current page number of the result set. */
             page?: number;
+            /** @description Number of items per page. */
             page_size?: number;
+            /** @description Total number of items available. */
             total_count?: number;
+            /** @description The organizations of the organizationpage. */
             organizations?: {
               /**
                * Format: uuid
@@ -656,25 +827,38 @@ export interface operations {
               metadata?: {
                 preferences: {
                   theme: {
+                    /**
+                     * Format: uuid
+                     * @description Theme ID.
+                     */
                     id: string;
                     logo: {
                       desktopView: {
+                        /** @description The svg of the location. */
                         svg: string;
+                        /** @description The location of the location. */
                         location: string;
                       };
                       mobileView: {
+                        /** @description The svg of the location. */
                         svg: string;
+                        /** @description The location of the location. */
                         location: string;
                       };
                       darkDesktopView: {
+                        /** @description The svg of the location. */
                         svg: string;
+                        /** @description The location of the location. */
                         location: string;
                       };
                       darkMobileView: {
+                        /** @description The svg of the location. */
                         svg: string;
+                        /** @description The location of the location. */
                         location: string;
                       };
                     };
+                    /** @description The vars of the theme. */
                     vars?: { [key: string]: unknown };
                   };
                   /** @description Preferences specific to dashboard behavior */
@@ -718,28 +902,42 @@ export interface operations {
           country?: string;
           region?: string;
           description?: string;
+          /** @description The notify org update of the organization. */
           notifyOrgUpdate?: boolean;
           preferences?: {
             theme: {
+              /**
+               * Format: uuid
+               * @description Theme ID.
+               */
               id: string;
               logo: {
                 desktopView: {
+                  /** @description The svg of the location. */
                   svg: string;
+                  /** @description The location of the location. */
                   location: string;
                 };
                 mobileView: {
+                  /** @description The svg of the location. */
                   svg: string;
+                  /** @description The location of the location. */
                   location: string;
                 };
                 darkDesktopView: {
+                  /** @description The svg of the location. */
                   svg: string;
+                  /** @description The location of the location. */
                   location: string;
                 };
                 darkMobileView: {
+                  /** @description The svg of the location. */
                   svg: string;
+                  /** @description The location of the location. */
                   location: string;
                 };
               };
+              /** @description The vars of the theme. */
               vars?: { [key: string]: unknown };
             };
             /** @description Preferences specific to dashboard behavior */
@@ -765,9 +963,13 @@ export interface operations {
              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             id: string;
+            /** @description Name of the organization. */
             name: string;
+            /** @description The country of the organization. */
             country: string;
+            /** @description The region of the organization. */
             region: string;
+            /** @description Description of the organization. */
             description: string;
             /**
              * Format: uuid
@@ -777,25 +979,38 @@ export interface operations {
             metadata: {
               preferences: {
                 theme: {
+                  /**
+                   * Format: uuid
+                   * @description Theme ID.
+                   */
                   id: string;
                   logo: {
                     desktopView: {
+                      /** @description The svg of the location. */
                       svg: string;
+                      /** @description The location of the location. */
                       location: string;
                     };
                     mobileView: {
+                      /** @description The svg of the location. */
                       svg: string;
+                      /** @description The location of the location. */
                       location: string;
                     };
                     darkDesktopView: {
+                      /** @description The svg of the location. */
                       svg: string;
+                      /** @description The location of the location. */
                       location: string;
                     };
                     darkMobileView: {
+                      /** @description The svg of the location. */
                       svg: string;
+                      /** @description The location of the location. */
                       location: string;
                     };
                   };
+                  /** @description The vars of the theme. */
                   vars?: { [key: string]: unknown };
                 };
                 /** @description Preferences specific to dashboard behavior */
@@ -808,6 +1023,7 @@ export interface operations {
             updated_at: string;
             /** Format: date-time */
             deleted_at?: string;
+            /** @description The domain of the organization. */
             domain?: string | null;
           };
         };
@@ -836,9 +1052,13 @@ export interface operations {
       200: {
         content: {
           "application/json": {
+            /** @description Current page number of the result set. */
             page?: number;
+            /** @description Number of items per page. */
             page_size?: number;
+            /** @description Total number of items available. */
             total_count?: number;
+            /** @description The organizations of the organizationpage. */
             organizations?: {
               /**
                * Format: uuid
@@ -853,25 +1073,38 @@ export interface operations {
               metadata?: {
                 preferences: {
                   theme: {
+                    /**
+                     * Format: uuid
+                     * @description Theme ID.
+                     */
                     id: string;
                     logo: {
                       desktopView: {
+                        /** @description The svg of the location. */
                         svg: string;
+                        /** @description The location of the location. */
                         location: string;
                       };
                       mobileView: {
+                        /** @description The svg of the location. */
                         svg: string;
+                        /** @description The location of the location. */
                         location: string;
                       };
                       darkDesktopView: {
+                        /** @description The svg of the location. */
                         svg: string;
+                        /** @description The location of the location. */
                         location: string;
                       };
                       darkMobileView: {
+                        /** @description The svg of the location. */
                         svg: string;
+                        /** @description The location of the location. */
                         location: string;
                       };
                     };
+                    /** @description The vars of the theme. */
                     vars?: { [key: string]: unknown };
                   };
                   /** @description Preferences specific to dashboard behavior */
@@ -920,9 +1153,13 @@ export interface operations {
       200: {
         content: {
           "application/json": {
+            /** @description Current page number of the result set. */
             page?: number;
+            /** @description Number of items per page. */
             page_size?: number;
+            /** @description Total number of items available. */
             total_count?: number;
+            /** @description The organizations of the organizationpage. */
             organizations?: {
               /**
                * Format: uuid
@@ -937,25 +1174,38 @@ export interface operations {
               metadata?: {
                 preferences: {
                   theme: {
+                    /**
+                     * Format: uuid
+                     * @description Theme ID.
+                     */
                     id: string;
                     logo: {
                       desktopView: {
+                        /** @description The svg of the location. */
                         svg: string;
+                        /** @description The location of the location. */
                         location: string;
                       };
                       mobileView: {
+                        /** @description The svg of the location. */
                         svg: string;
+                        /** @description The location of the location. */
                         location: string;
                       };
                       darkDesktopView: {
+                        /** @description The svg of the location. */
                         svg: string;
+                        /** @description The location of the location. */
                         location: string;
                       };
                       darkMobileView: {
+                        /** @description The svg of the location. */
                         svg: string;
+                        /** @description The location of the location. */
                         location: string;
                       };
                     };
+                    /** @description The vars of the theme. */
                     vars?: { [key: string]: unknown };
                   };
                   /** @description Preferences specific to dashboard behavior */
@@ -1005,28 +1255,42 @@ export interface operations {
           country?: string;
           region?: string;
           description?: string;
+          /** @description The notify org update of the organization. */
           notifyOrgUpdate?: boolean;
           preferences?: {
             theme: {
+              /**
+               * Format: uuid
+               * @description Theme ID.
+               */
               id: string;
               logo: {
                 desktopView: {
+                  /** @description The svg of the location. */
                   svg: string;
+                  /** @description The location of the location. */
                   location: string;
                 };
                 mobileView: {
+                  /** @description The svg of the location. */
                   svg: string;
+                  /** @description The location of the location. */
                   location: string;
                 };
                 darkDesktopView: {
+                  /** @description The svg of the location. */
                   svg: string;
+                  /** @description The location of the location. */
                   location: string;
                 };
                 darkMobileView: {
+                  /** @description The svg of the location. */
                   svg: string;
+                  /** @description The location of the location. */
                   location: string;
                 };
               };
+              /** @description The vars of the theme. */
               vars?: { [key: string]: unknown };
             };
             /** @description Preferences specific to dashboard behavior */
@@ -1086,25 +1350,38 @@ export interface operations {
           "application/json": {
             preferences: {
               theme: {
+                /**
+                 * Format: uuid
+                 * @description Theme ID.
+                 */
                 id: string;
                 logo: {
                   desktopView: {
+                    /** @description The svg of the location. */
                     svg: string;
+                    /** @description The location of the location. */
                     location: string;
                   };
                   mobileView: {
+                    /** @description The svg of the location. */
                     svg: string;
+                    /** @description The location of the location. */
                     location: string;
                   };
                   darkDesktopView: {
+                    /** @description The svg of the location. */
                     svg: string;
+                    /** @description The location of the location. */
                     location: string;
                   };
                   darkMobileView: {
+                    /** @description The svg of the location. */
                     svg: string;
+                    /** @description The location of the location. */
                     location: string;
                   };
                 };
+                /** @description The vars of the theme. */
                 vars?: { [key: string]: unknown };
               };
               /** @description Preferences specific to dashboard behavior */
@@ -1147,9 +1424,13 @@ export interface operations {
         content: {
           "application/json":
             | {
+                /** @description Current page number of the result set. */
                 page?: number;
+                /** @description Number of items per page. */
                 page_size?: number;
+                /** @description Total number of items available. */
                 total_count?: number;
+                /** @description The teams organizations mapping of the teamsorganizationsmappingpage. */
                 teamsOrganizationsMapping?: {
                   /** Format: uuid */
                   id?: string;
@@ -1166,9 +1447,13 @@ export interface operations {
                 }[];
               }
             | {
+                /** @description Current page number of the result set. */
                 page?: number;
+                /** @description Number of items per page. */
                 page_size?: number;
+                /** @description Total number of items available. */
                 total_count?: number;
+                /** @description The teams of the teamspage. */
                 teams?: {
                   /** Format: uuid */
                   id?: string;
@@ -1220,9 +1505,13 @@ export interface operations {
       200: {
         content: {
           "application/json": {
+            /** @description Current page number of the result set. */
             page?: number;
+            /** @description Number of items per page. */
             page_size?: number;
+            /** @description Total number of items available. */
             total_count?: number;
+            /** @description The teams organizations mapping of the teamsorganizationsmappingpage. */
             teamsOrganizationsMapping?: {
               /** Format: uuid */
               id?: string;

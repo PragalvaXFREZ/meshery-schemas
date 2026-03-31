@@ -135,7 +135,9 @@ const CredentialSchema: Record<string, unknown> = {
                             "x-order": 2,
                             "x-oapi-codegen-extra-tags": {
                               "db": "name"
-                            }
+                            },
+                            "minLength": 1,
+                            "maxLength": 255
                           },
                           "user_id": {
                             "description": "UUID of the user who owns this credential.",
@@ -156,7 +158,8 @@ const CredentialSchema: Record<string, unknown> = {
                             "x-order": 4,
                             "x-oapi-codegen-extra-tags": {
                               "db": "type"
-                            }
+                            },
+                            "maxLength": 255
                           },
                           "secret": {
                             "type": "object",
@@ -214,22 +217,26 @@ const CredentialSchema: Record<string, unknown> = {
                           }
                         }
                       },
-                      "x-order": 1
+                      "x-order": 1,
+                      "description": "The credentials of the credentialpage."
                     },
                     "total_count": {
                       "type": "integer",
                       "description": "Total number of credentials across all pages.",
-                      "x-order": 2
+                      "x-order": 2,
+                      "minimum": 0
                     },
                     "page": {
                       "type": "integer",
                       "description": "Current page number (zero-based).",
-                      "x-order": 3
+                      "x-order": 3,
+                      "minimum": 0
                     },
                     "page_size": {
                       "type": "integer",
                       "description": "Number of credentials per page.",
-                      "x-order": 4
+                      "x-order": 4,
+                      "minimum": 1
                     }
                   }
                 }
@@ -299,7 +306,9 @@ const CredentialSchema: Record<string, unknown> = {
                     "x-order": 2,
                     "x-oapi-codegen-extra-tags": {
                       "db": "name"
-                    }
+                    },
+                    "minLength": 1,
+                    "maxLength": 255
                   },
                   "user_id": {
                     "description": "UUID of the user who owns this credential.",
@@ -320,7 +329,8 @@ const CredentialSchema: Record<string, unknown> = {
                     "x-order": 4,
                     "x-oapi-codegen-extra-tags": {
                       "db": "type"
-                    }
+                    },
+                    "maxLength": 255
                   },
                   "secret": {
                     "type": "object",
@@ -413,7 +423,9 @@ const CredentialSchema: Record<string, unknown> = {
                       "x-order": 2,
                       "x-oapi-codegen-extra-tags": {
                         "db": "name"
-                      }
+                      },
+                      "minLength": 1,
+                      "maxLength": 255
                     },
                     "user_id": {
                       "description": "UUID of the user who owns this credential.",
@@ -434,7 +446,8 @@ const CredentialSchema: Record<string, unknown> = {
                       "x-order": 4,
                       "x-oapi-codegen-extra-tags": {
                         "db": "type"
-                      }
+                      },
+                      "maxLength": 255
                     },
                     "secret": {
                       "type": "object",
@@ -568,7 +581,9 @@ const CredentialSchema: Record<string, unknown> = {
                     "x-order": 2,
                     "x-oapi-codegen-extra-tags": {
                       "db": "name"
-                    }
+                    },
+                    "minLength": 1,
+                    "maxLength": 255
                   },
                   "user_id": {
                     "description": "UUID of the user who owns this credential.",
@@ -589,7 +604,8 @@ const CredentialSchema: Record<string, unknown> = {
                     "x-order": 4,
                     "x-oapi-codegen-extra-tags": {
                       "db": "type"
-                    }
+                    },
+                    "maxLength": 255
                   },
                   "secret": {
                     "type": "object",
@@ -682,7 +698,9 @@ const CredentialSchema: Record<string, unknown> = {
                       "x-order": 2,
                       "x-oapi-codegen-extra-tags": {
                         "db": "name"
-                      }
+                      },
+                      "minLength": 1,
+                      "maxLength": 255
                     },
                     "user_id": {
                       "description": "UUID of the user who owns this credential.",
@@ -703,7 +721,8 @@ const CredentialSchema: Record<string, unknown> = {
                       "x-order": 4,
                       "x-oapi-codegen-extra-tags": {
                         "db": "type"
-                      }
+                      },
+                      "maxLength": 255
                     },
                     "secret": {
                       "type": "object",
@@ -940,7 +959,9 @@ const CredentialSchema: Record<string, unknown> = {
                       "x-order": 2,
                       "x-oapi-codegen-extra-tags": {
                         "db": "name"
-                      }
+                      },
+                      "minLength": 1,
+                      "maxLength": 255
                     },
                     "user_id": {
                       "description": "UUID of the user who owns this credential.",
@@ -961,7 +982,8 @@ const CredentialSchema: Record<string, unknown> = {
                       "x-order": 4,
                       "x-oapi-codegen-extra-tags": {
                         "db": "type"
-                      }
+                      },
+                      "maxLength": 255
                     },
                     "secret": {
                       "type": "object",
@@ -1198,7 +1220,9 @@ const CredentialSchema: Record<string, unknown> = {
             "x-order": 2,
             "x-oapi-codegen-extra-tags": {
               "db": "name"
-            }
+            },
+            "minLength": 1,
+            "maxLength": 255
           },
           "user_id": {
             "description": "UUID of the user who owns this credential.",
@@ -1219,7 +1243,8 @@ const CredentialSchema: Record<string, unknown> = {
             "x-order": 4,
             "x-oapi-codegen-extra-tags": {
               "db": "type"
-            }
+            },
+            "maxLength": 255
           },
           "secret": {
             "type": "object",
@@ -1317,7 +1342,9 @@ const CredentialSchema: Record<string, unknown> = {
                   "x-order": 2,
                   "x-oapi-codegen-extra-tags": {
                     "db": "name"
-                  }
+                  },
+                  "minLength": 1,
+                  "maxLength": 255
                 },
                 "user_id": {
                   "description": "UUID of the user who owns this credential.",
@@ -1338,7 +1365,8 @@ const CredentialSchema: Record<string, unknown> = {
                   "x-order": 4,
                   "x-oapi-codegen-extra-tags": {
                     "db": "type"
-                  }
+                  },
+                  "maxLength": 255
                 },
                 "secret": {
                   "type": "object",
@@ -1396,22 +1424,26 @@ const CredentialSchema: Record<string, unknown> = {
                 }
               }
             },
-            "x-order": 1
+            "x-order": 1,
+            "description": "The credentials of the credentialpage."
           },
           "total_count": {
             "type": "integer",
             "description": "Total number of credentials across all pages.",
-            "x-order": 2
+            "x-order": 2,
+            "minimum": 0
           },
           "page": {
             "type": "integer",
             "description": "Current page number (zero-based).",
-            "x-order": 3
+            "x-order": 3,
+            "minimum": 0
           },
           "page_size": {
             "type": "integer",
             "description": "Number of credentials per page.",
-            "x-order": 4
+            "x-order": 4,
+            "minimum": 1
           }
         }
       }

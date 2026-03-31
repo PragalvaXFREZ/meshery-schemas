@@ -68,6 +68,7 @@ export interface components {
       page: number;
       page_size: number;
       total_count: number;
+      /** @description The keychains of the keychainpage. */
       keychains: {
         /**
          * Format: uuid
@@ -163,6 +164,7 @@ export interface operations {
             page: number;
             page_size: number;
             total_count: number;
+            /** @description The keychains of the keychainpage. */
             keychains: {
               /**
                * Format: uuid
@@ -570,6 +572,7 @@ export interface operations {
             page: number;
             page_size: number;
             total_count: number;
+            /** @description The keys of the keypage. */
             keys: {
               /**
                * Format: uuid

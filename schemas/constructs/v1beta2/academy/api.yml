@@ -794,6 +794,8 @@ components:
         contentId:
           type: string
           description: ID of the academy content to register for
+          maxLength: 500
+          format: uuid
         user_id:
           type: string
           format: uuid
@@ -861,6 +863,7 @@ components:
           x-go-name: Title
           x-oapi-codegen-extra-tags:
             json: title
+          maxLength: 500
         org_id:
           $ref: '#/components/schemas/AcademyCurriculaOrgId'
         workspace_id:
@@ -925,11 +928,13 @@ components:
           type: integer
           description: Total number of Curricula
           example: 7
+          minimum: 0
         data:
           type: array
           items:
             x-go-type: AcademyCurricula
             $ref: '#/components/schemas/AcademyCurricula'
+          description: The data of the academycurriculalistresponse.
       required:
       - total
       - data
@@ -940,12 +945,14 @@ components:
           type: integer
           description: Total number of Curricula
           example: 7
+          minimum: 0
         data:
           type: array
           items:
             $ref: '#/components/schemas/AcademyCurriculaWithMetrics'
             x-go-type: AcademyCurriculaWithMetrics
             x-go-type-skip-optional-pointer: true
+          description: The data of the academycurriculawithmetricslistresponse.
       required:
       - total
       - data
@@ -965,10 +972,13 @@ components:
           type: string
           description: Name of the issuing authority
           example: Cloud Native Foundation
+          minLength: 1
+          maxLength: 255
         role:
           type: string
           description: Role of the issuing authority
           example: COO
+          maxLength: 500
         signatureUrl:
           type: string
           format: uri
@@ -992,6 +1002,8 @@ components:
           description: Unique identifier for the certificate
           example: 1234567890abcdef
           x-go-name: ID
+          maxLength: 500
+          format: uuid
         orgId:
           $ref: ../core/api.yml#/components/schemas/Uuid
           description: UUID of the organization that issued the certificate
@@ -999,18 +1011,23 @@ components:
           type: string
           description: ID of the recipient (user) who received the certificate
           example: 1234567890abcdef
+          maxLength: 500
+          format: uuid
         recipientName:
           type: string
           description: Name of the recipient (user) who received the certificate
           example: John Doe
+          maxLength: 500
         title:
           type: string
           description: Title of the certificate
           example: Kubernetes Expert Certification
+          maxLength: 500
         description:
           type: string
           description: Description of the certificate
           example: Awarded for successfully completing the Kubernetes Expert course
+          maxLength: 5000
         issuingAuthorities:
           type: array
           items:
@@ -1032,6 +1049,7 @@ components:
           type: integer
           description: Number of months after which the certificate expires
           example: 24
+          minimum: 0
     CurriculaMetadata:
       type: object
       properties:
@@ -1039,15 +1057,18 @@ components:
           type: string
           description: Title of the learning path
           example: Mastering Kubernetes for Engineers
+          maxLength: 500
         description:
           type: string
           description: Short description of the curricula
           example: Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
+          maxLength: 5000
         detailedDescription:
           type: string
           description: Detailed description of the curricula
           example: This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including
             hands-on labs and real-world scenarios.
+          maxLength: 500
         banner:
           type: string
           format: uri
@@ -1111,6 +1132,8 @@ components:
           description: ID of the course content
           x-oapi-codegen-extra-tags:
             db: content_id
+          maxLength: 500
+          format: uuid
         user_id:
           $ref: ../core/api.yml#/components/schemas/Uuid
           description: ID of the user (foreign key to User)
@@ -1174,10 +1197,13 @@ components:
           x-oapi-codegen-extra-tags:
             db: id
             json: id
+          maxLength: 500
+          format: uuid
         title:
           type: string
           description: Title of the course
           example: Kubernetes Basics
+          maxLength: 500
         permalink:
           type: string
           format: uri
@@ -1187,11 +1213,13 @@ components:
           type: string
           description: Course description
           example: Learn the basics of Kubernetes
+          maxLength: 5000
         weight:
           type: number
           description: A numeric value to determine the display order. A smaller number appears first. If not specified, items
             will be sorted alphabetically by title.
           example: eg 1 , 2
+          minimum: 0
         banner:
           type: string
           format: uri
@@ -1220,11 +1248,13 @@ components:
           type: integer
           description: Total number of learning paths
           example: 7
+          minimum: 0
         data:
           type: array
           items:
             x-go-type: AcademyRegistration
             $ref: '#/components/schemas/AcademyRegistration'
+          description: The data of the academyregistrationslistresponse.
       required:
       - total
       - data
@@ -1237,9 +1267,13 @@ components:
       properties:
         id:
           type: string
+          description: CurriculaCurrentItemData ID.
+          maxLength: 500
+          format: uuid
         lastOpened:
           type: string
           format: date-time
+          description: The last opened of the curriculacurrentitemdata.
         contentType:
           $ref: '#/components/schemas/ContentType'
           x-go-type: ContentType
@@ -1257,14 +1291,17 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/CurriculaCurrentItemData'
             x-go-type: CurriculaCurrentItemData
+          description: The current item of the curriculaprogresstracker.
         grades:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/QuizEvaluationResult'
             x-go-type: QuizEvaluationResult
+          description: The grades of the curriculaprogresstracker.
         timeSpent:
           type: integer
           description: Total time spent in seconds
+          minimum: 0
         completedItems:
           type: object
           description: Items that have been completed (map of item IDs to item data)
@@ -1275,6 +1312,7 @@ components:
           type: string
           format: date-time
           x-go-type: core.NullTime
+          description: The completed of the curriculaprogresstracker.
     ProgressItemCompleted:
       type: object
       required:
@@ -1305,8 +1343,12 @@ components:
       properties:
         error:
           type: string
+          description: The error of the errorresponse.
+          maxLength: 500
         details:
           type: string
+          description: The details of the errorresponse.
+          maxLength: 500
     Quiz:
       x-generate-db-helpers: true
       type: object
@@ -1342,6 +1384,9 @@ components:
           x-go-name: ID
           x-oapi-codegen-extra-tags:
             json: id
+          description: Quiz ID.
+          maxLength: 500
+          format: uuid
         org_id:
           type: string
           description: Organization ID that owns this quiz
@@ -1349,6 +1394,8 @@ components:
           x-oapi-codegen-extra-tags:
             db: org_id
             json: org_id
+          maxLength: 500
+          format: uuid
         final:
           type: boolean
           description: Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section
@@ -1356,57 +1403,92 @@ components:
           example: true
         title:
           type: string
+          description: The title of the quiz.
+          maxLength: 500
         description:
           type: string
+          description: Description of the quiz.
+          maxLength: 5000
         slug:
           type: string
+          description: The slug of the quiz.
+          maxLength: 500
         relPermalink:
           type: string
+          description: The rel permalink of the quiz.
+          maxLength: 500
         permalink:
           type: string
+          description: The permalink of the quiz.
+          maxLength: 500
         type:
           type: string
+          description: Type of the resource.
+          maxLength: 255
         section:
           type: string
+          description: The section of the quiz.
+          maxLength: 500
         layout:
           type: string
+          description: The layout of the quiz.
+          maxLength: 500
         date:
           type: string
           format: date
+          description: The date of the quiz.
         lastmod:
           type: string
           format: date
+          description: The lastmod of the quiz.
         draft:
           type: boolean
+          description: The draft of the quiz.
         filePath:
           type: string
+          description: The file path of the quiz.
+          maxLength: 500
         passPercentage:
           type: number
           format: float
+          description: The pass percentage of the quiz.
+          minimum: 0
         timeLimit:
           description: Time limit for the quiz in minutes. A value of 0 indicates no time limit.
           type: integer
+          minimum: 0
         maxAttempts:
           description: Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.
           type: integer
+          minimum: 0
         questions:
           type: array
           items:
             $ref: '#/components/schemas/Question'
             x-go-type: Question
+          description: The questions of the quiz.
         totalQuestions:
           type: integer
+          description: The total questions of the quiz.
+          minimum: 0
         totalQuestionsInBank:
           type: integer
+          description: The total questions in bank of the quiz.
+          minimum: 0
         totalQuestionSets:
           type: integer
+          description: The total question sets of the quiz.
+          minimum: 0
         totalMarks:
           type: integer
+          description: The total marks of the quiz.
+          minimum: 0
         prerequisites:
           type: array
           items:
             $ref: '#/components/schemas/Parent'
             x-go-type: Parent
+          description: The prerequisites of the quiz.
         parent:
           $ref: '#/components/schemas/Parent'
           x-go-type: Parent
@@ -1423,12 +1505,21 @@ components:
       properties:
         id:
           type: string
+          description: Parent ID.
+          maxLength: 500
+          format: uuid
         title:
           type: string
+          description: The title of the parent.
+          maxLength: 500
         relPermalink:
           type: string
+          description: The rel permalink of the parent.
+          maxLength: 500
         type:
           type: string
+          description: Type of the resource.
+          maxLength: 255
     QuestionType:
       type: string
       x-enum-varnames:
@@ -1453,22 +1544,33 @@ components:
       properties:
         id:
           type: string
+          description: Question ID.
+          maxLength: 500
+          format: uuid
         text:
           type: string
+          description: The text of the question.
+          maxLength: 500
         type:
           $ref: '#/components/schemas/QuestionType'
           x-go-type: QuestionType
         marks:
           type: integer
+          description: The marks of the question.
+          minimum: 0
         multipleAnswers:
           type: boolean
+          description: The multiple answers of the question.
         options:
           type: array
           items:
             $ref: '#/components/schemas/QuestionOption'
             x-go-type: QuestionOption
+          description: The options of the question.
         correctAnswer:
           type: string
+          description: The correct answer of the question.
+          maxLength: 500
     QuestionOption:
       type: object
       required:
@@ -1478,10 +1580,16 @@ components:
       properties:
         id:
           type: string
+          description: QuestionOption ID.
+          maxLength: 500
+          format: uuid
         text:
           type: string
+          description: The text of the questionoption.
+          maxLength: 500
         isCorrect:
           type: boolean
+          description: The is correct of the questionoption.
     StartTestRequest:
       type: object
       required:
@@ -1490,8 +1598,13 @@ components:
       properties:
         testAbsPath:
           type: string
+          description: The test abs path of the starttestrequest.
+          maxLength: 500
         registrationId:
           type: string
+          description: ID of the associated registration.
+          maxLength: 500
+          format: uuid
     QuizSubmission:
       type: object
       required:
@@ -1505,15 +1618,24 @@ components:
           $ref: ../core/api.yml#/components/schemas/Uuid
         quizAbsPath:
           type: string
+          description: The quiz abs path of the quizsubmission.
+          maxLength: 500
         registrationId:
           type: string
+          description: ID of the associated registration.
+          maxLength: 500
+          format: uuid
         user_id:
           type: string
+          description: ID of the user who owns or created this resource.
+          maxLength: 500
+          format: uuid
         answers:
           type: array
           items:
             $ref: '#/components/schemas/SubmittedAnswer'
             x-go-type: SubmittedAnswer
+          description: The answers of the quizsubmission.
     SubmittedAnswer:
       type: object
       required:
@@ -1523,12 +1645,19 @@ components:
       properties:
         questionId:
           type: string
+          description: ID of the associated question.
+          maxLength: 500
+          format: uuid
         selectedOptionId:
           type: object
           additionalProperties:
             type: boolean
+          description: ID of the associated selectedOption.
+          format: uuid
         answerText:
           type: string
+          description: The answer text of the submittedanswer.
+          maxLength: 500
     TestSubmissionStatus:
       type: string
       enum:
@@ -1565,6 +1694,8 @@ components:
           type: string
           x-oapi-codegen-extra-tags:
             db: test_abs_path
+          description: The test abs path of the testsubmission.
+          maxLength: 500
         user_id:
           $ref: ../core/api.yml#/components/schemas/Uuid
           x-oapi-codegen-extra-tags:
@@ -1591,6 +1722,7 @@ components:
           format: date-time
           x-oapi-codegen-extra-tags:
             db: submitted_at
+          description: The submitted at of the testsubmission.
         submission_data:
           $ref: '#/components/schemas/QuizSubmission'
           x-go-type: QuizSubmission
@@ -1628,28 +1760,41 @@ components:
       properties:
         score:
           type: integer
+          description: The score of the quizevaluationresult.
+          minimum: 0
         passed:
           type: boolean
+          description: The passed of the quizevaluationresult.
         percentageScored:
           type: number
           format: float
+          description: The percentage scored of the quizevaluationresult.
+          minimum: 0
         totalMarks:
           type: integer
+          description: The total marks of the quizevaluationresult.
+          minimum: 0
         passPercentage:
           type: number
           format: float
+          description: The pass percentage of the quizevaluationresult.
+          minimum: 0
         correctSubmissions:
           type: object
           additionalProperties:
             type: boolean
+          description: The correct submissions of the quizevaluationresult.
         quiz:
           $ref: '#/components/schemas/Quiz'
           x-go-type: Quiz
         attemptedAt:
           type: string
           format: date-time
+          description: The attempted at of the quizevaluationresult.
         attempts:
           type: integer
+          description: The attempts of the quizevaluationresult.
+          minimum: 0
     UserRegistration:
       type: object
       required:
@@ -1670,6 +1815,7 @@ components:
           description: Title of the curricula
           x-oapi-codegen-extra-tags:
             db: curricula_title
+          maxLength: 500
         curricula_type:
           $ref: '#/components/schemas/ContentType'
           description: Type of the curricula
@@ -1681,6 +1827,7 @@ components:
           description: Permalink of the curricula
           x-oapi-codegen-extra-tags:
             db: curricula_permalink
+          maxLength: 500
         registration_id:
           type: string
           format: uuid
@@ -1710,11 +1857,13 @@ components:
           description: First name of the user
           x-oapi-codegen-extra-tags:
             db: user_first_name
+          maxLength: 500
         user_last_name:
           type: string
           description: Last name of the user
           x-oapi-codegen-extra-tags:
             db: user_last_name
+          maxLength: 500
         user_email:
           type: string
           format: email
@@ -1733,6 +1882,7 @@ components:
           description: Total count for pagination
           x-oapi-codegen-extra-tags:
             db: total_count
+          minimum: 0
     CurriculaRegistrationsFilter:
       type: object
       required:
@@ -1743,16 +1893,22 @@ components:
       properties:
         pagesize:
           type: integer
+          description: The pagesize of the curricularegistrationsfilter.
+          minimum: 0
         page:
           type: integer
+          description: Current page number of the result set.
+          minimum: 0
         contentType:
           type: array
           items:
             type: string
+          description: The content type of the curricularegistrationsfilter.
         status:
           type: array
           items:
             type: string
+          description: Current status of the resource.
     CurriculaRegistrationsResponse:
       type: object
       required:
@@ -1766,22 +1922,34 @@ components:
           items:
             $ref: '#/components/schemas/UserRegistration'
             x-go-type: UserRegistration
+          description: The data of the curricularegistrationsresponse.
         total_count:
           type: integer
           format: int64
+          description: Total number of items available.
+          minimum: 0
         page_size:
           type: integer
+          description: Number of items per page.
+          minimum: 1
         page:
           type: integer
+          description: Current page number of the result set.
+          minimum: 0
     UpdateCurrentItemProgressResponse:
       type: object
       properties:
         message:
           type: string
+          description: The message of the updatecurrentitemprogressresponse.
+          maxLength: 500
         progressTracker:
           $ref: '#/components/schemas/CurriculaProgressTracker'
         registrationId:
           type: string
+          description: ID of the associated registration.
+          maxLength: 500
+          format: uuid
         contentType:
           $ref: '#/components/schemas/ContentType'
         itemData:

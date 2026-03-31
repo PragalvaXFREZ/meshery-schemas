@@ -27,6 +27,8 @@ properties:
     x-order: 2
     type: string
     description: Connection Name
+    minLength: 1
+    maxLength: 255
   credential_id:
     x-go-name: CredentialID
     x-oapi-codegen-extra-tags:
@@ -42,6 +44,7 @@ properties:
     x-order: 4
     type: string
     description: Connection Type (platform, telemetry, collaboration)
+    maxLength: 255
   sub_type:
     x-oapi-codegen-extra-tags:
       db: sub_type
@@ -49,6 +52,7 @@ properties:
     x-order: 5
     type: string
     description: Connection Subtype (cloud, identity, metrics, chat, git, orchestration)
+    maxLength: 255
   kind:
     x-oapi-codegen-extra-tags:
       db: kind
@@ -56,6 +60,7 @@ properties:
     x-order: 6
     type: string
     description: Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)
+    maxLength: 255
   metadata:
     x-oapi-codegen-extra-tags:
       db: metadata

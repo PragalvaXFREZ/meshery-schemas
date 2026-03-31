@@ -342,11 +342,17 @@ export interface components {
     };
     /** @description Meshery server instance information */
     MesheryInstance: {
-      /** @description Instance ID */
+      /**
+       * Format: uuid
+       * @description Instance ID
+       */
       id?: string;
       /** @description Instance name */
       name?: string;
-      /** @description Server ID */
+      /**
+       * Format: uuid
+       * @description Server ID
+       */
       server_id?: string;
       /** @description Meshery server version */
       server_version?: string;
@@ -365,11 +371,17 @@ export interface components {
     MesheryInstancePage: {
       /** @description List of Meshery instances */
       mesheryInstances: {
-        /** @description Instance ID */
+        /**
+         * Format: uuid
+         * @description Instance ID
+         */
         id?: string;
         /** @description Instance name */
         name?: string;
-        /** @description Server ID */
+        /**
+         * Format: uuid
+         * @description Server ID
+         */
         server_id?: string;
         /** @description Meshery server version */
         server_version?: string;

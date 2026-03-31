@@ -74,6 +74,7 @@ components:
             enableTrace:
               type: boolean
               description: If true, include detailed trace information in the response
+          description: The options of the evaluationrequest.
 
     EvaluationResponse:
       type: object
@@ -86,6 +87,7 @@ components:
         schemaVersion:
           type: string
           description: Specifies the version of the schema to which the evaluation response conforms.
+          maxLength: 500
 
         design:
           $ref: ../design/api.yml#/components/schemas/PatternFile
@@ -101,6 +103,7 @@ components:
           type: string
           description: Hash of the input parameters and configuration used for this evaluation. Useful for identifying duplicate evaluations or caching results.
           example: "a1b2c3d4e5f6g7h8i9j0"
+          maxLength: 500
 
         timestamp:
           type: string
@@ -111,6 +114,7 @@ components:
           type: array
           item:
             $ref: "#/components/schemas/Action"
+          description: The actions of the evaluationresponse.
 
     Action:
       type: object
@@ -130,8 +134,10 @@ components:
               "update_relationship",
               "delete_relationship",
             ]
+          description: The op of the action.
         value:
           type: object
+          description: The value of the action.
 
     UpdateComponentOp:
       type: object
@@ -139,6 +145,7 @@ components:
         op:
           type: string
           enum: [update_component]
+          description: The op of the updatecomponentop.
         value:
           type: object
           required: [id, path, value]
@@ -154,6 +161,7 @@ components:
               type: string
               enum: [replace, merge]
               default: replace
+          description: The value of the updatecomponentop.
 
     UpdateComponentConfigurationOp:
       type: object
@@ -161,6 +169,7 @@ components:
         op:
           type: string
           enum: [update_component_configuration]
+          description: The op of the updatecomponentconfigurationop.
         value:
           type: object
           required: [id, path, value]
@@ -176,6 +185,7 @@ components:
               type: string
               enum: [replace, merge]
               default: replace
+          description: The value of the updatecomponentconfigurationop.
 
     DeleteComponentOp:
       type: object
@@ -183,12 +193,14 @@ components:
         op:
           type: string
           enum: [delete_component]
+          description: The op of the deletecomponentop.
         value:
           type: object
           required: [id]
           properties:
             id:
               type: string
+          description: The value of the deletecomponentop.
 
     AddComponentOp:
       type: object
@@ -196,12 +208,14 @@ components:
         op:
           type: string
           enum: [add_component]
+          description: The op of the addcomponentop.
         value:
           type: object
           required: [item]
           properties:
             item:
               $ref: "#/components/schemas/ComponentDeclaration"
+          description: The value of the addcomponentop.
 
     UpdateRelationshipOp:
       type: object
@@ -209,6 +223,7 @@ components:
         op:
           type: string
           enum: [update_relationship]
+          description: The op of the updaterelationshipop.
         value:
           type: object
           required: [id, path, value]
@@ -220,6 +235,7 @@ components:
               items:
                 type: string
             value: {}
+          description: The value of the updaterelationshipop.
 
     DeleteRelationshipOp:
       type: object
@@ -227,12 +243,14 @@ components:
         op:
           type: string
           enum: [delete_relationship]
+          description: The op of the deleterelationshipop.
         value:
           type: object
           required: [id]
           properties:
             id:
               type: string
+          description: The value of the deleterelationshipop.
 
     AddRelationshipOp:
       type: object
@@ -240,12 +258,14 @@ components:
         op:
           type: string
           enum: [add_relationship]
+          description: The op of the addrelationshipop.
         value:
           type: object
           required: [item]
           properties:
             item:
               $ref: "#/components/schemas/RelationshipDeclaration"
+          description: The value of the addrelationshipop.
 
     ComponentDeclaration:
       type: object

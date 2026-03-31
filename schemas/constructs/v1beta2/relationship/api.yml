@@ -87,6 +87,8 @@ components:
           type: string
           x-oapi-codegen-extra-tags:
             json: "kind"
+          description: Kind of the resource.
+          maxLength: 255
         mutatorRef:
           $ref: "#/components/schemas/MutatorRef"
           x-oapi-codegen-extra-tags:
@@ -108,6 +110,7 @@ components:
               type: string
           x-oapi-codegen-extra-tags:
             json: "refs,omitempty"
+          description: The refs of the matchselector.
         from:
           type: array
           items:
@@ -115,6 +118,7 @@ components:
             x-go-type: MatchSelectorItem
           x-oapi-codegen-extra-tags:
             json: "from,omitempty"
+          description: The from of the matchselector.
         to:
           type: array
           items:
@@ -122,6 +126,7 @@ components:
             x-go-type: MatchSelectorItem
           x-oapi-codegen-extra-tags:
             json: "to,omitempty"
+          description: The to of the matchselector.
       x-oapi-codegen-extra-tags:
         json: "match,omitempty"
 
@@ -137,6 +142,8 @@ components:
           type: string
           x-oapi-codegen-extra-tags:
             json: "kind"
+          description: Kind of the resource.
+          maxLength: 255
         match:
           $ref: "#/components/schemas/MatchSelector"
           x-go-type: MatchSelector
@@ -332,31 +339,37 @@ components:
           description: Primary color of the component used for UI representation.
           x-oapi-codegen-extra-tags:
             json: "primaryColor"
+          maxLength: 500
         secondaryColor:
           type: string
           description: Secondary color of the entity used for UI representation.
           x-oapi-codegen-extra-tags:
             json: "secondaryColor,omitempty"
+          maxLength: 500
         svgWhite:
           type: string
           description: White SVG of the entity used for UI representation on dark background.
           x-oapi-codegen-extra-tags:
             json: "svgWhite"
+          maxLength: 500
         svgColor:
           type: string
           description: Colored SVG of the entity used for UI representation on light background.
           x-oapi-codegen-extra-tags:
             json: "svgColor"
+          maxLength: 500
         svgComplete:
           type: string
           description: Complete SVG of the entity used for UI representation, often inclusive of background.
           x-oapi-codegen-extra-tags:
             json: "svgComplete,omitempty"
+          maxLength: 500
         color:
           type: string
           description: The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
           x-oapi-codegen-extra-tags:
             json: "color,omitempty"
+          maxLength: 500
         textOpacity:
           type: number
           format: float
@@ -364,30 +377,35 @@ components:
           x-go-name: TextOpacity
           x-oapi-codegen-extra-tags:
             json: "textOpacity,omitempty"
+          minimum: 0
         fontFamily:
           type: string
           description: A comma-separated list of font names to use on the label text.
           x-go-name: FontFamily
           x-oapi-codegen-extra-tags:
             json: "fontFamily,omitempty"
+          maxLength: 500
         fontSize:
           type: string
           description: The size of the label text.
           x-go-name: FontSize
           x-oapi-codegen-extra-tags:
             json: "fontSize,omitempty"
+          maxLength: 500
         fontStyle:
           type: string
           description: A CSS font style to be applied to the label text.
           x-go-name: FontStyle
           x-oapi-codegen-extra-tags:
             json: "fontStyle,omitempty"
+          maxLength: 500
         fontWeight:
           type: string
           description: A CSS font weight to be applied to the label text.
           x-go-name: FontWeight
           x-oapi-codegen-extra-tags:
             json: "fontWeight,omitempty"
+          maxLength: 500
         textTransform:
           $ref: "#/components/schemas/RelationshipDefinitionMetadataStylesTextTransform"
           description: A transformation to apply to the label text
@@ -401,24 +419,28 @@ components:
           x-go-name: Opacity
           x-oapi-codegen-extra-tags:
             json: "opacity,omitempty"
+          minimum: 0
         zIndex:
           type: integer
           description: An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index.
           x-go-name: ZIndex
           x-oapi-codegen-extra-tags:
             json: "zIndex,omitempty"
+          minimum: 0
         label:
           type: string
           description: The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id
           x-go-name: Label
           x-oapi-codegen-extra-tags:
             json: "label,omitempty"
+          maxLength: 500
         edgeAnimation:
           type: string
           description: The animation to use for the edge. Can be like 'marching-ants' , 'blink' , 'moving-gradient',etc .
           x-go-name: EdgeAnimation
           x-oapi-codegen-extra-tags:
             json: "edgeAnimation,omitempty"
+          maxLength: 500
         curveStyle:
           $ref: "#/components/schemas/RelationshipDefinitionMetadataStylesCurveStyle"
           x-go-name: CurveStyle
@@ -430,6 +452,7 @@ components:
           x-go-name: LineColor
           x-oapi-codegen-extra-tags:
             json: "lineColor,omitempty"
+          maxLength: 500
         lineStyle:
           $ref: "#/components/schemas/RelationshipDefinitionMetadataStylesLineStyle"
           x-go-name: LineStyle
@@ -447,12 +470,14 @@ components:
           x-go-name: LineOpacity
           x-oapi-codegen-extra-tags:
             json: "lineOpacity,omitempty"
+          minimum: 0
         targetArrowColor:
           type: string
           description: The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
           x-go-name: TargetArrowColor
           x-oapi-codegen-extra-tags:
             json: "targetArrowColor,omitempty"
+          maxLength: 500
         targetArrowShape:
           $ref: "#/components/schemas/RelationshipDefinitionMetadataStylesTargetArrowShape"
           x-go-name: TargetArrowShape
@@ -469,6 +494,7 @@ components:
           x-go-name: MidTargetArrowColor
           x-oapi-codegen-extra-tags:
             json: "midTargetArrowColor,omitempty"
+          maxLength: 500
         midTargetArrowShape:
           $ref: "#/components/schemas/RelationshipDefinitionMetadataStylesMidTargetArrowShape"
           x-go-name: MidTargetArrowShape
@@ -486,18 +512,21 @@ components:
           x-go-name: ArrowScale
           x-oapi-codegen-extra-tags:
             json: "arrowScale,omitempty"
+          minimum: 0
         sourceLabel:
           type: string
           description: The text to display for an edge's source label. Can give a path, e.g. data(id) will label with the elements id
           x-go-name: SourceLabel
           x-oapi-codegen-extra-tags:
             json: "sourceLabel,omitempty"
+          maxLength: 500
         targetLabel:
           type: string
           description: The text to display for an edge's target label. Can give a path, e.g. data(id) will label with the elements id
           x-go-name: TargetLabel
           x-oapi-codegen-extra-tags:
             json: "targetLabel,omitempty"
+          maxLength: 500
 
     # Relationship Metadata
     RelationshipMetadata:
@@ -513,6 +542,7 @@ components:
           type: string
           x-oapi-codegen-extra-tags:
             json: "description"
+          maxLength: 5000
         styles:
           $ref: "#/components/schemas/RelationshipDefinitionMetadataStyles"
           x-go-type: RelationshipDefinitionMetadataStyles

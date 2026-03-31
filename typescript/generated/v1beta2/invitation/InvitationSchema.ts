@@ -109,11 +109,14 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "name": {
                       "type": "string",
-                      "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,"
+                      "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,",
+                      "minLength": 1,
+                      "maxLength": 255
                     },
                     "description": {
                       "type": "string",
-                      "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description"
+                      "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description",
+                      "maxLength": 5000
                     },
                     "emails": {
                       "type": "array",
@@ -126,7 +129,8 @@ const InvitationSchema: Record<string, unknown> = {
                         "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
                         "x-go-type": "string",
                         "description": "Exact email address or the email address pattern for which the invitation is valid , null means the invitation is valid for all email addresses"
-                      }
+                      },
+                      "description": "The emails of the invitation."
                     },
                     "org_id": {
                       "type": "string",
@@ -134,7 +138,9 @@ const InvitationSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
                         "json": "org_id"
-                      }
+                      },
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "expires_at": {
                       "type": "string",
@@ -147,7 +153,8 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "quota": {
                       "type": "integer",
-                      "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
+                      "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota",
+                      "minimum": 0
                     },
                     "accepted_by": {
                       "type": "array",
@@ -173,7 +180,8 @@ const InvitationSchema: Record<string, unknown> = {
                       "items": {
                         "type": "string",
                         "description": "Roles that the user will have when accepting the invitation, null or empty string means the invitation does not specify any roles"
-                      }
+                      },
+                      "description": "The roles of the invitation."
                     },
                     "teams": {
                       "type": "array",
@@ -184,7 +192,8 @@ const InvitationSchema: Record<string, unknown> = {
                       "items": {
                         "type": "string",
                         "description": "Teams that the user will be added to when accepting the invitation, null or empty string means the invitation does not specify any teams"
-                      }
+                      },
+                      "description": "The teams of the invitation."
                     },
                     "status": {
                       "x-go-type": "InvitationStatus",
@@ -411,11 +420,14 @@ const InvitationSchema: Record<string, unknown> = {
                   },
                   "name": {
                     "type": "string",
-                    "description": "Name of the invitation."
+                    "description": "Name of the invitation.",
+                    "minLength": 1,
+                    "maxLength": 255
                   },
                   "description": {
                     "type": "string",
-                    "description": "Description of the invitation."
+                    "description": "Description of the invitation.",
+                    "maxLength": 5000
                   },
                   "emails": {
                     "type": "array",
@@ -427,7 +439,8 @@ const InvitationSchema: Record<string, unknown> = {
                       "type": "string",
                       "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
                       "x-go-type": "string"
-                    }
+                    },
+                    "description": "The emails of the invitation."
                   },
                   "org_id": {
                     "type": "string",
@@ -435,7 +448,9 @@ const InvitationSchema: Record<string, unknown> = {
                     "x-oapi-codegen-extra-tags": {
                       "db": "org_id",
                       "json": "org_id"
-                    }
+                    },
+                    "maxLength": 500,
+                    "format": "uuid"
                   },
                   "expires_at": {
                     "type": "string",
@@ -448,7 +463,8 @@ const InvitationSchema: Record<string, unknown> = {
                   },
                   "quota": {
                     "type": "integer",
-                    "description": "Quota for the invitation."
+                    "description": "Quota for the invitation.",
+                    "minimum": 0
                   },
                   "roles": {
                     "type": "array",
@@ -458,7 +474,8 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "items": {
                       "type": "string"
-                    }
+                    },
+                    "description": "The roles of the invitation."
                   },
                   "teams": {
                     "type": "array",
@@ -468,7 +485,8 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "items": {
                       "type": "string"
-                    }
+                    },
+                    "description": "The teams of the invitation."
                   },
                   "status": {
                     "x-go-type": "InvitationStatus",
@@ -542,11 +560,14 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "name": {
                       "type": "string",
-                      "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,"
+                      "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,",
+                      "minLength": 1,
+                      "maxLength": 255
                     },
                     "description": {
                       "type": "string",
-                      "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description"
+                      "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description",
+                      "maxLength": 5000
                     },
                     "emails": {
                       "type": "array",
@@ -559,7 +580,8 @@ const InvitationSchema: Record<string, unknown> = {
                         "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
                         "x-go-type": "string",
                         "description": "Exact email address or the email address pattern for which the invitation is valid , null means the invitation is valid for all email addresses"
-                      }
+                      },
+                      "description": "The emails of the invitation."
                     },
                     "org_id": {
                       "type": "string",
@@ -567,7 +589,9 @@ const InvitationSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
                         "json": "org_id"
-                      }
+                      },
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "expires_at": {
                       "type": "string",
@@ -580,7 +604,8 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "quota": {
                       "type": "integer",
-                      "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
+                      "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota",
+                      "minimum": 0
                     },
                     "accepted_by": {
                       "type": "array",
@@ -606,7 +631,8 @@ const InvitationSchema: Record<string, unknown> = {
                       "items": {
                         "type": "string",
                         "description": "Roles that the user will have when accepting the invitation, null or empty string means the invitation does not specify any roles"
-                      }
+                      },
+                      "description": "The roles of the invitation."
                     },
                     "teams": {
                       "type": "array",
@@ -617,7 +643,8 @@ const InvitationSchema: Record<string, unknown> = {
                       "items": {
                         "type": "string",
                         "description": "Teams that the user will be added to when accepting the invitation, null or empty string means the invitation does not specify any teams"
-                      }
+                      },
+                      "description": "The teams of the invitation."
                     },
                     "status": {
                       "x-go-type": "InvitationStatus",
@@ -783,11 +810,14 @@ const InvitationSchema: Record<string, unknown> = {
                           },
                           "name": {
                             "type": "string",
-                            "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,"
+                            "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,",
+                            "minLength": 1,
+                            "maxLength": 255
                           },
                           "description": {
                             "type": "string",
-                            "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description"
+                            "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description",
+                            "maxLength": 5000
                           },
                           "emails": {
                             "type": "array",
@@ -800,7 +830,8 @@ const InvitationSchema: Record<string, unknown> = {
                               "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
                               "x-go-type": "string",
                               "description": "Exact email address or the email address pattern for which the invitation is valid , null means the invitation is valid for all email addresses"
-                            }
+                            },
+                            "description": "The emails of the invitation."
                           },
                           "org_id": {
                             "type": "string",
@@ -808,7 +839,9 @@ const InvitationSchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "org_id",
                               "json": "org_id"
-                            }
+                            },
+                            "maxLength": 500,
+                            "format": "uuid"
                           },
                           "expires_at": {
                             "type": "string",
@@ -821,7 +854,8 @@ const InvitationSchema: Record<string, unknown> = {
                           },
                           "quota": {
                             "type": "integer",
-                            "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
+                            "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota",
+                            "minimum": 0
                           },
                           "accepted_by": {
                             "type": "array",
@@ -847,7 +881,8 @@ const InvitationSchema: Record<string, unknown> = {
                             "items": {
                               "type": "string",
                               "description": "Roles that the user will have when accepting the invitation, null or empty string means the invitation does not specify any roles"
-                            }
+                            },
+                            "description": "The roles of the invitation."
                           },
                           "teams": {
                             "type": "array",
@@ -858,7 +893,8 @@ const InvitationSchema: Record<string, unknown> = {
                             "items": {
                               "type": "string",
                               "description": "Teams that the user will be added to when accepting the invitation, null or empty string means the invitation does not specify any teams"
-                            }
+                            },
+                            "description": "The teams of the invitation."
                           },
                           "status": {
                             "x-go-type": "InvitationStatus",
@@ -913,7 +949,8 @@ const InvitationSchema: Record<string, unknown> = {
                       "description": "Total number of invitations available",
                       "x-oapi-codegen-extra-tags": {
                         "json": "total"
-                      }
+                      },
+                      "minimum": 0
                     }
                   }
                 }
@@ -1013,11 +1050,14 @@ const InvitationSchema: Record<string, unknown> = {
                   },
                   "name": {
                     "type": "string",
-                    "description": "Name of the invitation."
+                    "description": "Name of the invitation.",
+                    "minLength": 1,
+                    "maxLength": 255
                   },
                   "description": {
                     "type": "string",
-                    "description": "Description of the invitation."
+                    "description": "Description of the invitation.",
+                    "maxLength": 5000
                   },
                   "emails": {
                     "type": "array",
@@ -1029,7 +1069,8 @@ const InvitationSchema: Record<string, unknown> = {
                       "type": "string",
                       "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
                       "x-go-type": "string"
-                    }
+                    },
+                    "description": "The emails of the invitation."
                   },
                   "org_id": {
                     "type": "string",
@@ -1037,7 +1078,9 @@ const InvitationSchema: Record<string, unknown> = {
                     "x-oapi-codegen-extra-tags": {
                       "db": "org_id",
                       "json": "org_id"
-                    }
+                    },
+                    "maxLength": 500,
+                    "format": "uuid"
                   },
                   "expires_at": {
                     "type": "string",
@@ -1050,7 +1093,8 @@ const InvitationSchema: Record<string, unknown> = {
                   },
                   "quota": {
                     "type": "integer",
-                    "description": "Quota for the invitation."
+                    "description": "Quota for the invitation.",
+                    "minimum": 0
                   },
                   "roles": {
                     "type": "array",
@@ -1060,7 +1104,8 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "items": {
                       "type": "string"
-                    }
+                    },
+                    "description": "The roles of the invitation."
                   },
                   "teams": {
                     "type": "array",
@@ -1070,7 +1115,8 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "items": {
                       "type": "string"
-                    }
+                    },
+                    "description": "The teams of the invitation."
                   },
                   "status": {
                     "x-go-type": "InvitationStatus",
@@ -1144,11 +1190,14 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "name": {
                       "type": "string",
-                      "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,"
+                      "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,",
+                      "minLength": 1,
+                      "maxLength": 255
                     },
                     "description": {
                       "type": "string",
-                      "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description"
+                      "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description",
+                      "maxLength": 5000
                     },
                     "emails": {
                       "type": "array",
@@ -1161,7 +1210,8 @@ const InvitationSchema: Record<string, unknown> = {
                         "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
                         "x-go-type": "string",
                         "description": "Exact email address or the email address pattern for which the invitation is valid , null means the invitation is valid for all email addresses"
-                      }
+                      },
+                      "description": "The emails of the invitation."
                     },
                     "org_id": {
                       "type": "string",
@@ -1169,7 +1219,9 @@ const InvitationSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
                         "json": "org_id"
-                      }
+                      },
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "expires_at": {
                       "type": "string",
@@ -1182,7 +1234,8 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "quota": {
                       "type": "integer",
-                      "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
+                      "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota",
+                      "minimum": 0
                     },
                     "accepted_by": {
                       "type": "array",
@@ -1208,7 +1261,8 @@ const InvitationSchema: Record<string, unknown> = {
                       "items": {
                         "type": "string",
                         "description": "Roles that the user will have when accepting the invitation, null or empty string means the invitation does not specify any roles"
-                      }
+                      },
+                      "description": "The roles of the invitation."
                     },
                     "teams": {
                       "type": "array",
@@ -1219,7 +1273,8 @@ const InvitationSchema: Record<string, unknown> = {
                       "items": {
                         "type": "string",
                         "description": "Teams that the user will be added to when accepting the invitation, null or empty string means the invitation does not specify any teams"
-                      }
+                      },
+                      "description": "The teams of the invitation."
                     },
                     "status": {
                       "x-go-type": "InvitationStatus",
@@ -1377,11 +1432,14 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "name": {
                       "type": "string",
-                      "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,"
+                      "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,",
+                      "minLength": 1,
+                      "maxLength": 255
                     },
                     "description": {
                       "type": "string",
-                      "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description"
+                      "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description",
+                      "maxLength": 5000
                     },
                     "emails": {
                       "type": "array",
@@ -1394,7 +1452,8 @@ const InvitationSchema: Record<string, unknown> = {
                         "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
                         "x-go-type": "string",
                         "description": "Exact email address or the email address pattern for which the invitation is valid , null means the invitation is valid for all email addresses"
-                      }
+                      },
+                      "description": "The emails of the invitation."
                     },
                     "org_id": {
                       "type": "string",
@@ -1402,7 +1461,9 @@ const InvitationSchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
                         "json": "org_id"
-                      }
+                      },
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "expires_at": {
                       "type": "string",
@@ -1415,7 +1476,8 @@ const InvitationSchema: Record<string, unknown> = {
                     },
                     "quota": {
                       "type": "integer",
-                      "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
+                      "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota",
+                      "minimum": 0
                     },
                     "accepted_by": {
                       "type": "array",
@@ -1441,7 +1503,8 @@ const InvitationSchema: Record<string, unknown> = {
                       "items": {
                         "type": "string",
                         "description": "Roles that the user will have when accepting the invitation, null or empty string means the invitation does not specify any roles"
-                      }
+                      },
+                      "description": "The roles of the invitation."
                     },
                     "teams": {
                       "type": "array",
@@ -1452,7 +1515,8 @@ const InvitationSchema: Record<string, unknown> = {
                       "items": {
                         "type": "string",
                         "description": "Teams that the user will be added to when accepting the invitation, null or empty string means the invitation does not specify any teams"
-                      }
+                      },
+                      "description": "The teams of the invitation."
                     },
                     "status": {
                       "x-go-type": "InvitationStatus",
@@ -1755,20 +1819,27 @@ const InvitationSchema: Record<string, unknown> = {
                   "type": "object",
                   "properties": {
                     "page": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "Current page number of the result set.",
+                      "minimum": 0
                     },
                     "page_size": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "Number of items per page.",
+                      "minimum": 1
                     },
                     "total_count": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "Total number of items available.",
+                      "minimum": 0
                     },
                     "data": {
                       "type": "array",
                       "items": {
                         "type": "object",
                         "additionalProperties": true
-                      }
+                      },
+                      "description": "The data of the signuprequestspage."
                     }
                   }
                 }
@@ -2099,11 +2170,14 @@ const InvitationSchema: Record<string, unknown> = {
                 },
                 "name": {
                   "type": "string",
-                  "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,"
+                  "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,",
+                  "minLength": 1,
+                  "maxLength": 255
                 },
                 "description": {
                   "type": "string",
-                  "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description"
+                  "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description",
+                  "maxLength": 5000
                 },
                 "emails": {
                   "type": "array",
@@ -2116,7 +2190,8 @@ const InvitationSchema: Record<string, unknown> = {
                     "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
                     "x-go-type": "string",
                     "description": "Exact email address or the email address pattern for which the invitation is valid , null means the invitation is valid for all email addresses"
-                  }
+                  },
+                  "description": "The emails of the invitation."
                 },
                 "org_id": {
                   "type": "string",
@@ -2124,7 +2199,9 @@ const InvitationSchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "org_id",
                     "json": "org_id"
-                  }
+                  },
+                  "maxLength": 500,
+                  "format": "uuid"
                 },
                 "expires_at": {
                   "type": "string",
@@ -2137,7 +2214,8 @@ const InvitationSchema: Record<string, unknown> = {
                 },
                 "quota": {
                   "type": "integer",
-                  "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
+                  "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota",
+                  "minimum": 0
                 },
                 "accepted_by": {
                   "type": "array",
@@ -2163,7 +2241,8 @@ const InvitationSchema: Record<string, unknown> = {
                   "items": {
                     "type": "string",
                     "description": "Roles that the user will have when accepting the invitation, null or empty string means the invitation does not specify any roles"
-                  }
+                  },
+                  "description": "The roles of the invitation."
                 },
                 "teams": {
                   "type": "array",
@@ -2174,7 +2253,8 @@ const InvitationSchema: Record<string, unknown> = {
                   "items": {
                     "type": "string",
                     "description": "Teams that the user will be added to when accepting the invitation, null or empty string means the invitation does not specify any teams"
-                  }
+                  },
+                  "description": "The teams of the invitation."
                 },
                 "status": {
                   "x-go-type": "InvitationStatus",
@@ -2229,7 +2309,8 @@ const InvitationSchema: Record<string, unknown> = {
             "description": "Total number of invitations available",
             "x-oapi-codegen-extra-tags": {
               "json": "total"
-            }
+            },
+            "minimum": 0
           }
         }
       },
@@ -2241,20 +2322,27 @@ const InvitationSchema: Record<string, unknown> = {
         "type": "object",
         "properties": {
           "page": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Current page number of the result set.",
+            "minimum": 0
           },
           "page_size": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Number of items per page.",
+            "minimum": 1
           },
           "total_count": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Total number of items available.",
+            "minimum": 0
           },
           "data": {
             "type": "array",
             "items": {
               "type": "object",
               "additionalProperties": true
-            }
+            },
+            "description": "The data of the signuprequestspage."
           }
         }
       },
@@ -2307,11 +2395,14 @@ const InvitationSchema: Record<string, unknown> = {
           },
           "name": {
             "type": "string",
-            "description": "Name of the invitation."
+            "description": "Name of the invitation.",
+            "minLength": 1,
+            "maxLength": 255
           },
           "description": {
             "type": "string",
-            "description": "Description of the invitation."
+            "description": "Description of the invitation.",
+            "maxLength": 5000
           },
           "emails": {
             "type": "array",
@@ -2323,7 +2414,8 @@ const InvitationSchema: Record<string, unknown> = {
               "type": "string",
               "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
               "x-go-type": "string"
-            }
+            },
+            "description": "The emails of the invitation."
           },
           "org_id": {
             "type": "string",
@@ -2331,7 +2423,9 @@ const InvitationSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "org_id",
               "json": "org_id"
-            }
+            },
+            "maxLength": 500,
+            "format": "uuid"
           },
           "expires_at": {
             "type": "string",
@@ -2344,7 +2438,8 @@ const InvitationSchema: Record<string, unknown> = {
           },
           "quota": {
             "type": "integer",
-            "description": "Quota for the invitation."
+            "description": "Quota for the invitation.",
+            "minimum": 0
           },
           "roles": {
             "type": "array",
@@ -2354,7 +2449,8 @@ const InvitationSchema: Record<string, unknown> = {
             },
             "items": {
               "type": "string"
-            }
+            },
+            "description": "The roles of the invitation."
           },
           "teams": {
             "type": "array",
@@ -2364,7 +2460,8 @@ const InvitationSchema: Record<string, unknown> = {
             },
             "items": {
               "type": "string"
-            }
+            },
+            "description": "The teams of the invitation."
           },
           "status": {
             "x-go-type": "InvitationStatus",
@@ -2438,11 +2535,14 @@ const InvitationSchema: Record<string, unknown> = {
           },
           "name": {
             "type": "string",
-            "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,"
+            "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,",
+            "minLength": 1,
+            "maxLength": 255
           },
           "description": {
             "type": "string",
-            "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description"
+            "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description",
+            "maxLength": 5000
           },
           "emails": {
             "type": "array",
@@ -2455,7 +2555,8 @@ const InvitationSchema: Record<string, unknown> = {
               "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
               "x-go-type": "string",
               "description": "Exact email address or the email address pattern for which the invitation is valid , null means the invitation is valid for all email addresses"
-            }
+            },
+            "description": "The emails of the invitation."
           },
           "org_id": {
             "type": "string",
@@ -2463,7 +2564,9 @@ const InvitationSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "org_id",
               "json": "org_id"
-            }
+            },
+            "maxLength": 500,
+            "format": "uuid"
           },
           "expires_at": {
             "type": "string",
@@ -2476,7 +2579,8 @@ const InvitationSchema: Record<string, unknown> = {
           },
           "quota": {
             "type": "integer",
-            "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
+            "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota",
+            "minimum": 0
           },
           "accepted_by": {
             "type": "array",
@@ -2502,7 +2606,8 @@ const InvitationSchema: Record<string, unknown> = {
             "items": {
               "type": "string",
               "description": "Roles that the user will have when accepting the invitation, null or empty string means the invitation does not specify any roles"
-            }
+            },
+            "description": "The roles of the invitation."
           },
           "teams": {
             "type": "array",
@@ -2513,7 +2618,8 @@ const InvitationSchema: Record<string, unknown> = {
             "items": {
               "type": "string",
               "description": "Teams that the user will be added to when accepting the invitation, null or empty string means the invitation does not specify any teams"
-            }
+            },
+            "description": "The teams of the invitation."
           },
           "status": {
             "x-go-type": "InvitationStatus",

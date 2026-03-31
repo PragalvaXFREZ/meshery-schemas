@@ -20,9 +20,13 @@ export interface paths {
         200: {
           content: {
             "application/json": {
+              /** @description Current page number of the result set. */
               page: number;
+              /** @description Number of items per page. */
               page_size: number;
+              /** @description Total number of items available. */
               total_count: number;
+              /** @description The subscriptions of the subscriptionpage. */
               subscriptions: {
                 /**
                  * Format: uuid
@@ -90,7 +94,10 @@ export interface paths {
                 updated_at?: string;
                 /** Format: date-time */
                 deleted_at?: string;
-                /** @description Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe */
+                /**
+                 * Format: uuid
+                 * @description Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe
+                 */
                 billing_id: string;
               }[];
             };
@@ -130,7 +137,12 @@ export interface paths {
         201: {
           content: {
             "application/json": {
+              /**
+               * Format: uuid
+               * @description ID of the associated subscription.
+               */
               subscriptionId?: string;
+              /** @description The client secret of the createsubscriptionresponse. */
               clientSecret?: string;
             };
           };
@@ -157,11 +169,20 @@ export interface paths {
       requestBody: {
         content: {
           "application/json": {
-            /** @description Organization ID */
+            /**
+             * Format: uuid
+             * @description Organization ID
+             */
             orgId?: string;
-            /** @description Price ID from the payment processor */
+            /**
+             * Format: uuid
+             * @description Price ID from the payment processor
+             */
             planId?: string;
-            /** @description Coupon ID to apply */
+            /**
+             * Format: uuid
+             * @description Coupon ID to apply
+             */
             couponId?: string;
             /** @description Number of users in the organization */
             userCount?: number;
@@ -254,7 +275,10 @@ export interface paths {
               updated_at?: string;
               /** Format: date-time */
               deleted_at?: string;
-              /** @description Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe */
+              /**
+               * Format: uuid
+               * @description Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe
+               */
               billing_id: string;
             };
           };
@@ -401,11 +425,20 @@ export interface components {
      */
     PaymentProcessor: "stripe" | "paypal" | "braintree";
     CreateSubscriptionRequest: {
-      /** @description Organization ID */
+      /**
+       * Format: uuid
+       * @description Organization ID
+       */
       orgId?: string;
-      /** @description Price ID from the payment processor */
+      /**
+       * Format: uuid
+       * @description Price ID from the payment processor
+       */
       planId?: string;
-      /** @description Coupon ID to apply */
+      /**
+       * Format: uuid
+       * @description Coupon ID to apply
+       */
       couponId?: string;
       /** @description Number of users in the organization */
       userCount?: number;
@@ -433,7 +466,12 @@ export interface components {
       newPlanId?: string;
     };
     CreateSubscriptionResponse: {
+      /**
+       * Format: uuid
+       * @description ID of the associated subscription.
+       */
       subscriptionId?: string;
+      /** @description The client secret of the createsubscriptionresponse. */
       clientSecret?: string;
     };
     UpdateUsersRequest: {
@@ -444,7 +482,10 @@ export interface components {
       paymentProcessor?: "stripe" | "paypal" | "braintree";
     };
     CancelSubscriptionRequest: {
-      /** @description Subscription ID from the payment processor */
+      /**
+       * Format: uuid
+       * @description Subscription ID from the payment processor
+       */
       subscriptionId?: string;
       /**
        * @description Supported payment processors
@@ -455,9 +496,13 @@ export interface components {
     /** @description Payload for webhook events from payment processors */
     WebhookEvent: { [key: string]: unknown };
     SubscriptionPage: {
+      /** @description Current page number of the result set. */
       page: number;
+      /** @description Number of items per page. */
       page_size: number;
+      /** @description Total number of items available. */
       total_count: number;
+      /** @description The subscriptions of the subscriptionpage. */
       subscriptions: {
         /**
          * Format: uuid
@@ -521,7 +566,10 @@ export interface components {
         updated_at?: string;
         /** Format: date-time */
         deleted_at?: string;
-        /** @description Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe */
+        /**
+         * Format: uuid
+         * @description Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe
+         */
         billing_id: string;
       }[];
     };
@@ -589,7 +637,10 @@ export interface components {
       updated_at?: string;
       /** Format: date-time */
       deleted_at?: string;
-      /** @description Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe */
+      /**
+       * Format: uuid
+       * @description Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe
+       */
       billing_id: string;
     };
     /**
@@ -665,9 +716,13 @@ export interface operations {
       200: {
         content: {
           "application/json": {
+            /** @description Current page number of the result set. */
             page: number;
+            /** @description Number of items per page. */
             page_size: number;
+            /** @description Total number of items available. */
             total_count: number;
+            /** @description The subscriptions of the subscriptionpage. */
             subscriptions: {
               /**
                * Format: uuid
@@ -731,7 +786,10 @@ export interface operations {
               updated_at?: string;
               /** Format: date-time */
               deleted_at?: string;
-              /** @description Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe */
+              /**
+               * Format: uuid
+               * @description Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe
+               */
               billing_id: string;
             }[];
           };

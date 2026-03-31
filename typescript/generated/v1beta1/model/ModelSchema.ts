@@ -162,7 +162,8 @@ const ModelSchema: Record<string, unknown> = {
                   },
                   "register": {
                     "type": "boolean",
-                    "nullable": false
+                    "nullable": false,
+                    "description": "The register of the importrequest."
                   }
                 }
               }
@@ -254,20 +255,27 @@ const ModelSchema: Record<string, unknown> = {
                   "type": "object",
                   "properties": {
                     "page": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "Current page number of the result set.",
+                      "minimum": 0
                     },
                     "page_size": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "Number of items per page.",
+                      "minimum": 1
                     },
                     "total_count": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "Total number of items available.",
+                      "minimum": 0
                     },
                     "models": {
                       "type": "array",
                       "items": {
                         "type": "object",
                         "additionalProperties": true
-                      }
+                      },
+                      "description": "The models of the meshmodelmodelspage."
                     }
                   }
                 }
@@ -1072,7 +1080,8 @@ const ModelSchema: Record<string, unknown> = {
                     },
                     "description": {
                       "type": "string",
-                      "description": "A written representation of the purpose and characteristics of the capability."
+                      "description": "A written representation of the purpose and characteristics of the capability.",
+                      "maxLength": 5000
                     },
                     "kind": {
                       "description": "Top-level categorization of the capability",
@@ -1340,7 +1349,8 @@ const ModelSchema: Record<string, unknown> = {
               "gorm": "-",
               "json": "relationships",
               "yaml": "relationships"
-            }
+            },
+            "description": "The relationships of the model."
           },
           "components": {
             "type": "array",
@@ -1349,7 +1359,8 @@ const ModelSchema: Record<string, unknown> = {
               "gorm": "-",
               "json": "components",
               "yaml": "components"
-            }
+            },
+            "description": "The components of the model."
           },
           "componentsCount": {
             "type": "integer",
@@ -1360,7 +1371,8 @@ const ModelSchema: Record<string, unknown> = {
               "yaml": "components_count",
               "gorm": "-"
             },
-            "default": 0
+            "default": 0,
+            "minimum": 0
           },
           "relationshipsCount": {
             "type": "integer",
@@ -1371,7 +1383,8 @@ const ModelSchema: Record<string, unknown> = {
               "json": "relationships_count",
               "yaml": "relationships_count"
             },
-            "default": 0
+            "default": 0,
+            "minimum": 0
           },
           "created_at": {
             "x-order": 14,
@@ -1643,7 +1656,8 @@ const ModelSchema: Record<string, unknown> = {
           },
           "register": {
             "type": "boolean",
-            "nullable": false
+            "nullable": false,
+            "description": "The register of the importrequest."
           }
         }
       },
@@ -1753,20 +1767,27 @@ const ModelSchema: Record<string, unknown> = {
         "type": "object",
         "properties": {
           "page": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Current page number of the result set.",
+            "minimum": 0
           },
           "page_size": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Number of items per page.",
+            "minimum": 1
           },
           "total_count": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Total number of items available.",
+            "minimum": 0
           },
           "models": {
             "type": "array",
             "items": {
               "type": "object",
               "additionalProperties": true
-            }
+            },
+            "description": "The models of the meshmodelmodelspage."
           }
         }
       }

@@ -29,7 +29,10 @@ export interface components {
        * @description Unique identifier for the user
        */
       id: string;
-      /** @description User identifier (username or external ID) */
+      /**
+       * Format: uuid
+       * @description User identifier (username or external ID)
+       */
       user_id: string;
       /**
        * @description Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
@@ -71,23 +74,33 @@ export interface components {
       region?: { [key: string]: unknown };
       /** @description User preferences stored as JSONB */
       preferences?: {
+        /** @description The mesh adapters of the preference. */
         meshAdapters?: { [key: string]: unknown }[];
         grafana?: {
+          /** @description The grafana u r l of the grafana. */
           grafanaURL?: string;
+          /** @description The grafana a p i key of the grafana. */
           grafanaAPIKey?: string;
+          /** @description The selected boards configs of the grafana. */
           selectedBoardsConfigs?: {
             /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
             board?: { [key: string]: unknown };
+            /** @description The panels of the selectedgrafanaconfig. */
             panels?: { [key: string]: unknown }[];
+            /** @description The template vars of the selectedgrafanaconfig. */
             templateVars?: string[];
           }[];
         };
         prometheus?: {
+          /** @description The prometheus u r l of the prometheus. */
           prometheusURL?: string;
+          /** @description The selected prometheus boards configs of the prometheus. */
           selectedPrometheusBoardsConfigs?: {
             /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
             board?: { [key: string]: unknown };
+            /** @description The panels of the selectedgrafanaconfig. */
             panels?: { [key: string]: unknown }[];
+            /** @description The template vars of the selectedgrafanaconfig. */
             templateVars?: string[];
           }[];
         };
@@ -101,14 +114,27 @@ export interface components {
           /** @description Load generator */
           gen?: string;
         };
+        /** @description The anonymous usage stats of the preference. */
         anonymousUsageStats: boolean;
+        /** @description The anonymous perf results of the preference. */
         anonymousPerfResults: boolean;
-        /** Format: date-time */
+        /**
+         * Format: date-time
+         * @description Timestamp of when the resource was last updated.
+         */
         updated_at: string;
+        /** @description The dashboard preferences of the preference. */
         dashboardPreferences: { [key: string]: unknown };
+        /**
+         * Format: uuid
+         * @description ID of the associated selectedOrganization.
+         */
         selectedOrganizationId: string;
+        /** @description The selected workspace for organizations of the preference. */
         selectedWorkspaceForOrganizations: { [key: string]: string };
+        /** @description The users extension preferences of the preference. */
         usersExtensionPreferences: { [key: string]: unknown };
+        /** @description The remote provider preferences of the preference. */
         remoteProviderPreferences: { [key: string]: unknown };
       };
       /**
@@ -138,8 +164,12 @@ export interface components {
       updated_at: string;
       /** @description Various online profiles associated with the user account */
       socials?: {
+        /** @description The site of the social. */
         site: string;
-        /** Format: uri */
+        /**
+         * Format: uri
+         * @description The link of the social.
+         */
         link: string;
       }[];
       /**
@@ -177,16 +207,23 @@ export interface components {
     };
     /** @description Paginated list of users with organization and team role context */
     UsersPageForAdmin: {
+      /** @description Current page number of the result set. */
       page?: number;
+      /** @description Number of items per page. */
       page_size?: number;
+      /** @description Total number of items available. */
       total_count?: number;
+      /** @description The data of the userspageforadmin. */
       data?: {
         /**
          * Format: uuid
          * @description Unique identifier for the user
          */
         id: string;
-        /** @description User identifier (username or external ID) */
+        /**
+         * Format: uuid
+         * @description User identifier (username or external ID)
+         */
         user_id: string;
         /**
          * @description Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
@@ -228,23 +265,33 @@ export interface components {
         region?: { [key: string]: unknown };
         /** @description User preferences stored as JSONB */
         preferences?: {
+          /** @description The mesh adapters of the preference. */
           meshAdapters?: { [key: string]: unknown }[];
           grafana?: {
+            /** @description The grafana u r l of the grafana. */
             grafanaURL?: string;
+            /** @description The grafana a p i key of the grafana. */
             grafanaAPIKey?: string;
+            /** @description The selected boards configs of the grafana. */
             selectedBoardsConfigs?: {
               /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
               board?: { [key: string]: unknown };
+              /** @description The panels of the selectedgrafanaconfig. */
               panels?: { [key: string]: unknown }[];
+              /** @description The template vars of the selectedgrafanaconfig. */
               templateVars?: string[];
             }[];
           };
           prometheus?: {
+            /** @description The prometheus u r l of the prometheus. */
             prometheusURL?: string;
+            /** @description The selected prometheus boards configs of the prometheus. */
             selectedPrometheusBoardsConfigs?: {
               /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
               board?: { [key: string]: unknown };
+              /** @description The panels of the selectedgrafanaconfig. */
               panels?: { [key: string]: unknown }[];
+              /** @description The template vars of the selectedgrafanaconfig. */
               templateVars?: string[];
             }[];
           };
@@ -258,14 +305,27 @@ export interface components {
             /** @description Load generator */
             gen?: string;
           };
+          /** @description The anonymous usage stats of the preference. */
           anonymousUsageStats: boolean;
+          /** @description The anonymous perf results of the preference. */
           anonymousPerfResults: boolean;
-          /** Format: date-time */
+          /**
+           * Format: date-time
+           * @description Timestamp of when the resource was last updated.
+           */
           updated_at: string;
+          /** @description The dashboard preferences of the preference. */
           dashboardPreferences: { [key: string]: unknown };
+          /**
+           * Format: uuid
+           * @description ID of the associated selectedOrganization.
+           */
           selectedOrganizationId: string;
+          /** @description The selected workspace for organizations of the preference. */
           selectedWorkspaceForOrganizations: { [key: string]: string };
+          /** @description The users extension preferences of the preference. */
           usersExtensionPreferences: { [key: string]: unknown };
+          /** @description The remote provider preferences of the preference. */
           remoteProviderPreferences: { [key: string]: unknown };
         };
         /**
@@ -295,8 +355,12 @@ export interface components {
         updated_at: string;
         /** @description Various online profiles associated with the user account */
         socials?: {
+          /** @description The site of the social. */
           site: string;
-          /** Format: uri */
+          /**
+           * Format: uri
+           * @description The link of the social.
+           */
           link: string;
         }[];
         /**
@@ -335,16 +399,23 @@ export interface components {
     };
     /** @description Paginated list of public user records */
     UsersPageForNonAdmin: {
+      /** @description Current page number of the result set. */
       page?: number;
+      /** @description Number of items per page. */
       page_size?: number;
+      /** @description Total number of items available. */
       total_count?: number;
+      /** @description The data of the userspagefornonadmin. */
       data?: {
         /**
          * Format: uuid
          * @description Unique identifier for the user
          */
         id: string;
-        /** @description User identifier (username or external ID) */
+        /**
+         * Format: uuid
+         * @description User identifier (username or external ID)
+         */
         user_id: string;
         /**
          * @description Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
@@ -386,23 +457,33 @@ export interface components {
         region?: { [key: string]: unknown };
         /** @description User preferences stored as JSONB */
         preferences?: {
+          /** @description The mesh adapters of the preference. */
           meshAdapters?: { [key: string]: unknown }[];
           grafana?: {
+            /** @description The grafana u r l of the grafana. */
             grafanaURL?: string;
+            /** @description The grafana a p i key of the grafana. */
             grafanaAPIKey?: string;
+            /** @description The selected boards configs of the grafana. */
             selectedBoardsConfigs?: {
               /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
               board?: { [key: string]: unknown };
+              /** @description The panels of the selectedgrafanaconfig. */
               panels?: { [key: string]: unknown }[];
+              /** @description The template vars of the selectedgrafanaconfig. */
               templateVars?: string[];
             }[];
           };
           prometheus?: {
+            /** @description The prometheus u r l of the prometheus. */
             prometheusURL?: string;
+            /** @description The selected prometheus boards configs of the prometheus. */
             selectedPrometheusBoardsConfigs?: {
               /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
               board?: { [key: string]: unknown };
+              /** @description The panels of the selectedgrafanaconfig. */
               panels?: { [key: string]: unknown }[];
+              /** @description The template vars of the selectedgrafanaconfig. */
               templateVars?: string[];
             }[];
           };
@@ -416,14 +497,27 @@ export interface components {
             /** @description Load generator */
             gen?: string;
           };
+          /** @description The anonymous usage stats of the preference. */
           anonymousUsageStats: boolean;
+          /** @description The anonymous perf results of the preference. */
           anonymousPerfResults: boolean;
-          /** Format: date-time */
+          /**
+           * Format: date-time
+           * @description Timestamp of when the resource was last updated.
+           */
           updated_at: string;
+          /** @description The dashboard preferences of the preference. */
           dashboardPreferences: { [key: string]: unknown };
+          /**
+           * Format: uuid
+           * @description ID of the associated selectedOrganization.
+           */
           selectedOrganizationId: string;
+          /** @description The selected workspace for organizations of the preference. */
           selectedWorkspaceForOrganizations: { [key: string]: string };
+          /** @description The users extension preferences of the preference. */
           usersExtensionPreferences: { [key: string]: unknown };
+          /** @description The remote provider preferences of the preference. */
           remoteProviderPreferences: { [key: string]: unknown };
         };
         /**
@@ -453,8 +547,12 @@ export interface components {
         updated_at: string;
         /** @description Various online profiles associated with the user account */
         socials?: {
+          /** @description The site of the social. */
           site: string;
-          /** Format: uri */
+          /**
+           * Format: uri
+           * @description The link of the social.
+           */
           link: string;
         }[];
         /**
@@ -492,23 +590,33 @@ export interface components {
       }[];
     };
     Preference: {
+      /** @description The mesh adapters of the preference. */
       meshAdapters?: { [key: string]: unknown }[];
       grafana?: {
+        /** @description The grafana u r l of the grafana. */
         grafanaURL?: string;
+        /** @description The grafana a p i key of the grafana. */
         grafanaAPIKey?: string;
+        /** @description The selected boards configs of the grafana. */
         selectedBoardsConfigs?: {
           /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
           board?: { [key: string]: unknown };
+          /** @description The panels of the selectedgrafanaconfig. */
           panels?: { [key: string]: unknown }[];
+          /** @description The template vars of the selectedgrafanaconfig. */
           templateVars?: string[];
         }[];
       };
       prometheus?: {
+        /** @description The prometheus u r l of the prometheus. */
         prometheusURL?: string;
+        /** @description The selected prometheus boards configs of the prometheus. */
         selectedPrometheusBoardsConfigs?: {
           /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
           board?: { [key: string]: unknown };
+          /** @description The panels of the selectedgrafanaconfig. */
           panels?: { [key: string]: unknown }[];
+          /** @description The template vars of the selectedgrafanaconfig. */
           templateVars?: string[];
         }[];
       };
@@ -522,32 +630,52 @@ export interface components {
         /** @description Load generator */
         gen?: string;
       };
+      /** @description The anonymous usage stats of the preference. */
       anonymousUsageStats: boolean;
+      /** @description The anonymous perf results of the preference. */
       anonymousPerfResults: boolean;
-      /** Format: date-time */
+      /**
+       * Format: date-time
+       * @description Timestamp of when the resource was last updated.
+       */
       updated_at: string;
+      /** @description The dashboard preferences of the preference. */
       dashboardPreferences: { [key: string]: unknown };
+      /**
+       * Format: uuid
+       * @description ID of the associated selectedOrganization.
+       */
       selectedOrganizationId: string;
+      /** @description The selected workspace for organizations of the preference. */
       selectedWorkspaceForOrganizations: { [key: string]: string };
+      /** @description The users extension preferences of the preference. */
       usersExtensionPreferences: { [key: string]: unknown };
+      /** @description The remote provider preferences of the preference. */
       remoteProviderPreferences: { [key: string]: unknown };
     };
     /** @description Placeholder for Adapter struct definition. */
     Adapter: { [key: string]: unknown };
     Grafana: {
+      /** @description The grafana u r l of the grafana. */
       grafanaURL?: string;
+      /** @description The grafana a p i key of the grafana. */
       grafanaAPIKey?: string;
+      /** @description The selected boards configs of the grafana. */
       selectedBoardsConfigs?: {
         /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
         board?: { [key: string]: unknown };
+        /** @description The panels of the selectedgrafanaconfig. */
         panels?: { [key: string]: unknown }[];
+        /** @description The template vars of the selectedgrafanaconfig. */
         templateVars?: string[];
       }[];
     };
     SelectedGrafanaConfig: {
       /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
       board?: { [key: string]: unknown };
+      /** @description The panels of the selectedgrafanaconfig. */
       panels?: { [key: string]: unknown }[];
+      /** @description The template vars of the selectedgrafanaconfig. */
       templateVars?: string[];
     };
     /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
@@ -555,11 +683,15 @@ export interface components {
     /** @description Grafana panel structure imported from github.com/grafana-tools/sdk */
     Panel: { [key: string]: unknown };
     Prometheus: {
+      /** @description The prometheus u r l of the prometheus. */
       prometheusURL?: string;
+      /** @description The selected prometheus boards configs of the prometheus. */
       selectedPrometheusBoardsConfigs?: {
         /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
         board?: { [key: string]: unknown };
+        /** @description The panels of the selectedgrafanaconfig. */
         panels?: { [key: string]: unknown }[];
+        /** @description The template vars of the selectedgrafanaconfig. */
         templateVars?: string[];
       }[];
     };
@@ -575,8 +707,12 @@ export interface components {
     };
     /** @description Various online profiles associated with the user account, like GitHub, LinkedIn, X, and so on. */
     Social: {
+      /** @description The site of the social. */
       site: string;
-      /** Format: uri */
+      /**
+       * Format: uri
+       * @description The link of the social.
+       */
       link: string;
     };
   };
@@ -654,16 +790,23 @@ export interface operations {
       200: {
         content: {
           "application/json": {
+            /** @description Current page number of the result set. */
             page?: number;
+            /** @description Number of items per page. */
             page_size?: number;
+            /** @description Total number of items available. */
             total_count?: number;
+            /** @description The data of the userspageforadmin. */
             data?: {
               /**
                * Format: uuid
                * @description Unique identifier for the user
                */
               id: string;
-              /** @description User identifier (username or external ID) */
+              /**
+               * Format: uuid
+               * @description User identifier (username or external ID)
+               */
               user_id: string;
               /**
                * @description Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
@@ -705,23 +848,33 @@ export interface operations {
               region?: { [key: string]: unknown };
               /** @description User preferences stored as JSONB */
               preferences?: {
+                /** @description The mesh adapters of the preference. */
                 meshAdapters?: { [key: string]: unknown }[];
                 grafana?: {
+                  /** @description The grafana u r l of the grafana. */
                   grafanaURL?: string;
+                  /** @description The grafana a p i key of the grafana. */
                   grafanaAPIKey?: string;
+                  /** @description The selected boards configs of the grafana. */
                   selectedBoardsConfigs?: {
                     /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
                     board?: { [key: string]: unknown };
+                    /** @description The panels of the selectedgrafanaconfig. */
                     panels?: { [key: string]: unknown }[];
+                    /** @description The template vars of the selectedgrafanaconfig. */
                     templateVars?: string[];
                   }[];
                 };
                 prometheus?: {
+                  /** @description The prometheus u r l of the prometheus. */
                   prometheusURL?: string;
+                  /** @description The selected prometheus boards configs of the prometheus. */
                   selectedPrometheusBoardsConfigs?: {
                     /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
                     board?: { [key: string]: unknown };
+                    /** @description The panels of the selectedgrafanaconfig. */
                     panels?: { [key: string]: unknown }[];
+                    /** @description The template vars of the selectedgrafanaconfig. */
                     templateVars?: string[];
                   }[];
                 };
@@ -735,14 +888,27 @@ export interface operations {
                   /** @description Load generator */
                   gen?: string;
                 };
+                /** @description The anonymous usage stats of the preference. */
                 anonymousUsageStats: boolean;
+                /** @description The anonymous perf results of the preference. */
                 anonymousPerfResults: boolean;
-                /** Format: date-time */
+                /**
+                 * Format: date-time
+                 * @description Timestamp of when the resource was last updated.
+                 */
                 updated_at: string;
+                /** @description The dashboard preferences of the preference. */
                 dashboardPreferences: { [key: string]: unknown };
+                /**
+                 * Format: uuid
+                 * @description ID of the associated selectedOrganization.
+                 */
                 selectedOrganizationId: string;
+                /** @description The selected workspace for organizations of the preference. */
                 selectedWorkspaceForOrganizations: { [key: string]: string };
+                /** @description The users extension preferences of the preference. */
                 usersExtensionPreferences: { [key: string]: unknown };
+                /** @description The remote provider preferences of the preference. */
                 remoteProviderPreferences: { [key: string]: unknown };
               };
               /**
@@ -772,8 +938,12 @@ export interface operations {
               updated_at: string;
               /** @description Various online profiles associated with the user account */
               socials?: {
+                /** @description The site of the social. */
                 site: string;
-                /** Format: uri */
+                /**
+                 * Format: uri
+                 * @description The link of the social.
+                 */
                 link: string;
               }[];
               /**
@@ -859,16 +1029,23 @@ export interface operations {
       200: {
         content: {
           "application/json": {
+            /** @description Current page number of the result set. */
             page?: number;
+            /** @description Number of items per page. */
             page_size?: number;
+            /** @description Total number of items available. */
             total_count?: number;
+            /** @description The data of the userspagefornonadmin. */
             data?: {
               /**
                * Format: uuid
                * @description Unique identifier for the user
                */
               id: string;
-              /** @description User identifier (username or external ID) */
+              /**
+               * Format: uuid
+               * @description User identifier (username or external ID)
+               */
               user_id: string;
               /**
                * @description Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
@@ -910,23 +1087,33 @@ export interface operations {
               region?: { [key: string]: unknown };
               /** @description User preferences stored as JSONB */
               preferences?: {
+                /** @description The mesh adapters of the preference. */
                 meshAdapters?: { [key: string]: unknown }[];
                 grafana?: {
+                  /** @description The grafana u r l of the grafana. */
                   grafanaURL?: string;
+                  /** @description The grafana a p i key of the grafana. */
                   grafanaAPIKey?: string;
+                  /** @description The selected boards configs of the grafana. */
                   selectedBoardsConfigs?: {
                     /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
                     board?: { [key: string]: unknown };
+                    /** @description The panels of the selectedgrafanaconfig. */
                     panels?: { [key: string]: unknown }[];
+                    /** @description The template vars of the selectedgrafanaconfig. */
                     templateVars?: string[];
                   }[];
                 };
                 prometheus?: {
+                  /** @description The prometheus u r l of the prometheus. */
                   prometheusURL?: string;
+                  /** @description The selected prometheus boards configs of the prometheus. */
                   selectedPrometheusBoardsConfigs?: {
                     /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
                     board?: { [key: string]: unknown };
+                    /** @description The panels of the selectedgrafanaconfig. */
                     panels?: { [key: string]: unknown }[];
+                    /** @description The template vars of the selectedgrafanaconfig. */
                     templateVars?: string[];
                   }[];
                 };
@@ -940,14 +1127,27 @@ export interface operations {
                   /** @description Load generator */
                   gen?: string;
                 };
+                /** @description The anonymous usage stats of the preference. */
                 anonymousUsageStats: boolean;
+                /** @description The anonymous perf results of the preference. */
                 anonymousPerfResults: boolean;
-                /** Format: date-time */
+                /**
+                 * Format: date-time
+                 * @description Timestamp of when the resource was last updated.
+                 */
                 updated_at: string;
+                /** @description The dashboard preferences of the preference. */
                 dashboardPreferences: { [key: string]: unknown };
+                /**
+                 * Format: uuid
+                 * @description ID of the associated selectedOrganization.
+                 */
                 selectedOrganizationId: string;
+                /** @description The selected workspace for organizations of the preference. */
                 selectedWorkspaceForOrganizations: { [key: string]: string };
+                /** @description The users extension preferences of the preference. */
                 usersExtensionPreferences: { [key: string]: unknown };
+                /** @description The remote provider preferences of the preference. */
                 remoteProviderPreferences: { [key: string]: unknown };
               };
               /**
@@ -977,8 +1177,12 @@ export interface operations {
               updated_at: string;
               /** @description Various online profiles associated with the user account */
               socials?: {
+                /** @description The site of the social. */
                 site: string;
-                /** Format: uri */
+                /**
+                 * Format: uri
+                 * @description The link of the social.
+                 */
                 link: string;
               }[];
               /**
@@ -1054,7 +1258,10 @@ export interface operations {
              * @description Unique identifier for the user
              */
             id: string;
-            /** @description User identifier (username or external ID) */
+            /**
+             * Format: uuid
+             * @description User identifier (username or external ID)
+             */
             user_id: string;
             /**
              * @description Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
@@ -1096,23 +1303,33 @@ export interface operations {
             region?: { [key: string]: unknown };
             /** @description User preferences stored as JSONB */
             preferences?: {
+              /** @description The mesh adapters of the preference. */
               meshAdapters?: { [key: string]: unknown }[];
               grafana?: {
+                /** @description The grafana u r l of the grafana. */
                 grafanaURL?: string;
+                /** @description The grafana a p i key of the grafana. */
                 grafanaAPIKey?: string;
+                /** @description The selected boards configs of the grafana. */
                 selectedBoardsConfigs?: {
                   /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
                   board?: { [key: string]: unknown };
+                  /** @description The panels of the selectedgrafanaconfig. */
                   panels?: { [key: string]: unknown }[];
+                  /** @description The template vars of the selectedgrafanaconfig. */
                   templateVars?: string[];
                 }[];
               };
               prometheus?: {
+                /** @description The prometheus u r l of the prometheus. */
                 prometheusURL?: string;
+                /** @description The selected prometheus boards configs of the prometheus. */
                 selectedPrometheusBoardsConfigs?: {
                   /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
                   board?: { [key: string]: unknown };
+                  /** @description The panels of the selectedgrafanaconfig. */
                   panels?: { [key: string]: unknown }[];
+                  /** @description The template vars of the selectedgrafanaconfig. */
                   templateVars?: string[];
                 }[];
               };
@@ -1126,14 +1343,27 @@ export interface operations {
                 /** @description Load generator */
                 gen?: string;
               };
+              /** @description The anonymous usage stats of the preference. */
               anonymousUsageStats: boolean;
+              /** @description The anonymous perf results of the preference. */
               anonymousPerfResults: boolean;
-              /** Format: date-time */
+              /**
+               * Format: date-time
+               * @description Timestamp of when the resource was last updated.
+               */
               updated_at: string;
+              /** @description The dashboard preferences of the preference. */
               dashboardPreferences: { [key: string]: unknown };
+              /**
+               * Format: uuid
+               * @description ID of the associated selectedOrganization.
+               */
               selectedOrganizationId: string;
+              /** @description The selected workspace for organizations of the preference. */
               selectedWorkspaceForOrganizations: { [key: string]: string };
+              /** @description The users extension preferences of the preference. */
               usersExtensionPreferences: { [key: string]: unknown };
+              /** @description The remote provider preferences of the preference. */
               remoteProviderPreferences: { [key: string]: unknown };
             };
             /**
@@ -1163,8 +1393,12 @@ export interface operations {
             updated_at: string;
             /** @description Various online profiles associated with the user account */
             socials?: {
+              /** @description The site of the social. */
               site: string;
-              /** Format: uri */
+              /**
+               * Format: uri
+               * @description The link of the social.
+               */
               link: string;
             }[];
             /**
@@ -1239,7 +1473,10 @@ export interface operations {
              * @description Unique identifier for the user
              */
             id: string;
-            /** @description User identifier (username or external ID) */
+            /**
+             * Format: uuid
+             * @description User identifier (username or external ID)
+             */
             user_id: string;
             /**
              * @description Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
@@ -1281,23 +1518,33 @@ export interface operations {
             region?: { [key: string]: unknown };
             /** @description User preferences stored as JSONB */
             preferences?: {
+              /** @description The mesh adapters of the preference. */
               meshAdapters?: { [key: string]: unknown }[];
               grafana?: {
+                /** @description The grafana u r l of the grafana. */
                 grafanaURL?: string;
+                /** @description The grafana a p i key of the grafana. */
                 grafanaAPIKey?: string;
+                /** @description The selected boards configs of the grafana. */
                 selectedBoardsConfigs?: {
                   /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
                   board?: { [key: string]: unknown };
+                  /** @description The panels of the selectedgrafanaconfig. */
                   panels?: { [key: string]: unknown }[];
+                  /** @description The template vars of the selectedgrafanaconfig. */
                   templateVars?: string[];
                 }[];
               };
               prometheus?: {
+                /** @description The prometheus u r l of the prometheus. */
                 prometheusURL?: string;
+                /** @description The selected prometheus boards configs of the prometheus. */
                 selectedPrometheusBoardsConfigs?: {
                   /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
                   board?: { [key: string]: unknown };
+                  /** @description The panels of the selectedgrafanaconfig. */
                   panels?: { [key: string]: unknown }[];
+                  /** @description The template vars of the selectedgrafanaconfig. */
                   templateVars?: string[];
                 }[];
               };
@@ -1311,14 +1558,27 @@ export interface operations {
                 /** @description Load generator */
                 gen?: string;
               };
+              /** @description The anonymous usage stats of the preference. */
               anonymousUsageStats: boolean;
+              /** @description The anonymous perf results of the preference. */
               anonymousPerfResults: boolean;
-              /** Format: date-time */
+              /**
+               * Format: date-time
+               * @description Timestamp of when the resource was last updated.
+               */
               updated_at: string;
+              /** @description The dashboard preferences of the preference. */
               dashboardPreferences: { [key: string]: unknown };
+              /**
+               * Format: uuid
+               * @description ID of the associated selectedOrganization.
+               */
               selectedOrganizationId: string;
+              /** @description The selected workspace for organizations of the preference. */
               selectedWorkspaceForOrganizations: { [key: string]: string };
+              /** @description The users extension preferences of the preference. */
               usersExtensionPreferences: { [key: string]: unknown };
+              /** @description The remote provider preferences of the preference. */
               remoteProviderPreferences: { [key: string]: unknown };
             };
             /**
@@ -1348,8 +1608,12 @@ export interface operations {
             updated_at: string;
             /** @description Various online profiles associated with the user account */
             socials?: {
+              /** @description The site of the social. */
               site: string;
-              /** Format: uri */
+              /**
+               * Format: uri
+               * @description The link of the social.
+               */
               link: string;
             }[];
             /**

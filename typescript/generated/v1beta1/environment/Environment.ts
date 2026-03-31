@@ -92,9 +92,15 @@ export interface components {
     EnvironmentConnectionMapping: {
       /** Format: uuid */
       id?: string;
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @description ID of the associated environment.
+       */
       environment_id?: string;
-      /** Format: uuid */
+      /**
+       * Format: uuid
+       * @description ID of the associated connection.
+       */
       connection_id?: string;
       /** Format: date-time */
       created_at?: string;
@@ -111,13 +117,17 @@ export interface components {
       name: string;
       /** @description An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments). */
       description?: string;
-      /** @description Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation. */
+      /**
+       * Format: uuid
+       * @description Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
+       */
       organization_id: string;
     };
     EnvironmentPage: {
       page?: number;
       page_size?: number;
       total_count?: number;
+      /** @description Environments associated with this resource. */
       environments?: {
         /**
          * Format: uuid
@@ -171,9 +181,13 @@ export interface components {
       }[];
     };
     EnvironmentConnectionsPage: {
+      /** @description Current page number of the result set. */
       page?: number;
+      /** @description Number of items per page. */
       page_size?: number;
+      /** @description Total number of items available. */
       total_count?: number;
+      /** @description The connections of the environmentconnectionspage. */
       connections?: { [key: string]: unknown }[];
     };
   };
@@ -232,7 +246,10 @@ export interface components {
           name: string;
           /** @description An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments). */
           description?: string;
-          /** @description Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation. */
+          /**
+           * Format: uuid
+           * @description Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
+           */
           organization_id: string;
         };
       };
@@ -265,6 +282,7 @@ export interface operations {
             page?: number;
             page_size?: number;
             total_count?: number;
+            /** @description Environments associated with this resource. */
             environments?: {
               /**
                * Format: uuid
@@ -419,7 +437,10 @@ export interface operations {
           name: string;
           /** @description An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments). */
           description?: string;
-          /** @description Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation. */
+          /**
+           * Format: uuid
+           * @description Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
+           */
           organization_id: string;
         };
       };
@@ -444,6 +465,7 @@ export interface operations {
             page?: number;
             page_size?: number;
             total_count?: number;
+            /** @description Environments associated with this resource. */
             environments?: {
               /**
                * Format: uuid
@@ -539,6 +561,7 @@ export interface operations {
             page?: number;
             page_size?: number;
             total_count?: number;
+            /** @description Environments associated with this resource. */
             environments?: {
               /**
                * Format: uuid
@@ -626,7 +649,10 @@ export interface operations {
           name: string;
           /** @description An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments). */
           description?: string;
-          /** @description Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation. */
+          /**
+           * Format: uuid
+           * @description Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
+           */
           organization_id: string;
         };
       };
@@ -691,9 +717,13 @@ export interface operations {
       200: {
         content: {
           "application/json": {
+            /** @description Current page number of the result set. */
             page?: number;
+            /** @description Number of items per page. */
             page_size?: number;
+            /** @description Total number of items available. */
             total_count?: number;
+            /** @description The connections of the environmentconnectionspage. */
             connections?: { [key: string]: unknown }[];
           };
         };

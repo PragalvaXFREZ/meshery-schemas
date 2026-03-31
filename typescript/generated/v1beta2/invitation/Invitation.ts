@@ -60,8 +60,12 @@ export interface components {
         name: string;
         /** @description Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
         description: string;
+        /** @description The emails of the invitation. */
         emails: string[];
-        /** @description ID of the organization to which the user is invited */
+        /**
+         * Format: uuid
+         * @description ID of the organization to which the user is invited
+         */
         org_id: string;
         /**
          * Format: date-time
@@ -72,7 +76,9 @@ export interface components {
         quota?: number;
         /** @description List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
         accepted_by: string[];
+        /** @description The roles of the invitation. */
         roles: string[];
+        /** @description The teams of the invitation. */
         teams: string[];
         /**
          * @description Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
@@ -100,9 +106,13 @@ export interface components {
     };
     SignupRequest: { [key: string]: unknown };
     SignupRequestsPage: {
+      /** @description Current page number of the result set. */
       page?: number;
+      /** @description Number of items per page. */
       page_size?: number;
+      /** @description Total number of items available. */
       total_count?: number;
+      /** @description The data of the signuprequestspage. */
       data?: { [key: string]: unknown }[];
     };
     /** @description Payload for creating or updating an invitation. */
@@ -123,8 +133,12 @@ export interface components {
       name: string;
       /** @description Description of the invitation. */
       description: string;
+      /** @description The emails of the invitation. */
       emails: string[];
-      /** @description ID of the organization to which the user is invited. */
+      /**
+       * Format: uuid
+       * @description ID of the organization to which the user is invited.
+       */
       org_id: string;
       /**
        * Format: date-time
@@ -133,7 +147,9 @@ export interface components {
       expires_at?: string;
       /** @description Quota for the invitation. */
       quota?: number;
+      /** @description The roles of the invitation. */
       roles: string[];
+      /** @description The teams of the invitation. */
       teams: string[];
       /**
        * @description Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
@@ -164,8 +180,12 @@ export interface components {
       name: string;
       /** @description Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
       description: string;
+      /** @description The emails of the invitation. */
       emails: string[];
-      /** @description ID of the organization to which the user is invited */
+      /**
+       * Format: uuid
+       * @description ID of the organization to which the user is invited
+       */
       org_id: string;
       /**
        * Format: date-time
@@ -176,7 +196,9 @@ export interface components {
       quota?: number;
       /** @description List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
       accepted_by: string[];
+      /** @description The roles of the invitation. */
       roles: string[];
+      /** @description The teams of the invitation. */
       teams: string[];
       /**
        * @description Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
@@ -262,8 +284,12 @@ export interface operations {
             name: string;
             /** @description Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
             description: string;
+            /** @description The emails of the invitation. */
             emails: string[];
-            /** @description ID of the organization to which the user is invited */
+            /**
+             * Format: uuid
+             * @description ID of the organization to which the user is invited
+             */
             org_id: string;
             /**
              * Format: date-time
@@ -274,7 +300,9 @@ export interface operations {
             quota?: number;
             /** @description List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
             accepted_by: string[];
+            /** @description The roles of the invitation. */
             roles: string[];
+            /** @description The teams of the invitation. */
             teams: string[];
             /**
              * @description Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
@@ -352,8 +380,12 @@ export interface operations {
             name: string;
             /** @description Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
             description: string;
+            /** @description The emails of the invitation. */
             emails: string[];
-            /** @description ID of the organization to which the user is invited */
+            /**
+             * Format: uuid
+             * @description ID of the organization to which the user is invited
+             */
             org_id: string;
             /**
              * Format: date-time
@@ -364,7 +396,9 @@ export interface operations {
             quota?: number;
             /** @description List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
             accepted_by: string[];
+            /** @description The roles of the invitation. */
             roles: string[];
+            /** @description The teams of the invitation. */
             teams: string[];
             /**
              * @description Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
@@ -433,8 +467,12 @@ export interface operations {
           name: string;
           /** @description Description of the invitation. */
           description: string;
+          /** @description The emails of the invitation. */
           emails: string[];
-          /** @description ID of the organization to which the user is invited. */
+          /**
+           * Format: uuid
+           * @description ID of the organization to which the user is invited.
+           */
           org_id: string;
           /**
            * Format: date-time
@@ -443,7 +481,9 @@ export interface operations {
           expires_at?: string;
           /** @description Quota for the invitation. */
           quota?: number;
+          /** @description The roles of the invitation. */
           roles: string[];
+          /** @description The teams of the invitation. */
           teams: string[];
           /**
            * @description Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
@@ -513,8 +553,12 @@ export interface operations {
               name: string;
               /** @description Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
               description: string;
+              /** @description The emails of the invitation. */
               emails: string[];
-              /** @description ID of the organization to which the user is invited */
+              /**
+               * Format: uuid
+               * @description ID of the organization to which the user is invited
+               */
               org_id: string;
               /**
                * Format: date-time
@@ -525,7 +569,9 @@ export interface operations {
               quota?: number;
               /** @description List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
               accepted_by: string[];
+              /** @description The roles of the invitation. */
               roles: string[];
+              /** @description The teams of the invitation. */
               teams: string[];
               /**
                * @description Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
@@ -594,8 +640,12 @@ export interface operations {
             name: string;
             /** @description Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
             description: string;
+            /** @description The emails of the invitation. */
             emails: string[];
-            /** @description ID of the organization to which the user is invited */
+            /**
+             * Format: uuid
+             * @description ID of the organization to which the user is invited
+             */
             org_id: string;
             /**
              * Format: date-time
@@ -606,7 +656,9 @@ export interface operations {
             quota?: number;
             /** @description List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
             accepted_by: string[];
+            /** @description The roles of the invitation. */
             roles: string[];
+            /** @description The teams of the invitation. */
             teams: string[];
             /**
              * @description Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
@@ -669,8 +721,12 @@ export interface operations {
           name: string;
           /** @description Description of the invitation. */
           description: string;
+          /** @description The emails of the invitation. */
           emails: string[];
-          /** @description ID of the organization to which the user is invited. */
+          /**
+           * Format: uuid
+           * @description ID of the organization to which the user is invited.
+           */
           org_id: string;
           /**
            * Format: date-time
@@ -679,7 +735,9 @@ export interface operations {
           expires_at?: string;
           /** @description Quota for the invitation. */
           quota?: number;
+          /** @description The roles of the invitation. */
           roles: string[];
+          /** @description The teams of the invitation. */
           teams: string[];
           /**
            * @description Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
@@ -717,8 +775,12 @@ export interface operations {
             name: string;
             /** @description Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
             description: string;
+            /** @description The emails of the invitation. */
             emails: string[];
-            /** @description ID of the organization to which the user is invited */
+            /**
+             * Format: uuid
+             * @description ID of the organization to which the user is invited
+             */
             org_id: string;
             /**
              * Format: date-time
@@ -729,7 +791,9 @@ export interface operations {
             quota?: number;
             /** @description List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
             accepted_by: string[];
+            /** @description The roles of the invitation. */
             roles: string[];
+            /** @description The teams of the invitation. */
             teams: string[];
             /**
              * @description Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
@@ -845,9 +909,13 @@ export interface operations {
       200: {
         content: {
           "application/json": {
+            /** @description Current page number of the result set. */
             page?: number;
+            /** @description Number of items per page. */
             page_size?: number;
+            /** @description Total number of items available. */
             total_count?: number;
+            /** @description The data of the signuprequestspage. */
             data?: { [key: string]: unknown }[];
           };
         };

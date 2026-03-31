@@ -69,6 +69,7 @@ export interface components {
       page_size: number;
       /** @description Total number of roles across all pages. */
       total_count: number;
+      /** @description The roles of the rolespage. */
       roles: {
         /**
          * Format: uuid
@@ -151,12 +152,20 @@ export interface components {
        * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
        */
       user_id?: string;
+      /** @description The username of the userroleupdaterequest. */
       username?: string;
-      /** Format: email */
+      /**
+       * Format: email
+       * @description Email address.
+       */
       email?: string;
+      /** @description The first name of the userroleupdaterequest. */
       firstName?: string;
+      /** @description The last name of the userroleupdaterequest. */
       lastName?: string;
+      /** @description Current status of the resource. */
       status?: string;
+      /** @description The role names of the userroleupdaterequest. */
       roleNames?: string[];
       /** Format: date-time */
       created_at?: string;
@@ -339,6 +348,7 @@ export interface operations {
             page_size: number;
             /** @description Total number of roles across all pages. */
             total_count: number;
+            /** @description The roles of the rolespage. */
             roles: {
               /**
                * Format: uuid
@@ -437,12 +447,20 @@ export interface operations {
            * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
            */
           user_id?: string;
+          /** @description The username of the userroleupdaterequest. */
           username?: string;
-          /** Format: email */
+          /**
+           * Format: email
+           * @description Email address.
+           */
           email?: string;
+          /** @description The first name of the userroleupdaterequest. */
           firstName?: string;
+          /** @description The last name of the userroleupdaterequest. */
           lastName?: string;
+          /** @description Current status of the resource. */
           status?: string;
+          /** @description The role names of the userroleupdaterequest. */
           roleNames?: string[];
           /** Format: date-time */
           created_at?: string;
@@ -581,6 +599,7 @@ export interface operations {
             page: number;
             page_size: number;
             total_count: number;
+            /** @description The keychains of the keychainpage. */
             keychains: {
               /**
                * Format: uuid

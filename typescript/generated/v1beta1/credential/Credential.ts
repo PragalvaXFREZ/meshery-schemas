@@ -58,6 +58,7 @@ export interface components {
     };
     /** @description A paginated list of credentials. */
     CredentialPage: {
+      /** @description The credentials of the credentialpage. */
       credentials: {
         /**
          * Format: uuid
@@ -161,6 +162,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
+            /** @description The credentials of the credentialpage. */
             credentials: {
               /**
                * Format: uuid

@@ -108,17 +108,20 @@ const ScheduleSchema: Record<string, unknown> = {
                     "page": {
                       "type": "integer",
                       "description": "Current page number (zero-based).",
-                      "x-order": 1
+                      "x-order": 1,
+                      "minimum": 0
                     },
                     "page_size": {
                       "type": "integer",
                       "description": "Number of schedules per page.",
-                      "x-order": 2
+                      "x-order": 2,
+                      "minimum": 1
                     },
                     "total_count": {
                       "type": "integer",
                       "description": "Total number of schedules across all pages.",
-                      "x-order": 3
+                      "x-order": 3,
+                      "minimum": 0
                     },
                     "schedules": {
                       "type": "array",
@@ -150,7 +153,9 @@ const ScheduleSchema: Record<string, unknown> = {
                             "x-order": 2,
                             "x-oapi-codegen-extra-tags": {
                               "db": "name"
-                            }
+                            },
+                            "minLength": 1,
+                            "maxLength": 255
                           },
                           "user_id": {
                             "description": "UUID of the user who owns this schedule.",
@@ -171,7 +176,8 @@ const ScheduleSchema: Record<string, unknown> = {
                             "x-order": 4,
                             "x-oapi-codegen-extra-tags": {
                               "db": "cron_expression"
-                            }
+                            },
+                            "maxLength": 500
                           },
                           "created_at": {
                             "x-order": 5,
@@ -201,7 +207,8 @@ const ScheduleSchema: Record<string, unknown> = {
                           }
                         }
                       },
-                      "x-order": 4
+                      "x-order": 4,
+                      "description": "The schedules of the schedulepage."
                     }
                   }
                 }
@@ -272,7 +279,9 @@ const ScheduleSchema: Record<string, unknown> = {
                     "x-order": 2,
                     "x-oapi-codegen-extra-tags": {
                       "db": "name"
-                    }
+                    },
+                    "minLength": 1,
+                    "maxLength": 255
                   },
                   "user_id": {
                     "description": "UUID of the user who owns this schedule.",
@@ -293,7 +302,8 @@ const ScheduleSchema: Record<string, unknown> = {
                     "x-order": 4,
                     "x-oapi-codegen-extra-tags": {
                       "db": "cron_expression"
-                    }
+                    },
+                    "maxLength": 500
                   },
                   "created_at": {
                     "x-order": 5,
@@ -359,7 +369,9 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-order": 2,
                       "x-oapi-codegen-extra-tags": {
                         "db": "name"
-                      }
+                      },
+                      "minLength": 1,
+                      "maxLength": 255
                     },
                     "user_id": {
                       "description": "UUID of the user who owns this schedule.",
@@ -380,7 +392,8 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-order": 4,
                       "x-oapi-codegen-extra-tags": {
                         "db": "cron_expression"
-                      }
+                      },
+                      "maxLength": 500
                     },
                     "created_at": {
                       "x-order": 5,
@@ -507,7 +520,9 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-order": 2,
                       "x-oapi-codegen-extra-tags": {
                         "db": "name"
-                      }
+                      },
+                      "minLength": 1,
+                      "maxLength": 255
                     },
                     "user_id": {
                       "description": "UUID of the user who owns this schedule.",
@@ -528,7 +543,8 @@ const ScheduleSchema: Record<string, unknown> = {
                       "x-order": 4,
                       "x-oapi-codegen-extra-tags": {
                         "db": "cron_expression"
-                      }
+                      },
+                      "maxLength": 500
                     },
                     "created_at": {
                       "x-order": 5,
@@ -786,7 +802,9 @@ const ScheduleSchema: Record<string, unknown> = {
             "x-order": 2,
             "x-oapi-codegen-extra-tags": {
               "db": "name"
-            }
+            },
+            "minLength": 1,
+            "maxLength": 255
           },
           "user_id": {
             "description": "UUID of the user who owns this schedule.",
@@ -807,7 +825,8 @@ const ScheduleSchema: Record<string, unknown> = {
             "x-order": 4,
             "x-oapi-codegen-extra-tags": {
               "db": "cron_expression"
-            }
+            },
+            "maxLength": 500
           },
           "created_at": {
             "x-order": 5,
@@ -850,17 +869,20 @@ const ScheduleSchema: Record<string, unknown> = {
           "page": {
             "type": "integer",
             "description": "Current page number (zero-based).",
-            "x-order": 1
+            "x-order": 1,
+            "minimum": 0
           },
           "page_size": {
             "type": "integer",
             "description": "Number of schedules per page.",
-            "x-order": 2
+            "x-order": 2,
+            "minimum": 1
           },
           "total_count": {
             "type": "integer",
             "description": "Total number of schedules across all pages.",
-            "x-order": 3
+            "x-order": 3,
+            "minimum": 0
           },
           "schedules": {
             "type": "array",
@@ -892,7 +914,9 @@ const ScheduleSchema: Record<string, unknown> = {
                   "x-order": 2,
                   "x-oapi-codegen-extra-tags": {
                     "db": "name"
-                  }
+                  },
+                  "minLength": 1,
+                  "maxLength": 255
                 },
                 "user_id": {
                   "description": "UUID of the user who owns this schedule.",
@@ -913,7 +937,8 @@ const ScheduleSchema: Record<string, unknown> = {
                   "x-order": 4,
                   "x-oapi-codegen-extra-tags": {
                     "db": "cron_expression"
-                  }
+                  },
+                  "maxLength": 500
                 },
                 "created_at": {
                   "x-order": 5,
@@ -943,7 +968,8 @@ const ScheduleSchema: Record<string, unknown> = {
                 }
               }
             },
-            "x-order": 4
+            "x-order": 4,
+            "description": "The schedules of the schedulepage."
           }
         }
       }

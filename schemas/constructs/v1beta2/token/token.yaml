@@ -20,30 +20,36 @@ properties:
     x-order: 3
     x-oapi-codegen-extra-tags:
       db: provider
+    maxLength: 500
   access_token:
     type: string
     description: Access token value.
     x-order: 4
     x-oapi-codegen-extra-tags:
       db: access_token
+    maxLength: 500
   refresh_token:
     type: string
     description: Refresh token value when applicable.
     x-order: 5
     x-oapi-codegen-extra-tags:
       db: refresh_token
+    maxLength: 500
   name:
     type: string
     description: Human-readable token name.
     x-order: 6
     x-oapi-codegen-extra-tags:
       db: name
+    minLength: 1
+    maxLength: 255
   purpose:
     type: string
     description: Purpose for which the token was created.
     x-order: 7
     x-oapi-codegen-extra-tags:
       db: purpose
+    maxLength: 500
   is_oauth:
     type: boolean
     description: Whether this entry represents an OAuth session.

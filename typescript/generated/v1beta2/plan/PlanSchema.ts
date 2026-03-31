@@ -145,7 +145,8 @@ const PlanSchema: Record<string, unknown> = {
                           "db": "minimum_units",
                           "json": "minimum_units",
                           "csv": "minimum_units"
-                        }
+                        },
+                        "minimum": 0
                       },
                       "price_per_unit": {
                         "type": "number",
@@ -154,7 +155,8 @@ const PlanSchema: Record<string, unknown> = {
                           "db": "price_per_unit",
                           "json": "price_per_unit",
                           "csv": "price_per_unit"
-                        }
+                        },
+                        "minimum": 0
                       },
                       "currency": {
                         "x-go-type": "Currency",
@@ -259,13 +261,19 @@ const PlanSchema: Record<string, unknown> = {
         ],
         "properties": {
           "page": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Current page number of the result set.",
+            "minimum": 0
           },
           "page_size": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Number of items per page.",
+            "minimum": 1
           },
           "total_count": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Total number of items available.",
+            "minimum": 0
           },
           "plans": {
             "type": "array",
@@ -348,7 +356,8 @@ const PlanSchema: Record<string, unknown> = {
                     "db": "minimum_units",
                     "json": "minimum_units",
                     "csv": "minimum_units"
-                  }
+                  },
+                  "minimum": 0
                 },
                 "price_per_unit": {
                   "type": "number",
@@ -357,7 +366,8 @@ const PlanSchema: Record<string, unknown> = {
                     "db": "price_per_unit",
                     "json": "price_per_unit",
                     "csv": "price_per_unit"
-                  }
+                  },
+                  "minimum": 0
                 },
                 "currency": {
                   "x-go-type": "Currency",
@@ -373,7 +383,8 @@ const PlanSchema: Record<string, unknown> = {
                 }
               },
               "x-go-type": "Plan"
-            }
+            },
+            "description": "The plans of the planpage."
           }
         }
       },
@@ -456,7 +467,8 @@ const PlanSchema: Record<string, unknown> = {
               "db": "minimum_units",
               "json": "minimum_units",
               "csv": "minimum_units"
-            }
+            },
+            "minimum": 0
           },
           "price_per_unit": {
             "type": "number",
@@ -465,7 +477,8 @@ const PlanSchema: Record<string, unknown> = {
               "db": "price_per_unit",
               "json": "price_per_unit",
               "csv": "price_per_unit"
-            }
+            },
+            "minimum": 0
           },
           "currency": {
             "x-go-type": "Currency",

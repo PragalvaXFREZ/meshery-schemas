@@ -208,6 +208,7 @@ export interface components {
       page?: number;
       page_size?: number;
       total_count?: number;
+      /** @description The workspaces of the workspacepage. */
       workspaces?: {
         /** Format: uuid */
         id?: string;
@@ -241,6 +242,7 @@ export interface components {
       page?: number;
       page_size?: number;
       total_count?: number;
+      /** @description The workspaces teams mapping of the workspacesteamsmappingpage. */
       workspacesTeamsMapping?: {
         /** Format: uuid */
         id?: string;
@@ -269,6 +271,7 @@ export interface components {
       page?: number;
       page_size?: number;
       total_count?: number;
+      /** @description The workspaces environments mapping of the workspacesenvironmentsmappingpage. */
       workspacesEnvironmentsMapping?: {
         /** Format: uuid */
         id?: string;
@@ -297,6 +300,7 @@ export interface components {
       page?: number;
       page_size?: number;
       total_count?: number;
+      /** @description The workspaces designs mapping of the workspacesdesignsmappingpage. */
       workspacesDesignsMapping?: {
         /** Format: uuid */
         id?: string;
@@ -325,6 +329,7 @@ export interface components {
       page?: number;
       page_size?: number;
       total_count?: number;
+      /** @description The workspaces views mapping of the workspacesviewsmappingpage. */
       workspacesViewsMapping?: {
         /** Format: uuid */
         id?: string;
@@ -353,6 +358,7 @@ export interface components {
       page?: number;
       page_size?: number;
       total_count?: number;
+      /** @description The designs of the mesherydesignpage. */
       designs?: {
         catalogData?: {
           /** @description Tracks the specific content version that has been made available in the Catalog. */
@@ -849,7 +855,9 @@ export interface components {
                 /** @description Version of the model as defined by the registrant. */
                 version: string;
               };
+              /** @description The relationships of the model. */
               relationships: unknown[];
+              /** @description The components of the model. */
               components: unknown[];
               /**
                * @description Number of components associated with the model.
@@ -1937,6 +1945,7 @@ export interface components {
       page?: number;
       page_size?: number;
       total_count?: number;
+      /** @description The views of the mesheryviewpage. */
       views?: {
         /** Format: uuid */
         id?: string;
@@ -2078,6 +2087,7 @@ export interface operations {
             page?: number;
             page_size?: number;
             total_count?: number;
+            /** @description The workspaces of the workspacepage. */
             workspaces?: {
               /** Format: uuid */
               id?: string;
@@ -2412,6 +2422,7 @@ export interface operations {
             page?: number;
             page_size?: number;
             total_count?: number;
+            /** @description The teams of the teampage. */
             teams?: {
               /**
                * Format: uuid
@@ -2486,6 +2497,7 @@ export interface operations {
             page?: number;
             page_size?: number;
             total_count?: number;
+            /** @description The workspaces teams mapping of the workspacesteamsmappingpage. */
             workspacesTeamsMapping?: {
               /** Format: uuid */
               id?: string;
@@ -2605,6 +2617,7 @@ export interface operations {
             page?: number;
             page_size?: number;
             total_count?: number;
+            /** @description Environments associated with this resource. */
             environments?: {
               /**
                * Format: uuid
@@ -2703,6 +2716,7 @@ export interface operations {
             page?: number;
             page_size?: number;
             total_count?: number;
+            /** @description The workspaces environments mapping of the workspacesenvironmentsmappingpage. */
             workspacesEnvironmentsMapping?: {
               /** Format: uuid */
               id?: string;
@@ -2822,6 +2836,7 @@ export interface operations {
             page?: number;
             page_size?: number;
             total_count?: number;
+            /** @description The designs of the mesherydesignpage. */
             designs?: {
               catalogData?: {
                 /** @description Tracks the specific content version that has been made available in the Catalog. */
@@ -3318,7 +3333,9 @@ export interface operations {
                       /** @description Version of the model as defined by the registrant. */
                       version: string;
                     };
+                    /** @description The relationships of the model. */
                     relationships: unknown[];
+                    /** @description The components of the model. */
                     components: unknown[];
                     /**
                      * @description Number of components associated with the model.
@@ -4434,6 +4451,7 @@ export interface operations {
             page?: number;
             page_size?: number;
             total_count?: number;
+            /** @description The workspaces designs mapping of the workspacesdesignsmappingpage. */
             workspacesDesignsMapping?: {
               /** Format: uuid */
               id?: string;
@@ -4553,6 +4571,7 @@ export interface operations {
             page?: number;
             page_size?: number;
             total_count?: number;
+            /** @description The views of the mesheryviewpage. */
             views?: {
               /** Format: uuid */
               id?: string;
@@ -4624,6 +4643,7 @@ export interface operations {
             page?: number;
             page_size?: number;
             total_count?: number;
+            /** @description The workspaces views mapping of the workspacesviewsmappingpage. */
             workspacesViewsMapping?: {
               /** Format: uuid */
               id?: string;

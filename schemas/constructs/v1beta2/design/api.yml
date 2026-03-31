@@ -903,18 +903,27 @@ components:
       properties:
         page:
           type: integer
+          description: Current page number of the result set.
+          minimum: 0
         page_size:
           type: integer
+          description: Number of items per page.
+          minimum: 1
         patterns:
           type: array
           items:
             $ref: "#/components/schemas/MesheryPattern"
             x-go-type: MesheryPattern
+          description: The patterns of the mesherypatternpage.
 
         resultType:
           type: string
+          description: The result type of the mesherypatternpage.
+          maxLength: 500
         total_count:
           type: integer
+          description: Total number of items available.
+          minimum: 0
 
     MesheryPatternDeleteRequestBody:
       type: object
@@ -924,6 +933,7 @@ components:
           items:
             $ref: "#/components/schemas/DeletePatternModel"
             x-go-type: DeletePatternModel
+          description: The patterns of the mesherypatterndeleterequestbody.
 
     MesheryPatternRequestBody:
       type: object
@@ -935,10 +945,14 @@ components:
           x-go-type: MesheryPattern
         save:
           type: boolean
+          description: The save of the mesherypatternrequestbody.
         url:
           $ref: "../core/api.yml#/components/schemas/Endpoint"
         name:
           type: string
+          description: Name of the mesherypatternrequestbody.
+          minLength: 1
+          maxLength: 255
 
     MesheryPatternImportRequestBody:
       type: object
@@ -954,10 +968,13 @@ components:
         fileName:
           type: string
           description: "The name of the pattern file being imported."
+          maxLength: 500
         name:
           type: string
           default: "Untitled Design"
           description: "Provide a name for your design file. This name will help you identify the file more easily. You can also change the name of your design after importing it."
+          minLength: 1
+          maxLength: 255
         url:
           type: string
           format: uri
@@ -983,28 +1000,38 @@ components:
       properties:
         page:
           type: integer
+          description: Current page number of the result set.
+          minimum: 0
         page_size:
           type: integer
+          description: Number of items per page.
+          minimum: 1
         total_count:
           type: integer
+          description: Total number of items available.
+          minimum: 0
         patterns:
           type: array
           items:
             $ref: "#/components/schemas/MesheryPattern"
+          description: The patterns of the catalogcontentpage.
         filters:
           type: array
           items:
             $ref: "#/components/schemas/MesheryFilter"
+          description: The filters of the catalogcontentpage.
         modelsCount:
           type: array
           items:
             type: object
             additionalProperties: true
+          description: The models count of the catalogcontentpage.
         categoryCount:
           type: array
           items:
             type: object
             additionalProperties: true
+          description: The category count of the catalogcontentpage.
 
     CatalogRequest:
       type: object
@@ -1015,22 +1042,33 @@ components:
       properties:
         page:
           type: integer
+          description: Current page number of the result set.
+          minimum: 0
         page_size:
           type: integer
+          description: Number of items per page.
+          minimum: 1
         total_count:
           type: integer
+          description: Total number of items available.
+          minimum: 0
         catalogRequests:
           type: array
           items:
             $ref: "#/components/schemas/CatalogRequest"
+          description: The catalog requests of the catalogrequestspage.
 
     CatalogContentClass:
       type: object
       properties:
         class:
           type: string
+          description: The class of the catalogcontentclass.
+          maxLength: 500
         description:
           type: string
+          description: Description of the catalogcontentclass.
+          maxLength: 5000
       additionalProperties: true
 
     MesheryFilter:
@@ -1046,14 +1084,21 @@ components:
       properties:
         page:
           type: integer
+          description: Current page number of the result set.
+          minimum: 0
         page_size:
           type: integer
+          description: Number of items per page.
+          minimum: 1
         total_count:
           type: integer
+          description: Total number of items available.
+          minimum: 0
         views:
           type: array
           items:
             $ref: "#/components/schemas/MesheryView"
+          description: The views of the mesheryviewpage.
 
     ResourceAccessMapping:
       type: object
@@ -1067,6 +1112,7 @@ components:
           items:
             type: object
             additionalProperties: true
+          description: The users of the resourceaccessactorsresponse.
 
   requestBodies:
     catalogContentPayload:

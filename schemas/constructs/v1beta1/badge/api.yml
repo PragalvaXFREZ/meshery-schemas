@@ -185,6 +185,7 @@ components:
           x-oapi-codegen-extra-tags:
             db: "label"
             json: "label"
+          maxLength: 500
 
         name:
           type: string
@@ -193,6 +194,8 @@ components:
           x-oapi-codegen-extra-tags:
             db: "name"
             json: "name"
+          minLength: 1
+          maxLength: 255
 
         description:
           type: string
@@ -201,6 +204,7 @@ components:
           x-oapi-codegen-extra-tags:
             db: "description"
             json: "description"
+          maxLength: 5000
 
         image_url:
           type: string
@@ -245,6 +249,7 @@ components:
           x-oapi-codegen-extra-tags:
             db: "label"
             json: "label"
+          maxLength: 500
 
         name:
           type: string
@@ -253,6 +258,8 @@ components:
           x-oapi-codegen-extra-tags:
             db: "name"
             json: "name"
+          minLength: 1
+          maxLength: 255
 
         description:
           type: string
@@ -261,6 +268,7 @@ components:
           x-oapi-codegen-extra-tags:
             db: "description"
             json: "description"
+          maxLength: 5000
 
         image_url:
           type: string
@@ -295,6 +303,7 @@ components:
           type: object
           additionalProperties:
             $ref: "#/components/schemas/Badge"
+          description: The badges of the badgespage.
 
     BadgeAssignmentPayload:
       type: object
@@ -303,7 +312,12 @@ components:
           type: array
           items:
             type: string
+          description: The badges of the badgeassignment.
         user_id:
           type: string
+          description: ID of the user who owns or created this resource.
+          maxLength: 500
+          format: uuid
         notify:
           type: boolean
+          description: The notify of the badgeassignment.

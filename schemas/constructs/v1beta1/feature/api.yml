@@ -142,6 +142,7 @@ components:
           description: Quantity of the feature allowed, use 9999999999 for unlimited
           x-oapi-codegen-extra-tags:
             db: "quantity"
+          minimum: 0
         created_at:
           $ref: "../core/api.yml#/components/schemas/Time"
           x-oapi-codegen-extra-tags:

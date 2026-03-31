@@ -153,7 +153,8 @@ const TokenSchema: Record<string, unknown> = {
                             "x-order": 3,
                             "x-oapi-codegen-extra-tags": {
                               "db": "provider"
-                            }
+                            },
+                            "maxLength": 500
                           },
                           "access_token": {
                             "type": "string",
@@ -161,7 +162,8 @@ const TokenSchema: Record<string, unknown> = {
                             "x-order": 4,
                             "x-oapi-codegen-extra-tags": {
                               "db": "access_token"
-                            }
+                            },
+                            "maxLength": 500
                           },
                           "refresh_token": {
                             "type": "string",
@@ -169,7 +171,8 @@ const TokenSchema: Record<string, unknown> = {
                             "x-order": 5,
                             "x-oapi-codegen-extra-tags": {
                               "db": "refresh_token"
-                            }
+                            },
+                            "maxLength": 500
                           },
                           "name": {
                             "type": "string",
@@ -177,7 +180,9 @@ const TokenSchema: Record<string, unknown> = {
                             "x-order": 6,
                             "x-oapi-codegen-extra-tags": {
                               "db": "name"
-                            }
+                            },
+                            "minLength": 1,
+                            "maxLength": 255
                           },
                           "purpose": {
                             "type": "string",
@@ -185,7 +190,8 @@ const TokenSchema: Record<string, unknown> = {
                             "x-order": 7,
                             "x-oapi-codegen-extra-tags": {
                               "db": "purpose"
-                            }
+                            },
+                            "maxLength": 500
                           },
                           "is_oauth": {
                             "type": "boolean",
@@ -228,22 +234,26 @@ const TokenSchema: Record<string, unknown> = {
                           "provider"
                         ]
                       },
-                      "x-order": 1
+                      "x-order": 1,
+                      "description": "The tokens of the tokenpage."
                     },
                     "total_count": {
                       "type": "integer",
                       "description": "Total number of tokens across all pages.",
-                      "x-order": 2
+                      "x-order": 2,
+                      "minimum": 0
                     },
                     "page": {
                       "type": "integer",
                       "description": "Current page number (zero-based).",
-                      "x-order": 3
+                      "x-order": 3,
+                      "minimum": 0
                     },
                     "page_size": {
                       "type": "integer",
                       "description": "Number of tokens per page.",
-                      "x-order": 4
+                      "x-order": 4,
+                      "minimum": 1
                     }
                   }
                 }
@@ -356,7 +366,8 @@ const TokenSchema: Record<string, unknown> = {
                             "x-order": 3,
                             "x-oapi-codegen-extra-tags": {
                               "db": "provider"
-                            }
+                            },
+                            "maxLength": 500
                           },
                           "access_token": {
                             "type": "string",
@@ -364,7 +375,8 @@ const TokenSchema: Record<string, unknown> = {
                             "x-order": 4,
                             "x-oapi-codegen-extra-tags": {
                               "db": "access_token"
-                            }
+                            },
+                            "maxLength": 500
                           },
                           "refresh_token": {
                             "type": "string",
@@ -372,7 +384,8 @@ const TokenSchema: Record<string, unknown> = {
                             "x-order": 5,
                             "x-oapi-codegen-extra-tags": {
                               "db": "refresh_token"
-                            }
+                            },
+                            "maxLength": 500
                           },
                           "name": {
                             "type": "string",
@@ -380,7 +393,9 @@ const TokenSchema: Record<string, unknown> = {
                             "x-order": 6,
                             "x-oapi-codegen-extra-tags": {
                               "db": "name"
-                            }
+                            },
+                            "minLength": 1,
+                            "maxLength": 255
                           },
                           "purpose": {
                             "type": "string",
@@ -388,7 +403,8 @@ const TokenSchema: Record<string, unknown> = {
                             "x-order": 7,
                             "x-oapi-codegen-extra-tags": {
                               "db": "purpose"
-                            }
+                            },
+                            "maxLength": 500
                           },
                           "is_oauth": {
                             "type": "boolean",
@@ -431,22 +447,26 @@ const TokenSchema: Record<string, unknown> = {
                           "provider"
                         ]
                       },
-                      "x-order": 1
+                      "x-order": 1,
+                      "description": "The tokens of the tokenpage."
                     },
                     "total_count": {
                       "type": "integer",
                       "description": "Total number of tokens across all pages.",
-                      "x-order": 2
+                      "x-order": 2,
+                      "minimum": 0
                     },
                     "page": {
                       "type": "integer",
                       "description": "Current page number (zero-based).",
-                      "x-order": 3
+                      "x-order": 3,
+                      "minimum": 0
                     },
                     "page_size": {
                       "type": "integer",
                       "description": "Number of tokens per page.",
-                      "x-order": 4
+                      "x-order": 4,
+                      "minimum": 1
                     }
                   }
                 }
@@ -567,7 +587,8 @@ const TokenSchema: Record<string, unknown> = {
                             "x-order": 3,
                             "x-oapi-codegen-extra-tags": {
                               "db": "provider"
-                            }
+                            },
+                            "maxLength": 500
                           },
                           "access_token": {
                             "type": "string",
@@ -575,7 +596,8 @@ const TokenSchema: Record<string, unknown> = {
                             "x-order": 4,
                             "x-oapi-codegen-extra-tags": {
                               "db": "access_token"
-                            }
+                            },
+                            "maxLength": 500
                           },
                           "refresh_token": {
                             "type": "string",
@@ -583,7 +605,8 @@ const TokenSchema: Record<string, unknown> = {
                             "x-order": 5,
                             "x-oapi-codegen-extra-tags": {
                               "db": "refresh_token"
-                            }
+                            },
+                            "maxLength": 500
                           },
                           "name": {
                             "type": "string",
@@ -591,7 +614,9 @@ const TokenSchema: Record<string, unknown> = {
                             "x-order": 6,
                             "x-oapi-codegen-extra-tags": {
                               "db": "name"
-                            }
+                            },
+                            "minLength": 1,
+                            "maxLength": 255
                           },
                           "purpose": {
                             "type": "string",
@@ -599,7 +624,8 @@ const TokenSchema: Record<string, unknown> = {
                             "x-order": 7,
                             "x-oapi-codegen-extra-tags": {
                               "db": "purpose"
-                            }
+                            },
+                            "maxLength": 500
                           },
                           "is_oauth": {
                             "type": "boolean",
@@ -642,22 +668,26 @@ const TokenSchema: Record<string, unknown> = {
                           "provider"
                         ]
                       },
-                      "x-order": 1
+                      "x-order": 1,
+                      "description": "The tokens of the tokenpage."
                     },
                     "total_count": {
                       "type": "integer",
                       "description": "Total number of tokens across all pages.",
-                      "x-order": 2
+                      "x-order": 2,
+                      "minimum": 0
                     },
                     "page": {
                       "type": "integer",
                       "description": "Current page number (zero-based).",
-                      "x-order": 3
+                      "x-order": 3,
+                      "minimum": 0
                     },
                     "page_size": {
                       "type": "integer",
                       "description": "Number of tokens per page.",
-                      "x-order": 4
+                      "x-order": 4,
+                      "minimum": 1
                     }
                   }
                 }
@@ -767,7 +797,8 @@ const TokenSchema: Record<string, unknown> = {
                       "x-order": 3,
                       "x-oapi-codegen-extra-tags": {
                         "db": "provider"
-                      }
+                      },
+                      "maxLength": 500
                     },
                     "access_token": {
                       "type": "string",
@@ -775,7 +806,8 @@ const TokenSchema: Record<string, unknown> = {
                       "x-order": 4,
                       "x-oapi-codegen-extra-tags": {
                         "db": "access_token"
-                      }
+                      },
+                      "maxLength": 500
                     },
                     "refresh_token": {
                       "type": "string",
@@ -783,7 +815,8 @@ const TokenSchema: Record<string, unknown> = {
                       "x-order": 5,
                       "x-oapi-codegen-extra-tags": {
                         "db": "refresh_token"
-                      }
+                      },
+                      "maxLength": 500
                     },
                     "name": {
                       "type": "string",
@@ -791,7 +824,9 @@ const TokenSchema: Record<string, unknown> = {
                       "x-order": 6,
                       "x-oapi-codegen-extra-tags": {
                         "db": "name"
-                      }
+                      },
+                      "minLength": 1,
+                      "maxLength": 255
                     },
                     "purpose": {
                       "type": "string",
@@ -799,7 +834,8 @@ const TokenSchema: Record<string, unknown> = {
                       "x-order": 7,
                       "x-oapi-codegen-extra-tags": {
                         "db": "purpose"
-                      }
+                      },
+                      "maxLength": 500
                     },
                     "is_oauth": {
                       "type": "boolean",
@@ -970,7 +1006,8 @@ const TokenSchema: Record<string, unknown> = {
                             "x-order": 3,
                             "x-oapi-codegen-extra-tags": {
                               "db": "provider"
-                            }
+                            },
+                            "maxLength": 500
                           },
                           "access_token": {
                             "type": "string",
@@ -978,7 +1015,8 @@ const TokenSchema: Record<string, unknown> = {
                             "x-order": 4,
                             "x-oapi-codegen-extra-tags": {
                               "db": "access_token"
-                            }
+                            },
+                            "maxLength": 500
                           },
                           "refresh_token": {
                             "type": "string",
@@ -986,7 +1024,8 @@ const TokenSchema: Record<string, unknown> = {
                             "x-order": 5,
                             "x-oapi-codegen-extra-tags": {
                               "db": "refresh_token"
-                            }
+                            },
+                            "maxLength": 500
                           },
                           "name": {
                             "type": "string",
@@ -994,7 +1033,9 @@ const TokenSchema: Record<string, unknown> = {
                             "x-order": 6,
                             "x-oapi-codegen-extra-tags": {
                               "db": "name"
-                            }
+                            },
+                            "minLength": 1,
+                            "maxLength": 255
                           },
                           "purpose": {
                             "type": "string",
@@ -1002,7 +1043,8 @@ const TokenSchema: Record<string, unknown> = {
                             "x-order": 7,
                             "x-oapi-codegen-extra-tags": {
                               "db": "purpose"
-                            }
+                            },
+                            "maxLength": 500
                           },
                           "is_oauth": {
                             "type": "boolean",
@@ -1045,22 +1087,26 @@ const TokenSchema: Record<string, unknown> = {
                           "provider"
                         ]
                       },
-                      "x-order": 1
+                      "x-order": 1,
+                      "description": "The tokens of the tokenpage."
                     },
                     "total_count": {
                       "type": "integer",
                       "description": "Total number of tokens across all pages.",
-                      "x-order": 2
+                      "x-order": 2,
+                      "minimum": 0
                     },
                     "page": {
                       "type": "integer",
                       "description": "Current page number (zero-based).",
-                      "x-order": 3
+                      "x-order": 3,
+                      "minimum": 0
                     },
                     "page_size": {
                       "type": "integer",
                       "description": "Number of tokens per page.",
-                      "x-order": 4
+                      "x-order": 4,
+                      "minimum": 1
                     }
                   }
                 }
@@ -1302,7 +1348,8 @@ const TokenSchema: Record<string, unknown> = {
             "x-order": 3,
             "x-oapi-codegen-extra-tags": {
               "db": "provider"
-            }
+            },
+            "maxLength": 500
           },
           "access_token": {
             "type": "string",
@@ -1310,7 +1357,8 @@ const TokenSchema: Record<string, unknown> = {
             "x-order": 4,
             "x-oapi-codegen-extra-tags": {
               "db": "access_token"
-            }
+            },
+            "maxLength": 500
           },
           "refresh_token": {
             "type": "string",
@@ -1318,7 +1366,8 @@ const TokenSchema: Record<string, unknown> = {
             "x-order": 5,
             "x-oapi-codegen-extra-tags": {
               "db": "refresh_token"
-            }
+            },
+            "maxLength": 500
           },
           "name": {
             "type": "string",
@@ -1326,7 +1375,9 @@ const TokenSchema: Record<string, unknown> = {
             "x-order": 6,
             "x-oapi-codegen-extra-tags": {
               "db": "name"
-            }
+            },
+            "minLength": 1,
+            "maxLength": 255
           },
           "purpose": {
             "type": "string",
@@ -1334,7 +1385,8 @@ const TokenSchema: Record<string, unknown> = {
             "x-order": 7,
             "x-oapi-codegen-extra-tags": {
               "db": "purpose"
-            }
+            },
+            "maxLength": 500
           },
           "is_oauth": {
             "type": "boolean",
@@ -1427,7 +1479,8 @@ const TokenSchema: Record<string, unknown> = {
                   "x-order": 3,
                   "x-oapi-codegen-extra-tags": {
                     "db": "provider"
-                  }
+                  },
+                  "maxLength": 500
                 },
                 "access_token": {
                   "type": "string",
@@ -1435,7 +1488,8 @@ const TokenSchema: Record<string, unknown> = {
                   "x-order": 4,
                   "x-oapi-codegen-extra-tags": {
                     "db": "access_token"
-                  }
+                  },
+                  "maxLength": 500
                 },
                 "refresh_token": {
                   "type": "string",
@@ -1443,7 +1497,8 @@ const TokenSchema: Record<string, unknown> = {
                   "x-order": 5,
                   "x-oapi-codegen-extra-tags": {
                     "db": "refresh_token"
-                  }
+                  },
+                  "maxLength": 500
                 },
                 "name": {
                   "type": "string",
@@ -1451,7 +1506,9 @@ const TokenSchema: Record<string, unknown> = {
                   "x-order": 6,
                   "x-oapi-codegen-extra-tags": {
                     "db": "name"
-                  }
+                  },
+                  "minLength": 1,
+                  "maxLength": 255
                 },
                 "purpose": {
                   "type": "string",
@@ -1459,7 +1516,8 @@ const TokenSchema: Record<string, unknown> = {
                   "x-order": 7,
                   "x-oapi-codegen-extra-tags": {
                     "db": "purpose"
-                  }
+                  },
+                  "maxLength": 500
                 },
                 "is_oauth": {
                   "type": "boolean",
@@ -1502,22 +1560,26 @@ const TokenSchema: Record<string, unknown> = {
                 "provider"
               ]
             },
-            "x-order": 1
+            "x-order": 1,
+            "description": "The tokens of the tokenpage."
           },
           "total_count": {
             "type": "integer",
             "description": "Total number of tokens across all pages.",
-            "x-order": 2
+            "x-order": 2,
+            "minimum": 0
           },
           "page": {
             "type": "integer",
             "description": "Current page number (zero-based).",
-            "x-order": 3
+            "x-order": 3,
+            "minimum": 0
           },
           "page_size": {
             "type": "integer",
             "description": "Number of tokens per page.",
-            "x-order": 4
+            "x-order": 4,
+            "minimum": 1
           }
         }
       }

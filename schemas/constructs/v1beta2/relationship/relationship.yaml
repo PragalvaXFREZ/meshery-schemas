@@ -56,6 +56,7 @@ properties:
       yaml: "type"
       json: "type"
       gorm: "column:type"
+    maxLength: 255
 
   # camelCase: not DB-backed in this construct (no db: or gorm: tag).
   # Connection.sub_type is snake_case because it IS DB-backed there.
@@ -67,6 +68,7 @@ properties:
     x-oapi-codegen-extra-tags:
       yaml: "subType"
       json: "subType"
+    maxLength: 255
   status:
     type: string
     description: Status of the relationship.
@@ -132,6 +134,7 @@ properties:
     x-oapi-codegen-extra-tags:
       yaml: "evaluationQuery"
       json: "evaluationQuery"
+    maxLength: 500
   selectors:
     $ref: "./api.yml#/components/schemas/SelectorSet"
     x-go-type: SelectorSet

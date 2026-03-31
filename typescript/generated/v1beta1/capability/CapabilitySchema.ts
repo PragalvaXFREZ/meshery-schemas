@@ -73,7 +73,8 @@ const CapabilitySchema: Record<string, unknown> = {
           },
           "description": {
             "type": "string",
-            "description": "A written representation of the purpose and characteristics of the capability."
+            "description": "A written representation of the purpose and characteristics of the capability.",
+            "maxLength": 5000
           },
           "kind": {
             "description": "Top-level categorization of the capability",

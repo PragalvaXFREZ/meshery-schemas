@@ -22,6 +22,8 @@ properties:
     x-oapi-codegen-extra-tags:
       db: id
       json: id
+    maxLength: 500
+    format: uuid
   type:
     $ref: './api.yml#/components/schemas/ContentType'
     x-go-type: ContentType
@@ -48,6 +50,7 @@ properties:
     type: string
     description: slug of the Curricula
     example: intro-kubernetes-course
+    maxLength: 500
   level:
     $ref: './api.yml#/components/schemas/Level'
     description: Level of the Curricula

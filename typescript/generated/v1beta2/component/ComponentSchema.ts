@@ -93,7 +93,8 @@ const ComponentSchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "yaml": "description",
               "json": "description"
-            }
+            },
+            "maxLength": 5000
           },
           "format": {
             "x-order": 6,
@@ -860,7 +861,8 @@ const ComponentSchema: Record<string, unknown> = {
                         },
                         "description": {
                           "type": "string",
-                          "description": "A written representation of the purpose and characteristics of the capability."
+                          "description": "A written representation of the purpose and characteristics of the capability.",
+                          "maxLength": 5000
                         },
                         "kind": {
                           "description": "Top-level categorization of the capability",
@@ -1128,7 +1130,8 @@ const ComponentSchema: Record<string, unknown> = {
                   "gorm": "-",
                   "json": "relationships",
                   "yaml": "relationships"
-                }
+                },
+                "description": "The relationships of the model."
               },
               "components": {
                 "type": "array",
@@ -1137,7 +1140,8 @@ const ComponentSchema: Record<string, unknown> = {
                   "gorm": "-",
                   "json": "components",
                   "yaml": "components"
-                }
+                },
+                "description": "The components of the model."
               },
               "componentsCount": {
                 "type": "integer",
@@ -1148,7 +1152,8 @@ const ComponentSchema: Record<string, unknown> = {
                   "yaml": "components_count",
                   "gorm": "-"
                 },
-                "default": 0
+                "default": 0,
+                "minimum": 0
               },
               "relationshipsCount": {
                 "type": "integer",
@@ -1159,7 +1164,8 @@ const ComponentSchema: Record<string, unknown> = {
                   "json": "relationships_count",
                   "yaml": "relationships_count"
                 },
-                "default": 0
+                "default": 0,
+                "minimum": 0
               },
               "created_at": {
                 "x-order": 14,
@@ -1349,27 +1355,33 @@ const ComponentSchema: Record<string, unknown> = {
                 "properties": {
                   "primaryColor": {
                     "type": "string",
-                    "description": "Primary color of the component used for UI representation."
+                    "description": "Primary color of the component used for UI representation.",
+                    "maxLength": 500
                   },
                   "secondaryColor": {
                     "type": "string",
-                    "description": "Secondary color of the entity used for UI representation."
+                    "description": "Secondary color of the entity used for UI representation.",
+                    "maxLength": 500
                   },
                   "svgWhite": {
                     "type": "string",
-                    "description": "White SVG of the entity used for UI representation on dark background."
+                    "description": "White SVG of the entity used for UI representation on dark background.",
+                    "maxLength": 500
                   },
                   "svgColor": {
                     "type": "string",
-                    "description": "Colored SVG of the entity used for UI representation on light background."
+                    "description": "Colored SVG of the entity used for UI representation on light background.",
+                    "maxLength": 500
                   },
                   "svgComplete": {
                     "type": "string",
-                    "description": "Complete SVG of the entity used for UI representation, often inclusive of background."
+                    "description": "Complete SVG of the entity used for UI representation, often inclusive of background.",
+                    "maxLength": 500
                   },
                   "color": {
                     "type": "string",
-                    "description": "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g."
+                    "description": "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g.",
+                    "maxLength": 500
                   },
                   "textOpacity": {
                     "type": "number",
@@ -1379,19 +1391,23 @@ const ComponentSchema: Record<string, unknown> = {
                   },
                   "fontFamily": {
                     "type": "string",
-                    "description": "A comma-separated list of font names to use on the label text."
+                    "description": "A comma-separated list of font names to use on the label text.",
+                    "maxLength": 500
                   },
                   "fontSize": {
                     "type": "string",
-                    "description": "The size of the label text."
+                    "description": "The size of the label text.",
+                    "maxLength": 500
                   },
                   "fontStyle": {
                     "type": "string",
-                    "description": "A CSS font style to be applied to the label text."
+                    "description": "A CSS font style to be applied to the label text.",
+                    "maxLength": 500
                   },
                   "fontWeight": {
                     "type": "string",
-                    "description": "A CSS font weight to be applied to the label text."
+                    "description": "A CSS font weight to be applied to the label text.",
+                    "maxLength": 500
                   },
                   "textTransform": {
                     "type": "string",
@@ -1410,11 +1426,13 @@ const ComponentSchema: Record<string, unknown> = {
                   },
                   "zIndex": {
                     "type": "integer",
-                    "description": "An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index."
+                    "description": "An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index.",
+                    "minimum": 0
                   },
                   "label": {
                     "type": "string",
-                    "description": "The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id"
+                    "description": "The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id",
+                    "maxLength": 500
                   },
                   "animation": {
                     "type": "object",
@@ -1758,7 +1776,8 @@ const ComponentSchema: Record<string, unknown> = {
                 },
                 "description": {
                   "type": "string",
-                  "description": "A written representation of the purpose and characteristics of the capability."
+                  "description": "A written representation of the purpose and characteristics of the capability.",
+                  "maxLength": 5000
                 },
                 "kind": {
                   "description": "Top-level categorization of the capability",
@@ -2104,17 +2123,20 @@ const ComponentSchema: Record<string, unknown> = {
               "version": {
                 "type": "string",
                 "description": "Version of the component produced by the registrant. Example: APIVersion of a Kubernetes Pod.",
-                "x-order": 1
+                "x-order": 1,
+                "maxLength": 500
               },
               "kind": {
                 "type": "string",
                 "description": "The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'.",
-                "x-order": 2
+                "x-order": 2,
+                "maxLength": 255
               },
               "schema": {
                 "type": "string",
                 "description": "JSON schema of the object as defined by the registrant.",
-                "x-order": 3
+                "x-order": 3,
+                "maxLength": 500
               }
             },
             "required": [
@@ -2171,17 +2193,20 @@ const ComponentSchema: Record<string, unknown> = {
           "version": {
             "type": "string",
             "description": "Version of the component produced by the registrant. Example: APIVersion of a Kubernetes Pod.",
-            "x-order": 1
+            "x-order": 1,
+            "maxLength": 500
           },
           "kind": {
             "type": "string",
             "description": "The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'.",
-            "x-order": 2
+            "x-order": 2,
+            "maxLength": 255
           },
           "schema": {
             "type": "string",
             "description": "JSON schema of the object as defined by the registrant.",
-            "x-order": 3
+            "x-order": 3,
+            "maxLength": 500
           }
         },
         "required": [

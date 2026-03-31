@@ -104,6 +104,7 @@ export interface components {
       deleted_at: string;
     };
     BadgesPage: {
+      /** @description The badges of the badgespage. */
       badges?: {
         [key: string]: {
           /**
@@ -156,8 +157,14 @@ export interface components {
       };
     };
     BadgeAssignmentPayload: {
+      /** @description The badges of the badgeassignment. */
       badges?: string[];
+      /**
+       * Format: uuid
+       * @description ID of the user who owns or created this resource.
+       */
       user_id?: string;
+      /** @description The notify of the badgeassignment. */
       notify?: boolean;
     };
   };
@@ -417,6 +424,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
+            /** @description The badges of the badgespage. */
             badges?: {
               [key: string]: {
                 /**
@@ -520,8 +528,14 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": {
+          /** @description The badges of the badgeassignment. */
           badges?: string[];
+          /**
+           * Format: uuid
+           * @description ID of the user who owns or created this resource.
+           */
           user_id?: string;
+          /** @description The notify of the badgeassignment. */
           notify?: boolean;
         };
       };

@@ -106,6 +106,7 @@ export interface paths {
       requestBody: {
         content: {
           "application/json": {
+            /** @description The ids of the bulkdeleterequest. */
             ids: string[];
           };
         };
@@ -145,8 +146,12 @@ export interface paths {
       requestBody: {
         content: {
           "application/json": {
+            /** @description The ids of the bulkupdatestatusrequest. */
             ids: string[];
-            /** @example failed */
+            /**
+             * @description Current status of the resource.
+             * @example failed
+             */
             status: string;
           };
         };
@@ -201,7 +206,10 @@ export interface paths {
       requestBody: {
         content: {
           "application/json": {
-            /** @example completed */
+            /**
+             * @description Current status of the resource.
+             * @example completed
+             */
             status: string;
           };
         };
@@ -229,15 +237,23 @@ export interface paths {
 export interface components {
   schemas: {
     UpdateEventStatusRequest: {
-      /** @example completed */
+      /**
+       * @description Current status of the resource.
+       * @example completed
+       */
       status: string;
     };
     BulkDeleteRequest: {
+      /** @description The ids of the bulkdeleterequest. */
       ids: string[];
     };
     BulkUpdateStatusRequest: {
+      /** @description The ids of the bulkupdatestatusrequest. */
       ids: string[];
-      /** @example failed */
+      /**
+       * @description Current status of the resource.
+       * @example failed
+       */
       status: string;
     };
     /** @description EventResult entity schema. */
@@ -246,10 +262,15 @@ export interface components {
       user_id: string;
       /** Format: uuid */
       system_id?: string;
+      /** @description The category of the event. */
       category: string;
+      /** @description The action of the event. */
       action: string;
+      /** @description Description of the event. */
       description?: string;
+      /** @description The first name of the event. */
       firstName?: string;
+      /** @description The last name of the event. */
       lastName?: string;
       /**
        * Format: email
@@ -268,15 +289,21 @@ export interface components {
       page?: number;
       page_size?: number;
       total_count?: number;
+      /** @description The data of the eventspage. */
       data?: {
         /** Format: uuid */
         user_id: string;
         /** Format: uuid */
         system_id?: string;
+        /** @description The category of the event. */
         category: string;
+        /** @description The action of the event. */
         action: string;
+        /** @description Description of the event. */
         description?: string;
+        /** @description The first name of the event. */
         firstName?: string;
+        /** @description The last name of the event. */
         lastName?: string;
         /**
          * Format: email
@@ -293,20 +320,28 @@ export interface components {
       }[];
     };
     EventsAggregate: {
+      /** @description The audit of the eventsaggregate. */
       audit?: number;
     } & { [key: string]: unknown };
     EventSummary: { [key: string]: unknown };
     EventSummaryPage: {
+      /** @description Current page number of the result set. */
       page?: number;
+      /** @description Number of items per page. */
       page_size?: number;
+      /** @description Total number of items available. */
       total_count?: number;
+      /** @description The data of the eventsummarypage. */
       data?: { [key: string]: unknown }[];
     };
     EventType: {
+      /** @description The category of the eventtype. */
       category?: string;
+      /** @description The action of the eventtype. */
       action?: string;
     };
     ErrorResponse: {
+      /** @description The error of the errorresponse. */
       error?: string;
     };
   };
@@ -382,15 +417,21 @@ export interface operations {
             page?: number;
             page_size?: number;
             total_count?: number;
+            /** @description The data of the eventspage. */
             data?: {
               /** Format: uuid */
               user_id: string;
               /** Format: uuid */
               system_id?: string;
+              /** @description The category of the event. */
               category: string;
+              /** @description The action of the event. */
               action: string;
+              /** @description Description of the event. */
               description?: string;
+              /** @description The first name of the event. */
               firstName?: string;
+              /** @description The last name of the event. */
               lastName?: string;
               /**
                * Format: email
@@ -412,6 +453,7 @@ export interface operations {
       400: {
         content: {
           "application/json": {
+            /** @description The error of the errorresponse. */
             error?: string;
           };
         };
@@ -435,6 +477,7 @@ export interface operations {
       200: {
         content: {
           "application/json": {
+            /** @description The audit of the eventsaggregate. */
             audit?: number;
           } & { [key: string]: unknown };
         };
@@ -470,15 +513,21 @@ export interface operations {
             page?: number;
             page_size?: number;
             total_count?: number;
+            /** @description The data of the eventspage. */
             data?: {
               /** Format: uuid */
               user_id: string;
               /** Format: uuid */
               system_id?: string;
+              /** @description The category of the event. */
               category: string;
+              /** @description The action of the event. */
               action: string;
+              /** @description Description of the event. */
               description?: string;
+              /** @description The first name of the event. */
               firstName?: string;
+              /** @description The last name of the event. */
               lastName?: string;
               /**
                * Format: email
@@ -524,9 +573,13 @@ export interface operations {
       200: {
         content: {
           "application/json": {
+            /** @description Current page number of the result set. */
             page?: number;
+            /** @description Number of items per page. */
             page_size?: number;
+            /** @description Total number of items available. */
             total_count?: number;
+            /** @description The data of the eventsummarypage. */
             data?: { [key: string]: unknown }[];
           };
         };
@@ -553,7 +606,9 @@ export interface operations {
       200: {
         content: {
           "application/json": {
+            /** @description The category of the eventtype. */
             category?: string;
+            /** @description The action of the eventtype. */
             action?: string;
           }[];
         };

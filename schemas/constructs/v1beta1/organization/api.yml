@@ -372,8 +372,12 @@ components:
       properties:
         svg:
           type: string
+          description: The svg of the location.
+          maxLength: 500
         location:
           type: string
+          description: The location of the location.
+          maxLength: 500
 
     Logo:
       type: object
@@ -404,12 +408,16 @@ components:
       properties:
         id:
           type: string
+          description: Theme ID.
+          maxLength: 500
+          format: uuid
         logo:
           x-go-type: "Logo"
           $ref: "#/components/schemas/Logo"
         vars:
           type: object
           additionalProperties: true
+          description: The vars of the theme.
 
     DashboardPrefs:
       type: object
@@ -459,18 +467,27 @@ components:
           type: string
           x-oapi-codegen-extra-tags:
             db: "name"
+          description: Name of the organization.
+          minLength: 1
+          maxLength: 255
         country:
           type: string
           x-oapi-codegen-extra-tags:
             db: "country"
+          description: The country of the organization.
+          maxLength: 500
         region:
           type: string
           x-oapi-codegen-extra-tags:
             db: "region"
+          description: The region of the organization.
+          maxLength: 500
         description:
           type: string
           x-oapi-codegen-extra-tags:
             db: "description"
+          description: Description of the organization.
+          maxLength: 5000
         owner:
           $ref: "#/components/schemas/UUID"
           x-oapi-codegen-extra-tags:
@@ -497,6 +514,8 @@ components:
           nullable: true
           x-oapi-codegen-extra-tags:
             db: "domain"
+          description: The domain of the organization.
+          maxLength: 500
 
     AvailableOrganization:
       type: object
@@ -529,14 +548,21 @@ components:
       properties:
         page:
           type: integer
+          description: Current page number of the result set.
+          minimum: 0
         page_size:
           type: integer
+          description: Number of items per page.
+          minimum: 1
         total_count:
           type: integer
+          description: Total number of items available.
+          minimum: 0
         organizations:
           type: array
           items:
             $ref: "#/components/schemas/AvailableOrganization"
+          description: The organizations of the organizationspage.
 
     OrganizationPage:
       type: object
@@ -544,15 +570,22 @@ components:
       properties:
         page:
           type: integer
+          description: Current page number of the result set.
+          minimum: 0
         page_size:
           type: integer
+          description: Number of items per page.
+          minimum: 1
         total_count:
           type: integer
+          description: Total number of items available.
+          minimum: 0
         organizations:
           type: array
           maxItems: 1
           items:
             $ref: "#/components/schemas/AvailableOrganization"
+          description: The organizations of the organizationpage.
 
     OrganizationPayload:
       type: object
@@ -567,6 +600,7 @@ components:
           $ref: "#/components/schemas/Text"
         notifyOrgUpdate:
           type: boolean
+          description: The notify org update of the organization.
         preferences:
           $ref: "#/components/schemas/Preferences"
 
@@ -595,14 +629,21 @@ components:
       properties:
         page:
           type: integer
+          description: Current page number of the result set.
+          minimum: 0
         page_size:
           type: integer
+          description: Number of items per page.
+          minimum: 1
         total_count:
           type: integer
+          description: Total number of items available.
+          minimum: 0
         teams:
           type: array
           items:
             $ref: "#/components/schemas/AvailableTeam"
+          description: The teams of the teamspage.
 
     TeamsOrganizationsMapping:
       type: object
@@ -625,11 +666,18 @@ components:
       properties:
         page:
           type: integer
+          description: Current page number of the result set.
+          minimum: 0
         page_size:
           type: integer
+          description: Number of items per page.
+          minimum: 1
         total_count:
           type: integer
+          description: Total number of items available.
+          minimum: 0
         teamsOrganizationsMapping:
           type: array
           items:
             $ref: "#/components/schemas/TeamsOrganizationsMapping"
+          description: The teams organizations mapping of the teamsorganizationsmappingpage.

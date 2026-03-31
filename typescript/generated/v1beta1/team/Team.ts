@@ -82,6 +82,7 @@ export interface components {
       page?: number;
       page_size?: number;
       total_count?: number;
+      /** @description The teams of the teampage. */
       teams?: {
         /**
          * Format: uuid
@@ -139,6 +140,7 @@ export interface components {
       page?: number;
       page_size?: number;
       total_count?: number;
+      /** @description The teams users mapping of the teamsusersmappingpage. */
       teamsUsersMapping?: {
         /** Format: uuid */
         id?: string;
@@ -165,9 +167,13 @@ export interface components {
     };
     TeamMember: { [key: string]: unknown };
     TeamMembersPage: {
+      /** @description Current page number of the result set. */
       page?: number;
+      /** @description Number of items per page. */
       page_size?: number;
+      /** @description Total number of items available. */
       total_count?: number;
+      /** @description The data of the teammemberspage. */
       data?: { [key: string]: unknown }[];
     };
   };
@@ -270,6 +276,7 @@ export interface operations {
             page?: number;
             page_size?: number;
             total_count?: number;
+            /** @description The teams of the teampage. */
             teams?: {
               /**
                * Format: uuid
@@ -612,6 +619,7 @@ export interface operations {
             page?: number;
             page_size?: number;
             total_count?: number;
+            /** @description The teams users mapping of the teamsusersmappingpage. */
             teamsUsersMapping?: {
               /** Format: uuid */
               id?: string;
@@ -796,9 +804,13 @@ export interface operations {
       200: {
         content: {
           "application/json": {
+            /** @description Current page number of the result set. */
             page?: number;
+            /** @description Number of items per page. */
             page_size?: number;
+            /** @description Total number of items available. */
             total_count?: number;
+            /** @description The data of the teammemberspage. */
             data?: { [key: string]: unknown }[];
           };
         };

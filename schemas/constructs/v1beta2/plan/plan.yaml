@@ -44,6 +44,7 @@ properties:
       db: minimum_units
       json: minimum_units
       csv: minimum_units
+    minimum: 0
   price_per_unit:
     type: number
     description: Price per unit of the plan
@@ -51,6 +52,7 @@ properties:
       db: price_per_unit
       json: price_per_unit
       csv: price_per_unit
+    minimum: 0
   currency:
     $ref: './api.yml#/components/schemas/Currency'
     x-go-type: Currency

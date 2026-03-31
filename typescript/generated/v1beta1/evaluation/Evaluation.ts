@@ -465,7 +465,9 @@ export interface paths {
                       /** @description Version of the model as defined by the registrant. */
                       version: string;
                     };
+                    /** @description The relationships of the model. */
                     relationships: unknown[];
+                    /** @description The components of the model. */
                     components: unknown[];
                     /**
                      * @description Number of components associated with the model.
@@ -1538,6 +1540,7 @@ export interface paths {
                * @description ISO 8601 formatted timestamp of when the evaluation was completed.
                */
               timestamp?: string;
+              /** @description The actions of the evaluationresponse. */
               actions: unknown[];
             };
           };
@@ -2007,7 +2010,9 @@ export interface paths {
                     /** @description Version of the model as defined by the registrant. */
                     version: string;
                   };
+                  /** @description The relationships of the model. */
                   relationships: unknown[];
+                  /** @description The components of the model. */
                   components: unknown[];
                   /**
                    * @description Number of components associated with the model.
@@ -3070,6 +3075,7 @@ export interface paths {
                 }[];
               }[];
             };
+            /** @description The options of the evaluationrequest. */
             options?: {
               /** @description If true, only return the diff of changes instead of the complete updated design */
               returnDiffOnly?: boolean;
@@ -3537,7 +3543,9 @@ export interface components {
               /** @description Version of the model as defined by the registrant. */
               version: string;
             };
+            /** @description The relationships of the model. */
             relationships: unknown[];
+            /** @description The components of the model. */
             components: unknown[];
             /**
              * @description Number of components associated with the model.
@@ -4590,6 +4598,7 @@ export interface components {
           }[];
         }[];
       };
+      /** @description The options of the evaluationrequest. */
       options?: {
         /** @description If true, only return the diff of changes instead of the complete updated design */
         returnDiffOnly?: boolean;
@@ -5052,7 +5061,9 @@ export interface components {
               /** @description Version of the model as defined by the registrant. */
               version: string;
             };
+            /** @description The relationships of the model. */
             relationships: unknown[];
+            /** @description The components of the model. */
             components: unknown[];
             /**
              * @description Number of components associated with the model.
@@ -6115,10 +6126,14 @@ export interface components {
        * @description ISO 8601 formatted timestamp of when the evaluation was completed.
        */
       timestamp?: string;
+      /** @description The actions of the evaluationresponse. */
       actions: unknown[];
     };
     Action: {
-      /** @enum {string} */
+      /**
+       * @description The op of the action.
+       * @enum {string}
+       */
       op:
         | "update_component"
         | "update_component_configuration"
@@ -6127,11 +6142,16 @@ export interface components {
         | "add_relationship"
         | "update_relationship"
         | "delete_relationship";
+      /** @description The value of the action. */
       value: { [key: string]: unknown };
     };
     UpdateComponentOp: {
-      /** @enum {string} */
+      /**
+       * @description The op of the updatecomponentop.
+       * @enum {string}
+       */
       op?: "update_component";
+      /** @description The value of the updatecomponentop. */
       value?: {
         id: string;
         path: string[];
@@ -6144,8 +6164,12 @@ export interface components {
       };
     };
     UpdateComponentConfigurationOp: {
-      /** @enum {string} */
+      /**
+       * @description The op of the updatecomponentconfigurationop.
+       * @enum {string}
+       */
       op?: "update_component_configuration";
+      /** @description The value of the updatecomponentconfigurationop. */
       value?: {
         id: string;
         path: string[];
@@ -6158,22 +6182,34 @@ export interface components {
       };
     };
     DeleteComponentOp: {
-      /** @enum {string} */
+      /**
+       * @description The op of the deletecomponentop.
+       * @enum {string}
+       */
       op?: "delete_component";
+      /** @description The value of the deletecomponentop. */
       value?: {
         id: string;
       };
     };
     AddComponentOp: {
-      /** @enum {string} */
+      /**
+       * @description The op of the addcomponentop.
+       * @enum {string}
+       */
       op?: "add_component";
+      /** @description The value of the addcomponentop. */
       value?: {
         item: { [key: string]: unknown };
       };
     };
     UpdateRelationshipOp: {
-      /** @enum {string} */
+      /**
+       * @description The op of the updaterelationshipop.
+       * @enum {string}
+       */
       op?: "update_relationship";
+      /** @description The value of the updaterelationshipop. */
       value?: {
         id: string;
         path: string[];
@@ -6181,15 +6217,23 @@ export interface components {
       };
     };
     DeleteRelationshipOp: {
-      /** @enum {string} */
+      /**
+       * @description The op of the deleterelationshipop.
+       * @enum {string}
+       */
       op?: "delete_relationship";
+      /** @description The value of the deleterelationshipop. */
       value?: {
         id: string;
       };
     };
     AddRelationshipOp: {
-      /** @enum {string} */
+      /**
+       * @description The op of the addrelationshipop.
+       * @enum {string}
+       */
       op?: "add_relationship";
+      /** @description The value of the addrelationshipop. */
       value?: {
         item: { [key: string]: unknown };
       };

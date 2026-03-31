@@ -55,6 +55,7 @@ export interface components {
       page_size: number;
       /** @description Total number of schedules across all pages. */
       total_count: number;
+      /** @description The schedules of the schedulepage. */
       schedules: {
         /**
          * Format: uuid
@@ -149,6 +150,7 @@ export interface operations {
             page_size: number;
             /** @description Total number of schedules across all pages. */
             total_count: number;
+            /** @description The schedules of the schedulepage. */
             schedules: {
               /**
                * Format: uuid

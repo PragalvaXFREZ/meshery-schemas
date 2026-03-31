@@ -170,7 +170,8 @@ const EventSchema: Record<string, unknown> = {
                       "x-go-type-import": {
                         "path": "github.com/gofrs/uuid"
                       }
-                    }
+                    },
+                    "description": "The ids of the bulkdeleterequest."
                   }
                 }
               }
@@ -257,11 +258,14 @@ const EventSchema: Record<string, unknown> = {
                       "x-go-type-import": {
                         "path": "github.com/gofrs/uuid"
                       }
-                    }
+                    },
+                    "description": "The ids of the bulkupdatestatusrequest."
                   },
                   "status": {
                     "type": "string",
-                    "example": "failed"
+                    "example": "failed",
+                    "description": "Current status of the resource.",
+                    "maxLength": 255
                   }
                 }
               }
@@ -351,7 +355,9 @@ const EventSchema: Record<string, unknown> = {
                 "properties": {
                   "status": {
                     "type": "string",
-                    "example": "completed"
+                    "example": "completed",
+                    "description": "Current status of the resource.",
+                    "maxLength": 255
                   }
                 }
               }
@@ -549,19 +555,29 @@ const EventSchema: Record<string, unknown> = {
                             "x-go-type-skip-optional-pointer": true
                           },
                           "category": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The category of the event.",
+                            "maxLength": 500
                           },
                           "action": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The action of the event.",
+                            "maxLength": 500
                           },
                           "description": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "Description of the event.",
+                            "maxLength": 5000
                           },
                           "firstName": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The first name of the event.",
+                            "maxLength": 500
                           },
                           "lastName": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The last name of the event.",
+                            "maxLength": 500
                           },
                           "email": {
                             "type": "string",
@@ -592,7 +608,8 @@ const EventSchema: Record<string, unknown> = {
                           "category",
                           "action"
                         ]
-                      }
+                      },
+                      "description": "The data of the eventspage."
                     }
                   }
                 }
@@ -607,7 +624,9 @@ const EventSchema: Record<string, unknown> = {
                   "type": "object",
                   "properties": {
                     "error": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The error of the errorresponse.",
+                      "maxLength": 500
                     }
                   }
                 }
@@ -655,7 +674,9 @@ const EventSchema: Record<string, unknown> = {
                   "type": "object",
                   "properties": {
                     "audit": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "The audit of the eventsaggregate.",
+                      "minimum": 0
                     }
                   },
                   "additionalProperties": true
@@ -782,19 +803,29 @@ const EventSchema: Record<string, unknown> = {
                             "x-go-type-skip-optional-pointer": true
                           },
                           "category": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The category of the event.",
+                            "maxLength": 500
                           },
                           "action": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The action of the event.",
+                            "maxLength": 500
                           },
                           "description": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "Description of the event.",
+                            "maxLength": 5000
                           },
                           "firstName": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The first name of the event.",
+                            "maxLength": 500
                           },
                           "lastName": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The last name of the event.",
+                            "maxLength": 500
                           },
                           "email": {
                             "type": "string",
@@ -825,7 +856,8 @@ const EventSchema: Record<string, unknown> = {
                           "category",
                           "action"
                         ]
-                      }
+                      },
+                      "description": "The data of the eventspage."
                     }
                   }
                 }
@@ -905,20 +937,27 @@ const EventSchema: Record<string, unknown> = {
                   "type": "object",
                   "properties": {
                     "page": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "Current page number of the result set.",
+                      "minimum": 0
                     },
                     "page_size": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "Number of items per page.",
+                      "minimum": 1
                     },
                     "total_count": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "Total number of items available.",
+                      "minimum": 0
                     },
                     "data": {
                       "type": "array",
                       "items": {
                         "type": "object",
                         "additionalProperties": true
-                      }
+                      },
+                      "description": "The data of the eventsummarypage."
                     }
                   }
                 }
@@ -976,10 +1015,14 @@ const EventSchema: Record<string, unknown> = {
                     "type": "object",
                     "properties": {
                       "category": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The category of the eventtype.",
+                        "maxLength": 500
                       },
                       "action": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The action of the eventtype.",
+                        "maxLength": 500
                       }
                     }
                   }
@@ -1137,7 +1180,9 @@ const EventSchema: Record<string, unknown> = {
         "properties": {
           "status": {
             "type": "string",
-            "example": "completed"
+            "example": "completed",
+            "description": "Current status of the resource.",
+            "maxLength": 255
           }
         }
       },
@@ -1157,7 +1202,8 @@ const EventSchema: Record<string, unknown> = {
               "x-go-type-import": {
                 "path": "github.com/gofrs/uuid"
               }
-            }
+            },
+            "description": "The ids of the bulkdeleterequest."
           }
         }
       },
@@ -1178,11 +1224,14 @@ const EventSchema: Record<string, unknown> = {
               "x-go-type-import": {
                 "path": "github.com/gofrs/uuid"
               }
-            }
+            },
+            "description": "The ids of the bulkupdatestatusrequest."
           },
           "status": {
             "type": "string",
-            "example": "failed"
+            "example": "failed",
+            "description": "Current status of the resource.",
+            "maxLength": 255
           }
         }
       },
@@ -1219,19 +1268,29 @@ const EventSchema: Record<string, unknown> = {
             "x-go-type-skip-optional-pointer": true
           },
           "category": {
-            "type": "string"
+            "type": "string",
+            "description": "The category of the event.",
+            "maxLength": 500
           },
           "action": {
-            "type": "string"
+            "type": "string",
+            "description": "The action of the event.",
+            "maxLength": 500
           },
           "description": {
-            "type": "string"
+            "type": "string",
+            "description": "Description of the event.",
+            "maxLength": 5000
           },
           "firstName": {
-            "type": "string"
+            "type": "string",
+            "description": "The first name of the event.",
+            "maxLength": 500
           },
           "lastName": {
-            "type": "string"
+            "type": "string",
+            "description": "The last name of the event.",
+            "maxLength": 500
           },
           "email": {
             "type": "string",
@@ -1313,19 +1372,29 @@ const EventSchema: Record<string, unknown> = {
                   "x-go-type-skip-optional-pointer": true
                 },
                 "category": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The category of the event.",
+                  "maxLength": 500
                 },
                 "action": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The action of the event.",
+                  "maxLength": 500
                 },
                 "description": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Description of the event.",
+                  "maxLength": 5000
                 },
                 "firstName": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The first name of the event.",
+                  "maxLength": 500
                 },
                 "lastName": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The last name of the event.",
+                  "maxLength": 500
                 },
                 "email": {
                   "type": "string",
@@ -1356,7 +1425,8 @@ const EventSchema: Record<string, unknown> = {
                 "category",
                 "action"
               ]
-            }
+            },
+            "description": "The data of the eventspage."
           }
         }
       },
@@ -1364,7 +1434,9 @@ const EventSchema: Record<string, unknown> = {
         "type": "object",
         "properties": {
           "audit": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The audit of the eventsaggregate.",
+            "minimum": 0
           }
         },
         "additionalProperties": true
@@ -1377,20 +1449,27 @@ const EventSchema: Record<string, unknown> = {
         "type": "object",
         "properties": {
           "page": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Current page number of the result set.",
+            "minimum": 0
           },
           "page_size": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Number of items per page.",
+            "minimum": 1
           },
           "total_count": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Total number of items available.",
+            "minimum": 0
           },
           "data": {
             "type": "array",
             "items": {
               "type": "object",
               "additionalProperties": true
-            }
+            },
+            "description": "The data of the eventsummarypage."
           }
         }
       },
@@ -1398,10 +1477,14 @@ const EventSchema: Record<string, unknown> = {
         "type": "object",
         "properties": {
           "category": {
-            "type": "string"
+            "type": "string",
+            "description": "The category of the eventtype.",
+            "maxLength": 500
           },
           "action": {
-            "type": "string"
+            "type": "string",
+            "description": "The action of the eventtype.",
+            "maxLength": 500
           }
         }
       },
@@ -1409,7 +1492,9 @@ const EventSchema: Record<string, unknown> = {
         "type": "object",
         "properties": {
           "error": {
-            "type": "string"
+            "type": "string",
+            "description": "The error of the errorresponse.",
+            "maxLength": 500
           }
         }
       }

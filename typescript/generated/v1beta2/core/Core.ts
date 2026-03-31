@@ -61,21 +61,31 @@ export interface components {
     Endpoint: string;
     RoleNames: string[];
     RecordsPage: {
+      /** @description Current page number of the result set. */
       page?: number;
+      /** @description Number of items per page. */
       page_size?: number;
+      /** @description The records total of the recordspage. */
       recordsTotal?: number;
+      /** @description The record type of the recordspage. */
       recordType?: string;
     };
     ResultsPage: {
+      /** @description Current page number of the result set. */
       page?: number;
+      /** @description Number of items per page. */
       page_size?: number;
+      /** @description Total number of items available. */
       total_count?: number;
+      /** @description The result type of the resultspage. */
       resultType?: string;
     };
     /** @description Body for empty request */
     Empty: { [key: string]: unknown };
     EmailPreference: {
+      /** @description The welcome email of the emailpreference. */
       welcomeEmail?: boolean;
+      /** @description The notify role change of the emailpreference. */
       notifyRoleChange?: boolean;
     };
     /** Format: uuid */
@@ -683,6 +693,7 @@ export interface components {
        * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
        */
       immediateParentId: string;
+      /** @description The immediate ref field path of the nonresolvedalias. */
       immediateRefFieldPath: string[];
     };
     /** @description An resolved alias is an component that acts as an ref/pointer to a field in another component, resolvedAlias are aware of there immediate parents and completely resolved parents also */
@@ -702,6 +713,7 @@ export interface components {
        * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
        */
       immediateParentId: string;
+      /** @description The immediate ref field path of the nonresolvedalias. */
       immediateRefFieldPath: string[];
     } & {
       /**

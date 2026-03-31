@@ -66,15 +66,22 @@ components:
       properties:
         page:
           type: integer
+          description: Current page number of the result set.
+          minimum: 0
         page_size:
           type: integer
+          description: Number of items per page.
+          minimum: 1
         total_count:
           type: integer
+          description: Total number of items available.
+          minimum: 0
         plans:
           type: array
           items:
             $ref: '#/components/schemas/Plan'
             x-go-type: Plan
+          description: The plans of the planpage.
     Plan:
       $ref: ./plan.yaml
     PlanName:

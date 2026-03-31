@@ -399,7 +399,9 @@ export interface components {
           /** @description Version of the model as defined by the registrant. */
           version: string;
         };
+        /** @description The relationships of the model. */
         relationships: unknown[];
+        /** @description The components of the model. */
         components: unknown[];
         /**
          * @description Number of components associated with the model.

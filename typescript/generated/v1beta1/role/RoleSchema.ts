@@ -307,17 +307,20 @@ const RoleSchema: Record<string, unknown> = {
                     "page": {
                       "type": "integer",
                       "description": "Current page number (zero-based).",
-                      "x-order": 1
+                      "x-order": 1,
+                      "minimum": 0
                     },
                     "page_size": {
                       "type": "integer",
                       "description": "Number of roles per page.",
-                      "x-order": 2
+                      "x-order": 2,
+                      "minimum": 1
                     },
                     "total_count": {
                       "type": "integer",
                       "description": "Total number of roles across all pages.",
-                      "x-order": 3
+                      "x-order": 3,
+                      "minimum": 0
                     },
                     "roles": {
                       "type": "array",
@@ -349,7 +352,8 @@ const RoleSchema: Record<string, unknown> = {
                             "x-order": 2,
                             "x-oapi-codegen-extra-tags": {
                               "db": "role_name"
-                            }
+                            },
+                            "maxLength": 500
                           },
                           "description": {
                             "type": "string",
@@ -357,7 +361,8 @@ const RoleSchema: Record<string, unknown> = {
                             "x-order": 3,
                             "x-oapi-codegen-extra-tags": {
                               "db": "description"
-                            }
+                            },
+                            "maxLength": 5000
                           },
                           "created_at": {
                             "x-order": 4,
@@ -402,7 +407,8 @@ const RoleSchema: Record<string, unknown> = {
                           }
                         }
                       },
-                      "x-order": 4
+                      "x-order": 4,
+                      "description": "The roles of the rolespage."
                     }
                   }
                 }
@@ -499,7 +505,8 @@ const RoleSchema: Record<string, unknown> = {
                     "x-order": 2,
                     "x-oapi-codegen-extra-tags": {
                       "db": "role_name"
-                    }
+                    },
+                    "maxLength": 500
                   },
                   "description": {
                     "type": "string",
@@ -507,7 +514,8 @@ const RoleSchema: Record<string, unknown> = {
                     "x-order": 3,
                     "x-oapi-codegen-extra-tags": {
                       "db": "description"
-                    }
+                    },
+                    "maxLength": 5000
                   },
                   "created_at": {
                     "x-order": 4,
@@ -587,7 +595,8 @@ const RoleSchema: Record<string, unknown> = {
                       "x-order": 2,
                       "x-oapi-codegen-extra-tags": {
                         "db": "role_name"
-                      }
+                      },
+                      "maxLength": 500
                     },
                     "description": {
                       "type": "string",
@@ -595,7 +604,8 @@ const RoleSchema: Record<string, unknown> = {
                       "x-order": 3,
                       "x-oapi-codegen-extra-tags": {
                         "db": "description"
-                      }
+                      },
+                      "maxLength": 5000
                     },
                     "created_at": {
                       "x-order": 4,
@@ -744,31 +754,41 @@ const RoleSchema: Record<string, unknown> = {
                     },
                     "username": {
                       "type": "string",
-                      "x-order": 3
+                      "x-order": 3,
+                      "description": "The username of the userroleupdaterequest.",
+                      "maxLength": 500
                     },
                     "email": {
                       "type": "string",
                       "format": "email",
-                      "x-order": 4
+                      "x-order": 4,
+                      "description": "Email address."
                     },
                     "firstName": {
                       "type": "string",
-                      "x-order": 5
+                      "x-order": 5,
+                      "description": "The first name of the userroleupdaterequest.",
+                      "maxLength": 500
                     },
                     "lastName": {
                       "type": "string",
-                      "x-order": 6
+                      "x-order": 6,
+                      "description": "The last name of the userroleupdaterequest.",
+                      "maxLength": 500
                     },
                     "status": {
                       "type": "string",
-                      "x-order": 7
+                      "x-order": 7,
+                      "description": "Current status of the resource.",
+                      "maxLength": 255
                     },
                     "roleNames": {
                       "type": "array",
                       "items": {
                         "type": "string"
                       },
-                      "x-order": 8
+                      "x-order": 8,
+                      "description": "The role names of the userroleupdaterequest."
                     },
                     "created_at": {
                       "x-order": 9,
@@ -1048,7 +1068,8 @@ const RoleSchema: Record<string, unknown> = {
                           }
                         }
                       },
-                      "x-order": 4
+                      "x-order": 4,
+                      "description": "The keychains of the keychainpage."
                     }
                   }
                 }
@@ -1509,7 +1530,8 @@ const RoleSchema: Record<string, unknown> = {
             "x-order": 2,
             "x-oapi-codegen-extra-tags": {
               "db": "role_name"
-            }
+            },
+            "maxLength": 500
           },
           "description": {
             "type": "string",
@@ -1517,7 +1539,8 @@ const RoleSchema: Record<string, unknown> = {
             "x-order": 3,
             "x-oapi-codegen-extra-tags": {
               "db": "description"
-            }
+            },
+            "maxLength": 5000
           },
           "created_at": {
             "x-order": 4,
@@ -1575,17 +1598,20 @@ const RoleSchema: Record<string, unknown> = {
           "page": {
             "type": "integer",
             "description": "Current page number (zero-based).",
-            "x-order": 1
+            "x-order": 1,
+            "minimum": 0
           },
           "page_size": {
             "type": "integer",
             "description": "Number of roles per page.",
-            "x-order": 2
+            "x-order": 2,
+            "minimum": 1
           },
           "total_count": {
             "type": "integer",
             "description": "Total number of roles across all pages.",
-            "x-order": 3
+            "x-order": 3,
+            "minimum": 0
           },
           "roles": {
             "type": "array",
@@ -1617,7 +1643,8 @@ const RoleSchema: Record<string, unknown> = {
                   "x-order": 2,
                   "x-oapi-codegen-extra-tags": {
                     "db": "role_name"
-                  }
+                  },
+                  "maxLength": 500
                 },
                 "description": {
                   "type": "string",
@@ -1625,7 +1652,8 @@ const RoleSchema: Record<string, unknown> = {
                   "x-order": 3,
                   "x-oapi-codegen-extra-tags": {
                     "db": "description"
-                  }
+                  },
+                  "maxLength": 5000
                 },
                 "created_at": {
                   "x-order": 4,
@@ -1670,7 +1698,8 @@ const RoleSchema: Record<string, unknown> = {
                 }
               }
             },
-            "x-order": 4
+            "x-order": 4,
+            "description": "The roles of the rolespage."
           }
         }
       },
@@ -1817,31 +1846,41 @@ const RoleSchema: Record<string, unknown> = {
           },
           "username": {
             "type": "string",
-            "x-order": 3
+            "x-order": 3,
+            "description": "The username of the userroleupdaterequest.",
+            "maxLength": 500
           },
           "email": {
             "type": "string",
             "format": "email",
-            "x-order": 4
+            "x-order": 4,
+            "description": "Email address."
           },
           "firstName": {
             "type": "string",
-            "x-order": 5
+            "x-order": 5,
+            "description": "The first name of the userroleupdaterequest.",
+            "maxLength": 500
           },
           "lastName": {
             "type": "string",
-            "x-order": 6
+            "x-order": 6,
+            "description": "The last name of the userroleupdaterequest.",
+            "maxLength": 500
           },
           "status": {
             "type": "string",
-            "x-order": 7
+            "x-order": 7,
+            "description": "Current status of the resource.",
+            "maxLength": 255
           },
           "roleNames": {
             "type": "array",
             "items": {
               "type": "string"
             },
-            "x-order": 8
+            "x-order": 8,
+            "description": "The role names of the userroleupdaterequest."
           },
           "created_at": {
             "x-order": 9,

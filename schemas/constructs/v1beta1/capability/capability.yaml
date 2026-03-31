@@ -29,6 +29,7 @@ properties:
   description:
     type: string
     description: A written representation of the purpose and characteristics of the capability.
+    maxLength: 5000
   kind:
     $ref: ../core/api.yml#/components/schemas/inputString
     description: Top-level categorization of the capability

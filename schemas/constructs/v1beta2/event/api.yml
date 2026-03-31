@@ -349,6 +349,8 @@ components:
         status:
           type: string
           example: completed
+          description: Current status of the resource.
+          maxLength: 255
     BulkDeleteRequest:
       type: object
       required:
@@ -358,6 +360,7 @@ components:
           type: array
           items:
             $ref: ../core/api.yml#/components/schemas/Uuid
+          description: The ids of the bulkdeleterequest.
     BulkUpdateStatusRequest:
       type: object
       required:
@@ -368,9 +371,12 @@ components:
           type: array
           items:
             $ref: ../core/api.yml#/components/schemas/Uuid
+          description: The ids of the bulkupdatestatusrequest.
         status:
           type: string
           example: failed
+          description: Current status of the resource.
+          maxLength: 255
     EventResult:
       $ref: ./event.yaml
     EventsPage:
@@ -386,11 +392,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/EventResult'
+          description: The data of the eventspage.
     EventsAggregate:
       type: object
       properties:
         audit:
           type: integer
+          description: The audit of the eventsaggregate.
+          minimum: 0
       additionalProperties: true
     EventSummary:
       type: object
@@ -400,23 +409,36 @@ components:
       properties:
         page:
           type: integer
+          description: Current page number of the result set.
+          minimum: 0
         page_size:
           type: integer
+          description: Number of items per page.
+          minimum: 1
         total_count:
           type: integer
+          description: Total number of items available.
+          minimum: 0
         data:
           type: array
           items:
             $ref: '#/components/schemas/EventSummary'
+          description: The data of the eventsummarypage.
     EventType:
       type: object
       properties:
         category:
           type: string
+          description: The category of the eventtype.
+          maxLength: 500
         action:
           type: string
+          description: The action of the eventtype.
+          maxLength: 500
     ErrorResponse:
       type: object
       properties:
         error:
           type: string
+          description: The error of the errorresponse.
+          maxLength: 500

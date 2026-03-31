@@ -42,6 +42,7 @@ properties:
     x-oapi-codegen-extra-tags:
       yaml: description
       json: description
+    maxLength: 5000
   format:
     x-order: 6
     type: string

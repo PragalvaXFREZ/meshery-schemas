@@ -77,7 +77,8 @@ const AcademySchema: Record<string, unknown> = {
                     "total": {
                       "type": "integer",
                       "description": "Total number of Curricula",
-                      "example": 7
+                      "example": 7,
+                      "minimum": 0
                     },
                     "data": {
                       "type": "array",
@@ -108,7 +109,9 @@ const AcademySchema: Record<string, unknown> = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "id",
                               "json": "id"
-                            }
+                            },
+                            "maxLength": 500,
+                            "format": "uuid"
                           },
                           "type": {
                             "x-go-type": "ContentType",
@@ -162,7 +165,8 @@ const AcademySchema: Record<string, unknown> = {
                           "slug": {
                             "type": "string",
                             "description": "slug of the Curricula",
-                            "example": "intro-kubernetes-course"
+                            "example": "intro-kubernetes-course",
+                            "maxLength": 500
                           },
                           "level": {
                             "description": "Level of the Curricula",
@@ -296,17 +300,20 @@ const AcademySchema: Record<string, unknown> = {
                                   "title": {
                                     "type": "string",
                                     "description": "Title of the learning path",
-                                    "example": "Mastering Kubernetes for Engineers"
+                                    "example": "Mastering Kubernetes for Engineers",
+                                    "maxLength": 500
                                   },
                                   "description": {
                                     "type": "string",
                                     "description": "Short description of the curricula",
-                                    "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                                    "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads",
+                                    "maxLength": 5000
                                   },
                                   "detailedDescription": {
                                     "type": "string",
                                     "description": "Detailed description of the curricula",
-                                    "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
+                                    "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.",
+                                    "maxLength": 500
                                   },
                                   "banner": {
                                     "type": "string",
@@ -339,7 +346,9 @@ const AcademySchema: Record<string, unknown> = {
                                         "type": "string",
                                         "description": "Unique identifier for the certificate",
                                         "example": "1234567890abcdef",
-                                        "x-go-name": "ID"
+                                        "x-go-name": "ID",
+                                        "maxLength": 500,
+                                        "format": "uuid"
                                       },
                                       "orgId": {
                                         "type": "string",
@@ -353,22 +362,27 @@ const AcademySchema: Record<string, unknown> = {
                                       "recipientId": {
                                         "type": "string",
                                         "description": "ID of the recipient (user) who received the certificate",
-                                        "example": "1234567890abcdef"
+                                        "example": "1234567890abcdef",
+                                        "maxLength": 500,
+                                        "format": "uuid"
                                       },
                                       "recipientName": {
                                         "type": "string",
                                         "description": "Name of the recipient (user) who received the certificate",
-                                        "example": "John Doe"
+                                        "example": "John Doe",
+                                        "maxLength": 500
                                       },
                                       "title": {
                                         "type": "string",
                                         "description": "Title of the certificate",
-                                        "example": "Kubernetes Expert Certification"
+                                        "example": "Kubernetes Expert Certification",
+                                        "maxLength": 500
                                       },
                                       "description": {
                                         "type": "string",
                                         "description": "Description of the certificate",
-                                        "example": "Awarded for successfully completing the Kubernetes Expert course"
+                                        "example": "Awarded for successfully completing the Kubernetes Expert course",
+                                        "maxLength": 5000
                                       },
                                       "issuingAuthorities": {
                                         "type": "array",
@@ -383,12 +397,15 @@ const AcademySchema: Record<string, unknown> = {
                                             "name": {
                                               "type": "string",
                                               "description": "Name of the issuing authority",
-                                              "example": "Cloud Native Foundation"
+                                              "example": "Cloud Native Foundation",
+                                              "minLength": 1,
+                                              "maxLength": 255
                                             },
                                             "role": {
                                               "type": "string",
                                               "description": "Role of the issuing authority",
-                                              "example": "COO"
+                                              "example": "COO",
+                                              "maxLength": 500
                                             },
                                             "signatureUrl": {
                                               "type": "string",
@@ -415,7 +432,8 @@ const AcademySchema: Record<string, unknown> = {
                                       "expiresIn": {
                                         "type": "integer",
                                         "description": "Number of months after which the certificate expires",
-                                        "example": 24
+                                        "example": 24,
+                                        "minimum": 0
                                       }
                                     }
                                   },
@@ -434,12 +452,15 @@ const AcademySchema: Record<string, unknown> = {
                                           "x-oapi-codegen-extra-tags": {
                                             "db": "id",
                                             "json": "id"
-                                          }
+                                          },
+                                          "maxLength": 500,
+                                          "format": "uuid"
                                         },
                                         "title": {
                                           "type": "string",
                                           "description": "Title of the course",
-                                          "example": "Kubernetes Basics"
+                                          "example": "Kubernetes Basics",
+                                          "maxLength": 500
                                         },
                                         "permalink": {
                                           "type": "string",
@@ -450,12 +471,14 @@ const AcademySchema: Record<string, unknown> = {
                                         "description": {
                                           "type": "string",
                                           "description": "Course description",
-                                          "example": "Learn the basics of Kubernetes"
+                                          "example": "Learn the basics of Kubernetes",
+                                          "maxLength": 5000
                                         },
                                         "weight": {
                                           "type": "number",
                                           "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
-                                          "example": "eg 1 , 2"
+                                          "example": "eg 1 , 2",
+                                          "minimum": 0
                                         },
                                         "banner": {
                                           "type": "string",
@@ -501,7 +524,8 @@ const AcademySchema: Record<string, unknown> = {
                             ]
                           }
                         }
-                      }
+                      },
+                      "description": "The data of the academycurriculalistresponse."
                     }
                   },
                   "required": [
@@ -570,7 +594,8 @@ const AcademySchema: Record<string, unknown> = {
                     "x-go-name": "Title",
                     "x-oapi-codegen-extra-tags": {
                       "json": "title"
-                    }
+                    },
+                    "maxLength": 500
                   },
                   "org_id": {
                     "type": "string",
@@ -678,17 +703,20 @@ const AcademySchema: Record<string, unknown> = {
                           "title": {
                             "type": "string",
                             "description": "Title of the learning path",
-                            "example": "Mastering Kubernetes for Engineers"
+                            "example": "Mastering Kubernetes for Engineers",
+                            "maxLength": 500
                           },
                           "description": {
                             "type": "string",
                             "description": "Short description of the curricula",
-                            "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                            "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads",
+                            "maxLength": 5000
                           },
                           "detailedDescription": {
                             "type": "string",
                             "description": "Detailed description of the curricula",
-                            "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
+                            "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.",
+                            "maxLength": 500
                           },
                           "banner": {
                             "type": "string",
@@ -721,7 +749,9 @@ const AcademySchema: Record<string, unknown> = {
                                 "type": "string",
                                 "description": "Unique identifier for the certificate",
                                 "example": "1234567890abcdef",
-                                "x-go-name": "ID"
+                                "x-go-name": "ID",
+                                "maxLength": 500,
+                                "format": "uuid"
                               },
                               "orgId": {
                                 "type": "string",
@@ -735,22 +765,27 @@ const AcademySchema: Record<string, unknown> = {
                               "recipientId": {
                                 "type": "string",
                                 "description": "ID of the recipient (user) who received the certificate",
-                                "example": "1234567890abcdef"
+                                "example": "1234567890abcdef",
+                                "maxLength": 500,
+                                "format": "uuid"
                               },
                               "recipientName": {
                                 "type": "string",
                                 "description": "Name of the recipient (user) who received the certificate",
-                                "example": "John Doe"
+                                "example": "John Doe",
+                                "maxLength": 500
                               },
                               "title": {
                                 "type": "string",
                                 "description": "Title of the certificate",
-                                "example": "Kubernetes Expert Certification"
+                                "example": "Kubernetes Expert Certification",
+                                "maxLength": 500
                               },
                               "description": {
                                 "type": "string",
                                 "description": "Description of the certificate",
-                                "example": "Awarded for successfully completing the Kubernetes Expert course"
+                                "example": "Awarded for successfully completing the Kubernetes Expert course",
+                                "maxLength": 5000
                               },
                               "issuingAuthorities": {
                                 "type": "array",
@@ -765,12 +800,15 @@ const AcademySchema: Record<string, unknown> = {
                                     "name": {
                                       "type": "string",
                                       "description": "Name of the issuing authority",
-                                      "example": "Cloud Native Foundation"
+                                      "example": "Cloud Native Foundation",
+                                      "minLength": 1,
+                                      "maxLength": 255
                                     },
                                     "role": {
                                       "type": "string",
                                       "description": "Role of the issuing authority",
-                                      "example": "COO"
+                                      "example": "COO",
+                                      "maxLength": 500
                                     },
                                     "signatureUrl": {
                                       "type": "string",
@@ -797,7 +835,8 @@ const AcademySchema: Record<string, unknown> = {
                               "expiresIn": {
                                 "type": "integer",
                                 "description": "Number of months after which the certificate expires",
-                                "example": 24
+                                "example": 24,
+                                "minimum": 0
                               }
                             }
                           },
@@ -816,12 +855,15 @@ const AcademySchema: Record<string, unknown> = {
                                   "x-oapi-codegen-extra-tags": {
                                     "db": "id",
                                     "json": "id"
-                                  }
+                                  },
+                                  "maxLength": 500,
+                                  "format": "uuid"
                                 },
                                 "title": {
                                   "type": "string",
                                   "description": "Title of the course",
-                                  "example": "Kubernetes Basics"
+                                  "example": "Kubernetes Basics",
+                                  "maxLength": 500
                                 },
                                 "permalink": {
                                   "type": "string",
@@ -832,12 +874,14 @@ const AcademySchema: Record<string, unknown> = {
                                 "description": {
                                   "type": "string",
                                   "description": "Course description",
-                                  "example": "Learn the basics of Kubernetes"
+                                  "example": "Learn the basics of Kubernetes",
+                                  "maxLength": 5000
                                 },
                                 "weight": {
                                   "type": "number",
                                   "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
-                                  "example": "eg 1 , 2"
+                                  "example": "eg 1 , 2",
+                                  "minimum": 0
                                 },
                                 "banner": {
                                   "type": "string",
@@ -927,7 +971,9 @@ const AcademySchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "id",
                         "json": "id"
-                      }
+                      },
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "type": {
                       "x-go-type": "ContentType",
@@ -981,7 +1027,8 @@ const AcademySchema: Record<string, unknown> = {
                     "slug": {
                       "type": "string",
                       "description": "slug of the Curricula",
-                      "example": "intro-kubernetes-course"
+                      "example": "intro-kubernetes-course",
+                      "maxLength": 500
                     },
                     "level": {
                       "description": "Level of the Curricula",
@@ -1115,17 +1162,20 @@ const AcademySchema: Record<string, unknown> = {
                             "title": {
                               "type": "string",
                               "description": "Title of the learning path",
-                              "example": "Mastering Kubernetes for Engineers"
+                              "example": "Mastering Kubernetes for Engineers",
+                              "maxLength": 500
                             },
                             "description": {
                               "type": "string",
                               "description": "Short description of the curricula",
-                              "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                              "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads",
+                              "maxLength": 5000
                             },
                             "detailedDescription": {
                               "type": "string",
                               "description": "Detailed description of the curricula",
-                              "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
+                              "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.",
+                              "maxLength": 500
                             },
                             "banner": {
                               "type": "string",
@@ -1158,7 +1208,9 @@ const AcademySchema: Record<string, unknown> = {
                                   "type": "string",
                                   "description": "Unique identifier for the certificate",
                                   "example": "1234567890abcdef",
-                                  "x-go-name": "ID"
+                                  "x-go-name": "ID",
+                                  "maxLength": 500,
+                                  "format": "uuid"
                                 },
                                 "orgId": {
                                   "type": "string",
@@ -1172,22 +1224,27 @@ const AcademySchema: Record<string, unknown> = {
                                 "recipientId": {
                                   "type": "string",
                                   "description": "ID of the recipient (user) who received the certificate",
-                                  "example": "1234567890abcdef"
+                                  "example": "1234567890abcdef",
+                                  "maxLength": 500,
+                                  "format": "uuid"
                                 },
                                 "recipientName": {
                                   "type": "string",
                                   "description": "Name of the recipient (user) who received the certificate",
-                                  "example": "John Doe"
+                                  "example": "John Doe",
+                                  "maxLength": 500
                                 },
                                 "title": {
                                   "type": "string",
                                   "description": "Title of the certificate",
-                                  "example": "Kubernetes Expert Certification"
+                                  "example": "Kubernetes Expert Certification",
+                                  "maxLength": 500
                                 },
                                 "description": {
                                   "type": "string",
                                   "description": "Description of the certificate",
-                                  "example": "Awarded for successfully completing the Kubernetes Expert course"
+                                  "example": "Awarded for successfully completing the Kubernetes Expert course",
+                                  "maxLength": 5000
                                 },
                                 "issuingAuthorities": {
                                   "type": "array",
@@ -1202,12 +1259,15 @@ const AcademySchema: Record<string, unknown> = {
                                       "name": {
                                         "type": "string",
                                         "description": "Name of the issuing authority",
-                                        "example": "Cloud Native Foundation"
+                                        "example": "Cloud Native Foundation",
+                                        "minLength": 1,
+                                        "maxLength": 255
                                       },
                                       "role": {
                                         "type": "string",
                                         "description": "Role of the issuing authority",
-                                        "example": "COO"
+                                        "example": "COO",
+                                        "maxLength": 500
                                       },
                                       "signatureUrl": {
                                         "type": "string",
@@ -1234,7 +1294,8 @@ const AcademySchema: Record<string, unknown> = {
                                 "expiresIn": {
                                   "type": "integer",
                                   "description": "Number of months after which the certificate expires",
-                                  "example": 24
+                                  "example": 24,
+                                  "minimum": 0
                                 }
                               }
                             },
@@ -1253,12 +1314,15 @@ const AcademySchema: Record<string, unknown> = {
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "id",
                                       "json": "id"
-                                    }
+                                    },
+                                    "maxLength": 500,
+                                    "format": "uuid"
                                   },
                                   "title": {
                                     "type": "string",
                                     "description": "Title of the course",
-                                    "example": "Kubernetes Basics"
+                                    "example": "Kubernetes Basics",
+                                    "maxLength": 500
                                   },
                                   "permalink": {
                                     "type": "string",
@@ -1269,12 +1333,14 @@ const AcademySchema: Record<string, unknown> = {
                                   "description": {
                                     "type": "string",
                                     "description": "Course description",
-                                    "example": "Learn the basics of Kubernetes"
+                                    "example": "Learn the basics of Kubernetes",
+                                    "maxLength": 5000
                                   },
                                   "weight": {
                                     "type": "number",
                                     "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
-                                    "example": "eg 1 , 2"
+                                    "example": "eg 1 , 2",
+                                    "minimum": 0
                                   },
                                   "banner": {
                                     "type": "string",
@@ -1498,7 +1564,8 @@ const AcademySchema: Record<string, unknown> = {
                     "total": {
                       "type": "integer",
                       "description": "Total number of Curricula",
-                      "example": 7
+                      "example": 7,
+                      "minimum": 0
                     },
                     "data": {
                       "type": "array",
@@ -1532,7 +1599,9 @@ const AcademySchema: Record<string, unknown> = {
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "id",
                                   "json": "id"
-                                }
+                                },
+                                "maxLength": 500,
+                                "format": "uuid"
                               },
                               "type": {
                                 "x-go-type": "ContentType",
@@ -1586,7 +1655,8 @@ const AcademySchema: Record<string, unknown> = {
                               "slug": {
                                 "type": "string",
                                 "description": "slug of the Curricula",
-                                "example": "intro-kubernetes-course"
+                                "example": "intro-kubernetes-course",
+                                "maxLength": 500
                               },
                               "level": {
                                 "description": "Level of the Curricula",
@@ -1720,17 +1790,20 @@ const AcademySchema: Record<string, unknown> = {
                                       "title": {
                                         "type": "string",
                                         "description": "Title of the learning path",
-                                        "example": "Mastering Kubernetes for Engineers"
+                                        "example": "Mastering Kubernetes for Engineers",
+                                        "maxLength": 500
                                       },
                                       "description": {
                                         "type": "string",
                                         "description": "Short description of the curricula",
-                                        "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                                        "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads",
+                                        "maxLength": 5000
                                       },
                                       "detailedDescription": {
                                         "type": "string",
                                         "description": "Detailed description of the curricula",
-                                        "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
+                                        "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.",
+                                        "maxLength": 500
                                       },
                                       "banner": {
                                         "type": "string",
@@ -1763,7 +1836,9 @@ const AcademySchema: Record<string, unknown> = {
                                             "type": "string",
                                             "description": "Unique identifier for the certificate",
                                             "example": "1234567890abcdef",
-                                            "x-go-name": "ID"
+                                            "x-go-name": "ID",
+                                            "maxLength": 500,
+                                            "format": "uuid"
                                           },
                                           "orgId": {
                                             "type": "string",
@@ -1777,22 +1852,27 @@ const AcademySchema: Record<string, unknown> = {
                                           "recipientId": {
                                             "type": "string",
                                             "description": "ID of the recipient (user) who received the certificate",
-                                            "example": "1234567890abcdef"
+                                            "example": "1234567890abcdef",
+                                            "maxLength": 500,
+                                            "format": "uuid"
                                           },
                                           "recipientName": {
                                             "type": "string",
                                             "description": "Name of the recipient (user) who received the certificate",
-                                            "example": "John Doe"
+                                            "example": "John Doe",
+                                            "maxLength": 500
                                           },
                                           "title": {
                                             "type": "string",
                                             "description": "Title of the certificate",
-                                            "example": "Kubernetes Expert Certification"
+                                            "example": "Kubernetes Expert Certification",
+                                            "maxLength": 500
                                           },
                                           "description": {
                                             "type": "string",
                                             "description": "Description of the certificate",
-                                            "example": "Awarded for successfully completing the Kubernetes Expert course"
+                                            "example": "Awarded for successfully completing the Kubernetes Expert course",
+                                            "maxLength": 5000
                                           },
                                           "issuingAuthorities": {
                                             "type": "array",
@@ -1807,12 +1887,15 @@ const AcademySchema: Record<string, unknown> = {
                                                 "name": {
                                                   "type": "string",
                                                   "description": "Name of the issuing authority",
-                                                  "example": "Cloud Native Foundation"
+                                                  "example": "Cloud Native Foundation",
+                                                  "minLength": 1,
+                                                  "maxLength": 255
                                                 },
                                                 "role": {
                                                   "type": "string",
                                                   "description": "Role of the issuing authority",
-                                                  "example": "COO"
+                                                  "example": "COO",
+                                                  "maxLength": 500
                                                 },
                                                 "signatureUrl": {
                                                   "type": "string",
@@ -1839,7 +1922,8 @@ const AcademySchema: Record<string, unknown> = {
                                           "expiresIn": {
                                             "type": "integer",
                                             "description": "Number of months after which the certificate expires",
-                                            "example": 24
+                                            "example": 24,
+                                            "minimum": 0
                                           }
                                         }
                                       },
@@ -1858,12 +1942,15 @@ const AcademySchema: Record<string, unknown> = {
                                               "x-oapi-codegen-extra-tags": {
                                                 "db": "id",
                                                 "json": "id"
-                                              }
+                                              },
+                                              "maxLength": 500,
+                                              "format": "uuid"
                                             },
                                             "title": {
                                               "type": "string",
                                               "description": "Title of the course",
-                                              "example": "Kubernetes Basics"
+                                              "example": "Kubernetes Basics",
+                                              "maxLength": 500
                                             },
                                             "permalink": {
                                               "type": "string",
@@ -1874,12 +1961,14 @@ const AcademySchema: Record<string, unknown> = {
                                             "description": {
                                               "type": "string",
                                               "description": "Course description",
-                                              "example": "Learn the basics of Kubernetes"
+                                              "example": "Learn the basics of Kubernetes",
+                                              "maxLength": 5000
                                             },
                                             "weight": {
                                               "type": "number",
                                               "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
-                                              "example": "eg 1 , 2"
+                                              "example": "eg 1 , 2",
+                                              "minimum": 0
                                             },
                                             "banner": {
                                               "type": "string",
@@ -1942,7 +2031,8 @@ const AcademySchema: Record<string, unknown> = {
                             }
                           }
                         ]
-                      }
+                      },
+                      "description": "The data of the academycurriculawithmetricslistresponse."
                     }
                   },
                   "required": [
@@ -2036,7 +2126,9 @@ const AcademySchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "id",
                         "json": "id"
-                      }
+                      },
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "type": {
                       "x-go-type": "ContentType",
@@ -2090,7 +2182,8 @@ const AcademySchema: Record<string, unknown> = {
                     "slug": {
                       "type": "string",
                       "description": "slug of the Curricula",
-                      "example": "intro-kubernetes-course"
+                      "example": "intro-kubernetes-course",
+                      "maxLength": 500
                     },
                     "level": {
                       "description": "Level of the Curricula",
@@ -2224,17 +2317,20 @@ const AcademySchema: Record<string, unknown> = {
                             "title": {
                               "type": "string",
                               "description": "Title of the learning path",
-                              "example": "Mastering Kubernetes for Engineers"
+                              "example": "Mastering Kubernetes for Engineers",
+                              "maxLength": 500
                             },
                             "description": {
                               "type": "string",
                               "description": "Short description of the curricula",
-                              "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                              "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads",
+                              "maxLength": 5000
                             },
                             "detailedDescription": {
                               "type": "string",
                               "description": "Detailed description of the curricula",
-                              "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
+                              "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.",
+                              "maxLength": 500
                             },
                             "banner": {
                               "type": "string",
@@ -2267,7 +2363,9 @@ const AcademySchema: Record<string, unknown> = {
                                   "type": "string",
                                   "description": "Unique identifier for the certificate",
                                   "example": "1234567890abcdef",
-                                  "x-go-name": "ID"
+                                  "x-go-name": "ID",
+                                  "maxLength": 500,
+                                  "format": "uuid"
                                 },
                                 "orgId": {
                                   "type": "string",
@@ -2281,22 +2379,27 @@ const AcademySchema: Record<string, unknown> = {
                                 "recipientId": {
                                   "type": "string",
                                   "description": "ID of the recipient (user) who received the certificate",
-                                  "example": "1234567890abcdef"
+                                  "example": "1234567890abcdef",
+                                  "maxLength": 500,
+                                  "format": "uuid"
                                 },
                                 "recipientName": {
                                   "type": "string",
                                   "description": "Name of the recipient (user) who received the certificate",
-                                  "example": "John Doe"
+                                  "example": "John Doe",
+                                  "maxLength": 500
                                 },
                                 "title": {
                                   "type": "string",
                                   "description": "Title of the certificate",
-                                  "example": "Kubernetes Expert Certification"
+                                  "example": "Kubernetes Expert Certification",
+                                  "maxLength": 500
                                 },
                                 "description": {
                                   "type": "string",
                                   "description": "Description of the certificate",
-                                  "example": "Awarded for successfully completing the Kubernetes Expert course"
+                                  "example": "Awarded for successfully completing the Kubernetes Expert course",
+                                  "maxLength": 5000
                                 },
                                 "issuingAuthorities": {
                                   "type": "array",
@@ -2311,12 +2414,15 @@ const AcademySchema: Record<string, unknown> = {
                                       "name": {
                                         "type": "string",
                                         "description": "Name of the issuing authority",
-                                        "example": "Cloud Native Foundation"
+                                        "example": "Cloud Native Foundation",
+                                        "minLength": 1,
+                                        "maxLength": 255
                                       },
                                       "role": {
                                         "type": "string",
                                         "description": "Role of the issuing authority",
-                                        "example": "COO"
+                                        "example": "COO",
+                                        "maxLength": 500
                                       },
                                       "signatureUrl": {
                                         "type": "string",
@@ -2343,7 +2449,8 @@ const AcademySchema: Record<string, unknown> = {
                                 "expiresIn": {
                                   "type": "integer",
                                   "description": "Number of months after which the certificate expires",
-                                  "example": 24
+                                  "example": 24,
+                                  "minimum": 0
                                 }
                               }
                             },
@@ -2362,12 +2469,15 @@ const AcademySchema: Record<string, unknown> = {
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "id",
                                       "json": "id"
-                                    }
+                                    },
+                                    "maxLength": 500,
+                                    "format": "uuid"
                                   },
                                   "title": {
                                     "type": "string",
                                     "description": "Title of the course",
-                                    "example": "Kubernetes Basics"
+                                    "example": "Kubernetes Basics",
+                                    "maxLength": 500
                                   },
                                   "permalink": {
                                     "type": "string",
@@ -2378,12 +2488,14 @@ const AcademySchema: Record<string, unknown> = {
                                   "description": {
                                     "type": "string",
                                     "description": "Course description",
-                                    "example": "Learn the basics of Kubernetes"
+                                    "example": "Learn the basics of Kubernetes",
+                                    "maxLength": 5000
                                   },
                                   "weight": {
                                     "type": "number",
                                     "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
-                                    "example": "eg 1 , 2"
+                                    "example": "eg 1 , 2",
+                                    "minimum": 0
                                   },
                                   "banner": {
                                     "type": "string",
@@ -2485,7 +2597,9 @@ const AcademySchema: Record<string, unknown> = {
                 "properties": {
                   "contentId": {
                     "type": "string",
-                    "description": "ID of the academy content to register for"
+                    "description": "ID of the academy content to register for",
+                    "maxLength": 500,
+                    "format": "uuid"
                   },
                   "user_id": {
                     "type": "string",
@@ -2555,7 +2669,9 @@ const AcademySchema: Record<string, unknown> = {
                       "description": "ID of the course content",
                       "x-oapi-codegen-extra-tags": {
                         "db": "content_id"
-                      }
+                      },
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "user_id": {
                       "type": "string",
@@ -2636,7 +2752,9 @@ const AcademySchema: Record<string, unknown> = {
                           "type": "string",
                           "description": "Unique identifier for the certificate",
                           "example": "1234567890abcdef",
-                          "x-go-name": "ID"
+                          "x-go-name": "ID",
+                          "maxLength": 500,
+                          "format": "uuid"
                         },
                         "orgId": {
                           "type": "string",
@@ -2650,22 +2768,27 @@ const AcademySchema: Record<string, unknown> = {
                         "recipientId": {
                           "type": "string",
                           "description": "ID of the recipient (user) who received the certificate",
-                          "example": "1234567890abcdef"
+                          "example": "1234567890abcdef",
+                          "maxLength": 500,
+                          "format": "uuid"
                         },
                         "recipientName": {
                           "type": "string",
                           "description": "Name of the recipient (user) who received the certificate",
-                          "example": "John Doe"
+                          "example": "John Doe",
+                          "maxLength": 500
                         },
                         "title": {
                           "type": "string",
                           "description": "Title of the certificate",
-                          "example": "Kubernetes Expert Certification"
+                          "example": "Kubernetes Expert Certification",
+                          "maxLength": 500
                         },
                         "description": {
                           "type": "string",
                           "description": "Description of the certificate",
-                          "example": "Awarded for successfully completing the Kubernetes Expert course"
+                          "example": "Awarded for successfully completing the Kubernetes Expert course",
+                          "maxLength": 5000
                         },
                         "issuingAuthorities": {
                           "type": "array",
@@ -2680,12 +2803,15 @@ const AcademySchema: Record<string, unknown> = {
                               "name": {
                                 "type": "string",
                                 "description": "Name of the issuing authority",
-                                "example": "Cloud Native Foundation"
+                                "example": "Cloud Native Foundation",
+                                "minLength": 1,
+                                "maxLength": 255
                               },
                               "role": {
                                 "type": "string",
                                 "description": "Role of the issuing authority",
-                                "example": "COO"
+                                "example": "COO",
+                                "maxLength": 500
                               },
                               "signatureUrl": {
                                 "type": "string",
@@ -2712,7 +2838,8 @@ const AcademySchema: Record<string, unknown> = {
                         "expiresIn": {
                           "type": "integer",
                           "description": "Number of months after which the certificate expires",
-                          "example": 24
+                          "example": 24,
+                          "minimum": 0
                         }
                       }
                     },
@@ -2821,7 +2948,9 @@ const AcademySchema: Record<string, unknown> = {
                       "description": "ID of the course content",
                       "x-oapi-codegen-extra-tags": {
                         "db": "content_id"
-                      }
+                      },
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "user_id": {
                       "type": "string",
@@ -2902,7 +3031,9 @@ const AcademySchema: Record<string, unknown> = {
                           "type": "string",
                           "description": "Unique identifier for the certificate",
                           "example": "1234567890abcdef",
-                          "x-go-name": "ID"
+                          "x-go-name": "ID",
+                          "maxLength": 500,
+                          "format": "uuid"
                         },
                         "orgId": {
                           "type": "string",
@@ -2916,22 +3047,27 @@ const AcademySchema: Record<string, unknown> = {
                         "recipientId": {
                           "type": "string",
                           "description": "ID of the recipient (user) who received the certificate",
-                          "example": "1234567890abcdef"
+                          "example": "1234567890abcdef",
+                          "maxLength": 500,
+                          "format": "uuid"
                         },
                         "recipientName": {
                           "type": "string",
                           "description": "Name of the recipient (user) who received the certificate",
-                          "example": "John Doe"
+                          "example": "John Doe",
+                          "maxLength": 500
                         },
                         "title": {
                           "type": "string",
                           "description": "Title of the certificate",
-                          "example": "Kubernetes Expert Certification"
+                          "example": "Kubernetes Expert Certification",
+                          "maxLength": 500
                         },
                         "description": {
                           "type": "string",
                           "description": "Description of the certificate",
-                          "example": "Awarded for successfully completing the Kubernetes Expert course"
+                          "example": "Awarded for successfully completing the Kubernetes Expert course",
+                          "maxLength": 5000
                         },
                         "issuingAuthorities": {
                           "type": "array",
@@ -2946,12 +3082,15 @@ const AcademySchema: Record<string, unknown> = {
                               "name": {
                                 "type": "string",
                                 "description": "Name of the issuing authority",
-                                "example": "Cloud Native Foundation"
+                                "example": "Cloud Native Foundation",
+                                "minLength": 1,
+                                "maxLength": 255
                               },
                               "role": {
                                 "type": "string",
                                 "description": "Role of the issuing authority",
-                                "example": "COO"
+                                "example": "COO",
+                                "maxLength": 500
                               },
                               "signatureUrl": {
                                 "type": "string",
@@ -2978,7 +3117,8 @@ const AcademySchema: Record<string, unknown> = {
                         "expiresIn": {
                           "type": "integer",
                           "description": "Number of months after which the certificate expires",
-                          "example": 24
+                          "example": 24,
+                          "minimum": 0
                         }
                       }
                     },
@@ -3076,7 +3216,8 @@ const AcademySchema: Record<string, unknown> = {
                     "x-go-name": "Title",
                     "x-oapi-codegen-extra-tags": {
                       "json": "title"
-                    }
+                    },
+                    "maxLength": 500
                   },
                   "org_id": {
                     "type": "string",
@@ -3184,17 +3325,20 @@ const AcademySchema: Record<string, unknown> = {
                           "title": {
                             "type": "string",
                             "description": "Title of the learning path",
-                            "example": "Mastering Kubernetes for Engineers"
+                            "example": "Mastering Kubernetes for Engineers",
+                            "maxLength": 500
                           },
                           "description": {
                             "type": "string",
                             "description": "Short description of the curricula",
-                            "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                            "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads",
+                            "maxLength": 5000
                           },
                           "detailedDescription": {
                             "type": "string",
                             "description": "Detailed description of the curricula",
-                            "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
+                            "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.",
+                            "maxLength": 500
                           },
                           "banner": {
                             "type": "string",
@@ -3227,7 +3371,9 @@ const AcademySchema: Record<string, unknown> = {
                                 "type": "string",
                                 "description": "Unique identifier for the certificate",
                                 "example": "1234567890abcdef",
-                                "x-go-name": "ID"
+                                "x-go-name": "ID",
+                                "maxLength": 500,
+                                "format": "uuid"
                               },
                               "orgId": {
                                 "type": "string",
@@ -3241,22 +3387,27 @@ const AcademySchema: Record<string, unknown> = {
                               "recipientId": {
                                 "type": "string",
                                 "description": "ID of the recipient (user) who received the certificate",
-                                "example": "1234567890abcdef"
+                                "example": "1234567890abcdef",
+                                "maxLength": 500,
+                                "format": "uuid"
                               },
                               "recipientName": {
                                 "type": "string",
                                 "description": "Name of the recipient (user) who received the certificate",
-                                "example": "John Doe"
+                                "example": "John Doe",
+                                "maxLength": 500
                               },
                               "title": {
                                 "type": "string",
                                 "description": "Title of the certificate",
-                                "example": "Kubernetes Expert Certification"
+                                "example": "Kubernetes Expert Certification",
+                                "maxLength": 500
                               },
                               "description": {
                                 "type": "string",
                                 "description": "Description of the certificate",
-                                "example": "Awarded for successfully completing the Kubernetes Expert course"
+                                "example": "Awarded for successfully completing the Kubernetes Expert course",
+                                "maxLength": 5000
                               },
                               "issuingAuthorities": {
                                 "type": "array",
@@ -3271,12 +3422,15 @@ const AcademySchema: Record<string, unknown> = {
                                     "name": {
                                       "type": "string",
                                       "description": "Name of the issuing authority",
-                                      "example": "Cloud Native Foundation"
+                                      "example": "Cloud Native Foundation",
+                                      "minLength": 1,
+                                      "maxLength": 255
                                     },
                                     "role": {
                                       "type": "string",
                                       "description": "Role of the issuing authority",
-                                      "example": "COO"
+                                      "example": "COO",
+                                      "maxLength": 500
                                     },
                                     "signatureUrl": {
                                       "type": "string",
@@ -3303,7 +3457,8 @@ const AcademySchema: Record<string, unknown> = {
                               "expiresIn": {
                                 "type": "integer",
                                 "description": "Number of months after which the certificate expires",
-                                "example": 24
+                                "example": 24,
+                                "minimum": 0
                               }
                             }
                           },
@@ -3322,12 +3477,15 @@ const AcademySchema: Record<string, unknown> = {
                                   "x-oapi-codegen-extra-tags": {
                                     "db": "id",
                                     "json": "id"
-                                  }
+                                  },
+                                  "maxLength": 500,
+                                  "format": "uuid"
                                 },
                                 "title": {
                                   "type": "string",
                                   "description": "Title of the course",
-                                  "example": "Kubernetes Basics"
+                                  "example": "Kubernetes Basics",
+                                  "maxLength": 500
                                 },
                                 "permalink": {
                                   "type": "string",
@@ -3338,12 +3496,14 @@ const AcademySchema: Record<string, unknown> = {
                                 "description": {
                                   "type": "string",
                                   "description": "Course description",
-                                  "example": "Learn the basics of Kubernetes"
+                                  "example": "Learn the basics of Kubernetes",
+                                  "maxLength": 5000
                                 },
                                 "weight": {
                                   "type": "number",
                                   "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
-                                  "example": "eg 1 , 2"
+                                  "example": "eg 1 , 2",
+                                  "minimum": 0
                                 },
                                 "banner": {
                                   "type": "string",
@@ -3436,7 +3596,9 @@ const AcademySchema: Record<string, unknown> = {
                           "x-oapi-codegen-extra-tags": {
                             "db": "id",
                             "json": "id"
-                          }
+                          },
+                          "maxLength": 500,
+                          "format": "uuid"
                         },
                         "type": {
                           "x-go-type": "ContentType",
@@ -3490,7 +3652,8 @@ const AcademySchema: Record<string, unknown> = {
                         "slug": {
                           "type": "string",
                           "description": "slug of the Curricula",
-                          "example": "intro-kubernetes-course"
+                          "example": "intro-kubernetes-course",
+                          "maxLength": 500
                         },
                         "level": {
                           "description": "Level of the Curricula",
@@ -3624,17 +3787,20 @@ const AcademySchema: Record<string, unknown> = {
                                 "title": {
                                   "type": "string",
                                   "description": "Title of the learning path",
-                                  "example": "Mastering Kubernetes for Engineers"
+                                  "example": "Mastering Kubernetes for Engineers",
+                                  "maxLength": 500
                                 },
                                 "description": {
                                   "type": "string",
                                   "description": "Short description of the curricula",
-                                  "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                                  "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads",
+                                  "maxLength": 5000
                                 },
                                 "detailedDescription": {
                                   "type": "string",
                                   "description": "Detailed description of the curricula",
-                                  "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
+                                  "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.",
+                                  "maxLength": 500
                                 },
                                 "banner": {
                                   "type": "string",
@@ -3667,7 +3833,9 @@ const AcademySchema: Record<string, unknown> = {
                                       "type": "string",
                                       "description": "Unique identifier for the certificate",
                                       "example": "1234567890abcdef",
-                                      "x-go-name": "ID"
+                                      "x-go-name": "ID",
+                                      "maxLength": 500,
+                                      "format": "uuid"
                                     },
                                     "orgId": {
                                       "type": "string",
@@ -3681,22 +3849,27 @@ const AcademySchema: Record<string, unknown> = {
                                     "recipientId": {
                                       "type": "string",
                                       "description": "ID of the recipient (user) who received the certificate",
-                                      "example": "1234567890abcdef"
+                                      "example": "1234567890abcdef",
+                                      "maxLength": 500,
+                                      "format": "uuid"
                                     },
                                     "recipientName": {
                                       "type": "string",
                                       "description": "Name of the recipient (user) who received the certificate",
-                                      "example": "John Doe"
+                                      "example": "John Doe",
+                                      "maxLength": 500
                                     },
                                     "title": {
                                       "type": "string",
                                       "description": "Title of the certificate",
-                                      "example": "Kubernetes Expert Certification"
+                                      "example": "Kubernetes Expert Certification",
+                                      "maxLength": 500
                                     },
                                     "description": {
                                       "type": "string",
                                       "description": "Description of the certificate",
-                                      "example": "Awarded for successfully completing the Kubernetes Expert course"
+                                      "example": "Awarded for successfully completing the Kubernetes Expert course",
+                                      "maxLength": 5000
                                     },
                                     "issuingAuthorities": {
                                       "type": "array",
@@ -3711,12 +3884,15 @@ const AcademySchema: Record<string, unknown> = {
                                           "name": {
                                             "type": "string",
                                             "description": "Name of the issuing authority",
-                                            "example": "Cloud Native Foundation"
+                                            "example": "Cloud Native Foundation",
+                                            "minLength": 1,
+                                            "maxLength": 255
                                           },
                                           "role": {
                                             "type": "string",
                                             "description": "Role of the issuing authority",
-                                            "example": "COO"
+                                            "example": "COO",
+                                            "maxLength": 500
                                           },
                                           "signatureUrl": {
                                             "type": "string",
@@ -3743,7 +3919,8 @@ const AcademySchema: Record<string, unknown> = {
                                     "expiresIn": {
                                       "type": "integer",
                                       "description": "Number of months after which the certificate expires",
-                                      "example": 24
+                                      "example": 24,
+                                      "minimum": 0
                                     }
                                   }
                                 },
@@ -3762,12 +3939,15 @@ const AcademySchema: Record<string, unknown> = {
                                         "x-oapi-codegen-extra-tags": {
                                           "db": "id",
                                           "json": "id"
-                                        }
+                                        },
+                                        "maxLength": 500,
+                                        "format": "uuid"
                                       },
                                       "title": {
                                         "type": "string",
                                         "description": "Title of the course",
-                                        "example": "Kubernetes Basics"
+                                        "example": "Kubernetes Basics",
+                                        "maxLength": 500
                                       },
                                       "permalink": {
                                         "type": "string",
@@ -3778,12 +3958,14 @@ const AcademySchema: Record<string, unknown> = {
                                       "description": {
                                         "type": "string",
                                         "description": "Course description",
-                                        "example": "Learn the basics of Kubernetes"
+                                        "example": "Learn the basics of Kubernetes",
+                                        "maxLength": 5000
                                       },
                                       "weight": {
                                         "type": "number",
                                         "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
-                                        "example": "eg 1 , 2"
+                                        "example": "eg 1 , 2",
+                                        "minimum": 0
                                       },
                                       "banner": {
                                         "type": "string",
@@ -3901,11 +4083,14 @@ const AcademySchema: Record<string, unknown> = {
                             },
                             "name": {
                               "type": "string",
-                              "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,"
+                              "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,",
+                              "minLength": 1,
+                              "maxLength": 255
                             },
                             "description": {
                               "type": "string",
-                              "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description"
+                              "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description",
+                              "maxLength": 5000
                             },
                             "emails": {
                               "type": "array",
@@ -3918,7 +4103,8 @@ const AcademySchema: Record<string, unknown> = {
                                 "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
                                 "x-go-type": "string",
                                 "description": "Exact email address or the email address pattern for which the invitation is valid , null means the invitation is valid for all email addresses"
-                              }
+                              },
+                              "description": "The emails of the invitation."
                             },
                             "org_id": {
                               "type": "string",
@@ -3926,7 +4112,9 @@ const AcademySchema: Record<string, unknown> = {
                               "x-oapi-codegen-extra-tags": {
                                 "db": "org_id",
                                 "json": "org_id"
-                              }
+                              },
+                              "maxLength": 500,
+                              "format": "uuid"
                             },
                             "expires_at": {
                               "type": "string",
@@ -3939,7 +4127,8 @@ const AcademySchema: Record<string, unknown> = {
                             },
                             "quota": {
                               "type": "integer",
-                              "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
+                              "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota",
+                              "minimum": 0
                             },
                             "accepted_by": {
                               "type": "array",
@@ -3965,7 +4154,8 @@ const AcademySchema: Record<string, unknown> = {
                               "items": {
                                 "type": "string",
                                 "description": "Roles that the user will have when accepting the invitation, null or empty string means the invitation does not specify any roles"
-                              }
+                              },
+                              "description": "The roles of the invitation."
                             },
                             "teams": {
                               "type": "array",
@@ -3976,7 +4166,8 @@ const AcademySchema: Record<string, unknown> = {
                               "items": {
                                 "type": "string",
                                 "description": "Teams that the user will be added to when accepting the invitation, null or empty string means the invitation does not specify any teams"
-                              }
+                              },
+                              "description": "The teams of the invitation."
                             },
                             "status": {
                               "x-go-type": "InvitationStatus",
@@ -4149,7 +4340,9 @@ const AcademySchema: Record<string, unknown> = {
                           "x-oapi-codegen-extra-tags": {
                             "db": "id",
                             "json": "id"
-                          }
+                          },
+                          "maxLength": 500,
+                          "format": "uuid"
                         },
                         "type": {
                           "x-go-type": "ContentType",
@@ -4203,7 +4396,8 @@ const AcademySchema: Record<string, unknown> = {
                         "slug": {
                           "type": "string",
                           "description": "slug of the Curricula",
-                          "example": "intro-kubernetes-course"
+                          "example": "intro-kubernetes-course",
+                          "maxLength": 500
                         },
                         "level": {
                           "description": "Level of the Curricula",
@@ -4337,17 +4531,20 @@ const AcademySchema: Record<string, unknown> = {
                                 "title": {
                                   "type": "string",
                                   "description": "Title of the learning path",
-                                  "example": "Mastering Kubernetes for Engineers"
+                                  "example": "Mastering Kubernetes for Engineers",
+                                  "maxLength": 500
                                 },
                                 "description": {
                                   "type": "string",
                                   "description": "Short description of the curricula",
-                                  "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                                  "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads",
+                                  "maxLength": 5000
                                 },
                                 "detailedDescription": {
                                   "type": "string",
                                   "description": "Detailed description of the curricula",
-                                  "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
+                                  "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.",
+                                  "maxLength": 500
                                 },
                                 "banner": {
                                   "type": "string",
@@ -4380,7 +4577,9 @@ const AcademySchema: Record<string, unknown> = {
                                       "type": "string",
                                       "description": "Unique identifier for the certificate",
                                       "example": "1234567890abcdef",
-                                      "x-go-name": "ID"
+                                      "x-go-name": "ID",
+                                      "maxLength": 500,
+                                      "format": "uuid"
                                     },
                                     "orgId": {
                                       "type": "string",
@@ -4394,22 +4593,27 @@ const AcademySchema: Record<string, unknown> = {
                                     "recipientId": {
                                       "type": "string",
                                       "description": "ID of the recipient (user) who received the certificate",
-                                      "example": "1234567890abcdef"
+                                      "example": "1234567890abcdef",
+                                      "maxLength": 500,
+                                      "format": "uuid"
                                     },
                                     "recipientName": {
                                       "type": "string",
                                       "description": "Name of the recipient (user) who received the certificate",
-                                      "example": "John Doe"
+                                      "example": "John Doe",
+                                      "maxLength": 500
                                     },
                                     "title": {
                                       "type": "string",
                                       "description": "Title of the certificate",
-                                      "example": "Kubernetes Expert Certification"
+                                      "example": "Kubernetes Expert Certification",
+                                      "maxLength": 500
                                     },
                                     "description": {
                                       "type": "string",
                                       "description": "Description of the certificate",
-                                      "example": "Awarded for successfully completing the Kubernetes Expert course"
+                                      "example": "Awarded for successfully completing the Kubernetes Expert course",
+                                      "maxLength": 5000
                                     },
                                     "issuingAuthorities": {
                                       "type": "array",
@@ -4424,12 +4628,15 @@ const AcademySchema: Record<string, unknown> = {
                                           "name": {
                                             "type": "string",
                                             "description": "Name of the issuing authority",
-                                            "example": "Cloud Native Foundation"
+                                            "example": "Cloud Native Foundation",
+                                            "minLength": 1,
+                                            "maxLength": 255
                                           },
                                           "role": {
                                             "type": "string",
                                             "description": "Role of the issuing authority",
-                                            "example": "COO"
+                                            "example": "COO",
+                                            "maxLength": 500
                                           },
                                           "signatureUrl": {
                                             "type": "string",
@@ -4456,7 +4663,8 @@ const AcademySchema: Record<string, unknown> = {
                                     "expiresIn": {
                                       "type": "integer",
                                       "description": "Number of months after which the certificate expires",
-                                      "example": 24
+                                      "example": 24,
+                                      "minimum": 0
                                     }
                                   }
                                 },
@@ -4475,12 +4683,15 @@ const AcademySchema: Record<string, unknown> = {
                                         "x-oapi-codegen-extra-tags": {
                                           "db": "id",
                                           "json": "id"
-                                        }
+                                        },
+                                        "maxLength": 500,
+                                        "format": "uuid"
                                       },
                                       "title": {
                                         "type": "string",
                                         "description": "Title of the course",
-                                        "example": "Kubernetes Basics"
+                                        "example": "Kubernetes Basics",
+                                        "maxLength": 500
                                       },
                                       "permalink": {
                                         "type": "string",
@@ -4491,12 +4702,14 @@ const AcademySchema: Record<string, unknown> = {
                                       "description": {
                                         "type": "string",
                                         "description": "Course description",
-                                        "example": "Learn the basics of Kubernetes"
+                                        "example": "Learn the basics of Kubernetes",
+                                        "maxLength": 5000
                                       },
                                       "weight": {
                                         "type": "number",
                                         "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
-                                        "example": "eg 1 , 2"
+                                        "example": "eg 1 , 2",
+                                        "minimum": 0
                                       },
                                       "banner": {
                                         "type": "string",
@@ -4614,11 +4827,14 @@ const AcademySchema: Record<string, unknown> = {
                             },
                             "name": {
                               "type": "string",
-                              "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,"
+                              "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,",
+                              "minLength": 1,
+                              "maxLength": 255
                             },
                             "description": {
                               "type": "string",
-                              "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description"
+                              "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description",
+                              "maxLength": 5000
                             },
                             "emails": {
                               "type": "array",
@@ -4631,7 +4847,8 @@ const AcademySchema: Record<string, unknown> = {
                                 "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
                                 "x-go-type": "string",
                                 "description": "Exact email address or the email address pattern for which the invitation is valid , null means the invitation is valid for all email addresses"
-                              }
+                              },
+                              "description": "The emails of the invitation."
                             },
                             "org_id": {
                               "type": "string",
@@ -4639,7 +4856,9 @@ const AcademySchema: Record<string, unknown> = {
                               "x-oapi-codegen-extra-tags": {
                                 "db": "org_id",
                                 "json": "org_id"
-                              }
+                              },
+                              "maxLength": 500,
+                              "format": "uuid"
                             },
                             "expires_at": {
                               "type": "string",
@@ -4652,7 +4871,8 @@ const AcademySchema: Record<string, unknown> = {
                             },
                             "quota": {
                               "type": "integer",
-                              "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
+                              "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota",
+                              "minimum": 0
                             },
                             "accepted_by": {
                               "type": "array",
@@ -4678,7 +4898,8 @@ const AcademySchema: Record<string, unknown> = {
                               "items": {
                                 "type": "string",
                                 "description": "Roles that the user will have when accepting the invitation, null or empty string means the invitation does not specify any roles"
-                              }
+                              },
+                              "description": "The roles of the invitation."
                             },
                             "teams": {
                               "type": "array",
@@ -4689,7 +4910,8 @@ const AcademySchema: Record<string, unknown> = {
                               "items": {
                                 "type": "string",
                                 "description": "Teams that the user will be added to when accepting the invitation, null or empty string means the invitation does not specify any teams"
-                              }
+                              },
+                              "description": "The teams of the invitation."
                             },
                             "status": {
                               "x-go-type": "InvitationStatus",
@@ -4842,7 +5064,9 @@ const AcademySchema: Record<string, unknown> = {
                       "description": "ID of the course content",
                       "x-oapi-codegen-extra-tags": {
                         "db": "content_id"
-                      }
+                      },
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "user_id": {
                       "type": "string",
@@ -4923,7 +5147,9 @@ const AcademySchema: Record<string, unknown> = {
                           "type": "string",
                           "description": "Unique identifier for the certificate",
                           "example": "1234567890abcdef",
-                          "x-go-name": "ID"
+                          "x-go-name": "ID",
+                          "maxLength": 500,
+                          "format": "uuid"
                         },
                         "orgId": {
                           "type": "string",
@@ -4937,22 +5163,27 @@ const AcademySchema: Record<string, unknown> = {
                         "recipientId": {
                           "type": "string",
                           "description": "ID of the recipient (user) who received the certificate",
-                          "example": "1234567890abcdef"
+                          "example": "1234567890abcdef",
+                          "maxLength": 500,
+                          "format": "uuid"
                         },
                         "recipientName": {
                           "type": "string",
                           "description": "Name of the recipient (user) who received the certificate",
-                          "example": "John Doe"
+                          "example": "John Doe",
+                          "maxLength": 500
                         },
                         "title": {
                           "type": "string",
                           "description": "Title of the certificate",
-                          "example": "Kubernetes Expert Certification"
+                          "example": "Kubernetes Expert Certification",
+                          "maxLength": 500
                         },
                         "description": {
                           "type": "string",
                           "description": "Description of the certificate",
-                          "example": "Awarded for successfully completing the Kubernetes Expert course"
+                          "example": "Awarded for successfully completing the Kubernetes Expert course",
+                          "maxLength": 5000
                         },
                         "issuingAuthorities": {
                           "type": "array",
@@ -4967,12 +5198,15 @@ const AcademySchema: Record<string, unknown> = {
                               "name": {
                                 "type": "string",
                                 "description": "Name of the issuing authority",
-                                "example": "Cloud Native Foundation"
+                                "example": "Cloud Native Foundation",
+                                "minLength": 1,
+                                "maxLength": 255
                               },
                               "role": {
                                 "type": "string",
                                 "description": "Role of the issuing authority",
-                                "example": "COO"
+                                "example": "COO",
+                                "maxLength": 500
                               },
                               "signatureUrl": {
                                 "type": "string",
@@ -4999,7 +5233,8 @@ const AcademySchema: Record<string, unknown> = {
                         "expiresIn": {
                           "type": "integer",
                           "description": "Number of months after which the certificate expires",
-                          "example": 24
+                          "example": 24,
+                          "minimum": 0
                         }
                       }
                     },
@@ -5087,11 +5322,15 @@ const AcademySchema: Record<string, unknown> = {
                     ],
                     "properties": {
                       "id": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "CurriculaCurrentItemData ID.",
+                        "maxLength": 500,
+                        "format": "uuid"
                       },
                       "lastOpened": {
                         "type": "string",
-                        "format": "date-time"
+                        "format": "date-time",
+                        "description": "The last opened of the curriculacurrentitemdata."
                       },
                       "contentType": {
                         "type": "string",
@@ -5122,7 +5361,9 @@ const AcademySchema: Record<string, unknown> = {
                   "type": "object",
                   "properties": {
                     "message": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The message of the updatecurrentitemprogressresponse.",
+                      "maxLength": 500
                     },
                     "progressTracker": {
                       "type": "object",
@@ -5146,11 +5387,15 @@ const AcademySchema: Record<string, unknown> = {
                             ],
                             "properties": {
                               "id": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "CurriculaCurrentItemData ID.",
+                                "maxLength": 500,
+                                "format": "uuid"
                               },
                               "lastOpened": {
                                 "type": "string",
-                                "format": "date-time"
+                                "format": "date-time",
+                                "description": "The last opened of the curriculacurrentitemdata."
                               },
                               "contentType": {
                                 "type": "string",
@@ -5162,7 +5407,8 @@ const AcademySchema: Record<string, unknown> = {
                                 "x-go-type": "ContentType"
                               }
                             }
-                          }
+                          },
+                          "description": "The current item of the curriculaprogresstracker."
                         },
                         "grades": {
                           "type": "object",
@@ -5182,27 +5428,37 @@ const AcademySchema: Record<string, unknown> = {
                             ],
                             "properties": {
                               "score": {
-                                "type": "integer"
+                                "type": "integer",
+                                "description": "The score of the quizevaluationresult.",
+                                "minimum": 0
                               },
                               "passed": {
-                                "type": "boolean"
+                                "type": "boolean",
+                                "description": "The passed of the quizevaluationresult."
                               },
                               "percentageScored": {
                                 "type": "number",
-                                "format": "float"
+                                "format": "float",
+                                "description": "The percentage scored of the quizevaluationresult.",
+                                "minimum": 0
                               },
                               "totalMarks": {
-                                "type": "integer"
+                                "type": "integer",
+                                "description": "The total marks of the quizevaluationresult.",
+                                "minimum": 0
                               },
                               "passPercentage": {
                                 "type": "number",
-                                "format": "float"
+                                "format": "float",
+                                "description": "The pass percentage of the quizevaluationresult.",
+                                "minimum": 0
                               },
                               "correctSubmissions": {
                                 "type": "object",
                                 "additionalProperties": {
                                   "type": "boolean"
-                                }
+                                },
+                                "description": "The correct submissions of the quizevaluationresult."
                               },
                               "quiz": {
                                 "x-go-type": "Quiz",
@@ -5241,7 +5497,10 @@ const AcademySchema: Record<string, unknown> = {
                                     "x-go-name": "ID",
                                     "x-oapi-codegen-extra-tags": {
                                       "json": "id"
-                                    }
+                                    },
+                                    "description": "Quiz ID.",
+                                    "maxLength": 500,
+                                    "format": "uuid"
                                   },
                                   "org_id": {
                                     "type": "string",
@@ -5250,7 +5509,9 @@ const AcademySchema: Record<string, unknown> = {
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "org_id",
                                       "json": "org_id"
-                                    }
+                                    },
+                                    "maxLength": 500,
+                                    "format": "uuid"
                                   },
                                   "final": {
                                     "type": "boolean",
@@ -5258,54 +5519,79 @@ const AcademySchema: Record<string, unknown> = {
                                     "example": true
                                   },
                                   "title": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "description": "The title of the quiz.",
+                                    "maxLength": 500
                                   },
                                   "description": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "description": "Description of the quiz.",
+                                    "maxLength": 5000
                                   },
                                   "slug": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "description": "The slug of the quiz.",
+                                    "maxLength": 500
                                   },
                                   "relPermalink": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "description": "The rel permalink of the quiz.",
+                                    "maxLength": 500
                                   },
                                   "permalink": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "description": "The permalink of the quiz.",
+                                    "maxLength": 500
                                   },
                                   "type": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "description": "Type of the resource.",
+                                    "maxLength": 255
                                   },
                                   "section": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "description": "The section of the quiz.",
+                                    "maxLength": 500
                                   },
                                   "layout": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "description": "The layout of the quiz.",
+                                    "maxLength": 500
                                   },
                                   "date": {
                                     "type": "string",
-                                    "format": "date"
+                                    "format": "date",
+                                    "description": "The date of the quiz."
                                   },
                                   "lastmod": {
                                     "type": "string",
-                                    "format": "date"
+                                    "format": "date",
+                                    "description": "The lastmod of the quiz."
                                   },
                                   "draft": {
-                                    "type": "boolean"
+                                    "type": "boolean",
+                                    "description": "The draft of the quiz."
                                   },
                                   "filePath": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "description": "The file path of the quiz.",
+                                    "maxLength": 500
                                   },
                                   "passPercentage": {
                                     "type": "number",
-                                    "format": "float"
+                                    "format": "float",
+                                    "description": "The pass percentage of the quiz.",
+                                    "minimum": 0
                                   },
                                   "timeLimit": {
                                     "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "minimum": 0
                                   },
                                   "maxAttempts": {
                                     "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "minimum": 0
                                   },
                                   "questions": {
                                     "type": "array",
@@ -5322,10 +5608,15 @@ const AcademySchema: Record<string, unknown> = {
                                       ],
                                       "properties": {
                                         "id": {
-                                          "type": "string"
+                                          "type": "string",
+                                          "description": "Question ID.",
+                                          "maxLength": 500,
+                                          "format": "uuid"
                                         },
                                         "text": {
-                                          "type": "string"
+                                          "type": "string",
+                                          "description": "The text of the question.",
+                                          "maxLength": 500
                                         },
                                         "type": {
                                           "x-go-type": "QuestionType",
@@ -5344,10 +5635,13 @@ const AcademySchema: Record<string, unknown> = {
                                           ]
                                         },
                                         "marks": {
-                                          "type": "integer"
+                                          "type": "integer",
+                                          "description": "The marks of the question.",
+                                          "minimum": 0
                                         },
                                         "multipleAnswers": {
-                                          "type": "boolean"
+                                          "type": "boolean",
+                                          "description": "The multiple answers of the question."
                                         },
                                         "options": {
                                           "type": "array",
@@ -5361,34 +5655,52 @@ const AcademySchema: Record<string, unknown> = {
                                             ],
                                             "properties": {
                                               "id": {
-                                                "type": "string"
+                                                "type": "string",
+                                                "description": "QuestionOption ID.",
+                                                "maxLength": 500,
+                                                "format": "uuid"
                                               },
                                               "text": {
-                                                "type": "string"
+                                                "type": "string",
+                                                "description": "The text of the questionoption.",
+                                                "maxLength": 500
                                               },
                                               "isCorrect": {
-                                                "type": "boolean"
+                                                "type": "boolean",
+                                                "description": "The is correct of the questionoption."
                                               }
                                             }
-                                          }
+                                          },
+                                          "description": "The options of the question."
                                         },
                                         "correctAnswer": {
-                                          "type": "string"
+                                          "type": "string",
+                                          "description": "The correct answer of the question.",
+                                          "maxLength": 500
                                         }
                                       }
-                                    }
+                                    },
+                                    "description": "The questions of the quiz."
                                   },
                                   "totalQuestions": {
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "description": "The total questions of the quiz.",
+                                    "minimum": 0
                                   },
                                   "totalQuestionsInBank": {
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "description": "The total questions in bank of the quiz.",
+                                    "minimum": 0
                                   },
                                   "totalQuestionSets": {
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "description": "The total question sets of the quiz.",
+                                    "minimum": 0
                                   },
                                   "totalMarks": {
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "description": "The total marks of the quiz.",
+                                    "minimum": 0
                                   },
                                   "prerequisites": {
                                     "type": "array",
@@ -5403,19 +5715,29 @@ const AcademySchema: Record<string, unknown> = {
                                       ],
                                       "properties": {
                                         "id": {
-                                          "type": "string"
+                                          "type": "string",
+                                          "description": "Parent ID.",
+                                          "maxLength": 500,
+                                          "format": "uuid"
                                         },
                                         "title": {
-                                          "type": "string"
+                                          "type": "string",
+                                          "description": "The title of the parent.",
+                                          "maxLength": 500
                                         },
                                         "relPermalink": {
-                                          "type": "string"
+                                          "type": "string",
+                                          "description": "The rel permalink of the parent.",
+                                          "maxLength": 500
                                         },
                                         "type": {
-                                          "type": "string"
+                                          "type": "string",
+                                          "description": "Type of the resource.",
+                                          "maxLength": 255
                                         }
                                       }
-                                    }
+                                    },
+                                    "description": "The prerequisites of the quiz."
                                   },
                                   "parent": {
                                     "x-go-type": "Parent",
@@ -5428,16 +5750,25 @@ const AcademySchema: Record<string, unknown> = {
                                     ],
                                     "properties": {
                                       "id": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "description": "Parent ID.",
+                                        "maxLength": 500,
+                                        "format": "uuid"
                                       },
                                       "title": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "description": "The title of the parent.",
+                                        "maxLength": 500
                                       },
                                       "relPermalink": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "description": "The rel permalink of the parent.",
+                                        "maxLength": 500
                                       },
                                       "type": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "description": "Type of the resource.",
+                                        "maxLength": 255
                                       }
                                     }
                                   },
@@ -5452,16 +5783,25 @@ const AcademySchema: Record<string, unknown> = {
                                     ],
                                     "properties": {
                                       "id": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "description": "Parent ID.",
+                                        "maxLength": 500,
+                                        "format": "uuid"
                                       },
                                       "title": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "description": "The title of the parent.",
+                                        "maxLength": 500
                                       },
                                       "relPermalink": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "description": "The rel permalink of the parent.",
+                                        "maxLength": 500
                                       },
                                       "type": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "description": "Type of the resource.",
+                                        "maxLength": 255
                                       }
                                     }
                                   }
@@ -5469,17 +5809,22 @@ const AcademySchema: Record<string, unknown> = {
                               },
                               "attemptedAt": {
                                 "type": "string",
-                                "format": "date-time"
+                                "format": "date-time",
+                                "description": "The attempted at of the quizevaluationresult."
                               },
                               "attempts": {
-                                "type": "integer"
+                                "type": "integer",
+                                "description": "The attempts of the quizevaluationresult.",
+                                "minimum": 0
                               }
                             }
-                          }
+                          },
+                          "description": "The grades of the curriculaprogresstracker."
                         },
                         "timeSpent": {
                           "type": "integer",
-                          "description": "Total time spent in seconds"
+                          "description": "Total time spent in seconds",
+                          "minimum": 0
                         },
                         "completedItems": {
                           "type": "object",
@@ -5508,16 +5853,25 @@ const AcademySchema: Record<string, unknown> = {
                                 ],
                                 "properties": {
                                   "id": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "description": "Parent ID.",
+                                    "maxLength": 500,
+                                    "format": "uuid"
                                   },
                                   "title": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "description": "The title of the parent.",
+                                    "maxLength": 500
                                   },
                                   "relPermalink": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "description": "The rel permalink of the parent.",
+                                    "maxLength": 500
                                   },
                                   "type": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "description": "Type of the resource.",
+                                    "maxLength": 255
                                   }
                                 }
                               }
@@ -5527,12 +5881,16 @@ const AcademySchema: Record<string, unknown> = {
                         "completed": {
                           "type": "string",
                           "format": "date-time",
-                          "x-go-type": "core.NullTime"
+                          "x-go-type": "core.NullTime",
+                          "description": "The completed of the curriculaprogresstracker."
                         }
                       }
                     },
                     "registrationId": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "ID of the associated registration.",
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "contentType": {
                       "type": "string",
@@ -5551,11 +5909,15 @@ const AcademySchema: Record<string, unknown> = {
                       ],
                       "properties": {
                         "id": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "CurriculaCurrentItemData ID.",
+                          "maxLength": 500,
+                          "format": "uuid"
                         },
                         "lastOpened": {
                           "type": "string",
-                          "format": "date-time"
+                          "format": "date-time",
+                          "description": "The last opened of the curriculacurrentitemdata."
                         },
                         "contentType": {
                           "type": "string",
@@ -5581,10 +5943,14 @@ const AcademySchema: Record<string, unknown> = {
                   "type": "object",
                   "properties": {
                     "error": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The error of the errorresponse.",
+                      "maxLength": 500
                     },
                     "details": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The details of the errorresponse.",
+                      "maxLength": 500
                     }
                   }
                 }
@@ -5619,10 +5985,14 @@ const AcademySchema: Record<string, unknown> = {
                   "type": "object",
                   "properties": {
                     "error": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The error of the errorresponse.",
+                      "maxLength": 500
                     },
                     "details": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The details of the errorresponse.",
+                      "maxLength": 500
                     }
                   }
                 }
@@ -5695,7 +6065,10 @@ const AcademySchema: Record<string, unknown> = {
                       "x-go-name": "ID",
                       "x-oapi-codegen-extra-tags": {
                         "json": "id"
-                      }
+                      },
+                      "description": "Quiz ID.",
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "org_id": {
                       "type": "string",
@@ -5704,7 +6077,9 @@ const AcademySchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
                         "json": "org_id"
-                      }
+                      },
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "final": {
                       "type": "boolean",
@@ -5712,54 +6087,79 @@ const AcademySchema: Record<string, unknown> = {
                       "example": true
                     },
                     "title": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The title of the quiz.",
+                      "maxLength": 500
                     },
                     "description": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Description of the quiz.",
+                      "maxLength": 5000
                     },
                     "slug": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The slug of the quiz.",
+                      "maxLength": 500
                     },
                     "relPermalink": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The rel permalink of the quiz.",
+                      "maxLength": 500
                     },
                     "permalink": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The permalink of the quiz.",
+                      "maxLength": 500
                     },
                     "type": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Type of the resource.",
+                      "maxLength": 255
                     },
                     "section": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The section of the quiz.",
+                      "maxLength": 500
                     },
                     "layout": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The layout of the quiz.",
+                      "maxLength": 500
                     },
                     "date": {
                       "type": "string",
-                      "format": "date"
+                      "format": "date",
+                      "description": "The date of the quiz."
                     },
                     "lastmod": {
                       "type": "string",
-                      "format": "date"
+                      "format": "date",
+                      "description": "The lastmod of the quiz."
                     },
                     "draft": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "The draft of the quiz."
                     },
                     "filePath": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The file path of the quiz.",
+                      "maxLength": 500
                     },
                     "passPercentage": {
                       "type": "number",
-                      "format": "float"
+                      "format": "float",
+                      "description": "The pass percentage of the quiz.",
+                      "minimum": 0
                     },
                     "timeLimit": {
                       "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
-                      "type": "integer"
+                      "type": "integer",
+                      "minimum": 0
                     },
                     "maxAttempts": {
                       "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
-                      "type": "integer"
+                      "type": "integer",
+                      "minimum": 0
                     },
                     "questions": {
                       "type": "array",
@@ -5776,10 +6176,15 @@ const AcademySchema: Record<string, unknown> = {
                         ],
                         "properties": {
                           "id": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "Question ID.",
+                            "maxLength": 500,
+                            "format": "uuid"
                           },
                           "text": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The text of the question.",
+                            "maxLength": 500
                           },
                           "type": {
                             "x-go-type": "QuestionType",
@@ -5798,10 +6203,13 @@ const AcademySchema: Record<string, unknown> = {
                             ]
                           },
                           "marks": {
-                            "type": "integer"
+                            "type": "integer",
+                            "description": "The marks of the question.",
+                            "minimum": 0
                           },
                           "multipleAnswers": {
-                            "type": "boolean"
+                            "type": "boolean",
+                            "description": "The multiple answers of the question."
                           },
                           "options": {
                             "type": "array",
@@ -5815,34 +6223,52 @@ const AcademySchema: Record<string, unknown> = {
                               ],
                               "properties": {
                                 "id": {
-                                  "type": "string"
+                                  "type": "string",
+                                  "description": "QuestionOption ID.",
+                                  "maxLength": 500,
+                                  "format": "uuid"
                                 },
                                 "text": {
-                                  "type": "string"
+                                  "type": "string",
+                                  "description": "The text of the questionoption.",
+                                  "maxLength": 500
                                 },
                                 "isCorrect": {
-                                  "type": "boolean"
+                                  "type": "boolean",
+                                  "description": "The is correct of the questionoption."
                                 }
                               }
-                            }
+                            },
+                            "description": "The options of the question."
                           },
                           "correctAnswer": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The correct answer of the question.",
+                            "maxLength": 500
                           }
                         }
-                      }
+                      },
+                      "description": "The questions of the quiz."
                     },
                     "totalQuestions": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "The total questions of the quiz.",
+                      "minimum": 0
                     },
                     "totalQuestionsInBank": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "The total questions in bank of the quiz.",
+                      "minimum": 0
                     },
                     "totalQuestionSets": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "The total question sets of the quiz.",
+                      "minimum": 0
                     },
                     "totalMarks": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "The total marks of the quiz.",
+                      "minimum": 0
                     },
                     "prerequisites": {
                       "type": "array",
@@ -5857,19 +6283,29 @@ const AcademySchema: Record<string, unknown> = {
                         ],
                         "properties": {
                           "id": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "Parent ID.",
+                            "maxLength": 500,
+                            "format": "uuid"
                           },
                           "title": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The title of the parent.",
+                            "maxLength": 500
                           },
                           "relPermalink": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The rel permalink of the parent.",
+                            "maxLength": 500
                           },
                           "type": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "Type of the resource.",
+                            "maxLength": 255
                           }
                         }
-                      }
+                      },
+                      "description": "The prerequisites of the quiz."
                     },
                     "parent": {
                       "x-go-type": "Parent",
@@ -5882,16 +6318,25 @@ const AcademySchema: Record<string, unknown> = {
                       ],
                       "properties": {
                         "id": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "Parent ID.",
+                          "maxLength": 500,
+                          "format": "uuid"
                         },
                         "title": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The title of the parent.",
+                          "maxLength": 500
                         },
                         "relPermalink": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The rel permalink of the parent.",
+                          "maxLength": 500
                         },
                         "type": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "Type of the resource.",
+                          "maxLength": 255
                         }
                       }
                     },
@@ -5906,16 +6351,25 @@ const AcademySchema: Record<string, unknown> = {
                       ],
                       "properties": {
                         "id": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "Parent ID.",
+                          "maxLength": 500,
+                          "format": "uuid"
                         },
                         "title": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The title of the parent.",
+                          "maxLength": 500
                         },
                         "relPermalink": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The rel permalink of the parent.",
+                          "maxLength": 500
                         },
                         "type": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "Type of the resource.",
+                          "maxLength": 255
                         }
                       }
                     }
@@ -5969,10 +6423,15 @@ const AcademySchema: Record<string, unknown> = {
                 ],
                 "properties": {
                   "testAbsPath": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The test abs path of the starttestrequest.",
+                    "maxLength": 500
                   },
                   "registrationId": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "ID of the associated registration.",
+                    "maxLength": 500,
+                    "format": "uuid"
                   }
                 }
               }
@@ -6020,7 +6479,10 @@ const AcademySchema: Record<string, unknown> = {
                       "x-go-name": "ID",
                       "x-oapi-codegen-extra-tags": {
                         "json": "id"
-                      }
+                      },
+                      "description": "Quiz ID.",
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "org_id": {
                       "type": "string",
@@ -6029,7 +6491,9 @@ const AcademySchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
                         "json": "org_id"
-                      }
+                      },
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "final": {
                       "type": "boolean",
@@ -6037,54 +6501,79 @@ const AcademySchema: Record<string, unknown> = {
                       "example": true
                     },
                     "title": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The title of the quiz.",
+                      "maxLength": 500
                     },
                     "description": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Description of the quiz.",
+                      "maxLength": 5000
                     },
                     "slug": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The slug of the quiz.",
+                      "maxLength": 500
                     },
                     "relPermalink": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The rel permalink of the quiz.",
+                      "maxLength": 500
                     },
                     "permalink": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The permalink of the quiz.",
+                      "maxLength": 500
                     },
                     "type": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Type of the resource.",
+                      "maxLength": 255
                     },
                     "section": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The section of the quiz.",
+                      "maxLength": 500
                     },
                     "layout": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The layout of the quiz.",
+                      "maxLength": 500
                     },
                     "date": {
                       "type": "string",
-                      "format": "date"
+                      "format": "date",
+                      "description": "The date of the quiz."
                     },
                     "lastmod": {
                       "type": "string",
-                      "format": "date"
+                      "format": "date",
+                      "description": "The lastmod of the quiz."
                     },
                     "draft": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "The draft of the quiz."
                     },
                     "filePath": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The file path of the quiz.",
+                      "maxLength": 500
                     },
                     "passPercentage": {
                       "type": "number",
-                      "format": "float"
+                      "format": "float",
+                      "description": "The pass percentage of the quiz.",
+                      "minimum": 0
                     },
                     "timeLimit": {
                       "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
-                      "type": "integer"
+                      "type": "integer",
+                      "minimum": 0
                     },
                     "maxAttempts": {
                       "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
-                      "type": "integer"
+                      "type": "integer",
+                      "minimum": 0
                     },
                     "questions": {
                       "type": "array",
@@ -6101,10 +6590,15 @@ const AcademySchema: Record<string, unknown> = {
                         ],
                         "properties": {
                           "id": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "Question ID.",
+                            "maxLength": 500,
+                            "format": "uuid"
                           },
                           "text": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The text of the question.",
+                            "maxLength": 500
                           },
                           "type": {
                             "x-go-type": "QuestionType",
@@ -6123,10 +6617,13 @@ const AcademySchema: Record<string, unknown> = {
                             ]
                           },
                           "marks": {
-                            "type": "integer"
+                            "type": "integer",
+                            "description": "The marks of the question.",
+                            "minimum": 0
                           },
                           "multipleAnswers": {
-                            "type": "boolean"
+                            "type": "boolean",
+                            "description": "The multiple answers of the question."
                           },
                           "options": {
                             "type": "array",
@@ -6140,34 +6637,52 @@ const AcademySchema: Record<string, unknown> = {
                               ],
                               "properties": {
                                 "id": {
-                                  "type": "string"
+                                  "type": "string",
+                                  "description": "QuestionOption ID.",
+                                  "maxLength": 500,
+                                  "format": "uuid"
                                 },
                                 "text": {
-                                  "type": "string"
+                                  "type": "string",
+                                  "description": "The text of the questionoption.",
+                                  "maxLength": 500
                                 },
                                 "isCorrect": {
-                                  "type": "boolean"
+                                  "type": "boolean",
+                                  "description": "The is correct of the questionoption."
                                 }
                               }
-                            }
+                            },
+                            "description": "The options of the question."
                           },
                           "correctAnswer": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The correct answer of the question.",
+                            "maxLength": 500
                           }
                         }
-                      }
+                      },
+                      "description": "The questions of the quiz."
                     },
                     "totalQuestions": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "The total questions of the quiz.",
+                      "minimum": 0
                     },
                     "totalQuestionsInBank": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "The total questions in bank of the quiz.",
+                      "minimum": 0
                     },
                     "totalQuestionSets": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "The total question sets of the quiz.",
+                      "minimum": 0
                     },
                     "totalMarks": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "The total marks of the quiz.",
+                      "minimum": 0
                     },
                     "prerequisites": {
                       "type": "array",
@@ -6182,19 +6697,29 @@ const AcademySchema: Record<string, unknown> = {
                         ],
                         "properties": {
                           "id": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "Parent ID.",
+                            "maxLength": 500,
+                            "format": "uuid"
                           },
                           "title": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The title of the parent.",
+                            "maxLength": 500
                           },
                           "relPermalink": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The rel permalink of the parent.",
+                            "maxLength": 500
                           },
                           "type": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "Type of the resource.",
+                            "maxLength": 255
                           }
                         }
-                      }
+                      },
+                      "description": "The prerequisites of the quiz."
                     },
                     "parent": {
                       "x-go-type": "Parent",
@@ -6207,16 +6732,25 @@ const AcademySchema: Record<string, unknown> = {
                       ],
                       "properties": {
                         "id": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "Parent ID.",
+                          "maxLength": 500,
+                          "format": "uuid"
                         },
                         "title": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The title of the parent.",
+                          "maxLength": 500
                         },
                         "relPermalink": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The rel permalink of the parent.",
+                          "maxLength": 500
                         },
                         "type": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "Type of the resource.",
+                          "maxLength": 255
                         }
                       }
                     },
@@ -6231,16 +6765,25 @@ const AcademySchema: Record<string, unknown> = {
                       ],
                       "properties": {
                         "id": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "Parent ID.",
+                          "maxLength": 500,
+                          "format": "uuid"
                         },
                         "title": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The title of the parent.",
+                          "maxLength": 500
                         },
                         "relPermalink": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The rel permalink of the parent.",
+                          "maxLength": 500
                         },
                         "type": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "Type of the resource.",
+                          "maxLength": 255
                         }
                       }
                     }
@@ -6343,27 +6886,37 @@ const AcademySchema: Record<string, unknown> = {
                       ],
                       "properties": {
                         "score": {
-                          "type": "integer"
+                          "type": "integer",
+                          "description": "The score of the quizevaluationresult.",
+                          "minimum": 0
                         },
                         "passed": {
-                          "type": "boolean"
+                          "type": "boolean",
+                          "description": "The passed of the quizevaluationresult."
                         },
                         "percentageScored": {
                           "type": "number",
-                          "format": "float"
+                          "format": "float",
+                          "description": "The percentage scored of the quizevaluationresult.",
+                          "minimum": 0
                         },
                         "totalMarks": {
-                          "type": "integer"
+                          "type": "integer",
+                          "description": "The total marks of the quizevaluationresult.",
+                          "minimum": 0
                         },
                         "passPercentage": {
                           "type": "number",
-                          "format": "float"
+                          "format": "float",
+                          "description": "The pass percentage of the quizevaluationresult.",
+                          "minimum": 0
                         },
                         "correctSubmissions": {
                           "type": "object",
                           "additionalProperties": {
                             "type": "boolean"
-                          }
+                          },
+                          "description": "The correct submissions of the quizevaluationresult."
                         },
                         "quiz": {
                           "x-go-type": "Quiz",
@@ -6402,7 +6955,10 @@ const AcademySchema: Record<string, unknown> = {
                               "x-go-name": "ID",
                               "x-oapi-codegen-extra-tags": {
                                 "json": "id"
-                              }
+                              },
+                              "description": "Quiz ID.",
+                              "maxLength": 500,
+                              "format": "uuid"
                             },
                             "org_id": {
                               "type": "string",
@@ -6411,7 +6967,9 @@ const AcademySchema: Record<string, unknown> = {
                               "x-oapi-codegen-extra-tags": {
                                 "db": "org_id",
                                 "json": "org_id"
-                              }
+                              },
+                              "maxLength": 500,
+                              "format": "uuid"
                             },
                             "final": {
                               "type": "boolean",
@@ -6419,54 +6977,79 @@ const AcademySchema: Record<string, unknown> = {
                               "example": true
                             },
                             "title": {
-                              "type": "string"
+                              "type": "string",
+                              "description": "The title of the quiz.",
+                              "maxLength": 500
                             },
                             "description": {
-                              "type": "string"
+                              "type": "string",
+                              "description": "Description of the quiz.",
+                              "maxLength": 5000
                             },
                             "slug": {
-                              "type": "string"
+                              "type": "string",
+                              "description": "The slug of the quiz.",
+                              "maxLength": 500
                             },
                             "relPermalink": {
-                              "type": "string"
+                              "type": "string",
+                              "description": "The rel permalink of the quiz.",
+                              "maxLength": 500
                             },
                             "permalink": {
-                              "type": "string"
+                              "type": "string",
+                              "description": "The permalink of the quiz.",
+                              "maxLength": 500
                             },
                             "type": {
-                              "type": "string"
+                              "type": "string",
+                              "description": "Type of the resource.",
+                              "maxLength": 255
                             },
                             "section": {
-                              "type": "string"
+                              "type": "string",
+                              "description": "The section of the quiz.",
+                              "maxLength": 500
                             },
                             "layout": {
-                              "type": "string"
+                              "type": "string",
+                              "description": "The layout of the quiz.",
+                              "maxLength": 500
                             },
                             "date": {
                               "type": "string",
-                              "format": "date"
+                              "format": "date",
+                              "description": "The date of the quiz."
                             },
                             "lastmod": {
                               "type": "string",
-                              "format": "date"
+                              "format": "date",
+                              "description": "The lastmod of the quiz."
                             },
                             "draft": {
-                              "type": "boolean"
+                              "type": "boolean",
+                              "description": "The draft of the quiz."
                             },
                             "filePath": {
-                              "type": "string"
+                              "type": "string",
+                              "description": "The file path of the quiz.",
+                              "maxLength": 500
                             },
                             "passPercentage": {
                               "type": "number",
-                              "format": "float"
+                              "format": "float",
+                              "description": "The pass percentage of the quiz.",
+                              "minimum": 0
                             },
                             "timeLimit": {
                               "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
-                              "type": "integer"
+                              "type": "integer",
+                              "minimum": 0
                             },
                             "maxAttempts": {
                               "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
-                              "type": "integer"
+                              "type": "integer",
+                              "minimum": 0
                             },
                             "questions": {
                               "type": "array",
@@ -6483,10 +7066,15 @@ const AcademySchema: Record<string, unknown> = {
                                 ],
                                 "properties": {
                                   "id": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "description": "Question ID.",
+                                    "maxLength": 500,
+                                    "format": "uuid"
                                   },
                                   "text": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "description": "The text of the question.",
+                                    "maxLength": 500
                                   },
                                   "type": {
                                     "x-go-type": "QuestionType",
@@ -6505,10 +7093,13 @@ const AcademySchema: Record<string, unknown> = {
                                     ]
                                   },
                                   "marks": {
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "description": "The marks of the question.",
+                                    "minimum": 0
                                   },
                                   "multipleAnswers": {
-                                    "type": "boolean"
+                                    "type": "boolean",
+                                    "description": "The multiple answers of the question."
                                   },
                                   "options": {
                                     "type": "array",
@@ -6522,34 +7113,52 @@ const AcademySchema: Record<string, unknown> = {
                                       ],
                                       "properties": {
                                         "id": {
-                                          "type": "string"
+                                          "type": "string",
+                                          "description": "QuestionOption ID.",
+                                          "maxLength": 500,
+                                          "format": "uuid"
                                         },
                                         "text": {
-                                          "type": "string"
+                                          "type": "string",
+                                          "description": "The text of the questionoption.",
+                                          "maxLength": 500
                                         },
                                         "isCorrect": {
-                                          "type": "boolean"
+                                          "type": "boolean",
+                                          "description": "The is correct of the questionoption."
                                         }
                                       }
-                                    }
+                                    },
+                                    "description": "The options of the question."
                                   },
                                   "correctAnswer": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "description": "The correct answer of the question.",
+                                    "maxLength": 500
                                   }
                                 }
-                              }
+                              },
+                              "description": "The questions of the quiz."
                             },
                             "totalQuestions": {
-                              "type": "integer"
+                              "type": "integer",
+                              "description": "The total questions of the quiz.",
+                              "minimum": 0
                             },
                             "totalQuestionsInBank": {
-                              "type": "integer"
+                              "type": "integer",
+                              "description": "The total questions in bank of the quiz.",
+                              "minimum": 0
                             },
                             "totalQuestionSets": {
-                              "type": "integer"
+                              "type": "integer",
+                              "description": "The total question sets of the quiz.",
+                              "minimum": 0
                             },
                             "totalMarks": {
-                              "type": "integer"
+                              "type": "integer",
+                              "description": "The total marks of the quiz.",
+                              "minimum": 0
                             },
                             "prerequisites": {
                               "type": "array",
@@ -6564,19 +7173,29 @@ const AcademySchema: Record<string, unknown> = {
                                 ],
                                 "properties": {
                                   "id": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "description": "Parent ID.",
+                                    "maxLength": 500,
+                                    "format": "uuid"
                                   },
                                   "title": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "description": "The title of the parent.",
+                                    "maxLength": 500
                                   },
                                   "relPermalink": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "description": "The rel permalink of the parent.",
+                                    "maxLength": 500
                                   },
                                   "type": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "description": "Type of the resource.",
+                                    "maxLength": 255
                                   }
                                 }
-                              }
+                              },
+                              "description": "The prerequisites of the quiz."
                             },
                             "parent": {
                               "x-go-type": "Parent",
@@ -6589,16 +7208,25 @@ const AcademySchema: Record<string, unknown> = {
                               ],
                               "properties": {
                                 "id": {
-                                  "type": "string"
+                                  "type": "string",
+                                  "description": "Parent ID.",
+                                  "maxLength": 500,
+                                  "format": "uuid"
                                 },
                                 "title": {
-                                  "type": "string"
+                                  "type": "string",
+                                  "description": "The title of the parent.",
+                                  "maxLength": 500
                                 },
                                 "relPermalink": {
-                                  "type": "string"
+                                  "type": "string",
+                                  "description": "The rel permalink of the parent.",
+                                  "maxLength": 500
                                 },
                                 "type": {
-                                  "type": "string"
+                                  "type": "string",
+                                  "description": "Type of the resource.",
+                                  "maxLength": 255
                                 }
                               }
                             },
@@ -6613,16 +7241,25 @@ const AcademySchema: Record<string, unknown> = {
                               ],
                               "properties": {
                                 "id": {
-                                  "type": "string"
+                                  "type": "string",
+                                  "description": "Parent ID.",
+                                  "maxLength": 500,
+                                  "format": "uuid"
                                 },
                                 "title": {
-                                  "type": "string"
+                                  "type": "string",
+                                  "description": "The title of the parent.",
+                                  "maxLength": 500
                                 },
                                 "relPermalink": {
-                                  "type": "string"
+                                  "type": "string",
+                                  "description": "The rel permalink of the parent.",
+                                  "maxLength": 500
                                 },
                                 "type": {
-                                  "type": "string"
+                                  "type": "string",
+                                  "description": "Type of the resource.",
+                                  "maxLength": 255
                                 }
                               }
                             }
@@ -6630,10 +7267,13 @@ const AcademySchema: Record<string, unknown> = {
                         },
                         "attemptedAt": {
                           "type": "string",
-                          "format": "date-time"
+                          "format": "date-time",
+                          "description": "The attempted at of the quizevaluationresult."
                         },
                         "attempts": {
-                          "type": "integer"
+                          "type": "integer",
+                          "description": "The attempts of the quizevaluationresult.",
+                          "minimum": 0
                         }
                       }
                     }
@@ -6698,13 +7338,21 @@ const AcademySchema: Record<string, unknown> = {
                     }
                   },
                   "quizAbsPath": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The quiz abs path of the quizsubmission.",
+                    "maxLength": 500
                   },
                   "registrationId": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "ID of the associated registration.",
+                    "maxLength": 500,
+                    "format": "uuid"
                   },
                   "user_id": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "ID of the user who owns or created this resource.",
+                    "maxLength": 500,
+                    "format": "uuid"
                   },
                   "answers": {
                     "type": "array",
@@ -6718,19 +7366,27 @@ const AcademySchema: Record<string, unknown> = {
                       ],
                       "properties": {
                         "questionId": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "ID of the associated question.",
+                          "maxLength": 500,
+                          "format": "uuid"
                         },
                         "selectedOptionId": {
                           "type": "object",
                           "additionalProperties": {
                             "type": "boolean"
-                          }
+                          },
+                          "description": "ID of the associated selectedOption.",
+                          "format": "uuid"
                         },
                         "answerText": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The answer text of the submittedanswer.",
+                          "maxLength": 500
                         }
                       }
-                    }
+                    },
+                    "description": "The answers of the quizsubmission."
                   }
                 }
               }
@@ -6757,27 +7413,37 @@ const AcademySchema: Record<string, unknown> = {
                   ],
                   "properties": {
                     "score": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "The score of the quizevaluationresult.",
+                      "minimum": 0
                     },
                     "passed": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "The passed of the quizevaluationresult."
                     },
                     "percentageScored": {
                       "type": "number",
-                      "format": "float"
+                      "format": "float",
+                      "description": "The percentage scored of the quizevaluationresult.",
+                      "minimum": 0
                     },
                     "totalMarks": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "The total marks of the quizevaluationresult.",
+                      "minimum": 0
                     },
                     "passPercentage": {
                       "type": "number",
-                      "format": "float"
+                      "format": "float",
+                      "description": "The pass percentage of the quizevaluationresult.",
+                      "minimum": 0
                     },
                     "correctSubmissions": {
                       "type": "object",
                       "additionalProperties": {
                         "type": "boolean"
-                      }
+                      },
+                      "description": "The correct submissions of the quizevaluationresult."
                     },
                     "quiz": {
                       "x-go-type": "Quiz",
@@ -6816,7 +7482,10 @@ const AcademySchema: Record<string, unknown> = {
                           "x-go-name": "ID",
                           "x-oapi-codegen-extra-tags": {
                             "json": "id"
-                          }
+                          },
+                          "description": "Quiz ID.",
+                          "maxLength": 500,
+                          "format": "uuid"
                         },
                         "org_id": {
                           "type": "string",
@@ -6825,7 +7494,9 @@ const AcademySchema: Record<string, unknown> = {
                           "x-oapi-codegen-extra-tags": {
                             "db": "org_id",
                             "json": "org_id"
-                          }
+                          },
+                          "maxLength": 500,
+                          "format": "uuid"
                         },
                         "final": {
                           "type": "boolean",
@@ -6833,54 +7504,79 @@ const AcademySchema: Record<string, unknown> = {
                           "example": true
                         },
                         "title": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The title of the quiz.",
+                          "maxLength": 500
                         },
                         "description": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "Description of the quiz.",
+                          "maxLength": 5000
                         },
                         "slug": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The slug of the quiz.",
+                          "maxLength": 500
                         },
                         "relPermalink": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The rel permalink of the quiz.",
+                          "maxLength": 500
                         },
                         "permalink": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The permalink of the quiz.",
+                          "maxLength": 500
                         },
                         "type": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "Type of the resource.",
+                          "maxLength": 255
                         },
                         "section": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The section of the quiz.",
+                          "maxLength": 500
                         },
                         "layout": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The layout of the quiz.",
+                          "maxLength": 500
                         },
                         "date": {
                           "type": "string",
-                          "format": "date"
+                          "format": "date",
+                          "description": "The date of the quiz."
                         },
                         "lastmod": {
                           "type": "string",
-                          "format": "date"
+                          "format": "date",
+                          "description": "The lastmod of the quiz."
                         },
                         "draft": {
-                          "type": "boolean"
+                          "type": "boolean",
+                          "description": "The draft of the quiz."
                         },
                         "filePath": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The file path of the quiz.",
+                          "maxLength": 500
                         },
                         "passPercentage": {
                           "type": "number",
-                          "format": "float"
+                          "format": "float",
+                          "description": "The pass percentage of the quiz.",
+                          "minimum": 0
                         },
                         "timeLimit": {
                           "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
-                          "type": "integer"
+                          "type": "integer",
+                          "minimum": 0
                         },
                         "maxAttempts": {
                           "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
-                          "type": "integer"
+                          "type": "integer",
+                          "minimum": 0
                         },
                         "questions": {
                           "type": "array",
@@ -6897,10 +7593,15 @@ const AcademySchema: Record<string, unknown> = {
                             ],
                             "properties": {
                               "id": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "Question ID.",
+                                "maxLength": 500,
+                                "format": "uuid"
                               },
                               "text": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "The text of the question.",
+                                "maxLength": 500
                               },
                               "type": {
                                 "x-go-type": "QuestionType",
@@ -6919,10 +7620,13 @@ const AcademySchema: Record<string, unknown> = {
                                 ]
                               },
                               "marks": {
-                                "type": "integer"
+                                "type": "integer",
+                                "description": "The marks of the question.",
+                                "minimum": 0
                               },
                               "multipleAnswers": {
-                                "type": "boolean"
+                                "type": "boolean",
+                                "description": "The multiple answers of the question."
                               },
                               "options": {
                                 "type": "array",
@@ -6936,34 +7640,52 @@ const AcademySchema: Record<string, unknown> = {
                                   ],
                                   "properties": {
                                     "id": {
-                                      "type": "string"
+                                      "type": "string",
+                                      "description": "QuestionOption ID.",
+                                      "maxLength": 500,
+                                      "format": "uuid"
                                     },
                                     "text": {
-                                      "type": "string"
+                                      "type": "string",
+                                      "description": "The text of the questionoption.",
+                                      "maxLength": 500
                                     },
                                     "isCorrect": {
-                                      "type": "boolean"
+                                      "type": "boolean",
+                                      "description": "The is correct of the questionoption."
                                     }
                                   }
-                                }
+                                },
+                                "description": "The options of the question."
                               },
                               "correctAnswer": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "The correct answer of the question.",
+                                "maxLength": 500
                               }
                             }
-                          }
+                          },
+                          "description": "The questions of the quiz."
                         },
                         "totalQuestions": {
-                          "type": "integer"
+                          "type": "integer",
+                          "description": "The total questions of the quiz.",
+                          "minimum": 0
                         },
                         "totalQuestionsInBank": {
-                          "type": "integer"
+                          "type": "integer",
+                          "description": "The total questions in bank of the quiz.",
+                          "minimum": 0
                         },
                         "totalQuestionSets": {
-                          "type": "integer"
+                          "type": "integer",
+                          "description": "The total question sets of the quiz.",
+                          "minimum": 0
                         },
                         "totalMarks": {
-                          "type": "integer"
+                          "type": "integer",
+                          "description": "The total marks of the quiz.",
+                          "minimum": 0
                         },
                         "prerequisites": {
                           "type": "array",
@@ -6978,19 +7700,29 @@ const AcademySchema: Record<string, unknown> = {
                             ],
                             "properties": {
                               "id": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "Parent ID.",
+                                "maxLength": 500,
+                                "format": "uuid"
                               },
                               "title": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "The title of the parent.",
+                                "maxLength": 500
                               },
                               "relPermalink": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "The rel permalink of the parent.",
+                                "maxLength": 500
                               },
                               "type": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "Type of the resource.",
+                                "maxLength": 255
                               }
                             }
-                          }
+                          },
+                          "description": "The prerequisites of the quiz."
                         },
                         "parent": {
                           "x-go-type": "Parent",
@@ -7003,16 +7735,25 @@ const AcademySchema: Record<string, unknown> = {
                           ],
                           "properties": {
                             "id": {
-                              "type": "string"
+                              "type": "string",
+                              "description": "Parent ID.",
+                              "maxLength": 500,
+                              "format": "uuid"
                             },
                             "title": {
-                              "type": "string"
+                              "type": "string",
+                              "description": "The title of the parent.",
+                              "maxLength": 500
                             },
                             "relPermalink": {
-                              "type": "string"
+                              "type": "string",
+                              "description": "The rel permalink of the parent.",
+                              "maxLength": 500
                             },
                             "type": {
-                              "type": "string"
+                              "type": "string",
+                              "description": "Type of the resource.",
+                              "maxLength": 255
                             }
                           }
                         },
@@ -7027,16 +7768,25 @@ const AcademySchema: Record<string, unknown> = {
                           ],
                           "properties": {
                             "id": {
-                              "type": "string"
+                              "type": "string",
+                              "description": "Parent ID.",
+                              "maxLength": 500,
+                              "format": "uuid"
                             },
                             "title": {
-                              "type": "string"
+                              "type": "string",
+                              "description": "The title of the parent.",
+                              "maxLength": 500
                             },
                             "relPermalink": {
-                              "type": "string"
+                              "type": "string",
+                              "description": "The rel permalink of the parent.",
+                              "maxLength": 500
                             },
                             "type": {
-                              "type": "string"
+                              "type": "string",
+                              "description": "Type of the resource.",
+                              "maxLength": 255
                             }
                           }
                         }
@@ -7044,10 +7794,13 @@ const AcademySchema: Record<string, unknown> = {
                     },
                     "attemptedAt": {
                       "type": "string",
-                      "format": "date-time"
+                      "format": "date-time",
+                      "description": "The attempted at of the quizevaluationresult."
                     },
                     "attempts": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "The attempts of the quizevaluationresult.",
+                      "minimum": 0
                     }
                   }
                 }
@@ -7062,10 +7815,14 @@ const AcademySchema: Record<string, unknown> = {
                   "type": "object",
                   "properties": {
                     "error": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The error of the errorresponse.",
+                      "maxLength": 500
                     },
                     "details": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The details of the errorresponse.",
+                      "maxLength": 500
                     }
                   }
                 }
@@ -7090,10 +7847,14 @@ const AcademySchema: Record<string, unknown> = {
                   "type": "object",
                   "properties": {
                     "error": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The error of the errorresponse.",
+                      "maxLength": 500
                     },
                     "details": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The details of the errorresponse.",
+                      "maxLength": 500
                     }
                   }
                 }
@@ -7241,7 +8002,8 @@ const AcademySchema: Record<string, unknown> = {
                             "description": "Title of the curricula",
                             "x-oapi-codegen-extra-tags": {
                               "db": "curricula_title"
-                            }
+                            },
+                            "maxLength": 500
                           },
                           "curricula_type": {
                             "type": "string",
@@ -7261,7 +8023,8 @@ const AcademySchema: Record<string, unknown> = {
                             "description": "Permalink of the curricula",
                             "x-oapi-codegen-extra-tags": {
                               "db": "curricula_permalink"
-                            }
+                            },
+                            "maxLength": 500
                           },
                           "registration_id": {
                             "type": "string",
@@ -7306,14 +8069,16 @@ const AcademySchema: Record<string, unknown> = {
                             "description": "First name of the user",
                             "x-oapi-codegen-extra-tags": {
                               "db": "user_first_name"
-                            }
+                            },
+                            "maxLength": 500
                           },
                           "user_last_name": {
                             "type": "string",
                             "description": "Last name of the user",
                             "x-oapi-codegen-extra-tags": {
                               "db": "user_last_name"
-                            }
+                            },
+                            "maxLength": 500
                           },
                           "user_email": {
                             "type": "string",
@@ -7337,20 +8102,28 @@ const AcademySchema: Record<string, unknown> = {
                             "description": "Total count for pagination",
                             "x-oapi-codegen-extra-tags": {
                               "db": "total_count"
-                            }
+                            },
+                            "minimum": 0
                           }
                         }
-                      }
+                      },
+                      "description": "The data of the curricularegistrationsresponse."
                     },
                     "total_count": {
                       "type": "integer",
-                      "format": "int64"
+                      "format": "int64",
+                      "description": "Total number of items available.",
+                      "minimum": 0
                     },
                     "page_size": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "Number of items per page.",
+                      "minimum": 1
                     },
                     "page": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "Current page number of the result set.",
+                      "minimum": 0
                     }
                   }
                 }
@@ -7420,7 +8193,9 @@ const AcademySchema: Record<string, unknown> = {
                       "type": "string",
                       "description": "Unique identifier for the certificate",
                       "example": "1234567890abcdef",
-                      "x-go-name": "ID"
+                      "x-go-name": "ID",
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "orgId": {
                       "type": "string",
@@ -7434,22 +8209,27 @@ const AcademySchema: Record<string, unknown> = {
                     "recipientId": {
                       "type": "string",
                       "description": "ID of the recipient (user) who received the certificate",
-                      "example": "1234567890abcdef"
+                      "example": "1234567890abcdef",
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "recipientName": {
                       "type": "string",
                       "description": "Name of the recipient (user) who received the certificate",
-                      "example": "John Doe"
+                      "example": "John Doe",
+                      "maxLength": 500
                     },
                     "title": {
                       "type": "string",
                       "description": "Title of the certificate",
-                      "example": "Kubernetes Expert Certification"
+                      "example": "Kubernetes Expert Certification",
+                      "maxLength": 500
                     },
                     "description": {
                       "type": "string",
                       "description": "Description of the certificate",
-                      "example": "Awarded for successfully completing the Kubernetes Expert course"
+                      "example": "Awarded for successfully completing the Kubernetes Expert course",
+                      "maxLength": 5000
                     },
                     "issuingAuthorities": {
                       "type": "array",
@@ -7464,12 +8244,15 @@ const AcademySchema: Record<string, unknown> = {
                           "name": {
                             "type": "string",
                             "description": "Name of the issuing authority",
-                            "example": "Cloud Native Foundation"
+                            "example": "Cloud Native Foundation",
+                            "minLength": 1,
+                            "maxLength": 255
                           },
                           "role": {
                             "type": "string",
                             "description": "Role of the issuing authority",
-                            "example": "COO"
+                            "example": "COO",
+                            "maxLength": 500
                           },
                           "signatureUrl": {
                             "type": "string",
@@ -7496,7 +8279,8 @@ const AcademySchema: Record<string, unknown> = {
                     "expiresIn": {
                       "type": "integer",
                       "description": "Number of months after which the certificate expires",
-                      "example": 24
+                      "example": 24,
+                      "minimum": 0
                     }
                   }
                 }
@@ -7719,17 +8503,20 @@ const AcademySchema: Record<string, unknown> = {
               "title": {
                 "type": "string",
                 "description": "Title of the learning path",
-                "example": "Mastering Kubernetes for Engineers"
+                "example": "Mastering Kubernetes for Engineers",
+                "maxLength": 500
               },
               "description": {
                 "type": "string",
                 "description": "Short description of the curricula",
-                "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads",
+                "maxLength": 5000
               },
               "detailedDescription": {
                 "type": "string",
                 "description": "Detailed description of the curricula",
-                "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
+                "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.",
+                "maxLength": 500
               },
               "banner": {
                 "type": "string",
@@ -7762,7 +8549,9 @@ const AcademySchema: Record<string, unknown> = {
                     "type": "string",
                     "description": "Unique identifier for the certificate",
                     "example": "1234567890abcdef",
-                    "x-go-name": "ID"
+                    "x-go-name": "ID",
+                    "maxLength": 500,
+                    "format": "uuid"
                   },
                   "orgId": {
                     "type": "string",
@@ -7776,22 +8565,27 @@ const AcademySchema: Record<string, unknown> = {
                   "recipientId": {
                     "type": "string",
                     "description": "ID of the recipient (user) who received the certificate",
-                    "example": "1234567890abcdef"
+                    "example": "1234567890abcdef",
+                    "maxLength": 500,
+                    "format": "uuid"
                   },
                   "recipientName": {
                     "type": "string",
                     "description": "Name of the recipient (user) who received the certificate",
-                    "example": "John Doe"
+                    "example": "John Doe",
+                    "maxLength": 500
                   },
                   "title": {
                     "type": "string",
                     "description": "Title of the certificate",
-                    "example": "Kubernetes Expert Certification"
+                    "example": "Kubernetes Expert Certification",
+                    "maxLength": 500
                   },
                   "description": {
                     "type": "string",
                     "description": "Description of the certificate",
-                    "example": "Awarded for successfully completing the Kubernetes Expert course"
+                    "example": "Awarded for successfully completing the Kubernetes Expert course",
+                    "maxLength": 5000
                   },
                   "issuingAuthorities": {
                     "type": "array",
@@ -7806,12 +8600,15 @@ const AcademySchema: Record<string, unknown> = {
                         "name": {
                           "type": "string",
                           "description": "Name of the issuing authority",
-                          "example": "Cloud Native Foundation"
+                          "example": "Cloud Native Foundation",
+                          "minLength": 1,
+                          "maxLength": 255
                         },
                         "role": {
                           "type": "string",
                           "description": "Role of the issuing authority",
-                          "example": "COO"
+                          "example": "COO",
+                          "maxLength": 500
                         },
                         "signatureUrl": {
                           "type": "string",
@@ -7838,7 +8635,8 @@ const AcademySchema: Record<string, unknown> = {
                   "expiresIn": {
                     "type": "integer",
                     "description": "Number of months after which the certificate expires",
-                    "example": 24
+                    "example": 24,
+                    "minimum": 0
                   }
                 }
               },
@@ -7857,12 +8655,15 @@ const AcademySchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "id",
                         "json": "id"
-                      }
+                      },
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "title": {
                       "type": "string",
                       "description": "Title of the course",
-                      "example": "Kubernetes Basics"
+                      "example": "Kubernetes Basics",
+                      "maxLength": 500
                     },
                     "permalink": {
                       "type": "string",
@@ -7873,12 +8674,14 @@ const AcademySchema: Record<string, unknown> = {
                     "description": {
                       "type": "string",
                       "description": "Course description",
-                      "example": "Learn the basics of Kubernetes"
+                      "example": "Learn the basics of Kubernetes",
+                      "maxLength": 5000
                     },
                     "weight": {
                       "type": "number",
                       "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
-                      "example": "eg 1 , 2"
+                      "example": "eg 1 , 2",
+                      "minimum": 0
                     },
                     "banner": {
                       "type": "string",
@@ -7947,7 +8750,9 @@ const AcademySchema: Record<string, unknown> = {
         "properties": {
           "contentId": {
             "type": "string",
-            "description": "ID of the academy content to register for"
+            "description": "ID of the academy content to register for",
+            "maxLength": 500,
+            "format": "uuid"
           },
           "user_id": {
             "type": "string",
@@ -8021,7 +8826,9 @@ const AcademySchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "id",
               "json": "id"
-            }
+            },
+            "maxLength": 500,
+            "format": "uuid"
           },
           "type": {
             "x-go-type": "ContentType",
@@ -8075,7 +8882,8 @@ const AcademySchema: Record<string, unknown> = {
           "slug": {
             "type": "string",
             "description": "slug of the Curricula",
-            "example": "intro-kubernetes-course"
+            "example": "intro-kubernetes-course",
+            "maxLength": 500
           },
           "level": {
             "description": "Level of the Curricula",
@@ -8209,17 +9017,20 @@ const AcademySchema: Record<string, unknown> = {
                   "title": {
                     "type": "string",
                     "description": "Title of the learning path",
-                    "example": "Mastering Kubernetes for Engineers"
+                    "example": "Mastering Kubernetes for Engineers",
+                    "maxLength": 500
                   },
                   "description": {
                     "type": "string",
                     "description": "Short description of the curricula",
-                    "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                    "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads",
+                    "maxLength": 5000
                   },
                   "detailedDescription": {
                     "type": "string",
                     "description": "Detailed description of the curricula",
-                    "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
+                    "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.",
+                    "maxLength": 500
                   },
                   "banner": {
                     "type": "string",
@@ -8252,7 +9063,9 @@ const AcademySchema: Record<string, unknown> = {
                         "type": "string",
                         "description": "Unique identifier for the certificate",
                         "example": "1234567890abcdef",
-                        "x-go-name": "ID"
+                        "x-go-name": "ID",
+                        "maxLength": 500,
+                        "format": "uuid"
                       },
                       "orgId": {
                         "type": "string",
@@ -8266,22 +9079,27 @@ const AcademySchema: Record<string, unknown> = {
                       "recipientId": {
                         "type": "string",
                         "description": "ID of the recipient (user) who received the certificate",
-                        "example": "1234567890abcdef"
+                        "example": "1234567890abcdef",
+                        "maxLength": 500,
+                        "format": "uuid"
                       },
                       "recipientName": {
                         "type": "string",
                         "description": "Name of the recipient (user) who received the certificate",
-                        "example": "John Doe"
+                        "example": "John Doe",
+                        "maxLength": 500
                       },
                       "title": {
                         "type": "string",
                         "description": "Title of the certificate",
-                        "example": "Kubernetes Expert Certification"
+                        "example": "Kubernetes Expert Certification",
+                        "maxLength": 500
                       },
                       "description": {
                         "type": "string",
                         "description": "Description of the certificate",
-                        "example": "Awarded for successfully completing the Kubernetes Expert course"
+                        "example": "Awarded for successfully completing the Kubernetes Expert course",
+                        "maxLength": 5000
                       },
                       "issuingAuthorities": {
                         "type": "array",
@@ -8296,12 +9114,15 @@ const AcademySchema: Record<string, unknown> = {
                             "name": {
                               "type": "string",
                               "description": "Name of the issuing authority",
-                              "example": "Cloud Native Foundation"
+                              "example": "Cloud Native Foundation",
+                              "minLength": 1,
+                              "maxLength": 255
                             },
                             "role": {
                               "type": "string",
                               "description": "Role of the issuing authority",
-                              "example": "COO"
+                              "example": "COO",
+                              "maxLength": 500
                             },
                             "signatureUrl": {
                               "type": "string",
@@ -8328,7 +9149,8 @@ const AcademySchema: Record<string, unknown> = {
                       "expiresIn": {
                         "type": "integer",
                         "description": "Number of months after which the certificate expires",
-                        "example": 24
+                        "example": 24,
+                        "minimum": 0
                       }
                     }
                   },
@@ -8347,12 +9169,15 @@ const AcademySchema: Record<string, unknown> = {
                           "x-oapi-codegen-extra-tags": {
                             "db": "id",
                             "json": "id"
-                          }
+                          },
+                          "maxLength": 500,
+                          "format": "uuid"
                         },
                         "title": {
                           "type": "string",
                           "description": "Title of the course",
-                          "example": "Kubernetes Basics"
+                          "example": "Kubernetes Basics",
+                          "maxLength": 500
                         },
                         "permalink": {
                           "type": "string",
@@ -8363,12 +9188,14 @@ const AcademySchema: Record<string, unknown> = {
                         "description": {
                           "type": "string",
                           "description": "Course description",
-                          "example": "Learn the basics of Kubernetes"
+                          "example": "Learn the basics of Kubernetes",
+                          "maxLength": 5000
                         },
                         "weight": {
                           "type": "number",
                           "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
-                          "example": "eg 1 , 2"
+                          "example": "eg 1 , 2",
+                          "minimum": 0
                         },
                         "banner": {
                           "type": "string",
@@ -8444,7 +9271,9 @@ const AcademySchema: Record<string, unknown> = {
                 "x-oapi-codegen-extra-tags": {
                   "db": "id",
                   "json": "id"
-                }
+                },
+                "maxLength": 500,
+                "format": "uuid"
               },
               "type": {
                 "x-go-type": "ContentType",
@@ -8498,7 +9327,8 @@ const AcademySchema: Record<string, unknown> = {
               "slug": {
                 "type": "string",
                 "description": "slug of the Curricula",
-                "example": "intro-kubernetes-course"
+                "example": "intro-kubernetes-course",
+                "maxLength": 500
               },
               "level": {
                 "description": "Level of the Curricula",
@@ -8632,17 +9462,20 @@ const AcademySchema: Record<string, unknown> = {
                       "title": {
                         "type": "string",
                         "description": "Title of the learning path",
-                        "example": "Mastering Kubernetes for Engineers"
+                        "example": "Mastering Kubernetes for Engineers",
+                        "maxLength": 500
                       },
                       "description": {
                         "type": "string",
                         "description": "Short description of the curricula",
-                        "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                        "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads",
+                        "maxLength": 5000
                       },
                       "detailedDescription": {
                         "type": "string",
                         "description": "Detailed description of the curricula",
-                        "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
+                        "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.",
+                        "maxLength": 500
                       },
                       "banner": {
                         "type": "string",
@@ -8675,7 +9508,9 @@ const AcademySchema: Record<string, unknown> = {
                             "type": "string",
                             "description": "Unique identifier for the certificate",
                             "example": "1234567890abcdef",
-                            "x-go-name": "ID"
+                            "x-go-name": "ID",
+                            "maxLength": 500,
+                            "format": "uuid"
                           },
                           "orgId": {
                             "type": "string",
@@ -8689,22 +9524,27 @@ const AcademySchema: Record<string, unknown> = {
                           "recipientId": {
                             "type": "string",
                             "description": "ID of the recipient (user) who received the certificate",
-                            "example": "1234567890abcdef"
+                            "example": "1234567890abcdef",
+                            "maxLength": 500,
+                            "format": "uuid"
                           },
                           "recipientName": {
                             "type": "string",
                             "description": "Name of the recipient (user) who received the certificate",
-                            "example": "John Doe"
+                            "example": "John Doe",
+                            "maxLength": 500
                           },
                           "title": {
                             "type": "string",
                             "description": "Title of the certificate",
-                            "example": "Kubernetes Expert Certification"
+                            "example": "Kubernetes Expert Certification",
+                            "maxLength": 500
                           },
                           "description": {
                             "type": "string",
                             "description": "Description of the certificate",
-                            "example": "Awarded for successfully completing the Kubernetes Expert course"
+                            "example": "Awarded for successfully completing the Kubernetes Expert course",
+                            "maxLength": 5000
                           },
                           "issuingAuthorities": {
                             "type": "array",
@@ -8719,12 +9559,15 @@ const AcademySchema: Record<string, unknown> = {
                                 "name": {
                                   "type": "string",
                                   "description": "Name of the issuing authority",
-                                  "example": "Cloud Native Foundation"
+                                  "example": "Cloud Native Foundation",
+                                  "minLength": 1,
+                                  "maxLength": 255
                                 },
                                 "role": {
                                   "type": "string",
                                   "description": "Role of the issuing authority",
-                                  "example": "COO"
+                                  "example": "COO",
+                                  "maxLength": 500
                                 },
                                 "signatureUrl": {
                                   "type": "string",
@@ -8751,7 +9594,8 @@ const AcademySchema: Record<string, unknown> = {
                           "expiresIn": {
                             "type": "integer",
                             "description": "Number of months after which the certificate expires",
-                            "example": 24
+                            "example": 24,
+                            "minimum": 0
                           }
                         }
                       },
@@ -8770,12 +9614,15 @@ const AcademySchema: Record<string, unknown> = {
                               "x-oapi-codegen-extra-tags": {
                                 "db": "id",
                                 "json": "id"
-                              }
+                              },
+                              "maxLength": 500,
+                              "format": "uuid"
                             },
                             "title": {
                               "type": "string",
                               "description": "Title of the course",
-                              "example": "Kubernetes Basics"
+                              "example": "Kubernetes Basics",
+                              "maxLength": 500
                             },
                             "permalink": {
                               "type": "string",
@@ -8786,12 +9633,14 @@ const AcademySchema: Record<string, unknown> = {
                             "description": {
                               "type": "string",
                               "description": "Course description",
-                              "example": "Learn the basics of Kubernetes"
+                              "example": "Learn the basics of Kubernetes",
+                              "maxLength": 5000
                             },
                             "weight": {
                               "type": "number",
                               "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
-                              "example": "eg 1 , 2"
+                              "example": "eg 1 , 2",
+                              "minimum": 0
                             },
                             "banner": {
                               "type": "string",
@@ -8909,11 +9758,14 @@ const AcademySchema: Record<string, unknown> = {
                   },
                   "name": {
                     "type": "string",
-                    "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,"
+                    "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,",
+                    "minLength": 1,
+                    "maxLength": 255
                   },
                   "description": {
                     "type": "string",
-                    "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description"
+                    "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description",
+                    "maxLength": 5000
                   },
                   "emails": {
                     "type": "array",
@@ -8926,7 +9778,8 @@ const AcademySchema: Record<string, unknown> = {
                       "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
                       "x-go-type": "string",
                       "description": "Exact email address or the email address pattern for which the invitation is valid , null means the invitation is valid for all email addresses"
-                    }
+                    },
+                    "description": "The emails of the invitation."
                   },
                   "org_id": {
                     "type": "string",
@@ -8934,7 +9787,9 @@ const AcademySchema: Record<string, unknown> = {
                     "x-oapi-codegen-extra-tags": {
                       "db": "org_id",
                       "json": "org_id"
-                    }
+                    },
+                    "maxLength": 500,
+                    "format": "uuid"
                   },
                   "expires_at": {
                     "type": "string",
@@ -8947,7 +9802,8 @@ const AcademySchema: Record<string, unknown> = {
                   },
                   "quota": {
                     "type": "integer",
-                    "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
+                    "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota",
+                    "minimum": 0
                   },
                   "accepted_by": {
                     "type": "array",
@@ -8973,7 +9829,8 @@ const AcademySchema: Record<string, unknown> = {
                     "items": {
                       "type": "string",
                       "description": "Roles that the user will have when accepting the invitation, null or empty string means the invitation does not specify any roles"
-                    }
+                    },
+                    "description": "The roles of the invitation."
                   },
                   "teams": {
                     "type": "array",
@@ -8984,7 +9841,8 @@ const AcademySchema: Record<string, unknown> = {
                     "items": {
                       "type": "string",
                       "description": "Teams that the user will be added to when accepting the invitation, null or empty string means the invitation does not specify any teams"
-                    }
+                    },
+                    "description": "The teams of the invitation."
                   },
                   "status": {
                     "x-go-type": "InvitationStatus",
@@ -9056,7 +9914,8 @@ const AcademySchema: Record<string, unknown> = {
             "x-go-name": "Title",
             "x-oapi-codegen-extra-tags": {
               "json": "title"
-            }
+            },
+            "maxLength": 500
           },
           "org_id": {
             "type": "string",
@@ -9164,17 +10023,20 @@ const AcademySchema: Record<string, unknown> = {
                   "title": {
                     "type": "string",
                     "description": "Title of the learning path",
-                    "example": "Mastering Kubernetes for Engineers"
+                    "example": "Mastering Kubernetes for Engineers",
+                    "maxLength": 500
                   },
                   "description": {
                     "type": "string",
                     "description": "Short description of the curricula",
-                    "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                    "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads",
+                    "maxLength": 5000
                   },
                   "detailedDescription": {
                     "type": "string",
                     "description": "Detailed description of the curricula",
-                    "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
+                    "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.",
+                    "maxLength": 500
                   },
                   "banner": {
                     "type": "string",
@@ -9207,7 +10069,9 @@ const AcademySchema: Record<string, unknown> = {
                         "type": "string",
                         "description": "Unique identifier for the certificate",
                         "example": "1234567890abcdef",
-                        "x-go-name": "ID"
+                        "x-go-name": "ID",
+                        "maxLength": 500,
+                        "format": "uuid"
                       },
                       "orgId": {
                         "type": "string",
@@ -9221,22 +10085,27 @@ const AcademySchema: Record<string, unknown> = {
                       "recipientId": {
                         "type": "string",
                         "description": "ID of the recipient (user) who received the certificate",
-                        "example": "1234567890abcdef"
+                        "example": "1234567890abcdef",
+                        "maxLength": 500,
+                        "format": "uuid"
                       },
                       "recipientName": {
                         "type": "string",
                         "description": "Name of the recipient (user) who received the certificate",
-                        "example": "John Doe"
+                        "example": "John Doe",
+                        "maxLength": 500
                       },
                       "title": {
                         "type": "string",
                         "description": "Title of the certificate",
-                        "example": "Kubernetes Expert Certification"
+                        "example": "Kubernetes Expert Certification",
+                        "maxLength": 500
                       },
                       "description": {
                         "type": "string",
                         "description": "Description of the certificate",
-                        "example": "Awarded for successfully completing the Kubernetes Expert course"
+                        "example": "Awarded for successfully completing the Kubernetes Expert course",
+                        "maxLength": 5000
                       },
                       "issuingAuthorities": {
                         "type": "array",
@@ -9251,12 +10120,15 @@ const AcademySchema: Record<string, unknown> = {
                             "name": {
                               "type": "string",
                               "description": "Name of the issuing authority",
-                              "example": "Cloud Native Foundation"
+                              "example": "Cloud Native Foundation",
+                              "minLength": 1,
+                              "maxLength": 255
                             },
                             "role": {
                               "type": "string",
                               "description": "Role of the issuing authority",
-                              "example": "COO"
+                              "example": "COO",
+                              "maxLength": 500
                             },
                             "signatureUrl": {
                               "type": "string",
@@ -9283,7 +10155,8 @@ const AcademySchema: Record<string, unknown> = {
                       "expiresIn": {
                         "type": "integer",
                         "description": "Number of months after which the certificate expires",
-                        "example": 24
+                        "example": 24,
+                        "minimum": 0
                       }
                     }
                   },
@@ -9302,12 +10175,15 @@ const AcademySchema: Record<string, unknown> = {
                           "x-oapi-codegen-extra-tags": {
                             "db": "id",
                             "json": "id"
-                          }
+                          },
+                          "maxLength": 500,
+                          "format": "uuid"
                         },
                         "title": {
                           "type": "string",
                           "description": "Title of the course",
-                          "example": "Kubernetes Basics"
+                          "example": "Kubernetes Basics",
+                          "maxLength": 500
                         },
                         "permalink": {
                           "type": "string",
@@ -9318,12 +10194,14 @@ const AcademySchema: Record<string, unknown> = {
                         "description": {
                           "type": "string",
                           "description": "Course description",
-                          "example": "Learn the basics of Kubernetes"
+                          "example": "Learn the basics of Kubernetes",
+                          "maxLength": 5000
                         },
                         "weight": {
                           "type": "number",
                           "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
-                          "example": "eg 1 , 2"
+                          "example": "eg 1 , 2",
+                          "minimum": 0
                         },
                         "banner": {
                           "type": "string",
@@ -9407,7 +10285,9 @@ const AcademySchema: Record<string, unknown> = {
                 "x-oapi-codegen-extra-tags": {
                   "db": "id",
                   "json": "id"
-                }
+                },
+                "maxLength": 500,
+                "format": "uuid"
               },
               "type": {
                 "x-go-type": "ContentType",
@@ -9461,7 +10341,8 @@ const AcademySchema: Record<string, unknown> = {
               "slug": {
                 "type": "string",
                 "description": "slug of the Curricula",
-                "example": "intro-kubernetes-course"
+                "example": "intro-kubernetes-course",
+                "maxLength": 500
               },
               "level": {
                 "description": "Level of the Curricula",
@@ -9595,17 +10476,20 @@ const AcademySchema: Record<string, unknown> = {
                       "title": {
                         "type": "string",
                         "description": "Title of the learning path",
-                        "example": "Mastering Kubernetes for Engineers"
+                        "example": "Mastering Kubernetes for Engineers",
+                        "maxLength": 500
                       },
                       "description": {
                         "type": "string",
                         "description": "Short description of the curricula",
-                        "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                        "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads",
+                        "maxLength": 5000
                       },
                       "detailedDescription": {
                         "type": "string",
                         "description": "Detailed description of the curricula",
-                        "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
+                        "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.",
+                        "maxLength": 500
                       },
                       "banner": {
                         "type": "string",
@@ -9638,7 +10522,9 @@ const AcademySchema: Record<string, unknown> = {
                             "type": "string",
                             "description": "Unique identifier for the certificate",
                             "example": "1234567890abcdef",
-                            "x-go-name": "ID"
+                            "x-go-name": "ID",
+                            "maxLength": 500,
+                            "format": "uuid"
                           },
                           "orgId": {
                             "type": "string",
@@ -9652,22 +10538,27 @@ const AcademySchema: Record<string, unknown> = {
                           "recipientId": {
                             "type": "string",
                             "description": "ID of the recipient (user) who received the certificate",
-                            "example": "1234567890abcdef"
+                            "example": "1234567890abcdef",
+                            "maxLength": 500,
+                            "format": "uuid"
                           },
                           "recipientName": {
                             "type": "string",
                             "description": "Name of the recipient (user) who received the certificate",
-                            "example": "John Doe"
+                            "example": "John Doe",
+                            "maxLength": 500
                           },
                           "title": {
                             "type": "string",
                             "description": "Title of the certificate",
-                            "example": "Kubernetes Expert Certification"
+                            "example": "Kubernetes Expert Certification",
+                            "maxLength": 500
                           },
                           "description": {
                             "type": "string",
                             "description": "Description of the certificate",
-                            "example": "Awarded for successfully completing the Kubernetes Expert course"
+                            "example": "Awarded for successfully completing the Kubernetes Expert course",
+                            "maxLength": 5000
                           },
                           "issuingAuthorities": {
                             "type": "array",
@@ -9682,12 +10573,15 @@ const AcademySchema: Record<string, unknown> = {
                                 "name": {
                                   "type": "string",
                                   "description": "Name of the issuing authority",
-                                  "example": "Cloud Native Foundation"
+                                  "example": "Cloud Native Foundation",
+                                  "minLength": 1,
+                                  "maxLength": 255
                                 },
                                 "role": {
                                   "type": "string",
                                   "description": "Role of the issuing authority",
-                                  "example": "COO"
+                                  "example": "COO",
+                                  "maxLength": 500
                                 },
                                 "signatureUrl": {
                                   "type": "string",
@@ -9714,7 +10608,8 @@ const AcademySchema: Record<string, unknown> = {
                           "expiresIn": {
                             "type": "integer",
                             "description": "Number of months after which the certificate expires",
-                            "example": 24
+                            "example": 24,
+                            "minimum": 0
                           }
                         }
                       },
@@ -9733,12 +10628,15 @@ const AcademySchema: Record<string, unknown> = {
                               "x-oapi-codegen-extra-tags": {
                                 "db": "id",
                                 "json": "id"
-                              }
+                              },
+                              "maxLength": 500,
+                              "format": "uuid"
                             },
                             "title": {
                               "type": "string",
                               "description": "Title of the course",
-                              "example": "Kubernetes Basics"
+                              "example": "Kubernetes Basics",
+                              "maxLength": 500
                             },
                             "permalink": {
                               "type": "string",
@@ -9749,12 +10647,14 @@ const AcademySchema: Record<string, unknown> = {
                             "description": {
                               "type": "string",
                               "description": "Course description",
-                              "example": "Learn the basics of Kubernetes"
+                              "example": "Learn the basics of Kubernetes",
+                              "maxLength": 5000
                             },
                             "weight": {
                               "type": "number",
                               "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
-                              "example": "eg 1 , 2"
+                              "example": "eg 1 , 2",
+                              "minimum": 0
                             },
                             "banner": {
                               "type": "string",
@@ -9824,7 +10724,8 @@ const AcademySchema: Record<string, unknown> = {
           "total": {
             "type": "integer",
             "description": "Total number of Curricula",
-            "example": 7
+            "example": 7,
+            "minimum": 0
           },
           "data": {
             "type": "array",
@@ -9855,7 +10756,9 @@ const AcademySchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "id",
                     "json": "id"
-                  }
+                  },
+                  "maxLength": 500,
+                  "format": "uuid"
                 },
                 "type": {
                   "x-go-type": "ContentType",
@@ -9909,7 +10812,8 @@ const AcademySchema: Record<string, unknown> = {
                 "slug": {
                   "type": "string",
                   "description": "slug of the Curricula",
-                  "example": "intro-kubernetes-course"
+                  "example": "intro-kubernetes-course",
+                  "maxLength": 500
                 },
                 "level": {
                   "description": "Level of the Curricula",
@@ -10043,17 +10947,20 @@ const AcademySchema: Record<string, unknown> = {
                         "title": {
                           "type": "string",
                           "description": "Title of the learning path",
-                          "example": "Mastering Kubernetes for Engineers"
+                          "example": "Mastering Kubernetes for Engineers",
+                          "maxLength": 500
                         },
                         "description": {
                           "type": "string",
                           "description": "Short description of the curricula",
-                          "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                          "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads",
+                          "maxLength": 5000
                         },
                         "detailedDescription": {
                           "type": "string",
                           "description": "Detailed description of the curricula",
-                          "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
+                          "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.",
+                          "maxLength": 500
                         },
                         "banner": {
                           "type": "string",
@@ -10086,7 +10993,9 @@ const AcademySchema: Record<string, unknown> = {
                               "type": "string",
                               "description": "Unique identifier for the certificate",
                               "example": "1234567890abcdef",
-                              "x-go-name": "ID"
+                              "x-go-name": "ID",
+                              "maxLength": 500,
+                              "format": "uuid"
                             },
                             "orgId": {
                               "type": "string",
@@ -10100,22 +11009,27 @@ const AcademySchema: Record<string, unknown> = {
                             "recipientId": {
                               "type": "string",
                               "description": "ID of the recipient (user) who received the certificate",
-                              "example": "1234567890abcdef"
+                              "example": "1234567890abcdef",
+                              "maxLength": 500,
+                              "format": "uuid"
                             },
                             "recipientName": {
                               "type": "string",
                               "description": "Name of the recipient (user) who received the certificate",
-                              "example": "John Doe"
+                              "example": "John Doe",
+                              "maxLength": 500
                             },
                             "title": {
                               "type": "string",
                               "description": "Title of the certificate",
-                              "example": "Kubernetes Expert Certification"
+                              "example": "Kubernetes Expert Certification",
+                              "maxLength": 500
                             },
                             "description": {
                               "type": "string",
                               "description": "Description of the certificate",
-                              "example": "Awarded for successfully completing the Kubernetes Expert course"
+                              "example": "Awarded for successfully completing the Kubernetes Expert course",
+                              "maxLength": 5000
                             },
                             "issuingAuthorities": {
                               "type": "array",
@@ -10130,12 +11044,15 @@ const AcademySchema: Record<string, unknown> = {
                                   "name": {
                                     "type": "string",
                                     "description": "Name of the issuing authority",
-                                    "example": "Cloud Native Foundation"
+                                    "example": "Cloud Native Foundation",
+                                    "minLength": 1,
+                                    "maxLength": 255
                                   },
                                   "role": {
                                     "type": "string",
                                     "description": "Role of the issuing authority",
-                                    "example": "COO"
+                                    "example": "COO",
+                                    "maxLength": 500
                                   },
                                   "signatureUrl": {
                                     "type": "string",
@@ -10162,7 +11079,8 @@ const AcademySchema: Record<string, unknown> = {
                             "expiresIn": {
                               "type": "integer",
                               "description": "Number of months after which the certificate expires",
-                              "example": 24
+                              "example": 24,
+                              "minimum": 0
                             }
                           }
                         },
@@ -10181,12 +11099,15 @@ const AcademySchema: Record<string, unknown> = {
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "id",
                                   "json": "id"
-                                }
+                                },
+                                "maxLength": 500,
+                                "format": "uuid"
                               },
                               "title": {
                                 "type": "string",
                                 "description": "Title of the course",
-                                "example": "Kubernetes Basics"
+                                "example": "Kubernetes Basics",
+                                "maxLength": 500
                               },
                               "permalink": {
                                 "type": "string",
@@ -10197,12 +11118,14 @@ const AcademySchema: Record<string, unknown> = {
                               "description": {
                                 "type": "string",
                                 "description": "Course description",
-                                "example": "Learn the basics of Kubernetes"
+                                "example": "Learn the basics of Kubernetes",
+                                "maxLength": 5000
                               },
                               "weight": {
                                 "type": "number",
                                 "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
-                                "example": "eg 1 , 2"
+                                "example": "eg 1 , 2",
+                                "minimum": 0
                               },
                               "banner": {
                                 "type": "string",
@@ -10248,7 +11171,8 @@ const AcademySchema: Record<string, unknown> = {
                   ]
                 }
               }
-            }
+            },
+            "description": "The data of the academycurriculalistresponse."
           }
         },
         "required": [
@@ -10262,7 +11186,8 @@ const AcademySchema: Record<string, unknown> = {
           "total": {
             "type": "integer",
             "description": "Total number of Curricula",
-            "example": 7
+            "example": 7,
+            "minimum": 0
           },
           "data": {
             "type": "array",
@@ -10296,7 +11221,9 @@ const AcademySchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "id",
                         "json": "id"
-                      }
+                      },
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "type": {
                       "x-go-type": "ContentType",
@@ -10350,7 +11277,8 @@ const AcademySchema: Record<string, unknown> = {
                     "slug": {
                       "type": "string",
                       "description": "slug of the Curricula",
-                      "example": "intro-kubernetes-course"
+                      "example": "intro-kubernetes-course",
+                      "maxLength": 500
                     },
                     "level": {
                       "description": "Level of the Curricula",
@@ -10484,17 +11412,20 @@ const AcademySchema: Record<string, unknown> = {
                             "title": {
                               "type": "string",
                               "description": "Title of the learning path",
-                              "example": "Mastering Kubernetes for Engineers"
+                              "example": "Mastering Kubernetes for Engineers",
+                              "maxLength": 500
                             },
                             "description": {
                               "type": "string",
                               "description": "Short description of the curricula",
-                              "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                              "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads",
+                              "maxLength": 5000
                             },
                             "detailedDescription": {
                               "type": "string",
                               "description": "Detailed description of the curricula",
-                              "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
+                              "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.",
+                              "maxLength": 500
                             },
                             "banner": {
                               "type": "string",
@@ -10527,7 +11458,9 @@ const AcademySchema: Record<string, unknown> = {
                                   "type": "string",
                                   "description": "Unique identifier for the certificate",
                                   "example": "1234567890abcdef",
-                                  "x-go-name": "ID"
+                                  "x-go-name": "ID",
+                                  "maxLength": 500,
+                                  "format": "uuid"
                                 },
                                 "orgId": {
                                   "type": "string",
@@ -10541,22 +11474,27 @@ const AcademySchema: Record<string, unknown> = {
                                 "recipientId": {
                                   "type": "string",
                                   "description": "ID of the recipient (user) who received the certificate",
-                                  "example": "1234567890abcdef"
+                                  "example": "1234567890abcdef",
+                                  "maxLength": 500,
+                                  "format": "uuid"
                                 },
                                 "recipientName": {
                                   "type": "string",
                                   "description": "Name of the recipient (user) who received the certificate",
-                                  "example": "John Doe"
+                                  "example": "John Doe",
+                                  "maxLength": 500
                                 },
                                 "title": {
                                   "type": "string",
                                   "description": "Title of the certificate",
-                                  "example": "Kubernetes Expert Certification"
+                                  "example": "Kubernetes Expert Certification",
+                                  "maxLength": 500
                                 },
                                 "description": {
                                   "type": "string",
                                   "description": "Description of the certificate",
-                                  "example": "Awarded for successfully completing the Kubernetes Expert course"
+                                  "example": "Awarded for successfully completing the Kubernetes Expert course",
+                                  "maxLength": 5000
                                 },
                                 "issuingAuthorities": {
                                   "type": "array",
@@ -10571,12 +11509,15 @@ const AcademySchema: Record<string, unknown> = {
                                       "name": {
                                         "type": "string",
                                         "description": "Name of the issuing authority",
-                                        "example": "Cloud Native Foundation"
+                                        "example": "Cloud Native Foundation",
+                                        "minLength": 1,
+                                        "maxLength": 255
                                       },
                                       "role": {
                                         "type": "string",
                                         "description": "Role of the issuing authority",
-                                        "example": "COO"
+                                        "example": "COO",
+                                        "maxLength": 500
                                       },
                                       "signatureUrl": {
                                         "type": "string",
@@ -10603,7 +11544,8 @@ const AcademySchema: Record<string, unknown> = {
                                 "expiresIn": {
                                   "type": "integer",
                                   "description": "Number of months after which the certificate expires",
-                                  "example": 24
+                                  "example": 24,
+                                  "minimum": 0
                                 }
                               }
                             },
@@ -10622,12 +11564,15 @@ const AcademySchema: Record<string, unknown> = {
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "id",
                                       "json": "id"
-                                    }
+                                    },
+                                    "maxLength": 500,
+                                    "format": "uuid"
                                   },
                                   "title": {
                                     "type": "string",
                                     "description": "Title of the course",
-                                    "example": "Kubernetes Basics"
+                                    "example": "Kubernetes Basics",
+                                    "maxLength": 500
                                   },
                                   "permalink": {
                                     "type": "string",
@@ -10638,12 +11583,14 @@ const AcademySchema: Record<string, unknown> = {
                                   "description": {
                                     "type": "string",
                                     "description": "Course description",
-                                    "example": "Learn the basics of Kubernetes"
+                                    "example": "Learn the basics of Kubernetes",
+                                    "maxLength": 5000
                                   },
                                   "weight": {
                                     "type": "number",
                                     "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
-                                    "example": "eg 1 , 2"
+                                    "example": "eg 1 , 2",
+                                    "minimum": 0
                                   },
                                   "banner": {
                                     "type": "string",
@@ -10706,7 +11653,8 @@ const AcademySchema: Record<string, unknown> = {
                   }
                 }
               ]
-            }
+            },
+            "description": "The data of the academycurriculawithmetricslistresponse."
           }
         },
         "required": [
@@ -10721,17 +11669,20 @@ const AcademySchema: Record<string, unknown> = {
           "title": {
             "type": "string",
             "description": "Title of the learning path",
-            "example": "Mastering Kubernetes for Engineers"
+            "example": "Mastering Kubernetes for Engineers",
+            "maxLength": 500
           },
           "description": {
             "type": "string",
             "description": "Short description of the curricula",
-            "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+            "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads",
+            "maxLength": 5000
           },
           "detailedDescription": {
             "type": "string",
             "description": "Detailed description of the curricula",
-            "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
+            "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.",
+            "maxLength": 500
           },
           "banner": {
             "type": "string",
@@ -10764,7 +11715,9 @@ const AcademySchema: Record<string, unknown> = {
                 "type": "string",
                 "description": "Unique identifier for the certificate",
                 "example": "1234567890abcdef",
-                "x-go-name": "ID"
+                "x-go-name": "ID",
+                "maxLength": 500,
+                "format": "uuid"
               },
               "orgId": {
                 "type": "string",
@@ -10778,22 +11731,27 @@ const AcademySchema: Record<string, unknown> = {
               "recipientId": {
                 "type": "string",
                 "description": "ID of the recipient (user) who received the certificate",
-                "example": "1234567890abcdef"
+                "example": "1234567890abcdef",
+                "maxLength": 500,
+                "format": "uuid"
               },
               "recipientName": {
                 "type": "string",
                 "description": "Name of the recipient (user) who received the certificate",
-                "example": "John Doe"
+                "example": "John Doe",
+                "maxLength": 500
               },
               "title": {
                 "type": "string",
                 "description": "Title of the certificate",
-                "example": "Kubernetes Expert Certification"
+                "example": "Kubernetes Expert Certification",
+                "maxLength": 500
               },
               "description": {
                 "type": "string",
                 "description": "Description of the certificate",
-                "example": "Awarded for successfully completing the Kubernetes Expert course"
+                "example": "Awarded for successfully completing the Kubernetes Expert course",
+                "maxLength": 5000
               },
               "issuingAuthorities": {
                 "type": "array",
@@ -10808,12 +11766,15 @@ const AcademySchema: Record<string, unknown> = {
                     "name": {
                       "type": "string",
                       "description": "Name of the issuing authority",
-                      "example": "Cloud Native Foundation"
+                      "example": "Cloud Native Foundation",
+                      "minLength": 1,
+                      "maxLength": 255
                     },
                     "role": {
                       "type": "string",
                       "description": "Role of the issuing authority",
-                      "example": "COO"
+                      "example": "COO",
+                      "maxLength": 500
                     },
                     "signatureUrl": {
                       "type": "string",
@@ -10840,7 +11801,8 @@ const AcademySchema: Record<string, unknown> = {
               "expiresIn": {
                 "type": "integer",
                 "description": "Number of months after which the certificate expires",
-                "example": 24
+                "example": 24,
+                "minimum": 0
               }
             }
           },
@@ -10859,12 +11821,15 @@ const AcademySchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "id",
                     "json": "id"
-                  }
+                  },
+                  "maxLength": 500,
+                  "format": "uuid"
                 },
                 "title": {
                   "type": "string",
                   "description": "Title of the course",
-                  "example": "Kubernetes Basics"
+                  "example": "Kubernetes Basics",
+                  "maxLength": 500
                 },
                 "permalink": {
                   "type": "string",
@@ -10875,12 +11840,14 @@ const AcademySchema: Record<string, unknown> = {
                 "description": {
                   "type": "string",
                   "description": "Course description",
-                  "example": "Learn the basics of Kubernetes"
+                  "example": "Learn the basics of Kubernetes",
+                  "maxLength": 5000
                 },
                 "weight": {
                   "type": "number",
                   "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
-                  "example": "eg 1 , 2"
+                  "example": "eg 1 , 2",
+                  "minimum": 0
                 },
                 "banner": {
                   "type": "string",
@@ -10930,17 +11897,20 @@ const AcademySchema: Record<string, unknown> = {
           "title": {
             "type": "string",
             "description": "Title of the learning path",
-            "example": "Mastering Kubernetes for Engineers"
+            "example": "Mastering Kubernetes for Engineers",
+            "maxLength": 500
           },
           "description": {
             "type": "string",
             "description": "Short description of the curricula",
-            "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+            "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads",
+            "maxLength": 5000
           },
           "detailedDescription": {
             "type": "string",
             "description": "Detailed description of the curricula",
-            "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
+            "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.",
+            "maxLength": 500
           },
           "banner": {
             "type": "string",
@@ -10973,7 +11943,9 @@ const AcademySchema: Record<string, unknown> = {
                 "type": "string",
                 "description": "Unique identifier for the certificate",
                 "example": "1234567890abcdef",
-                "x-go-name": "ID"
+                "x-go-name": "ID",
+                "maxLength": 500,
+                "format": "uuid"
               },
               "orgId": {
                 "type": "string",
@@ -10987,22 +11959,27 @@ const AcademySchema: Record<string, unknown> = {
               "recipientId": {
                 "type": "string",
                 "description": "ID of the recipient (user) who received the certificate",
-                "example": "1234567890abcdef"
+                "example": "1234567890abcdef",
+                "maxLength": 500,
+                "format": "uuid"
               },
               "recipientName": {
                 "type": "string",
                 "description": "Name of the recipient (user) who received the certificate",
-                "example": "John Doe"
+                "example": "John Doe",
+                "maxLength": 500
               },
               "title": {
                 "type": "string",
                 "description": "Title of the certificate",
-                "example": "Kubernetes Expert Certification"
+                "example": "Kubernetes Expert Certification",
+                "maxLength": 500
               },
               "description": {
                 "type": "string",
                 "description": "Description of the certificate",
-                "example": "Awarded for successfully completing the Kubernetes Expert course"
+                "example": "Awarded for successfully completing the Kubernetes Expert course",
+                "maxLength": 5000
               },
               "issuingAuthorities": {
                 "type": "array",
@@ -11017,12 +11994,15 @@ const AcademySchema: Record<string, unknown> = {
                     "name": {
                       "type": "string",
                       "description": "Name of the issuing authority",
-                      "example": "Cloud Native Foundation"
+                      "example": "Cloud Native Foundation",
+                      "minLength": 1,
+                      "maxLength": 255
                     },
                     "role": {
                       "type": "string",
                       "description": "Role of the issuing authority",
-                      "example": "COO"
+                      "example": "COO",
+                      "maxLength": 500
                     },
                     "signatureUrl": {
                       "type": "string",
@@ -11049,7 +12029,8 @@ const AcademySchema: Record<string, unknown> = {
               "expiresIn": {
                 "type": "integer",
                 "description": "Number of months after which the certificate expires",
-                "example": 24
+                "example": 24,
+                "minimum": 0
               }
             }
           },
@@ -11068,12 +12049,15 @@ const AcademySchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "id",
                     "json": "id"
-                  }
+                  },
+                  "maxLength": 500,
+                  "format": "uuid"
                 },
                 "title": {
                   "type": "string",
                   "description": "Title of the course",
-                  "example": "Kubernetes Basics"
+                  "example": "Kubernetes Basics",
+                  "maxLength": 500
                 },
                 "permalink": {
                   "type": "string",
@@ -11084,12 +12068,14 @@ const AcademySchema: Record<string, unknown> = {
                 "description": {
                   "type": "string",
                   "description": "Course description",
-                  "example": "Learn the basics of Kubernetes"
+                  "example": "Learn the basics of Kubernetes",
+                  "maxLength": 5000
                 },
                 "weight": {
                   "type": "number",
                   "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
-                  "example": "eg 1 , 2"
+                  "example": "eg 1 , 2",
+                  "minimum": 0
                 },
                 "banner": {
                   "type": "string",
@@ -11142,12 +12128,15 @@ const AcademySchema: Record<string, unknown> = {
           "name": {
             "type": "string",
             "description": "Name of the issuing authority",
-            "example": "Cloud Native Foundation"
+            "example": "Cloud Native Foundation",
+            "minLength": 1,
+            "maxLength": 255
           },
           "role": {
             "type": "string",
             "description": "Role of the issuing authority",
-            "example": "COO"
+            "example": "COO",
+            "maxLength": 500
           },
           "signatureUrl": {
             "type": "string",
@@ -11174,7 +12163,9 @@ const AcademySchema: Record<string, unknown> = {
             "type": "string",
             "description": "Unique identifier for the certificate",
             "example": "1234567890abcdef",
-            "x-go-name": "ID"
+            "x-go-name": "ID",
+            "maxLength": 500,
+            "format": "uuid"
           },
           "orgId": {
             "type": "string",
@@ -11188,22 +12179,27 @@ const AcademySchema: Record<string, unknown> = {
           "recipientId": {
             "type": "string",
             "description": "ID of the recipient (user) who received the certificate",
-            "example": "1234567890abcdef"
+            "example": "1234567890abcdef",
+            "maxLength": 500,
+            "format": "uuid"
           },
           "recipientName": {
             "type": "string",
             "description": "Name of the recipient (user) who received the certificate",
-            "example": "John Doe"
+            "example": "John Doe",
+            "maxLength": 500
           },
           "title": {
             "type": "string",
             "description": "Title of the certificate",
-            "example": "Kubernetes Expert Certification"
+            "example": "Kubernetes Expert Certification",
+            "maxLength": 500
           },
           "description": {
             "type": "string",
             "description": "Description of the certificate",
-            "example": "Awarded for successfully completing the Kubernetes Expert course"
+            "example": "Awarded for successfully completing the Kubernetes Expert course",
+            "maxLength": 5000
           },
           "issuingAuthorities": {
             "type": "array",
@@ -11218,12 +12214,15 @@ const AcademySchema: Record<string, unknown> = {
                 "name": {
                   "type": "string",
                   "description": "Name of the issuing authority",
-                  "example": "Cloud Native Foundation"
+                  "example": "Cloud Native Foundation",
+                  "minLength": 1,
+                  "maxLength": 255
                 },
                 "role": {
                   "type": "string",
                   "description": "Role of the issuing authority",
-                  "example": "COO"
+                  "example": "COO",
+                  "maxLength": 500
                 },
                 "signatureUrl": {
                   "type": "string",
@@ -11250,7 +12249,8 @@ const AcademySchema: Record<string, unknown> = {
           "expiresIn": {
             "type": "integer",
             "description": "Number of months after which the certificate expires",
-            "example": 24
+            "example": 24,
+            "minimum": 0
           }
         }
       },
@@ -11260,17 +12260,20 @@ const AcademySchema: Record<string, unknown> = {
           "title": {
             "type": "string",
             "description": "Title of the learning path",
-            "example": "Mastering Kubernetes for Engineers"
+            "example": "Mastering Kubernetes for Engineers",
+            "maxLength": 500
           },
           "description": {
             "type": "string",
             "description": "Short description of the curricula",
-            "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+            "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads",
+            "maxLength": 5000
           },
           "detailedDescription": {
             "type": "string",
             "description": "Detailed description of the curricula",
-            "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
+            "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.",
+            "maxLength": 500
           },
           "banner": {
             "type": "string",
@@ -11303,7 +12306,9 @@ const AcademySchema: Record<string, unknown> = {
                 "type": "string",
                 "description": "Unique identifier for the certificate",
                 "example": "1234567890abcdef",
-                "x-go-name": "ID"
+                "x-go-name": "ID",
+                "maxLength": 500,
+                "format": "uuid"
               },
               "orgId": {
                 "type": "string",
@@ -11317,22 +12322,27 @@ const AcademySchema: Record<string, unknown> = {
               "recipientId": {
                 "type": "string",
                 "description": "ID of the recipient (user) who received the certificate",
-                "example": "1234567890abcdef"
+                "example": "1234567890abcdef",
+                "maxLength": 500,
+                "format": "uuid"
               },
               "recipientName": {
                 "type": "string",
                 "description": "Name of the recipient (user) who received the certificate",
-                "example": "John Doe"
+                "example": "John Doe",
+                "maxLength": 500
               },
               "title": {
                 "type": "string",
                 "description": "Title of the certificate",
-                "example": "Kubernetes Expert Certification"
+                "example": "Kubernetes Expert Certification",
+                "maxLength": 500
               },
               "description": {
                 "type": "string",
                 "description": "Description of the certificate",
-                "example": "Awarded for successfully completing the Kubernetes Expert course"
+                "example": "Awarded for successfully completing the Kubernetes Expert course",
+                "maxLength": 5000
               },
               "issuingAuthorities": {
                 "type": "array",
@@ -11347,12 +12357,15 @@ const AcademySchema: Record<string, unknown> = {
                     "name": {
                       "type": "string",
                       "description": "Name of the issuing authority",
-                      "example": "Cloud Native Foundation"
+                      "example": "Cloud Native Foundation",
+                      "minLength": 1,
+                      "maxLength": 255
                     },
                     "role": {
                       "type": "string",
                       "description": "Role of the issuing authority",
-                      "example": "COO"
+                      "example": "COO",
+                      "maxLength": 500
                     },
                     "signatureUrl": {
                       "type": "string",
@@ -11379,7 +12392,8 @@ const AcademySchema: Record<string, unknown> = {
               "expiresIn": {
                 "type": "integer",
                 "description": "Number of months after which the certificate expires",
-                "example": 24
+                "example": 24,
+                "minimum": 0
               }
             }
           },
@@ -11398,12 +12412,15 @@ const AcademySchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "id",
                     "json": "id"
-                  }
+                  },
+                  "maxLength": 500,
+                  "format": "uuid"
                 },
                 "title": {
                   "type": "string",
                   "description": "Title of the course",
-                  "example": "Kubernetes Basics"
+                  "example": "Kubernetes Basics",
+                  "maxLength": 500
                 },
                 "permalink": {
                   "type": "string",
@@ -11414,12 +12431,14 @@ const AcademySchema: Record<string, unknown> = {
                 "description": {
                   "type": "string",
                   "description": "Course description",
-                  "example": "Learn the basics of Kubernetes"
+                  "example": "Learn the basics of Kubernetes",
+                  "maxLength": 5000
                 },
                 "weight": {
                   "type": "number",
                   "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
-                  "example": "eg 1 , 2"
+                  "example": "eg 1 , 2",
+                  "minimum": 0
                 },
                 "banner": {
                   "type": "string",
@@ -11520,7 +12539,9 @@ const AcademySchema: Record<string, unknown> = {
             "description": "ID of the course content",
             "x-oapi-codegen-extra-tags": {
               "db": "content_id"
-            }
+            },
+            "maxLength": 500,
+            "format": "uuid"
           },
           "user_id": {
             "type": "string",
@@ -11601,7 +12622,9 @@ const AcademySchema: Record<string, unknown> = {
                 "type": "string",
                 "description": "Unique identifier for the certificate",
                 "example": "1234567890abcdef",
-                "x-go-name": "ID"
+                "x-go-name": "ID",
+                "maxLength": 500,
+                "format": "uuid"
               },
               "orgId": {
                 "type": "string",
@@ -11615,22 +12638,27 @@ const AcademySchema: Record<string, unknown> = {
               "recipientId": {
                 "type": "string",
                 "description": "ID of the recipient (user) who received the certificate",
-                "example": "1234567890abcdef"
+                "example": "1234567890abcdef",
+                "maxLength": 500,
+                "format": "uuid"
               },
               "recipientName": {
                 "type": "string",
                 "description": "Name of the recipient (user) who received the certificate",
-                "example": "John Doe"
+                "example": "John Doe",
+                "maxLength": 500
               },
               "title": {
                 "type": "string",
                 "description": "Title of the certificate",
-                "example": "Kubernetes Expert Certification"
+                "example": "Kubernetes Expert Certification",
+                "maxLength": 500
               },
               "description": {
                 "type": "string",
                 "description": "Description of the certificate",
-                "example": "Awarded for successfully completing the Kubernetes Expert course"
+                "example": "Awarded for successfully completing the Kubernetes Expert course",
+                "maxLength": 5000
               },
               "issuingAuthorities": {
                 "type": "array",
@@ -11645,12 +12673,15 @@ const AcademySchema: Record<string, unknown> = {
                     "name": {
                       "type": "string",
                       "description": "Name of the issuing authority",
-                      "example": "Cloud Native Foundation"
+                      "example": "Cloud Native Foundation",
+                      "minLength": 1,
+                      "maxLength": 255
                     },
                     "role": {
                       "type": "string",
                       "description": "Role of the issuing authority",
-                      "example": "COO"
+                      "example": "COO",
+                      "maxLength": 500
                     },
                     "signatureUrl": {
                       "type": "string",
@@ -11677,7 +12708,8 @@ const AcademySchema: Record<string, unknown> = {
               "expiresIn": {
                 "type": "integer",
                 "description": "Number of months after which the certificate expires",
-                "example": 24
+                "example": 24,
+                "minimum": 0
               }
             }
           },
@@ -11714,27 +12746,37 @@ const AcademySchema: Record<string, unknown> = {
             ],
             "properties": {
               "score": {
-                "type": "integer"
+                "type": "integer",
+                "description": "The score of the quizevaluationresult.",
+                "minimum": 0
               },
               "passed": {
-                "type": "boolean"
+                "type": "boolean",
+                "description": "The passed of the quizevaluationresult."
               },
               "percentageScored": {
                 "type": "number",
-                "format": "float"
+                "format": "float",
+                "description": "The percentage scored of the quizevaluationresult.",
+                "minimum": 0
               },
               "totalMarks": {
-                "type": "integer"
+                "type": "integer",
+                "description": "The total marks of the quizevaluationresult.",
+                "minimum": 0
               },
               "passPercentage": {
                 "type": "number",
-                "format": "float"
+                "format": "float",
+                "description": "The pass percentage of the quizevaluationresult.",
+                "minimum": 0
               },
               "correctSubmissions": {
                 "type": "object",
                 "additionalProperties": {
                   "type": "boolean"
-                }
+                },
+                "description": "The correct submissions of the quizevaluationresult."
               },
               "quiz": {
                 "x-go-type": "Quiz",
@@ -11773,7 +12815,10 @@ const AcademySchema: Record<string, unknown> = {
                     "x-go-name": "ID",
                     "x-oapi-codegen-extra-tags": {
                       "json": "id"
-                    }
+                    },
+                    "description": "Quiz ID.",
+                    "maxLength": 500,
+                    "format": "uuid"
                   },
                   "org_id": {
                     "type": "string",
@@ -11782,7 +12827,9 @@ const AcademySchema: Record<string, unknown> = {
                     "x-oapi-codegen-extra-tags": {
                       "db": "org_id",
                       "json": "org_id"
-                    }
+                    },
+                    "maxLength": 500,
+                    "format": "uuid"
                   },
                   "final": {
                     "type": "boolean",
@@ -11790,54 +12837,79 @@ const AcademySchema: Record<string, unknown> = {
                     "example": true
                   },
                   "title": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The title of the quiz.",
+                    "maxLength": 500
                   },
                   "description": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Description of the quiz.",
+                    "maxLength": 5000
                   },
                   "slug": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The slug of the quiz.",
+                    "maxLength": 500
                   },
                   "relPermalink": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The rel permalink of the quiz.",
+                    "maxLength": 500
                   },
                   "permalink": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The permalink of the quiz.",
+                    "maxLength": 500
                   },
                   "type": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Type of the resource.",
+                    "maxLength": 255
                   },
                   "section": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The section of the quiz.",
+                    "maxLength": 500
                   },
                   "layout": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The layout of the quiz.",
+                    "maxLength": 500
                   },
                   "date": {
                     "type": "string",
-                    "format": "date"
+                    "format": "date",
+                    "description": "The date of the quiz."
                   },
                   "lastmod": {
                     "type": "string",
-                    "format": "date"
+                    "format": "date",
+                    "description": "The lastmod of the quiz."
                   },
                   "draft": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "description": "The draft of the quiz."
                   },
                   "filePath": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The file path of the quiz.",
+                    "maxLength": 500
                   },
                   "passPercentage": {
                     "type": "number",
-                    "format": "float"
+                    "format": "float",
+                    "description": "The pass percentage of the quiz.",
+                    "minimum": 0
                   },
                   "timeLimit": {
                     "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 0
                   },
                   "maxAttempts": {
                     "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 0
                   },
                   "questions": {
                     "type": "array",
@@ -11854,10 +12926,15 @@ const AcademySchema: Record<string, unknown> = {
                       ],
                       "properties": {
                         "id": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "Question ID.",
+                          "maxLength": 500,
+                          "format": "uuid"
                         },
                         "text": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The text of the question.",
+                          "maxLength": 500
                         },
                         "type": {
                           "x-go-type": "QuestionType",
@@ -11876,10 +12953,13 @@ const AcademySchema: Record<string, unknown> = {
                           ]
                         },
                         "marks": {
-                          "type": "integer"
+                          "type": "integer",
+                          "description": "The marks of the question.",
+                          "minimum": 0
                         },
                         "multipleAnswers": {
-                          "type": "boolean"
+                          "type": "boolean",
+                          "description": "The multiple answers of the question."
                         },
                         "options": {
                           "type": "array",
@@ -11893,34 +12973,52 @@ const AcademySchema: Record<string, unknown> = {
                             ],
                             "properties": {
                               "id": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "QuestionOption ID.",
+                                "maxLength": 500,
+                                "format": "uuid"
                               },
                               "text": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "The text of the questionoption.",
+                                "maxLength": 500
                               },
                               "isCorrect": {
-                                "type": "boolean"
+                                "type": "boolean",
+                                "description": "The is correct of the questionoption."
                               }
                             }
-                          }
+                          },
+                          "description": "The options of the question."
                         },
                         "correctAnswer": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The correct answer of the question.",
+                          "maxLength": 500
                         }
                       }
-                    }
+                    },
+                    "description": "The questions of the quiz."
                   },
                   "totalQuestions": {
-                    "type": "integer"
+                    "type": "integer",
+                    "description": "The total questions of the quiz.",
+                    "minimum": 0
                   },
                   "totalQuestionsInBank": {
-                    "type": "integer"
+                    "type": "integer",
+                    "description": "The total questions in bank of the quiz.",
+                    "minimum": 0
                   },
                   "totalQuestionSets": {
-                    "type": "integer"
+                    "type": "integer",
+                    "description": "The total question sets of the quiz.",
+                    "minimum": 0
                   },
                   "totalMarks": {
-                    "type": "integer"
+                    "type": "integer",
+                    "description": "The total marks of the quiz.",
+                    "minimum": 0
                   },
                   "prerequisites": {
                     "type": "array",
@@ -11935,19 +13033,29 @@ const AcademySchema: Record<string, unknown> = {
                       ],
                       "properties": {
                         "id": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "Parent ID.",
+                          "maxLength": 500,
+                          "format": "uuid"
                         },
                         "title": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The title of the parent.",
+                          "maxLength": 500
                         },
                         "relPermalink": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The rel permalink of the parent.",
+                          "maxLength": 500
                         },
                         "type": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "Type of the resource.",
+                          "maxLength": 255
                         }
                       }
-                    }
+                    },
+                    "description": "The prerequisites of the quiz."
                   },
                   "parent": {
                     "x-go-type": "Parent",
@@ -11960,16 +13068,25 @@ const AcademySchema: Record<string, unknown> = {
                     ],
                     "properties": {
                       "id": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Parent ID.",
+                        "maxLength": 500,
+                        "format": "uuid"
                       },
                       "title": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The title of the parent.",
+                        "maxLength": 500
                       },
                       "relPermalink": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The rel permalink of the parent.",
+                        "maxLength": 500
                       },
                       "type": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Type of the resource.",
+                        "maxLength": 255
                       }
                     }
                   },
@@ -11984,16 +13101,25 @@ const AcademySchema: Record<string, unknown> = {
                     ],
                     "properties": {
                       "id": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Parent ID.",
+                        "maxLength": 500,
+                        "format": "uuid"
                       },
                       "title": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The title of the parent.",
+                        "maxLength": 500
                       },
                       "relPermalink": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The rel permalink of the parent.",
+                        "maxLength": 500
                       },
                       "type": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Type of the resource.",
+                        "maxLength": 255
                       }
                     }
                   }
@@ -12001,10 +13127,13 @@ const AcademySchema: Record<string, unknown> = {
               },
               "attemptedAt": {
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "description": "The attempted at of the quizevaluationresult."
               },
               "attempts": {
-                "type": "integer"
+                "type": "integer",
+                "description": "The attempts of the quizevaluationresult.",
+                "minimum": 0
               }
             }
           },
@@ -12029,27 +13158,37 @@ const AcademySchema: Record<string, unknown> = {
           ],
           "properties": {
             "score": {
-              "type": "integer"
+              "type": "integer",
+              "description": "The score of the quizevaluationresult.",
+              "minimum": 0
             },
             "passed": {
-              "type": "boolean"
+              "type": "boolean",
+              "description": "The passed of the quizevaluationresult."
             },
             "percentageScored": {
               "type": "number",
-              "format": "float"
+              "format": "float",
+              "description": "The percentage scored of the quizevaluationresult.",
+              "minimum": 0
             },
             "totalMarks": {
-              "type": "integer"
+              "type": "integer",
+              "description": "The total marks of the quizevaluationresult.",
+              "minimum": 0
             },
             "passPercentage": {
               "type": "number",
-              "format": "float"
+              "format": "float",
+              "description": "The pass percentage of the quizevaluationresult.",
+              "minimum": 0
             },
             "correctSubmissions": {
               "type": "object",
               "additionalProperties": {
                 "type": "boolean"
-              }
+              },
+              "description": "The correct submissions of the quizevaluationresult."
             },
             "quiz": {
               "x-go-type": "Quiz",
@@ -12088,7 +13227,10 @@ const AcademySchema: Record<string, unknown> = {
                   "x-go-name": "ID",
                   "x-oapi-codegen-extra-tags": {
                     "json": "id"
-                  }
+                  },
+                  "description": "Quiz ID.",
+                  "maxLength": 500,
+                  "format": "uuid"
                 },
                 "org_id": {
                   "type": "string",
@@ -12097,7 +13239,9 @@ const AcademySchema: Record<string, unknown> = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "org_id",
                     "json": "org_id"
-                  }
+                  },
+                  "maxLength": 500,
+                  "format": "uuid"
                 },
                 "final": {
                   "type": "boolean",
@@ -12105,54 +13249,79 @@ const AcademySchema: Record<string, unknown> = {
                   "example": true
                 },
                 "title": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The title of the quiz.",
+                  "maxLength": 500
                 },
                 "description": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Description of the quiz.",
+                  "maxLength": 5000
                 },
                 "slug": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The slug of the quiz.",
+                  "maxLength": 500
                 },
                 "relPermalink": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The rel permalink of the quiz.",
+                  "maxLength": 500
                 },
                 "permalink": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The permalink of the quiz.",
+                  "maxLength": 500
                 },
                 "type": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Type of the resource.",
+                  "maxLength": 255
                 },
                 "section": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The section of the quiz.",
+                  "maxLength": 500
                 },
                 "layout": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The layout of the quiz.",
+                  "maxLength": 500
                 },
                 "date": {
                   "type": "string",
-                  "format": "date"
+                  "format": "date",
+                  "description": "The date of the quiz."
                 },
                 "lastmod": {
                   "type": "string",
-                  "format": "date"
+                  "format": "date",
+                  "description": "The lastmod of the quiz."
                 },
                 "draft": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "The draft of the quiz."
                 },
                 "filePath": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The file path of the quiz.",
+                  "maxLength": 500
                 },
                 "passPercentage": {
                   "type": "number",
-                  "format": "float"
+                  "format": "float",
+                  "description": "The pass percentage of the quiz.",
+                  "minimum": 0
                 },
                 "timeLimit": {
                   "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
-                  "type": "integer"
+                  "type": "integer",
+                  "minimum": 0
                 },
                 "maxAttempts": {
                   "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
-                  "type": "integer"
+                  "type": "integer",
+                  "minimum": 0
                 },
                 "questions": {
                   "type": "array",
@@ -12169,10 +13338,15 @@ const AcademySchema: Record<string, unknown> = {
                     ],
                     "properties": {
                       "id": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Question ID.",
+                        "maxLength": 500,
+                        "format": "uuid"
                       },
                       "text": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The text of the question.",
+                        "maxLength": 500
                       },
                       "type": {
                         "x-go-type": "QuestionType",
@@ -12191,10 +13365,13 @@ const AcademySchema: Record<string, unknown> = {
                         ]
                       },
                       "marks": {
-                        "type": "integer"
+                        "type": "integer",
+                        "description": "The marks of the question.",
+                        "minimum": 0
                       },
                       "multipleAnswers": {
-                        "type": "boolean"
+                        "type": "boolean",
+                        "description": "The multiple answers of the question."
                       },
                       "options": {
                         "type": "array",
@@ -12208,34 +13385,52 @@ const AcademySchema: Record<string, unknown> = {
                           ],
                           "properties": {
                             "id": {
-                              "type": "string"
+                              "type": "string",
+                              "description": "QuestionOption ID.",
+                              "maxLength": 500,
+                              "format": "uuid"
                             },
                             "text": {
-                              "type": "string"
+                              "type": "string",
+                              "description": "The text of the questionoption.",
+                              "maxLength": 500
                             },
                             "isCorrect": {
-                              "type": "boolean"
+                              "type": "boolean",
+                              "description": "The is correct of the questionoption."
                             }
                           }
-                        }
+                        },
+                        "description": "The options of the question."
                       },
                       "correctAnswer": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The correct answer of the question.",
+                        "maxLength": 500
                       }
                     }
-                  }
+                  },
+                  "description": "The questions of the quiz."
                 },
                 "totalQuestions": {
-                  "type": "integer"
+                  "type": "integer",
+                  "description": "The total questions of the quiz.",
+                  "minimum": 0
                 },
                 "totalQuestionsInBank": {
-                  "type": "integer"
+                  "type": "integer",
+                  "description": "The total questions in bank of the quiz.",
+                  "minimum": 0
                 },
                 "totalQuestionSets": {
-                  "type": "integer"
+                  "type": "integer",
+                  "description": "The total question sets of the quiz.",
+                  "minimum": 0
                 },
                 "totalMarks": {
-                  "type": "integer"
+                  "type": "integer",
+                  "description": "The total marks of the quiz.",
+                  "minimum": 0
                 },
                 "prerequisites": {
                   "type": "array",
@@ -12250,19 +13445,29 @@ const AcademySchema: Record<string, unknown> = {
                     ],
                     "properties": {
                       "id": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Parent ID.",
+                        "maxLength": 500,
+                        "format": "uuid"
                       },
                       "title": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The title of the parent.",
+                        "maxLength": 500
                       },
                       "relPermalink": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The rel permalink of the parent.",
+                        "maxLength": 500
                       },
                       "type": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Type of the resource.",
+                        "maxLength": 255
                       }
                     }
-                  }
+                  },
+                  "description": "The prerequisites of the quiz."
                 },
                 "parent": {
                   "x-go-type": "Parent",
@@ -12275,16 +13480,25 @@ const AcademySchema: Record<string, unknown> = {
                   ],
                   "properties": {
                     "id": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Parent ID.",
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "title": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The title of the parent.",
+                      "maxLength": 500
                     },
                     "relPermalink": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The rel permalink of the parent.",
+                      "maxLength": 500
                     },
                     "type": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Type of the resource.",
+                      "maxLength": 255
                     }
                   }
                 },
@@ -12299,16 +13513,25 @@ const AcademySchema: Record<string, unknown> = {
                   ],
                   "properties": {
                     "id": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Parent ID.",
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "title": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The title of the parent.",
+                      "maxLength": 500
                     },
                     "relPermalink": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The rel permalink of the parent.",
+                      "maxLength": 500
                     },
                     "type": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Type of the resource.",
+                      "maxLength": 255
                     }
                   }
                 }
@@ -12316,10 +13539,13 @@ const AcademySchema: Record<string, unknown> = {
             },
             "attemptedAt": {
               "type": "string",
-              "format": "date-time"
+              "format": "date-time",
+              "description": "The attempted at of the quizevaluationresult."
             },
             "attempts": {
-              "type": "integer"
+              "type": "integer",
+              "description": "The attempts of the quizevaluationresult.",
+              "minimum": 0
             }
           }
         }
@@ -12335,12 +13561,15 @@ const AcademySchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "id",
               "json": "id"
-            }
+            },
+            "maxLength": 500,
+            "format": "uuid"
           },
           "title": {
             "type": "string",
             "description": "Title of the course",
-            "example": "Kubernetes Basics"
+            "example": "Kubernetes Basics",
+            "maxLength": 500
           },
           "permalink": {
             "type": "string",
@@ -12351,12 +13580,14 @@ const AcademySchema: Record<string, unknown> = {
           "description": {
             "type": "string",
             "description": "Course description",
-            "example": "Learn the basics of Kubernetes"
+            "example": "Learn the basics of Kubernetes",
+            "maxLength": 5000
           },
           "weight": {
             "type": "number",
             "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
-            "example": "eg 1 , 2"
+            "example": "eg 1 , 2",
+            "minimum": 0
           },
           "banner": {
             "type": "string",
@@ -12397,7 +13628,8 @@ const AcademySchema: Record<string, unknown> = {
           "total": {
             "type": "integer",
             "description": "Total number of learning paths",
-            "example": 7
+            "example": 7,
+            "minimum": 0
           },
           "data": {
             "type": "array",
@@ -12446,7 +13678,9 @@ const AcademySchema: Record<string, unknown> = {
                   "description": "ID of the course content",
                   "x-oapi-codegen-extra-tags": {
                     "db": "content_id"
-                  }
+                  },
+                  "maxLength": 500,
+                  "format": "uuid"
                 },
                 "user_id": {
                   "type": "string",
@@ -12527,7 +13761,9 @@ const AcademySchema: Record<string, unknown> = {
                       "type": "string",
                       "description": "Unique identifier for the certificate",
                       "example": "1234567890abcdef",
-                      "x-go-name": "ID"
+                      "x-go-name": "ID",
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "orgId": {
                       "type": "string",
@@ -12541,22 +13777,27 @@ const AcademySchema: Record<string, unknown> = {
                     "recipientId": {
                       "type": "string",
                       "description": "ID of the recipient (user) who received the certificate",
-                      "example": "1234567890abcdef"
+                      "example": "1234567890abcdef",
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "recipientName": {
                       "type": "string",
                       "description": "Name of the recipient (user) who received the certificate",
-                      "example": "John Doe"
+                      "example": "John Doe",
+                      "maxLength": 500
                     },
                     "title": {
                       "type": "string",
                       "description": "Title of the certificate",
-                      "example": "Kubernetes Expert Certification"
+                      "example": "Kubernetes Expert Certification",
+                      "maxLength": 500
                     },
                     "description": {
                       "type": "string",
                       "description": "Description of the certificate",
-                      "example": "Awarded for successfully completing the Kubernetes Expert course"
+                      "example": "Awarded for successfully completing the Kubernetes Expert course",
+                      "maxLength": 5000
                     },
                     "issuingAuthorities": {
                       "type": "array",
@@ -12571,12 +13812,15 @@ const AcademySchema: Record<string, unknown> = {
                           "name": {
                             "type": "string",
                             "description": "Name of the issuing authority",
-                            "example": "Cloud Native Foundation"
+                            "example": "Cloud Native Foundation",
+                            "minLength": 1,
+                            "maxLength": 255
                           },
                           "role": {
                             "type": "string",
                             "description": "Role of the issuing authority",
-                            "example": "COO"
+                            "example": "COO",
+                            "maxLength": 500
                           },
                           "signatureUrl": {
                             "type": "string",
@@ -12603,7 +13847,8 @@ const AcademySchema: Record<string, unknown> = {
                     "expiresIn": {
                       "type": "integer",
                       "description": "Number of months after which the certificate expires",
-                      "example": 24
+                      "example": 24,
+                      "minimum": 0
                     }
                   }
                 },
@@ -12619,7 +13864,8 @@ const AcademySchema: Record<string, unknown> = {
                 }
               },
               "x-go-type": "AcademyRegistration"
-            }
+            },
+            "description": "The data of the academyregistrationslistresponse."
           }
         },
         "required": [
@@ -12636,11 +13882,15 @@ const AcademySchema: Record<string, unknown> = {
         ],
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "description": "CurriculaCurrentItemData ID.",
+            "maxLength": 500,
+            "format": "uuid"
           },
           "lastOpened": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "The last opened of the curriculacurrentitemdata."
           },
           "contentType": {
             "type": "string",
@@ -12675,11 +13925,15 @@ const AcademySchema: Record<string, unknown> = {
               ],
               "properties": {
                 "id": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "CurriculaCurrentItemData ID.",
+                  "maxLength": 500,
+                  "format": "uuid"
                 },
                 "lastOpened": {
                   "type": "string",
-                  "format": "date-time"
+                  "format": "date-time",
+                  "description": "The last opened of the curriculacurrentitemdata."
                 },
                 "contentType": {
                   "type": "string",
@@ -12691,7 +13945,8 @@ const AcademySchema: Record<string, unknown> = {
                   "x-go-type": "ContentType"
                 }
               }
-            }
+            },
+            "description": "The current item of the curriculaprogresstracker."
           },
           "grades": {
             "type": "object",
@@ -12711,27 +13966,37 @@ const AcademySchema: Record<string, unknown> = {
               ],
               "properties": {
                 "score": {
-                  "type": "integer"
+                  "type": "integer",
+                  "description": "The score of the quizevaluationresult.",
+                  "minimum": 0
                 },
                 "passed": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "The passed of the quizevaluationresult."
                 },
                 "percentageScored": {
                   "type": "number",
-                  "format": "float"
+                  "format": "float",
+                  "description": "The percentage scored of the quizevaluationresult.",
+                  "minimum": 0
                 },
                 "totalMarks": {
-                  "type": "integer"
+                  "type": "integer",
+                  "description": "The total marks of the quizevaluationresult.",
+                  "minimum": 0
                 },
                 "passPercentage": {
                   "type": "number",
-                  "format": "float"
+                  "format": "float",
+                  "description": "The pass percentage of the quizevaluationresult.",
+                  "minimum": 0
                 },
                 "correctSubmissions": {
                   "type": "object",
                   "additionalProperties": {
                     "type": "boolean"
-                  }
+                  },
+                  "description": "The correct submissions of the quizevaluationresult."
                 },
                 "quiz": {
                   "x-go-type": "Quiz",
@@ -12770,7 +14035,10 @@ const AcademySchema: Record<string, unknown> = {
                       "x-go-name": "ID",
                       "x-oapi-codegen-extra-tags": {
                         "json": "id"
-                      }
+                      },
+                      "description": "Quiz ID.",
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "org_id": {
                       "type": "string",
@@ -12779,7 +14047,9 @@ const AcademySchema: Record<string, unknown> = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "org_id",
                         "json": "org_id"
-                      }
+                      },
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "final": {
                       "type": "boolean",
@@ -12787,54 +14057,79 @@ const AcademySchema: Record<string, unknown> = {
                       "example": true
                     },
                     "title": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The title of the quiz.",
+                      "maxLength": 500
                     },
                     "description": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Description of the quiz.",
+                      "maxLength": 5000
                     },
                     "slug": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The slug of the quiz.",
+                      "maxLength": 500
                     },
                     "relPermalink": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The rel permalink of the quiz.",
+                      "maxLength": 500
                     },
                     "permalink": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The permalink of the quiz.",
+                      "maxLength": 500
                     },
                     "type": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Type of the resource.",
+                      "maxLength": 255
                     },
                     "section": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The section of the quiz.",
+                      "maxLength": 500
                     },
                     "layout": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The layout of the quiz.",
+                      "maxLength": 500
                     },
                     "date": {
                       "type": "string",
-                      "format": "date"
+                      "format": "date",
+                      "description": "The date of the quiz."
                     },
                     "lastmod": {
                       "type": "string",
-                      "format": "date"
+                      "format": "date",
+                      "description": "The lastmod of the quiz."
                     },
                     "draft": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "The draft of the quiz."
                     },
                     "filePath": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The file path of the quiz.",
+                      "maxLength": 500
                     },
                     "passPercentage": {
                       "type": "number",
-                      "format": "float"
+                      "format": "float",
+                      "description": "The pass percentage of the quiz.",
+                      "minimum": 0
                     },
                     "timeLimit": {
                       "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
-                      "type": "integer"
+                      "type": "integer",
+                      "minimum": 0
                     },
                     "maxAttempts": {
                       "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
-                      "type": "integer"
+                      "type": "integer",
+                      "minimum": 0
                     },
                     "questions": {
                       "type": "array",
@@ -12851,10 +14146,15 @@ const AcademySchema: Record<string, unknown> = {
                         ],
                         "properties": {
                           "id": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "Question ID.",
+                            "maxLength": 500,
+                            "format": "uuid"
                           },
                           "text": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The text of the question.",
+                            "maxLength": 500
                           },
                           "type": {
                             "x-go-type": "QuestionType",
@@ -12873,10 +14173,13 @@ const AcademySchema: Record<string, unknown> = {
                             ]
                           },
                           "marks": {
-                            "type": "integer"
+                            "type": "integer",
+                            "description": "The marks of the question.",
+                            "minimum": 0
                           },
                           "multipleAnswers": {
-                            "type": "boolean"
+                            "type": "boolean",
+                            "description": "The multiple answers of the question."
                           },
                           "options": {
                             "type": "array",
@@ -12890,34 +14193,52 @@ const AcademySchema: Record<string, unknown> = {
                               ],
                               "properties": {
                                 "id": {
-                                  "type": "string"
+                                  "type": "string",
+                                  "description": "QuestionOption ID.",
+                                  "maxLength": 500,
+                                  "format": "uuid"
                                 },
                                 "text": {
-                                  "type": "string"
+                                  "type": "string",
+                                  "description": "The text of the questionoption.",
+                                  "maxLength": 500
                                 },
                                 "isCorrect": {
-                                  "type": "boolean"
+                                  "type": "boolean",
+                                  "description": "The is correct of the questionoption."
                                 }
                               }
-                            }
+                            },
+                            "description": "The options of the question."
                           },
                           "correctAnswer": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The correct answer of the question.",
+                            "maxLength": 500
                           }
                         }
-                      }
+                      },
+                      "description": "The questions of the quiz."
                     },
                     "totalQuestions": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "The total questions of the quiz.",
+                      "minimum": 0
                     },
                     "totalQuestionsInBank": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "The total questions in bank of the quiz.",
+                      "minimum": 0
                     },
                     "totalQuestionSets": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "The total question sets of the quiz.",
+                      "minimum": 0
                     },
                     "totalMarks": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "The total marks of the quiz.",
+                      "minimum": 0
                     },
                     "prerequisites": {
                       "type": "array",
@@ -12932,19 +14253,29 @@ const AcademySchema: Record<string, unknown> = {
                         ],
                         "properties": {
                           "id": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "Parent ID.",
+                            "maxLength": 500,
+                            "format": "uuid"
                           },
                           "title": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The title of the parent.",
+                            "maxLength": 500
                           },
                           "relPermalink": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The rel permalink of the parent.",
+                            "maxLength": 500
                           },
                           "type": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "Type of the resource.",
+                            "maxLength": 255
                           }
                         }
-                      }
+                      },
+                      "description": "The prerequisites of the quiz."
                     },
                     "parent": {
                       "x-go-type": "Parent",
@@ -12957,16 +14288,25 @@ const AcademySchema: Record<string, unknown> = {
                       ],
                       "properties": {
                         "id": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "Parent ID.",
+                          "maxLength": 500,
+                          "format": "uuid"
                         },
                         "title": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The title of the parent.",
+                          "maxLength": 500
                         },
                         "relPermalink": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The rel permalink of the parent.",
+                          "maxLength": 500
                         },
                         "type": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "Type of the resource.",
+                          "maxLength": 255
                         }
                       }
                     },
@@ -12981,16 +14321,25 @@ const AcademySchema: Record<string, unknown> = {
                       ],
                       "properties": {
                         "id": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "Parent ID.",
+                          "maxLength": 500,
+                          "format": "uuid"
                         },
                         "title": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The title of the parent.",
+                          "maxLength": 500
                         },
                         "relPermalink": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The rel permalink of the parent.",
+                          "maxLength": 500
                         },
                         "type": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "Type of the resource.",
+                          "maxLength": 255
                         }
                       }
                     }
@@ -12998,17 +14347,22 @@ const AcademySchema: Record<string, unknown> = {
                 },
                 "attemptedAt": {
                   "type": "string",
-                  "format": "date-time"
+                  "format": "date-time",
+                  "description": "The attempted at of the quizevaluationresult."
                 },
                 "attempts": {
-                  "type": "integer"
+                  "type": "integer",
+                  "description": "The attempts of the quizevaluationresult.",
+                  "minimum": 0
                 }
               }
-            }
+            },
+            "description": "The grades of the curriculaprogresstracker."
           },
           "timeSpent": {
             "type": "integer",
-            "description": "Total time spent in seconds"
+            "description": "Total time spent in seconds",
+            "minimum": 0
           },
           "completedItems": {
             "type": "object",
@@ -13037,16 +14391,25 @@ const AcademySchema: Record<string, unknown> = {
                   ],
                   "properties": {
                     "id": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Parent ID.",
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "title": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The title of the parent.",
+                      "maxLength": 500
                     },
                     "relPermalink": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The rel permalink of the parent.",
+                      "maxLength": 500
                     },
                     "type": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Type of the resource.",
+                      "maxLength": 255
                     }
                   }
                 }
@@ -13056,7 +14419,8 @@ const AcademySchema: Record<string, unknown> = {
           "completed": {
             "type": "string",
             "format": "date-time",
-            "x-go-type": "core.NullTime"
+            "x-go-type": "core.NullTime",
+            "description": "The completed of the curriculaprogresstracker."
           }
         }
       },
@@ -13083,16 +14447,25 @@ const AcademySchema: Record<string, unknown> = {
             ],
             "properties": {
               "id": {
-                "type": "string"
+                "type": "string",
+                "description": "Parent ID.",
+                "maxLength": 500,
+                "format": "uuid"
               },
               "title": {
-                "type": "string"
+                "type": "string",
+                "description": "The title of the parent.",
+                "maxLength": 500
               },
               "relPermalink": {
-                "type": "string"
+                "type": "string",
+                "description": "The rel permalink of the parent.",
+                "maxLength": 500
               },
               "type": {
-                "type": "string"
+                "type": "string",
+                "description": "Type of the resource.",
+                "maxLength": 255
               }
             }
           }
@@ -13120,11 +14493,15 @@ const AcademySchema: Record<string, unknown> = {
             ],
             "properties": {
               "id": {
-                "type": "string"
+                "type": "string",
+                "description": "CurriculaCurrentItemData ID.",
+                "maxLength": 500,
+                "format": "uuid"
               },
               "lastOpened": {
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "description": "The last opened of the curriculacurrentitemdata."
               },
               "contentType": {
                 "type": "string",
@@ -13147,10 +14524,14 @@ const AcademySchema: Record<string, unknown> = {
         "type": "object",
         "properties": {
           "error": {
-            "type": "string"
+            "type": "string",
+            "description": "The error of the errorresponse.",
+            "maxLength": 500
           },
           "details": {
-            "type": "string"
+            "type": "string",
+            "description": "The details of the errorresponse.",
+            "maxLength": 500
           }
         }
       },
@@ -13190,7 +14571,10 @@ const AcademySchema: Record<string, unknown> = {
             "x-go-name": "ID",
             "x-oapi-codegen-extra-tags": {
               "json": "id"
-            }
+            },
+            "description": "Quiz ID.",
+            "maxLength": 500,
+            "format": "uuid"
           },
           "org_id": {
             "type": "string",
@@ -13199,7 +14583,9 @@ const AcademySchema: Record<string, unknown> = {
             "x-oapi-codegen-extra-tags": {
               "db": "org_id",
               "json": "org_id"
-            }
+            },
+            "maxLength": 500,
+            "format": "uuid"
           },
           "final": {
             "type": "boolean",
@@ -13207,54 +14593,79 @@ const AcademySchema: Record<string, unknown> = {
             "example": true
           },
           "title": {
-            "type": "string"
+            "type": "string",
+            "description": "The title of the quiz.",
+            "maxLength": 500
           },
           "description": {
-            "type": "string"
+            "type": "string",
+            "description": "Description of the quiz.",
+            "maxLength": 5000
           },
           "slug": {
-            "type": "string"
+            "type": "string",
+            "description": "The slug of the quiz.",
+            "maxLength": 500
           },
           "relPermalink": {
-            "type": "string"
+            "type": "string",
+            "description": "The rel permalink of the quiz.",
+            "maxLength": 500
           },
           "permalink": {
-            "type": "string"
+            "type": "string",
+            "description": "The permalink of the quiz.",
+            "maxLength": 500
           },
           "type": {
-            "type": "string"
+            "type": "string",
+            "description": "Type of the resource.",
+            "maxLength": 255
           },
           "section": {
-            "type": "string"
+            "type": "string",
+            "description": "The section of the quiz.",
+            "maxLength": 500
           },
           "layout": {
-            "type": "string"
+            "type": "string",
+            "description": "The layout of the quiz.",
+            "maxLength": 500
           },
           "date": {
             "type": "string",
-            "format": "date"
+            "format": "date",
+            "description": "The date of the quiz."
           },
           "lastmod": {
             "type": "string",
-            "format": "date"
+            "format": "date",
+            "description": "The lastmod of the quiz."
           },
           "draft": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "The draft of the quiz."
           },
           "filePath": {
-            "type": "string"
+            "type": "string",
+            "description": "The file path of the quiz.",
+            "maxLength": 500
           },
           "passPercentage": {
             "type": "number",
-            "format": "float"
+            "format": "float",
+            "description": "The pass percentage of the quiz.",
+            "minimum": 0
           },
           "timeLimit": {
             "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
-            "type": "integer"
+            "type": "integer",
+            "minimum": 0
           },
           "maxAttempts": {
             "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
-            "type": "integer"
+            "type": "integer",
+            "minimum": 0
           },
           "questions": {
             "type": "array",
@@ -13271,10 +14682,15 @@ const AcademySchema: Record<string, unknown> = {
               ],
               "properties": {
                 "id": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Question ID.",
+                  "maxLength": 500,
+                  "format": "uuid"
                 },
                 "text": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The text of the question.",
+                  "maxLength": 500
                 },
                 "type": {
                   "x-go-type": "QuestionType",
@@ -13293,10 +14709,13 @@ const AcademySchema: Record<string, unknown> = {
                   ]
                 },
                 "marks": {
-                  "type": "integer"
+                  "type": "integer",
+                  "description": "The marks of the question.",
+                  "minimum": 0
                 },
                 "multipleAnswers": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "The multiple answers of the question."
                 },
                 "options": {
                   "type": "array",
@@ -13310,34 +14729,52 @@ const AcademySchema: Record<string, unknown> = {
                     ],
                     "properties": {
                       "id": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "QuestionOption ID.",
+                        "maxLength": 500,
+                        "format": "uuid"
                       },
                       "text": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The text of the questionoption.",
+                        "maxLength": 500
                       },
                       "isCorrect": {
-                        "type": "boolean"
+                        "type": "boolean",
+                        "description": "The is correct of the questionoption."
                       }
                     }
-                  }
+                  },
+                  "description": "The options of the question."
                 },
                 "correctAnswer": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The correct answer of the question.",
+                  "maxLength": 500
                 }
               }
-            }
+            },
+            "description": "The questions of the quiz."
           },
           "totalQuestions": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The total questions of the quiz.",
+            "minimum": 0
           },
           "totalQuestionsInBank": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The total questions in bank of the quiz.",
+            "minimum": 0
           },
           "totalQuestionSets": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The total question sets of the quiz.",
+            "minimum": 0
           },
           "totalMarks": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The total marks of the quiz.",
+            "minimum": 0
           },
           "prerequisites": {
             "type": "array",
@@ -13352,19 +14789,29 @@ const AcademySchema: Record<string, unknown> = {
               ],
               "properties": {
                 "id": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Parent ID.",
+                  "maxLength": 500,
+                  "format": "uuid"
                 },
                 "title": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The title of the parent.",
+                  "maxLength": 500
                 },
                 "relPermalink": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The rel permalink of the parent.",
+                  "maxLength": 500
                 },
                 "type": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Type of the resource.",
+                  "maxLength": 255
                 }
               }
-            }
+            },
+            "description": "The prerequisites of the quiz."
           },
           "parent": {
             "x-go-type": "Parent",
@@ -13377,16 +14824,25 @@ const AcademySchema: Record<string, unknown> = {
             ],
             "properties": {
               "id": {
-                "type": "string"
+                "type": "string",
+                "description": "Parent ID.",
+                "maxLength": 500,
+                "format": "uuid"
               },
               "title": {
-                "type": "string"
+                "type": "string",
+                "description": "The title of the parent.",
+                "maxLength": 500
               },
               "relPermalink": {
-                "type": "string"
+                "type": "string",
+                "description": "The rel permalink of the parent.",
+                "maxLength": 500
               },
               "type": {
-                "type": "string"
+                "type": "string",
+                "description": "Type of the resource.",
+                "maxLength": 255
               }
             }
           },
@@ -13401,16 +14857,25 @@ const AcademySchema: Record<string, unknown> = {
             ],
             "properties": {
               "id": {
-                "type": "string"
+                "type": "string",
+                "description": "Parent ID.",
+                "maxLength": 500,
+                "format": "uuid"
               },
               "title": {
-                "type": "string"
+                "type": "string",
+                "description": "The title of the parent.",
+                "maxLength": 500
               },
               "relPermalink": {
-                "type": "string"
+                "type": "string",
+                "description": "The rel permalink of the parent.",
+                "maxLength": 500
               },
               "type": {
-                "type": "string"
+                "type": "string",
+                "description": "Type of the resource.",
+                "maxLength": 255
               }
             }
           }
@@ -13426,16 +14891,25 @@ const AcademySchema: Record<string, unknown> = {
         ],
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "description": "Parent ID.",
+            "maxLength": 500,
+            "format": "uuid"
           },
           "title": {
-            "type": "string"
+            "type": "string",
+            "description": "The title of the parent.",
+            "maxLength": 500
           },
           "relPermalink": {
-            "type": "string"
+            "type": "string",
+            "description": "The rel permalink of the parent.",
+            "maxLength": 500
           },
           "type": {
-            "type": "string"
+            "type": "string",
+            "description": "Type of the resource.",
+            "maxLength": 255
           }
         }
       },
@@ -13466,10 +14940,15 @@ const AcademySchema: Record<string, unknown> = {
         ],
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "description": "Question ID.",
+            "maxLength": 500,
+            "format": "uuid"
           },
           "text": {
-            "type": "string"
+            "type": "string",
+            "description": "The text of the question.",
+            "maxLength": 500
           },
           "type": {
             "x-go-type": "QuestionType",
@@ -13488,10 +14967,13 @@ const AcademySchema: Record<string, unknown> = {
             ]
           },
           "marks": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The marks of the question.",
+            "minimum": 0
           },
           "multipleAnswers": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "The multiple answers of the question."
           },
           "options": {
             "type": "array",
@@ -13505,19 +14987,28 @@ const AcademySchema: Record<string, unknown> = {
               ],
               "properties": {
                 "id": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "QuestionOption ID.",
+                  "maxLength": 500,
+                  "format": "uuid"
                 },
                 "text": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The text of the questionoption.",
+                  "maxLength": 500
                 },
                 "isCorrect": {
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "The is correct of the questionoption."
                 }
               }
-            }
+            },
+            "description": "The options of the question."
           },
           "correctAnswer": {
-            "type": "string"
+            "type": "string",
+            "description": "The correct answer of the question.",
+            "maxLength": 500
           }
         }
       },
@@ -13530,13 +15021,19 @@ const AcademySchema: Record<string, unknown> = {
         ],
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "description": "QuestionOption ID.",
+            "maxLength": 500,
+            "format": "uuid"
           },
           "text": {
-            "type": "string"
+            "type": "string",
+            "description": "The text of the questionoption.",
+            "maxLength": 500
           },
           "isCorrect": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "The is correct of the questionoption."
           }
         }
       },
@@ -13548,10 +15045,15 @@ const AcademySchema: Record<string, unknown> = {
         ],
         "properties": {
           "testAbsPath": {
-            "type": "string"
+            "type": "string",
+            "description": "The test abs path of the starttestrequest.",
+            "maxLength": 500
           },
           "registrationId": {
-            "type": "string"
+            "type": "string",
+            "description": "ID of the associated registration.",
+            "maxLength": 500,
+            "format": "uuid"
           }
         }
       },
@@ -13575,13 +15077,21 @@ const AcademySchema: Record<string, unknown> = {
             }
           },
           "quizAbsPath": {
-            "type": "string"
+            "type": "string",
+            "description": "The quiz abs path of the quizsubmission.",
+            "maxLength": 500
           },
           "registrationId": {
-            "type": "string"
+            "type": "string",
+            "description": "ID of the associated registration.",
+            "maxLength": 500,
+            "format": "uuid"
           },
           "user_id": {
-            "type": "string"
+            "type": "string",
+            "description": "ID of the user who owns or created this resource.",
+            "maxLength": 500,
+            "format": "uuid"
           },
           "answers": {
             "type": "array",
@@ -13595,19 +15105,27 @@ const AcademySchema: Record<string, unknown> = {
               ],
               "properties": {
                 "questionId": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "ID of the associated question.",
+                  "maxLength": 500,
+                  "format": "uuid"
                 },
                 "selectedOptionId": {
                   "type": "object",
                   "additionalProperties": {
                     "type": "boolean"
-                  }
+                  },
+                  "description": "ID of the associated selectedOption.",
+                  "format": "uuid"
                 },
                 "answerText": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The answer text of the submittedanswer.",
+                  "maxLength": 500
                 }
               }
-            }
+            },
+            "description": "The answers of the quizsubmission."
           }
         }
       },
@@ -13620,16 +15138,23 @@ const AcademySchema: Record<string, unknown> = {
         ],
         "properties": {
           "questionId": {
-            "type": "string"
+            "type": "string",
+            "description": "ID of the associated question.",
+            "maxLength": 500,
+            "format": "uuid"
           },
           "selectedOptionId": {
             "type": "object",
             "additionalProperties": {
               "type": "boolean"
-            }
+            },
+            "description": "ID of the associated selectedOption.",
+            "format": "uuid"
           },
           "answerText": {
-            "type": "string"
+            "type": "string",
+            "description": "The answer text of the submittedanswer.",
+            "maxLength": 500
           }
         }
       },
@@ -13689,7 +15214,9 @@ const AcademySchema: Record<string, unknown> = {
             "type": "string",
             "x-oapi-codegen-extra-tags": {
               "db": "test_abs_path"
-            }
+            },
+            "description": "The test abs path of the testsubmission.",
+            "maxLength": 500
           },
           "user_id": {
             "type": "string",
@@ -13736,7 +15263,8 @@ const AcademySchema: Record<string, unknown> = {
             "format": "date-time",
             "x-oapi-codegen-extra-tags": {
               "db": "submitted_at"
-            }
+            },
+            "description": "The submitted at of the testsubmission."
           },
           "submission_data": {
             "type": "object",
@@ -13758,13 +15286,21 @@ const AcademySchema: Record<string, unknown> = {
                 }
               },
               "quizAbsPath": {
-                "type": "string"
+                "type": "string",
+                "description": "The quiz abs path of the quizsubmission.",
+                "maxLength": 500
               },
               "registrationId": {
-                "type": "string"
+                "type": "string",
+                "description": "ID of the associated registration.",
+                "maxLength": 500,
+                "format": "uuid"
               },
               "user_id": {
-                "type": "string"
+                "type": "string",
+                "description": "ID of the user who owns or created this resource.",
+                "maxLength": 500,
+                "format": "uuid"
               },
               "answers": {
                 "type": "array",
@@ -13778,19 +15314,27 @@ const AcademySchema: Record<string, unknown> = {
                   ],
                   "properties": {
                     "questionId": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "ID of the associated question.",
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "selectedOptionId": {
                       "type": "object",
                       "additionalProperties": {
                         "type": "boolean"
-                      }
+                      },
+                      "description": "ID of the associated selectedOption.",
+                      "format": "uuid"
                     },
                     "answerText": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The answer text of the submittedanswer.",
+                      "maxLength": 500
                     }
                   }
-                }
+                },
+                "description": "The answers of the quizsubmission."
               }
             },
             "x-go-type": "QuizSubmission",
@@ -13835,27 +15379,37 @@ const AcademySchema: Record<string, unknown> = {
             ],
             "properties": {
               "score": {
-                "type": "integer"
+                "type": "integer",
+                "description": "The score of the quizevaluationresult.",
+                "minimum": 0
               },
               "passed": {
-                "type": "boolean"
+                "type": "boolean",
+                "description": "The passed of the quizevaluationresult."
               },
               "percentageScored": {
                 "type": "number",
-                "format": "float"
+                "format": "float",
+                "description": "The percentage scored of the quizevaluationresult.",
+                "minimum": 0
               },
               "totalMarks": {
-                "type": "integer"
+                "type": "integer",
+                "description": "The total marks of the quizevaluationresult.",
+                "minimum": 0
               },
               "passPercentage": {
                 "type": "number",
-                "format": "float"
+                "format": "float",
+                "description": "The pass percentage of the quizevaluationresult.",
+                "minimum": 0
               },
               "correctSubmissions": {
                 "type": "object",
                 "additionalProperties": {
                   "type": "boolean"
-                }
+                },
+                "description": "The correct submissions of the quizevaluationresult."
               },
               "quiz": {
                 "x-go-type": "Quiz",
@@ -13894,7 +15448,10 @@ const AcademySchema: Record<string, unknown> = {
                     "x-go-name": "ID",
                     "x-oapi-codegen-extra-tags": {
                       "json": "id"
-                    }
+                    },
+                    "description": "Quiz ID.",
+                    "maxLength": 500,
+                    "format": "uuid"
                   },
                   "org_id": {
                     "type": "string",
@@ -13903,7 +15460,9 @@ const AcademySchema: Record<string, unknown> = {
                     "x-oapi-codegen-extra-tags": {
                       "db": "org_id",
                       "json": "org_id"
-                    }
+                    },
+                    "maxLength": 500,
+                    "format": "uuid"
                   },
                   "final": {
                     "type": "boolean",
@@ -13911,54 +15470,79 @@ const AcademySchema: Record<string, unknown> = {
                     "example": true
                   },
                   "title": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The title of the quiz.",
+                    "maxLength": 500
                   },
                   "description": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Description of the quiz.",
+                    "maxLength": 5000
                   },
                   "slug": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The slug of the quiz.",
+                    "maxLength": 500
                   },
                   "relPermalink": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The rel permalink of the quiz.",
+                    "maxLength": 500
                   },
                   "permalink": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The permalink of the quiz.",
+                    "maxLength": 500
                   },
                   "type": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Type of the resource.",
+                    "maxLength": 255
                   },
                   "section": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The section of the quiz.",
+                    "maxLength": 500
                   },
                   "layout": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The layout of the quiz.",
+                    "maxLength": 500
                   },
                   "date": {
                     "type": "string",
-                    "format": "date"
+                    "format": "date",
+                    "description": "The date of the quiz."
                   },
                   "lastmod": {
                     "type": "string",
-                    "format": "date"
+                    "format": "date",
+                    "description": "The lastmod of the quiz."
                   },
                   "draft": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "description": "The draft of the quiz."
                   },
                   "filePath": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The file path of the quiz.",
+                    "maxLength": 500
                   },
                   "passPercentage": {
                     "type": "number",
-                    "format": "float"
+                    "format": "float",
+                    "description": "The pass percentage of the quiz.",
+                    "minimum": 0
                   },
                   "timeLimit": {
                     "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 0
                   },
                   "maxAttempts": {
                     "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 0
                   },
                   "questions": {
                     "type": "array",
@@ -13975,10 +15559,15 @@ const AcademySchema: Record<string, unknown> = {
                       ],
                       "properties": {
                         "id": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "Question ID.",
+                          "maxLength": 500,
+                          "format": "uuid"
                         },
                         "text": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The text of the question.",
+                          "maxLength": 500
                         },
                         "type": {
                           "x-go-type": "QuestionType",
@@ -13997,10 +15586,13 @@ const AcademySchema: Record<string, unknown> = {
                           ]
                         },
                         "marks": {
-                          "type": "integer"
+                          "type": "integer",
+                          "description": "The marks of the question.",
+                          "minimum": 0
                         },
                         "multipleAnswers": {
-                          "type": "boolean"
+                          "type": "boolean",
+                          "description": "The multiple answers of the question."
                         },
                         "options": {
                           "type": "array",
@@ -14014,34 +15606,52 @@ const AcademySchema: Record<string, unknown> = {
                             ],
                             "properties": {
                               "id": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "QuestionOption ID.",
+                                "maxLength": 500,
+                                "format": "uuid"
                               },
                               "text": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "The text of the questionoption.",
+                                "maxLength": 500
                               },
                               "isCorrect": {
-                                "type": "boolean"
+                                "type": "boolean",
+                                "description": "The is correct of the questionoption."
                               }
                             }
-                          }
+                          },
+                          "description": "The options of the question."
                         },
                         "correctAnswer": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The correct answer of the question.",
+                          "maxLength": 500
                         }
                       }
-                    }
+                    },
+                    "description": "The questions of the quiz."
                   },
                   "totalQuestions": {
-                    "type": "integer"
+                    "type": "integer",
+                    "description": "The total questions of the quiz.",
+                    "minimum": 0
                   },
                   "totalQuestionsInBank": {
-                    "type": "integer"
+                    "type": "integer",
+                    "description": "The total questions in bank of the quiz.",
+                    "minimum": 0
                   },
                   "totalQuestionSets": {
-                    "type": "integer"
+                    "type": "integer",
+                    "description": "The total question sets of the quiz.",
+                    "minimum": 0
                   },
                   "totalMarks": {
-                    "type": "integer"
+                    "type": "integer",
+                    "description": "The total marks of the quiz.",
+                    "minimum": 0
                   },
                   "prerequisites": {
                     "type": "array",
@@ -14056,19 +15666,29 @@ const AcademySchema: Record<string, unknown> = {
                       ],
                       "properties": {
                         "id": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "Parent ID.",
+                          "maxLength": 500,
+                          "format": "uuid"
                         },
                         "title": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The title of the parent.",
+                          "maxLength": 500
                         },
                         "relPermalink": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The rel permalink of the parent.",
+                          "maxLength": 500
                         },
                         "type": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "Type of the resource.",
+                          "maxLength": 255
                         }
                       }
-                    }
+                    },
+                    "description": "The prerequisites of the quiz."
                   },
                   "parent": {
                     "x-go-type": "Parent",
@@ -14081,16 +15701,25 @@ const AcademySchema: Record<string, unknown> = {
                     ],
                     "properties": {
                       "id": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Parent ID.",
+                        "maxLength": 500,
+                        "format": "uuid"
                       },
                       "title": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The title of the parent.",
+                        "maxLength": 500
                       },
                       "relPermalink": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The rel permalink of the parent.",
+                        "maxLength": 500
                       },
                       "type": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Type of the resource.",
+                        "maxLength": 255
                       }
                     }
                   },
@@ -14105,16 +15734,25 @@ const AcademySchema: Record<string, unknown> = {
                     ],
                     "properties": {
                       "id": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Parent ID.",
+                        "maxLength": 500,
+                        "format": "uuid"
                       },
                       "title": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The title of the parent.",
+                        "maxLength": 500
                       },
                       "relPermalink": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The rel permalink of the parent.",
+                        "maxLength": 500
                       },
                       "type": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Type of the resource.",
+                        "maxLength": 255
                       }
                     }
                   }
@@ -14122,10 +15760,13 @@ const AcademySchema: Record<string, unknown> = {
               },
               "attemptedAt": {
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "description": "The attempted at of the quizevaluationresult."
               },
               "attempts": {
-                "type": "integer"
+                "type": "integer",
+                "description": "The attempts of the quizevaluationresult.",
+                "minimum": 0
               }
             },
             "x-go-type": "QuizEvaluationResult",
@@ -14169,7 +15810,10 @@ const AcademySchema: Record<string, unknown> = {
                 "x-go-name": "ID",
                 "x-oapi-codegen-extra-tags": {
                   "json": "id"
-                }
+                },
+                "description": "Quiz ID.",
+                "maxLength": 500,
+                "format": "uuid"
               },
               "org_id": {
                 "type": "string",
@@ -14178,7 +15822,9 @@ const AcademySchema: Record<string, unknown> = {
                 "x-oapi-codegen-extra-tags": {
                   "db": "org_id",
                   "json": "org_id"
-                }
+                },
+                "maxLength": 500,
+                "format": "uuid"
               },
               "final": {
                 "type": "boolean",
@@ -14186,54 +15832,79 @@ const AcademySchema: Record<string, unknown> = {
                 "example": true
               },
               "title": {
-                "type": "string"
+                "type": "string",
+                "description": "The title of the quiz.",
+                "maxLength": 500
               },
               "description": {
-                "type": "string"
+                "type": "string",
+                "description": "Description of the quiz.",
+                "maxLength": 5000
               },
               "slug": {
-                "type": "string"
+                "type": "string",
+                "description": "The slug of the quiz.",
+                "maxLength": 500
               },
               "relPermalink": {
-                "type": "string"
+                "type": "string",
+                "description": "The rel permalink of the quiz.",
+                "maxLength": 500
               },
               "permalink": {
-                "type": "string"
+                "type": "string",
+                "description": "The permalink of the quiz.",
+                "maxLength": 500
               },
               "type": {
-                "type": "string"
+                "type": "string",
+                "description": "Type of the resource.",
+                "maxLength": 255
               },
               "section": {
-                "type": "string"
+                "type": "string",
+                "description": "The section of the quiz.",
+                "maxLength": 500
               },
               "layout": {
-                "type": "string"
+                "type": "string",
+                "description": "The layout of the quiz.",
+                "maxLength": 500
               },
               "date": {
                 "type": "string",
-                "format": "date"
+                "format": "date",
+                "description": "The date of the quiz."
               },
               "lastmod": {
                 "type": "string",
-                "format": "date"
+                "format": "date",
+                "description": "The lastmod of the quiz."
               },
               "draft": {
-                "type": "boolean"
+                "type": "boolean",
+                "description": "The draft of the quiz."
               },
               "filePath": {
-                "type": "string"
+                "type": "string",
+                "description": "The file path of the quiz.",
+                "maxLength": 500
               },
               "passPercentage": {
                 "type": "number",
-                "format": "float"
+                "format": "float",
+                "description": "The pass percentage of the quiz.",
+                "minimum": 0
               },
               "timeLimit": {
                 "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
-                "type": "integer"
+                "type": "integer",
+                "minimum": 0
               },
               "maxAttempts": {
                 "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
-                "type": "integer"
+                "type": "integer",
+                "minimum": 0
               },
               "questions": {
                 "type": "array",
@@ -14250,10 +15921,15 @@ const AcademySchema: Record<string, unknown> = {
                   ],
                   "properties": {
                     "id": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Question ID.",
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "text": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The text of the question.",
+                      "maxLength": 500
                     },
                     "type": {
                       "x-go-type": "QuestionType",
@@ -14272,10 +15948,13 @@ const AcademySchema: Record<string, unknown> = {
                       ]
                     },
                     "marks": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "The marks of the question.",
+                      "minimum": 0
                     },
                     "multipleAnswers": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "The multiple answers of the question."
                     },
                     "options": {
                       "type": "array",
@@ -14289,34 +15968,52 @@ const AcademySchema: Record<string, unknown> = {
                         ],
                         "properties": {
                           "id": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "QuestionOption ID.",
+                            "maxLength": 500,
+                            "format": "uuid"
                           },
                           "text": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The text of the questionoption.",
+                            "maxLength": 500
                           },
                           "isCorrect": {
-                            "type": "boolean"
+                            "type": "boolean",
+                            "description": "The is correct of the questionoption."
                           }
                         }
-                      }
+                      },
+                      "description": "The options of the question."
                     },
                     "correctAnswer": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The correct answer of the question.",
+                      "maxLength": 500
                     }
                   }
-                }
+                },
+                "description": "The questions of the quiz."
               },
               "totalQuestions": {
-                "type": "integer"
+                "type": "integer",
+                "description": "The total questions of the quiz.",
+                "minimum": 0
               },
               "totalQuestionsInBank": {
-                "type": "integer"
+                "type": "integer",
+                "description": "The total questions in bank of the quiz.",
+                "minimum": 0
               },
               "totalQuestionSets": {
-                "type": "integer"
+                "type": "integer",
+                "description": "The total question sets of the quiz.",
+                "minimum": 0
               },
               "totalMarks": {
-                "type": "integer"
+                "type": "integer",
+                "description": "The total marks of the quiz.",
+                "minimum": 0
               },
               "prerequisites": {
                 "type": "array",
@@ -14331,19 +16028,29 @@ const AcademySchema: Record<string, unknown> = {
                   ],
                   "properties": {
                     "id": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Parent ID.",
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "title": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The title of the parent.",
+                      "maxLength": 500
                     },
                     "relPermalink": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The rel permalink of the parent.",
+                      "maxLength": 500
                     },
                     "type": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Type of the resource.",
+                      "maxLength": 255
                     }
                   }
-                }
+                },
+                "description": "The prerequisites of the quiz."
               },
               "parent": {
                 "x-go-type": "Parent",
@@ -14356,16 +16063,25 @@ const AcademySchema: Record<string, unknown> = {
                 ],
                 "properties": {
                   "id": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Parent ID.",
+                    "maxLength": 500,
+                    "format": "uuid"
                   },
                   "title": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The title of the parent.",
+                    "maxLength": 500
                   },
                   "relPermalink": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The rel permalink of the parent.",
+                    "maxLength": 500
                   },
                   "type": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Type of the resource.",
+                    "maxLength": 255
                   }
                 }
               },
@@ -14380,16 +16096,25 @@ const AcademySchema: Record<string, unknown> = {
                 ],
                 "properties": {
                   "id": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Parent ID.",
+                    "maxLength": 500,
+                    "format": "uuid"
                   },
                   "title": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The title of the parent.",
+                    "maxLength": 500
                   },
                   "relPermalink": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The rel permalink of the parent.",
+                    "maxLength": 500
                   },
                   "type": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Type of the resource.",
+                    "maxLength": 255
                   }
                 }
               }
@@ -14413,27 +16138,37 @@ const AcademySchema: Record<string, unknown> = {
         ],
         "properties": {
           "score": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The score of the quizevaluationresult.",
+            "minimum": 0
           },
           "passed": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "The passed of the quizevaluationresult."
           },
           "percentageScored": {
             "type": "number",
-            "format": "float"
+            "format": "float",
+            "description": "The percentage scored of the quizevaluationresult.",
+            "minimum": 0
           },
           "totalMarks": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The total marks of the quizevaluationresult.",
+            "minimum": 0
           },
           "passPercentage": {
             "type": "number",
-            "format": "float"
+            "format": "float",
+            "description": "The pass percentage of the quizevaluationresult.",
+            "minimum": 0
           },
           "correctSubmissions": {
             "type": "object",
             "additionalProperties": {
               "type": "boolean"
-            }
+            },
+            "description": "The correct submissions of the quizevaluationresult."
           },
           "quiz": {
             "x-go-type": "Quiz",
@@ -14472,7 +16207,10 @@ const AcademySchema: Record<string, unknown> = {
                 "x-go-name": "ID",
                 "x-oapi-codegen-extra-tags": {
                   "json": "id"
-                }
+                },
+                "description": "Quiz ID.",
+                "maxLength": 500,
+                "format": "uuid"
               },
               "org_id": {
                 "type": "string",
@@ -14481,7 +16219,9 @@ const AcademySchema: Record<string, unknown> = {
                 "x-oapi-codegen-extra-tags": {
                   "db": "org_id",
                   "json": "org_id"
-                }
+                },
+                "maxLength": 500,
+                "format": "uuid"
               },
               "final": {
                 "type": "boolean",
@@ -14489,54 +16229,79 @@ const AcademySchema: Record<string, unknown> = {
                 "example": true
               },
               "title": {
-                "type": "string"
+                "type": "string",
+                "description": "The title of the quiz.",
+                "maxLength": 500
               },
               "description": {
-                "type": "string"
+                "type": "string",
+                "description": "Description of the quiz.",
+                "maxLength": 5000
               },
               "slug": {
-                "type": "string"
+                "type": "string",
+                "description": "The slug of the quiz.",
+                "maxLength": 500
               },
               "relPermalink": {
-                "type": "string"
+                "type": "string",
+                "description": "The rel permalink of the quiz.",
+                "maxLength": 500
               },
               "permalink": {
-                "type": "string"
+                "type": "string",
+                "description": "The permalink of the quiz.",
+                "maxLength": 500
               },
               "type": {
-                "type": "string"
+                "type": "string",
+                "description": "Type of the resource.",
+                "maxLength": 255
               },
               "section": {
-                "type": "string"
+                "type": "string",
+                "description": "The section of the quiz.",
+                "maxLength": 500
               },
               "layout": {
-                "type": "string"
+                "type": "string",
+                "description": "The layout of the quiz.",
+                "maxLength": 500
               },
               "date": {
                 "type": "string",
-                "format": "date"
+                "format": "date",
+                "description": "The date of the quiz."
               },
               "lastmod": {
                 "type": "string",
-                "format": "date"
+                "format": "date",
+                "description": "The lastmod of the quiz."
               },
               "draft": {
-                "type": "boolean"
+                "type": "boolean",
+                "description": "The draft of the quiz."
               },
               "filePath": {
-                "type": "string"
+                "type": "string",
+                "description": "The file path of the quiz.",
+                "maxLength": 500
               },
               "passPercentage": {
                 "type": "number",
-                "format": "float"
+                "format": "float",
+                "description": "The pass percentage of the quiz.",
+                "minimum": 0
               },
               "timeLimit": {
                 "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
-                "type": "integer"
+                "type": "integer",
+                "minimum": 0
               },
               "maxAttempts": {
                 "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
-                "type": "integer"
+                "type": "integer",
+                "minimum": 0
               },
               "questions": {
                 "type": "array",
@@ -14553,10 +16318,15 @@ const AcademySchema: Record<string, unknown> = {
                   ],
                   "properties": {
                     "id": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Question ID.",
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "text": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The text of the question.",
+                      "maxLength": 500
                     },
                     "type": {
                       "x-go-type": "QuestionType",
@@ -14575,10 +16345,13 @@ const AcademySchema: Record<string, unknown> = {
                       ]
                     },
                     "marks": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "The marks of the question.",
+                      "minimum": 0
                     },
                     "multipleAnswers": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "The multiple answers of the question."
                     },
                     "options": {
                       "type": "array",
@@ -14592,34 +16365,52 @@ const AcademySchema: Record<string, unknown> = {
                         ],
                         "properties": {
                           "id": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "QuestionOption ID.",
+                            "maxLength": 500,
+                            "format": "uuid"
                           },
                           "text": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The text of the questionoption.",
+                            "maxLength": 500
                           },
                           "isCorrect": {
-                            "type": "boolean"
+                            "type": "boolean",
+                            "description": "The is correct of the questionoption."
                           }
                         }
-                      }
+                      },
+                      "description": "The options of the question."
                     },
                     "correctAnswer": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The correct answer of the question.",
+                      "maxLength": 500
                     }
                   }
-                }
+                },
+                "description": "The questions of the quiz."
               },
               "totalQuestions": {
-                "type": "integer"
+                "type": "integer",
+                "description": "The total questions of the quiz.",
+                "minimum": 0
               },
               "totalQuestionsInBank": {
-                "type": "integer"
+                "type": "integer",
+                "description": "The total questions in bank of the quiz.",
+                "minimum": 0
               },
               "totalQuestionSets": {
-                "type": "integer"
+                "type": "integer",
+                "description": "The total question sets of the quiz.",
+                "minimum": 0
               },
               "totalMarks": {
-                "type": "integer"
+                "type": "integer",
+                "description": "The total marks of the quiz.",
+                "minimum": 0
               },
               "prerequisites": {
                 "type": "array",
@@ -14634,19 +16425,29 @@ const AcademySchema: Record<string, unknown> = {
                   ],
                   "properties": {
                     "id": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Parent ID.",
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "title": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The title of the parent.",
+                      "maxLength": 500
                     },
                     "relPermalink": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The rel permalink of the parent.",
+                      "maxLength": 500
                     },
                     "type": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Type of the resource.",
+                      "maxLength": 255
                     }
                   }
-                }
+                },
+                "description": "The prerequisites of the quiz."
               },
               "parent": {
                 "x-go-type": "Parent",
@@ -14659,16 +16460,25 @@ const AcademySchema: Record<string, unknown> = {
                 ],
                 "properties": {
                   "id": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Parent ID.",
+                    "maxLength": 500,
+                    "format": "uuid"
                   },
                   "title": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The title of the parent.",
+                    "maxLength": 500
                   },
                   "relPermalink": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The rel permalink of the parent.",
+                    "maxLength": 500
                   },
                   "type": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Type of the resource.",
+                    "maxLength": 255
                   }
                 }
               },
@@ -14683,16 +16493,25 @@ const AcademySchema: Record<string, unknown> = {
                 ],
                 "properties": {
                   "id": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Parent ID.",
+                    "maxLength": 500,
+                    "format": "uuid"
                   },
                   "title": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The title of the parent.",
+                    "maxLength": 500
                   },
                   "relPermalink": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The rel permalink of the parent.",
+                    "maxLength": 500
                   },
                   "type": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Type of the resource.",
+                    "maxLength": 255
                   }
                 }
               }
@@ -14700,10 +16519,13 @@ const AcademySchema: Record<string, unknown> = {
           },
           "attemptedAt": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "The attempted at of the quizevaluationresult."
           },
           "attempts": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The attempts of the quizevaluationresult.",
+            "minimum": 0
           }
         }
       },
@@ -14728,7 +16550,8 @@ const AcademySchema: Record<string, unknown> = {
             "description": "Title of the curricula",
             "x-oapi-codegen-extra-tags": {
               "db": "curricula_title"
-            }
+            },
+            "maxLength": 500
           },
           "curricula_type": {
             "type": "string",
@@ -14748,7 +16571,8 @@ const AcademySchema: Record<string, unknown> = {
             "description": "Permalink of the curricula",
             "x-oapi-codegen-extra-tags": {
               "db": "curricula_permalink"
-            }
+            },
+            "maxLength": 500
           },
           "registration_id": {
             "type": "string",
@@ -14793,14 +16617,16 @@ const AcademySchema: Record<string, unknown> = {
             "description": "First name of the user",
             "x-oapi-codegen-extra-tags": {
               "db": "user_first_name"
-            }
+            },
+            "maxLength": 500
           },
           "user_last_name": {
             "type": "string",
             "description": "Last name of the user",
             "x-oapi-codegen-extra-tags": {
               "db": "user_last_name"
-            }
+            },
+            "maxLength": 500
           },
           "user_email": {
             "type": "string",
@@ -14824,7 +16650,8 @@ const AcademySchema: Record<string, unknown> = {
             "description": "Total count for pagination",
             "x-oapi-codegen-extra-tags": {
               "db": "total_count"
-            }
+            },
+            "minimum": 0
           }
         }
       },
@@ -14838,22 +16665,28 @@ const AcademySchema: Record<string, unknown> = {
         ],
         "properties": {
           "pagesize": {
-            "type": "integer"
+            "type": "integer",
+            "description": "The pagesize of the curricularegistrationsfilter.",
+            "minimum": 0
           },
           "page": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Current page number of the result set.",
+            "minimum": 0
           },
           "contentType": {
             "type": "array",
             "items": {
               "type": "string"
-            }
+            },
+            "description": "The content type of the curricularegistrationsfilter."
           },
           "status": {
             "type": "array",
             "items": {
               "type": "string"
-            }
+            },
+            "description": "Current status of the resource."
           }
         }
       },
@@ -14890,7 +16723,8 @@ const AcademySchema: Record<string, unknown> = {
                   "description": "Title of the curricula",
                   "x-oapi-codegen-extra-tags": {
                     "db": "curricula_title"
-                  }
+                  },
+                  "maxLength": 500
                 },
                 "curricula_type": {
                   "type": "string",
@@ -14910,7 +16744,8 @@ const AcademySchema: Record<string, unknown> = {
                   "description": "Permalink of the curricula",
                   "x-oapi-codegen-extra-tags": {
                     "db": "curricula_permalink"
-                  }
+                  },
+                  "maxLength": 500
                 },
                 "registration_id": {
                   "type": "string",
@@ -14955,14 +16790,16 @@ const AcademySchema: Record<string, unknown> = {
                   "description": "First name of the user",
                   "x-oapi-codegen-extra-tags": {
                     "db": "user_first_name"
-                  }
+                  },
+                  "maxLength": 500
                 },
                 "user_last_name": {
                   "type": "string",
                   "description": "Last name of the user",
                   "x-oapi-codegen-extra-tags": {
                     "db": "user_last_name"
-                  }
+                  },
+                  "maxLength": 500
                 },
                 "user_email": {
                   "type": "string",
@@ -14986,20 +16823,28 @@ const AcademySchema: Record<string, unknown> = {
                   "description": "Total count for pagination",
                   "x-oapi-codegen-extra-tags": {
                     "db": "total_count"
-                  }
+                  },
+                  "minimum": 0
                 }
               }
-            }
+            },
+            "description": "The data of the curricularegistrationsresponse."
           },
           "total_count": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "description": "Total number of items available.",
+            "minimum": 0
           },
           "page_size": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Number of items per page.",
+            "minimum": 1
           },
           "page": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Current page number of the result set.",
+            "minimum": 0
           }
         }
       },
@@ -15007,7 +16852,9 @@ const AcademySchema: Record<string, unknown> = {
         "type": "object",
         "properties": {
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "The message of the updatecurrentitemprogressresponse.",
+            "maxLength": 500
           },
           "progressTracker": {
             "type": "object",
@@ -15031,11 +16878,15 @@ const AcademySchema: Record<string, unknown> = {
                   ],
                   "properties": {
                     "id": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "CurriculaCurrentItemData ID.",
+                      "maxLength": 500,
+                      "format": "uuid"
                     },
                     "lastOpened": {
                       "type": "string",
-                      "format": "date-time"
+                      "format": "date-time",
+                      "description": "The last opened of the curriculacurrentitemdata."
                     },
                     "contentType": {
                       "type": "string",
@@ -15047,7 +16898,8 @@ const AcademySchema: Record<string, unknown> = {
                       "x-go-type": "ContentType"
                     }
                   }
-                }
+                },
+                "description": "The current item of the curriculaprogresstracker."
               },
               "grades": {
                 "type": "object",
@@ -15067,27 +16919,37 @@ const AcademySchema: Record<string, unknown> = {
                   ],
                   "properties": {
                     "score": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "The score of the quizevaluationresult.",
+                      "minimum": 0
                     },
                     "passed": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "The passed of the quizevaluationresult."
                     },
                     "percentageScored": {
                       "type": "number",
-                      "format": "float"
+                      "format": "float",
+                      "description": "The percentage scored of the quizevaluationresult.",
+                      "minimum": 0
                     },
                     "totalMarks": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "The total marks of the quizevaluationresult.",
+                      "minimum": 0
                     },
                     "passPercentage": {
                       "type": "number",
-                      "format": "float"
+                      "format": "float",
+                      "description": "The pass percentage of the quizevaluationresult.",
+                      "minimum": 0
                     },
                     "correctSubmissions": {
                       "type": "object",
                       "additionalProperties": {
                         "type": "boolean"
-                      }
+                      },
+                      "description": "The correct submissions of the quizevaluationresult."
                     },
                     "quiz": {
                       "x-go-type": "Quiz",
@@ -15126,7 +16988,10 @@ const AcademySchema: Record<string, unknown> = {
                           "x-go-name": "ID",
                           "x-oapi-codegen-extra-tags": {
                             "json": "id"
-                          }
+                          },
+                          "description": "Quiz ID.",
+                          "maxLength": 500,
+                          "format": "uuid"
                         },
                         "org_id": {
                           "type": "string",
@@ -15135,7 +17000,9 @@ const AcademySchema: Record<string, unknown> = {
                           "x-oapi-codegen-extra-tags": {
                             "db": "org_id",
                             "json": "org_id"
-                          }
+                          },
+                          "maxLength": 500,
+                          "format": "uuid"
                         },
                         "final": {
                           "type": "boolean",
@@ -15143,54 +17010,79 @@ const AcademySchema: Record<string, unknown> = {
                           "example": true
                         },
                         "title": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The title of the quiz.",
+                          "maxLength": 500
                         },
                         "description": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "Description of the quiz.",
+                          "maxLength": 5000
                         },
                         "slug": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The slug of the quiz.",
+                          "maxLength": 500
                         },
                         "relPermalink": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The rel permalink of the quiz.",
+                          "maxLength": 500
                         },
                         "permalink": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The permalink of the quiz.",
+                          "maxLength": 500
                         },
                         "type": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "Type of the resource.",
+                          "maxLength": 255
                         },
                         "section": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The section of the quiz.",
+                          "maxLength": 500
                         },
                         "layout": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The layout of the quiz.",
+                          "maxLength": 500
                         },
                         "date": {
                           "type": "string",
-                          "format": "date"
+                          "format": "date",
+                          "description": "The date of the quiz."
                         },
                         "lastmod": {
                           "type": "string",
-                          "format": "date"
+                          "format": "date",
+                          "description": "The lastmod of the quiz."
                         },
                         "draft": {
-                          "type": "boolean"
+                          "type": "boolean",
+                          "description": "The draft of the quiz."
                         },
                         "filePath": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The file path of the quiz.",
+                          "maxLength": 500
                         },
                         "passPercentage": {
                           "type": "number",
-                          "format": "float"
+                          "format": "float",
+                          "description": "The pass percentage of the quiz.",
+                          "minimum": 0
                         },
                         "timeLimit": {
                           "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
-                          "type": "integer"
+                          "type": "integer",
+                          "minimum": 0
                         },
                         "maxAttempts": {
                           "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
-                          "type": "integer"
+                          "type": "integer",
+                          "minimum": 0
                         },
                         "questions": {
                           "type": "array",
@@ -15207,10 +17099,15 @@ const AcademySchema: Record<string, unknown> = {
                             ],
                             "properties": {
                               "id": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "Question ID.",
+                                "maxLength": 500,
+                                "format": "uuid"
                               },
                               "text": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "The text of the question.",
+                                "maxLength": 500
                               },
                               "type": {
                                 "x-go-type": "QuestionType",
@@ -15229,10 +17126,13 @@ const AcademySchema: Record<string, unknown> = {
                                 ]
                               },
                               "marks": {
-                                "type": "integer"
+                                "type": "integer",
+                                "description": "The marks of the question.",
+                                "minimum": 0
                               },
                               "multipleAnswers": {
-                                "type": "boolean"
+                                "type": "boolean",
+                                "description": "The multiple answers of the question."
                               },
                               "options": {
                                 "type": "array",
@@ -15246,34 +17146,52 @@ const AcademySchema: Record<string, unknown> = {
                                   ],
                                   "properties": {
                                     "id": {
-                                      "type": "string"
+                                      "type": "string",
+                                      "description": "QuestionOption ID.",
+                                      "maxLength": 500,
+                                      "format": "uuid"
                                     },
                                     "text": {
-                                      "type": "string"
+                                      "type": "string",
+                                      "description": "The text of the questionoption.",
+                                      "maxLength": 500
                                     },
                                     "isCorrect": {
-                                      "type": "boolean"
+                                      "type": "boolean",
+                                      "description": "The is correct of the questionoption."
                                     }
                                   }
-                                }
+                                },
+                                "description": "The options of the question."
                               },
                               "correctAnswer": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "The correct answer of the question.",
+                                "maxLength": 500
                               }
                             }
-                          }
+                          },
+                          "description": "The questions of the quiz."
                         },
                         "totalQuestions": {
-                          "type": "integer"
+                          "type": "integer",
+                          "description": "The total questions of the quiz.",
+                          "minimum": 0
                         },
                         "totalQuestionsInBank": {
-                          "type": "integer"
+                          "type": "integer",
+                          "description": "The total questions in bank of the quiz.",
+                          "minimum": 0
                         },
                         "totalQuestionSets": {
-                          "type": "integer"
+                          "type": "integer",
+                          "description": "The total question sets of the quiz.",
+                          "minimum": 0
                         },
                         "totalMarks": {
-                          "type": "integer"
+                          "type": "integer",
+                          "description": "The total marks of the quiz.",
+                          "minimum": 0
                         },
                         "prerequisites": {
                           "type": "array",
@@ -15288,19 +17206,29 @@ const AcademySchema: Record<string, unknown> = {
                             ],
                             "properties": {
                               "id": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "Parent ID.",
+                                "maxLength": 500,
+                                "format": "uuid"
                               },
                               "title": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "The title of the parent.",
+                                "maxLength": 500
                               },
                               "relPermalink": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "The rel permalink of the parent.",
+                                "maxLength": 500
                               },
                               "type": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "Type of the resource.",
+                                "maxLength": 255
                               }
                             }
-                          }
+                          },
+                          "description": "The prerequisites of the quiz."
                         },
                         "parent": {
                           "x-go-type": "Parent",
@@ -15313,16 +17241,25 @@ const AcademySchema: Record<string, unknown> = {
                           ],
                           "properties": {
                             "id": {
-                              "type": "string"
+                              "type": "string",
+                              "description": "Parent ID.",
+                              "maxLength": 500,
+                              "format": "uuid"
                             },
                             "title": {
-                              "type": "string"
+                              "type": "string",
+                              "description": "The title of the parent.",
+                              "maxLength": 500
                             },
                             "relPermalink": {
-                              "type": "string"
+                              "type": "string",
+                              "description": "The rel permalink of the parent.",
+                              "maxLength": 500
                             },
                             "type": {
-                              "type": "string"
+                              "type": "string",
+                              "description": "Type of the resource.",
+                              "maxLength": 255
                             }
                           }
                         },
@@ -15337,16 +17274,25 @@ const AcademySchema: Record<string, unknown> = {
                           ],
                           "properties": {
                             "id": {
-                              "type": "string"
+                              "type": "string",
+                              "description": "Parent ID.",
+                              "maxLength": 500,
+                              "format": "uuid"
                             },
                             "title": {
-                              "type": "string"
+                              "type": "string",
+                              "description": "The title of the parent.",
+                              "maxLength": 500
                             },
                             "relPermalink": {
-                              "type": "string"
+                              "type": "string",
+                              "description": "The rel permalink of the parent.",
+                              "maxLength": 500
                             },
                             "type": {
-                              "type": "string"
+                              "type": "string",
+                              "description": "Type of the resource.",
+                              "maxLength": 255
                             }
                           }
                         }
@@ -15354,17 +17300,22 @@ const AcademySchema: Record<string, unknown> = {
                     },
                     "attemptedAt": {
                       "type": "string",
-                      "format": "date-time"
+                      "format": "date-time",
+                      "description": "The attempted at of the quizevaluationresult."
                     },
                     "attempts": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "The attempts of the quizevaluationresult.",
+                      "minimum": 0
                     }
                   }
-                }
+                },
+                "description": "The grades of the curriculaprogresstracker."
               },
               "timeSpent": {
                 "type": "integer",
-                "description": "Total time spent in seconds"
+                "description": "Total time spent in seconds",
+                "minimum": 0
               },
               "completedItems": {
                 "type": "object",
@@ -15393,16 +17344,25 @@ const AcademySchema: Record<string, unknown> = {
                       ],
                       "properties": {
                         "id": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "Parent ID.",
+                          "maxLength": 500,
+                          "format": "uuid"
                         },
                         "title": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The title of the parent.",
+                          "maxLength": 500
                         },
                         "relPermalink": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "The rel permalink of the parent.",
+                          "maxLength": 500
                         },
                         "type": {
-                          "type": "string"
+                          "type": "string",
+                          "description": "Type of the resource.",
+                          "maxLength": 255
                         }
                       }
                     }
@@ -15412,12 +17372,16 @@ const AcademySchema: Record<string, unknown> = {
               "completed": {
                 "type": "string",
                 "format": "date-time",
-                "x-go-type": "core.NullTime"
+                "x-go-type": "core.NullTime",
+                "description": "The completed of the curriculaprogresstracker."
               }
             }
           },
           "registrationId": {
-            "type": "string"
+            "type": "string",
+            "description": "ID of the associated registration.",
+            "maxLength": 500,
+            "format": "uuid"
           },
           "contentType": {
             "type": "string",
@@ -15436,11 +17400,15 @@ const AcademySchema: Record<string, unknown> = {
             ],
             "properties": {
               "id": {
-                "type": "string"
+                "type": "string",
+                "description": "CurriculaCurrentItemData ID.",
+                "maxLength": 500,
+                "format": "uuid"
               },
               "lastOpened": {
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "description": "The last opened of the curriculacurrentitemdata."
               },
               "contentType": {
                 "type": "string",

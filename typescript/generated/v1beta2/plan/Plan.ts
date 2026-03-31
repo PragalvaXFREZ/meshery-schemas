@@ -12,9 +12,13 @@ export interface paths {
 export interface components {
   schemas: {
     PlanPage: {
+      /** @description Current page number of the result set. */
       page: number;
+      /** @description Number of items per page. */
       page_size: number;
+      /** @description Total number of items available. */
       total_count: number;
+      /** @description The plans of the planpage. */
       plans: {
         /**
          * Format: uuid

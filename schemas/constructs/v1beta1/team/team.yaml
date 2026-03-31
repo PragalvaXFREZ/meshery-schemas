@@ -22,6 +22,8 @@ properties:
     x-order: 2
     type: string
     description: Team name
+    minLength: 1
+    maxLength: 255
   description:
     x-oapi-codegen-extra-tags:
       db: description
@@ -29,6 +31,7 @@ properties:
     x-order: 3
     type: string
     description: Team description
+    maxLength: 5000
   owner:
     x-oapi-codegen-extra-tags:
       db: owner

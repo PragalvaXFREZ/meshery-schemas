@@ -234,15 +234,19 @@ components:
             $ref: '#/components/schemas/UserToken'
             x-go-type: UserToken
           x-order: 1
+          description: The tokens of the tokenpage.
         total_count:
           type: integer
           description: Total number of tokens across all pages.
           x-order: 2
+          minimum: 0
         page:
           type: integer
           description: Current page number (zero-based).
           x-order: 3
+          minimum: 0
         page_size:
           type: integer
           description: Number of tokens per page.
           x-order: 4
+          minimum: 1

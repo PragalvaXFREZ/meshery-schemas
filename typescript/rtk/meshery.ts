@@ -399,6 +399,7 @@ export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
   page?: number;
   page_size?: number;
   total_count?: number;
+  /** Environments associated with this resource. */
   environments?: {
     /** ID */
     id: string;
@@ -438,6 +439,7 @@ export type GetEnvironmentByIdApiResponse = /** status 200 Environment page */ {
   page?: number;
   page_size?: number;
   total_count?: number;
+  /** Environments associated with this resource. */
   environments?: {
     /** ID */
     id: string;
@@ -471,6 +473,7 @@ export type UpdateEnvironmentApiResponse = /** status 200 Environment page */ {
   page?: number;
   page_size?: number;
   total_count?: number;
+  /** Environments associated with this resource. */
   environments?: {
     /** ID */
     id: string;
@@ -513,9 +516,13 @@ export type DeleteEnvironmentApiArg = {
   environmentId: string;
 };
 export type GetEnvironmentConnectionsApiResponse = /** status 200 Environment connections */ {
+  /** Current page number of the result set. */
   page?: number;
+  /** Number of items per page. */
   page_size?: number;
+  /** Total number of items available. */
   total_count?: number;
+  /** The connections of the environmentconnectionspage. */
   connections?: {
     [key: string]: any;
   }[];
@@ -808,7 +815,9 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
           /** Version of the model as defined by the registrant. */
           version: string;
         };
+        /** The relationships of the model. */
         relationships: any;
+        /** The components of the model. */
         components: any;
         /** Number of components associated with the model. */
         componentsCount: number;
@@ -1507,6 +1516,7 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
   evaluationHash?: string;
   /** ISO 8601 formatted timestamp of when the evaluation was completed. */
   timestamp?: string;
+  /** The actions of the evaluationresponse. */
   actions: any;
 };
 export type PostEvaluateApiArg = {
@@ -1783,7 +1793,9 @@ export type PostEvaluateApiArg = {
             /** Version of the model as defined by the registrant. */
             version: string;
           };
+          /** The relationships of the model. */
           relationships: any;
+          /** The components of the model. */
           components: any;
           /** Number of components associated with the model. */
           componentsCount: number;
@@ -2478,6 +2490,7 @@ export type PostEvaluateApiArg = {
         }[];
       }[];
     };
+    /** The options of the evaluationrequest. */
     options?: {
       /** If true, only return the diff of changes instead of the complete updated design */
       returnDiffOnly?: boolean;
@@ -2490,6 +2503,7 @@ export type GetUserKeysApiResponse = /** status 200 Returns user keys based on r
   page: number;
   page_size: number;
   total_count: number;
+  /** The keys of the keypage. */
   keys: {
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id: string;
@@ -2549,13 +2563,18 @@ export type RegisterMeshmodelsApiArg = {
         };
     /** Choose the method you prefer to upload your model file. Select 'File Import' or 'CSV Import' if you have the file on your local system or 'URL Import' if you have the file hosted online. */
     uploadType: "file" | "urlImport" | "csv" | "url";
+    /** The register of the importrequest. */
     register: boolean;
   };
 };
 export type GetOrgsApiResponse = /** status 200 Organizations response */ {
+  /** Current page number of the result set. */
   page?: number;
+  /** Number of items per page. */
   page_size?: number;
+  /** Total number of items available. */
   total_count?: number;
+  /** The organizations of the organizationspage. */
   organizations?: {
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id?: string;
@@ -2567,25 +2586,35 @@ export type GetOrgsApiResponse = /** status 200 Organizations response */ {
     metadata?: {
       preferences: {
         theme: {
+          /** Theme ID. */
           id: string;
           logo: {
             desktopView: {
+              /** The svg of the location. */
               svg: string;
+              /** The location of the location. */
               location: string;
             };
             mobileView: {
+              /** The svg of the location. */
               svg: string;
+              /** The location of the location. */
               location: string;
             };
             darkDesktopView: {
+              /** The svg of the location. */
               svg: string;
+              /** The location of the location. */
               location: string;
             };
             darkMobileView: {
+              /** The svg of the location. */
               svg: string;
+              /** The location of the location. */
               location: string;
             };
           };
+          /** The vars of the theme. */
           vars?: {
             [key: string]: any;
           };
@@ -2614,9 +2643,13 @@ export type GetOrgsApiArg = {
   all?: boolean;
 };
 export type CreateOrgApiResponse = /** status 201 Single-organization page response */ {
+  /** Current page number of the result set. */
   page?: number;
+  /** Number of items per page. */
   page_size?: number;
+  /** Total number of items available. */
   total_count?: number;
+  /** The organizations of the organizationpage. */
   organizations?: {
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id?: string;
@@ -2628,25 +2661,35 @@ export type CreateOrgApiResponse = /** status 201 Single-organization page respo
     metadata?: {
       preferences: {
         theme: {
+          /** Theme ID. */
           id: string;
           logo: {
             desktopView: {
+              /** The svg of the location. */
               svg: string;
+              /** The location of the location. */
               location: string;
             };
             mobileView: {
+              /** The svg of the location. */
               svg: string;
+              /** The location of the location. */
               location: string;
             };
             darkDesktopView: {
+              /** The svg of the location. */
               svg: string;
+              /** The location of the location. */
               location: string;
             };
             darkMobileView: {
+              /** The svg of the location. */
               svg: string;
+              /** The location of the location. */
               location: string;
             };
           };
+          /** The vars of the theme. */
           vars?: {
             [key: string]: any;
           };
@@ -2669,28 +2712,39 @@ export type CreateOrgApiArg = {
     country?: string;
     region?: string;
     description?: string;
+    /** The notify org update of the organization. */
     notifyOrgUpdate?: boolean;
     preferences?: {
       theme: {
+        /** Theme ID. */
         id: string;
         logo: {
           desktopView: {
+            /** The svg of the location. */
             svg: string;
+            /** The location of the location. */
             location: string;
           };
           mobileView: {
+            /** The svg of the location. */
             svg: string;
+            /** The location of the location. */
             location: string;
           };
           darkDesktopView: {
+            /** The svg of the location. */
             svg: string;
+            /** The location of the location. */
             location: string;
           };
           darkMobileView: {
+            /** The svg of the location. */
             svg: string;
+            /** The location of the location. */
             location: string;
           };
         };
+        /** The vars of the theme. */
         vars?: {
           [key: string]: any;
         };
@@ -2705,34 +2759,48 @@ export type CreateOrgApiArg = {
 export type GetOrgByDomainApiResponse = /** status 200 Successful response */ {
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   id: string;
+  /** Name of the organization. */
   name: string;
+  /** The country of the organization. */
   country: string;
+  /** The region of the organization. */
   region: string;
+  /** Description of the organization. */
   description: string;
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   owner: string;
   metadata: {
     preferences: {
       theme: {
+        /** Theme ID. */
         id: string;
         logo: {
           desktopView: {
+            /** The svg of the location. */
             svg: string;
+            /** The location of the location. */
             location: string;
           };
           mobileView: {
+            /** The svg of the location. */
             svg: string;
+            /** The location of the location. */
             location: string;
           };
           darkDesktopView: {
+            /** The svg of the location. */
             svg: string;
+            /** The location of the location. */
             location: string;
           };
           darkMobileView: {
+            /** The svg of the location. */
             svg: string;
+            /** The location of the location. */
             location: string;
           };
         };
+        /** The vars of the theme. */
         vars?: {
           [key: string]: any;
         };
@@ -2746,15 +2814,20 @@ export type GetOrgByDomainApiResponse = /** status 200 Successful response */ {
   created_at: string;
   updated_at: string;
   deleted_at?: string;
+  /** The domain of the organization. */
   domain?: string | null;
 };
 export type GetOrgByDomainApiArg = {
   domain: string;
 };
 export type GetOrgApiResponse = /** status 200 Single-organization page response */ {
+  /** Current page number of the result set. */
   page?: number;
+  /** Number of items per page. */
   page_size?: number;
+  /** Total number of items available. */
   total_count?: number;
+  /** The organizations of the organizationpage. */
   organizations?: {
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id?: string;
@@ -2766,25 +2839,35 @@ export type GetOrgApiResponse = /** status 200 Single-organization page response
     metadata?: {
       preferences: {
         theme: {
+          /** Theme ID. */
           id: string;
           logo: {
             desktopView: {
+              /** The svg of the location. */
               svg: string;
+              /** The location of the location. */
               location: string;
             };
             mobileView: {
+              /** The svg of the location. */
               svg: string;
+              /** The location of the location. */
               location: string;
             };
             darkDesktopView: {
+              /** The svg of the location. */
               svg: string;
+              /** The location of the location. */
               location: string;
             };
             darkMobileView: {
+              /** The svg of the location. */
               svg: string;
+              /** The location of the location. */
               location: string;
             };
           };
+          /** The vars of the theme. */
           vars?: {
             [key: string]: any;
           };
@@ -2809,9 +2892,13 @@ export type DeleteOrgApiArg = {
 };
 export type HandleUpdateOrgApiResponse =
   /** status 200 Single-organization page response for the updated organization */ {
+    /** Current page number of the result set. */
     page?: number;
+    /** Number of items per page. */
     page_size?: number;
+    /** Total number of items available. */
     total_count?: number;
+    /** The organizations of the organizationpage. */
     organizations?: {
       /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
       id?: string;
@@ -2823,25 +2910,35 @@ export type HandleUpdateOrgApiResponse =
       metadata?: {
         preferences: {
           theme: {
+            /** Theme ID. */
             id: string;
             logo: {
               desktopView: {
+                /** The svg of the location. */
                 svg: string;
+                /** The location of the location. */
                 location: string;
               };
               mobileView: {
+                /** The svg of the location. */
                 svg: string;
+                /** The location of the location. */
                 location: string;
               };
               darkDesktopView: {
+                /** The svg of the location. */
                 svg: string;
+                /** The location of the location. */
                 location: string;
               };
               darkMobileView: {
+                /** The svg of the location. */
                 svg: string;
+                /** The location of the location. */
                 location: string;
               };
             };
+            /** The vars of the theme. */
             vars?: {
               [key: string]: any;
             };
@@ -2865,28 +2962,39 @@ export type HandleUpdateOrgApiArg = {
     country?: string;
     region?: string;
     description?: string;
+    /** The notify org update of the organization. */
     notifyOrgUpdate?: boolean;
     preferences?: {
       theme: {
+        /** Theme ID. */
         id: string;
         logo: {
           desktopView: {
+            /** The svg of the location. */
             svg: string;
+            /** The location of the location. */
             location: string;
           };
           mobileView: {
+            /** The svg of the location. */
             svg: string;
+            /** The location of the location. */
             location: string;
           };
           darkDesktopView: {
+            /** The svg of the location. */
             svg: string;
+            /** The location of the location. */
             location: string;
           };
           darkMobileView: {
+            /** The svg of the location. */
             svg: string;
+            /** The location of the location. */
             location: string;
           };
         };
+        /** The vars of the theme. */
         vars?: {
           [key: string]: any;
         };
@@ -2901,25 +3009,35 @@ export type HandleUpdateOrgApiArg = {
 export type GetOrgPreferencesApiResponse = /** status 200 Organization metadata, including preferences */ {
   preferences: {
     theme: {
+      /** Theme ID. */
       id: string;
       logo: {
         desktopView: {
+          /** The svg of the location. */
           svg: string;
+          /** The location of the location. */
           location: string;
         };
         mobileView: {
+          /** The svg of the location. */
           svg: string;
+          /** The location of the location. */
           location: string;
         };
         darkDesktopView: {
+          /** The svg of the location. */
           svg: string;
+          /** The location of the location. */
           location: string;
         };
         darkMobileView: {
+          /** The svg of the location. */
           svg: string;
+          /** The location of the location. */
           location: string;
         };
       };
+      /** The vars of the theme. */
       vars?: {
         [key: string]: any;
       };
@@ -2935,9 +3053,13 @@ export type GetOrgPreferencesApiArg = {
 };
 export type AddTeamToOrgApiResponse = /** status 201 Team added to organization or team tombstoned */
   | {
+      /** Current page number of the result set. */
       page?: number;
+      /** Number of items per page. */
       page_size?: number;
+      /** Total number of items available. */
       total_count?: number;
+      /** The teams organizations mapping of the teamsorganizationsmappingpage. */
       teamsOrganizationsMapping?: {
         id?: string;
         orgId?: string;
@@ -2948,9 +3070,13 @@ export type AddTeamToOrgApiResponse = /** status 201 Team added to organization 
       }[];
     }
   | {
+      /** Current page number of the result set. */
       page?: number;
+      /** Number of items per page. */
       page_size?: number;
+      /** Total number of items available. */
       total_count?: number;
+      /** The teams of the teamspage. */
       teams?: {
         id?: string;
         name?: string;
@@ -3031,9 +3157,13 @@ export type DeleteTeamApiArg = {
   teamId: string;
 };
 export type RemoveTeamFromOrgApiResponse = /** status 200 Team removed from organization */ {
+  /** Current page number of the result set. */
   page?: number;
+  /** Number of items per page. */
   page_size?: number;
+  /** Total number of items available. */
   total_count?: number;
+  /** The teams organizations mapping of the teamsorganizationsmappingpage. */
   teamsOrganizationsMapping?: {
     id?: string;
     orgId?: string;
@@ -3063,6 +3193,7 @@ export type GetTeamsApiResponse = /** status 200 Teams */ {
   page?: number;
   page_size?: number;
   total_count?: number;
+  /** The teams of the teampage. */
   teams?: {
     /** Team ID */
     id: string;
@@ -3123,6 +3254,7 @@ export type GetTeamUsersApiResponse = /** status 200 Team users mapping */ {
   page?: number;
   page_size?: number;
   total_count?: number;
+  /** The teams users mapping of the teamsusersmappingpage. */
   teamsUsersMapping?: {
     id?: string;
     team_id?: string;
@@ -3178,9 +3310,13 @@ export type RemoveUserFromTeamApiArg = {
   userId: string;
 };
 export type ListUsersNotInTeamApiResponse = /** status 200 Users not currently in the team */ {
+  /** Current page number of the result set. */
   page?: number;
+  /** Number of items per page. */
   page_size?: number;
+  /** Total number of items available. */
   total_count?: number;
+  /** The data of the teammemberspage. */
   data?: {
     [key: string]: any;
   }[];
@@ -3200,9 +3336,13 @@ export type ListUsersNotInTeamApiArg = {
   pagesize?: string;
 };
 export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organization users */ {
+  /** Current page number of the result set. */
   page?: number;
+  /** Number of items per page. */
   page_size?: number;
+  /** Total number of items available. */
   total_count?: number;
+  /** The data of the userspageforadmin. */
   data?: {
     /** Unique identifier for the user */
     id: string;
@@ -3232,23 +3372,33 @@ export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organiz
     };
     /** User preferences stored as JSONB */
     preferences?: {
+      /** The mesh adapters of the preference. */
       meshAdapters?: object[];
       grafana?: {
+        /** The grafana u r l of the grafana. */
         grafanaURL?: string;
+        /** The grafana a p i key of the grafana. */
         grafanaAPIKey?: string;
+        /** The selected boards configs of the grafana. */
         selectedBoardsConfigs?: {
           /** Placeholder for GrafanaBoard definition (define fields as needed) */
           board?: object;
+          /** The panels of the selectedgrafanaconfig. */
           panels?: object[];
+          /** The template vars of the selectedgrafanaconfig. */
           templateVars?: string[];
         }[];
       };
       prometheus?: {
+        /** The prometheus u r l of the prometheus. */
         prometheusURL?: string;
+        /** The selected prometheus boards configs of the prometheus. */
         selectedPrometheusBoardsConfigs?: {
           /** Placeholder for GrafanaBoard definition (define fields as needed) */
           board?: object;
+          /** The panels of the selectedgrafanaconfig. */
           panels?: object[];
+          /** The template vars of the selectedgrafanaconfig. */
           templateVars?: string[];
         }[];
       };
@@ -3262,19 +3412,27 @@ export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organiz
         /** Load generator */
         gen?: string;
       };
+      /** The anonymous usage stats of the preference. */
       anonymousUsageStats: boolean;
+      /** The anonymous perf results of the preference. */
       anonymousPerfResults: boolean;
+      /** Timestamp of when the resource was last updated. */
       updated_at: string;
+      /** The dashboard preferences of the preference. */
       dashboardPreferences: {
         [key: string]: any;
       };
+      /** ID of the associated selectedOrganization. */
       selectedOrganizationId: string;
+      /** The selected workspace for organizations of the preference. */
       selectedWorkspaceForOrganizations: {
         [key: string]: string;
       };
+      /** The users extension preferences of the preference. */
       usersExtensionPreferences: {
         [key: string]: any;
       };
+      /** The remote provider preferences of the preference. */
       remoteProviderPreferences: {
         [key: string]: any;
       };
@@ -3291,7 +3449,9 @@ export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organiz
     updated_at: string;
     /** Various online profiles associated with the user account */
     socials?: {
+      /** The site of the social. */
       site: string;
+      /** The link of the social. */
       link: string;
     }[];
     /** Timestamp when the user record was soft-deleted (null if not deleted) */
@@ -3336,9 +3496,13 @@ export type GetUsersForOrgApiArg = {
   teamId?: string;
 };
 export type GetUsersApiResponse = /** status 200 Paginated list of public users */ {
+  /** Current page number of the result set. */
   page?: number;
+  /** Number of items per page. */
   page_size?: number;
+  /** Total number of items available. */
   total_count?: number;
+  /** The data of the userspagefornonadmin. */
   data?: {
     /** Unique identifier for the user */
     id: string;
@@ -3368,23 +3532,33 @@ export type GetUsersApiResponse = /** status 200 Paginated list of public users 
     };
     /** User preferences stored as JSONB */
     preferences?: {
+      /** The mesh adapters of the preference. */
       meshAdapters?: object[];
       grafana?: {
+        /** The grafana u r l of the grafana. */
         grafanaURL?: string;
+        /** The grafana a p i key of the grafana. */
         grafanaAPIKey?: string;
+        /** The selected boards configs of the grafana. */
         selectedBoardsConfigs?: {
           /** Placeholder for GrafanaBoard definition (define fields as needed) */
           board?: object;
+          /** The panels of the selectedgrafanaconfig. */
           panels?: object[];
+          /** The template vars of the selectedgrafanaconfig. */
           templateVars?: string[];
         }[];
       };
       prometheus?: {
+        /** The prometheus u r l of the prometheus. */
         prometheusURL?: string;
+        /** The selected prometheus boards configs of the prometheus. */
         selectedPrometheusBoardsConfigs?: {
           /** Placeholder for GrafanaBoard definition (define fields as needed) */
           board?: object;
+          /** The panels of the selectedgrafanaconfig. */
           panels?: object[];
+          /** The template vars of the selectedgrafanaconfig. */
           templateVars?: string[];
         }[];
       };
@@ -3398,19 +3572,27 @@ export type GetUsersApiResponse = /** status 200 Paginated list of public users 
         /** Load generator */
         gen?: string;
       };
+      /** The anonymous usage stats of the preference. */
       anonymousUsageStats: boolean;
+      /** The anonymous perf results of the preference. */
       anonymousPerfResults: boolean;
+      /** Timestamp of when the resource was last updated. */
       updated_at: string;
+      /** The dashboard preferences of the preference. */
       dashboardPreferences: {
         [key: string]: any;
       };
+      /** ID of the associated selectedOrganization. */
       selectedOrganizationId: string;
+      /** The selected workspace for organizations of the preference. */
       selectedWorkspaceForOrganizations: {
         [key: string]: string;
       };
+      /** The users extension preferences of the preference. */
       usersExtensionPreferences: {
         [key: string]: any;
       };
+      /** The remote provider preferences of the preference. */
       remoteProviderPreferences: {
         [key: string]: any;
       };
@@ -3427,7 +3609,9 @@ export type GetUsersApiResponse = /** status 200 Paginated list of public users 
     updated_at: string;
     /** Various online profiles associated with the user account */
     socials?: {
+      /** The site of the social. */
       site: string;
+      /** The link of the social. */
       link: string;
     }[];
     /** Timestamp when the user record was soft-deleted (null if not deleted) */
@@ -3496,23 +3680,33 @@ export type GetUserProfileByIdApiResponse = /** status 200 User profile for the 
   };
   /** User preferences stored as JSONB */
   preferences?: {
+    /** The mesh adapters of the preference. */
     meshAdapters?: object[];
     grafana?: {
+      /** The grafana u r l of the grafana. */
       grafanaURL?: string;
+      /** The grafana a p i key of the grafana. */
       grafanaAPIKey?: string;
+      /** The selected boards configs of the grafana. */
       selectedBoardsConfigs?: {
         /** Placeholder for GrafanaBoard definition (define fields as needed) */
         board?: object;
+        /** The panels of the selectedgrafanaconfig. */
         panels?: object[];
+        /** The template vars of the selectedgrafanaconfig. */
         templateVars?: string[];
       }[];
     };
     prometheus?: {
+      /** The prometheus u r l of the prometheus. */
       prometheusURL?: string;
+      /** The selected prometheus boards configs of the prometheus. */
       selectedPrometheusBoardsConfigs?: {
         /** Placeholder for GrafanaBoard definition (define fields as needed) */
         board?: object;
+        /** The panels of the selectedgrafanaconfig. */
         panels?: object[];
+        /** The template vars of the selectedgrafanaconfig. */
         templateVars?: string[];
       }[];
     };
@@ -3526,19 +3720,27 @@ export type GetUserProfileByIdApiResponse = /** status 200 User profile for the 
       /** Load generator */
       gen?: string;
     };
+    /** The anonymous usage stats of the preference. */
     anonymousUsageStats: boolean;
+    /** The anonymous perf results of the preference. */
     anonymousPerfResults: boolean;
+    /** Timestamp of when the resource was last updated. */
     updated_at: string;
+    /** The dashboard preferences of the preference. */
     dashboardPreferences: {
       [key: string]: any;
     };
+    /** ID of the associated selectedOrganization. */
     selectedOrganizationId: string;
+    /** The selected workspace for organizations of the preference. */
     selectedWorkspaceForOrganizations: {
       [key: string]: string;
     };
+    /** The users extension preferences of the preference. */
     usersExtensionPreferences: {
       [key: string]: any;
     };
+    /** The remote provider preferences of the preference. */
     remoteProviderPreferences: {
       [key: string]: any;
     };
@@ -3555,7 +3757,9 @@ export type GetUserProfileByIdApiResponse = /** status 200 User profile for the 
   updated_at: string;
   /** Various online profiles associated with the user account */
   socials?: {
+    /** The site of the social. */
     site: string;
+    /** The link of the social. */
     link: string;
   }[];
   /** Timestamp when the user record was soft-deleted (null if not deleted) */
@@ -3615,23 +3819,33 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
   };
   /** User preferences stored as JSONB */
   preferences?: {
+    /** The mesh adapters of the preference. */
     meshAdapters?: object[];
     grafana?: {
+      /** The grafana u r l of the grafana. */
       grafanaURL?: string;
+      /** The grafana a p i key of the grafana. */
       grafanaAPIKey?: string;
+      /** The selected boards configs of the grafana. */
       selectedBoardsConfigs?: {
         /** Placeholder for GrafanaBoard definition (define fields as needed) */
         board?: object;
+        /** The panels of the selectedgrafanaconfig. */
         panels?: object[];
+        /** The template vars of the selectedgrafanaconfig. */
         templateVars?: string[];
       }[];
     };
     prometheus?: {
+      /** The prometheus u r l of the prometheus. */
       prometheusURL?: string;
+      /** The selected prometheus boards configs of the prometheus. */
       selectedPrometheusBoardsConfigs?: {
         /** Placeholder for GrafanaBoard definition (define fields as needed) */
         board?: object;
+        /** The panels of the selectedgrafanaconfig. */
         panels?: object[];
+        /** The template vars of the selectedgrafanaconfig. */
         templateVars?: string[];
       }[];
     };
@@ -3645,19 +3859,27 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
       /** Load generator */
       gen?: string;
     };
+    /** The anonymous usage stats of the preference. */
     anonymousUsageStats: boolean;
+    /** The anonymous perf results of the preference. */
     anonymousPerfResults: boolean;
+    /** Timestamp of when the resource was last updated. */
     updated_at: string;
+    /** The dashboard preferences of the preference. */
     dashboardPreferences: {
       [key: string]: any;
     };
+    /** ID of the associated selectedOrganization. */
     selectedOrganizationId: string;
+    /** The selected workspace for organizations of the preference. */
     selectedWorkspaceForOrganizations: {
       [key: string]: string;
     };
+    /** The users extension preferences of the preference. */
     usersExtensionPreferences: {
       [key: string]: any;
     };
+    /** The remote provider preferences of the preference. */
     remoteProviderPreferences: {
       [key: string]: any;
     };
@@ -3674,7 +3896,9 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
   updated_at: string;
   /** Various online profiles associated with the user account */
   socials?: {
+    /** The site of the social. */
     site: string;
+    /** The link of the social. */
     link: string;
   }[];
   /** Timestamp when the user record was soft-deleted (null if not deleted) */
@@ -4080,6 +4304,7 @@ export type PostEventsDeleteApiResponse = /** status 200 event deleted */ {
 };
 export type PostEventsDeleteApiArg = {
   body: {
+    /** The ids of the bulkdeleterequest. */
     ids: string[];
   };
 };
@@ -4088,7 +4313,9 @@ export type PutEventsStatusApiResponse = /** status 200 Events updated */ {
 };
 export type PutEventsStatusApiArg = {
   body: {
+    /** The ids of the bulkupdatestatusrequest. */
     ids: string[];
+    /** Current status of the resource. */
     status: string;
   };
 };
@@ -4101,6 +4328,7 @@ export type PutEventsByIdStatusApiArg = {
   /** ID of the event */
   id: string;
   body: {
+    /** Current status of the resource. */
     status: string;
   };
 };

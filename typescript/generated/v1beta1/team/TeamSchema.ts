@@ -212,7 +212,9 @@ const TeamSchema: Record<string, unknown> = {
             },
             "x-order": 2,
             "type": "string",
-            "description": "Team name"
+            "description": "Team name",
+            "minLength": 1,
+            "maxLength": 255
           },
           "description": {
             "x-oapi-codegen-extra-tags": {
@@ -221,7 +223,8 @@ const TeamSchema: Record<string, unknown> = {
             },
             "x-order": 3,
             "type": "string",
-            "description": "Team description"
+            "description": "Team description",
+            "maxLength": 5000
           },
           "owner": {
             "x-oapi-codegen-extra-tags": {
@@ -374,7 +377,9 @@ const TeamSchema: Record<string, unknown> = {
                   },
                   "x-order": 2,
                   "type": "string",
-                  "description": "Team name"
+                  "description": "Team name",
+                  "minLength": 1,
+                  "maxLength": 255
                 },
                 "description": {
                   "x-oapi-codegen-extra-tags": {
@@ -383,7 +388,8 @@ const TeamSchema: Record<string, unknown> = {
                   },
                   "x-order": 3,
                   "type": "string",
-                  "description": "Team description"
+                  "description": "Team description",
+                  "maxLength": 5000
                 },
                 "owner": {
                   "x-oapi-codegen-extra-tags": {
@@ -447,7 +453,8 @@ const TeamSchema: Record<string, unknown> = {
                   "x-go-type-skip-optional-pointer": true
                 }
               }
-            }
+            },
+            "description": "The teams of the teampage."
           }
         }
       },
@@ -632,7 +639,8 @@ const TeamSchema: Record<string, unknown> = {
                   "x-go-type-skip-optional-pointer": true
                 }
               }
-            }
+            },
+            "description": "The teams users mapping of the teamsusersmappingpage."
           }
         }
       },
@@ -644,20 +652,27 @@ const TeamSchema: Record<string, unknown> = {
         "type": "object",
         "properties": {
           "page": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Current page number of the result set.",
+            "minimum": 0
           },
           "page_size": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Number of items per page.",
+            "minimum": 1
           },
           "total_count": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Total number of items available.",
+            "minimum": 0
           },
           "data": {
             "type": "array",
             "items": {
               "type": "object",
               "additionalProperties": true
-            }
+            },
+            "description": "The data of the teammemberspage."
           }
         }
       }
@@ -837,7 +852,9 @@ const TeamSchema: Record<string, unknown> = {
                             },
                             "x-order": 2,
                             "type": "string",
-                            "description": "Team name"
+                            "description": "Team name",
+                            "minLength": 1,
+                            "maxLength": 255
                           },
                           "description": {
                             "x-oapi-codegen-extra-tags": {
@@ -846,7 +863,8 @@ const TeamSchema: Record<string, unknown> = {
                             },
                             "x-order": 3,
                             "type": "string",
-                            "description": "Team description"
+                            "description": "Team description",
+                            "maxLength": 5000
                           },
                           "owner": {
                             "x-oapi-codegen-extra-tags": {
@@ -910,7 +928,8 @@ const TeamSchema: Record<string, unknown> = {
                             "x-go-type-skip-optional-pointer": true
                           }
                         }
-                      }
+                      },
+                      "description": "The teams of the teampage."
                     }
                   }
                 }
@@ -1043,7 +1062,9 @@ const TeamSchema: Record<string, unknown> = {
                       },
                       "x-order": 2,
                       "type": "string",
-                      "description": "Team name"
+                      "description": "Team name",
+                      "minLength": 1,
+                      "maxLength": 255
                     },
                     "description": {
                       "x-oapi-codegen-extra-tags": {
@@ -1052,7 +1073,8 @@ const TeamSchema: Record<string, unknown> = {
                       },
                       "x-order": 3,
                       "type": "string",
-                      "description": "Team description"
+                      "description": "Team description",
+                      "maxLength": 5000
                     },
                     "owner": {
                       "x-oapi-codegen-extra-tags": {
@@ -1251,7 +1273,9 @@ const TeamSchema: Record<string, unknown> = {
                       },
                       "x-order": 2,
                       "type": "string",
-                      "description": "Team name"
+                      "description": "Team name",
+                      "minLength": 1,
+                      "maxLength": 255
                     },
                     "description": {
                       "x-oapi-codegen-extra-tags": {
@@ -1260,7 +1284,8 @@ const TeamSchema: Record<string, unknown> = {
                       },
                       "x-order": 3,
                       "type": "string",
-                      "description": "Team description"
+                      "description": "Team description",
+                      "maxLength": 5000
                     },
                     "owner": {
                       "x-oapi-codegen-extra-tags": {
@@ -1481,7 +1506,9 @@ const TeamSchema: Record<string, unknown> = {
                       },
                       "x-order": 2,
                       "type": "string",
-                      "description": "Team name"
+                      "description": "Team name",
+                      "minLength": 1,
+                      "maxLength": 255
                     },
                     "description": {
                       "x-oapi-codegen-extra-tags": {
@@ -1490,7 +1517,8 @@ const TeamSchema: Record<string, unknown> = {
                       },
                       "x-order": 3,
                       "type": "string",
-                      "description": "Team description"
+                      "description": "Team description",
+                      "maxLength": 5000
                     },
                     "owner": {
                       "x-oapi-codegen-extra-tags": {
@@ -1863,7 +1891,8 @@ const TeamSchema: Record<string, unknown> = {
                             "x-go-type-skip-optional-pointer": true
                           }
                         }
-                      }
+                      },
+                      "description": "The teams users mapping of the teamsusersmappingpage."
                     }
                   }
                 }
@@ -2302,20 +2331,27 @@ const TeamSchema: Record<string, unknown> = {
                   "type": "object",
                   "properties": {
                     "page": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "Current page number of the result set.",
+                      "minimum": 0
                     },
                     "page_size": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "Number of items per page.",
+                      "minimum": 1
                     },
                     "total_count": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "Total number of items available.",
+                      "minimum": 0
                     },
                     "data": {
                       "type": "array",
                       "items": {
                         "type": "object",
                         "additionalProperties": true
-                      }
+                      },
+                      "description": "The data of the teammemberspage."
                     }
                   }
                 }

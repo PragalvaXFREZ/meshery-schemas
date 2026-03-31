@@ -11,6 +11,8 @@ properties:
     type: string
     description: Name of the design; a descriptive, but concise title for the design document.
     x-order: 2
+    minLength: 1
+    maxLength: 255
   schemaVersion:
     $ref: ../core/api.yml#/components/schemas/VersionString
     description: Specifies the version of the schema to which the design conforms.
@@ -36,6 +38,7 @@ properties:
           name: core
         additionalProperties:
           $ref: ../core/api.yml#/components/schemas/ResolvedAlias
+    description: Additional metadata associated with this resource.
   components:
     description: A list of one or more component declarations.
     minItems: 0
