@@ -22,6 +22,8 @@ security:
 tags:
   - name: workspaces
     description: APIs for Meshery Cloud workspaces.
+  - name: views
+    description: APIs for Meshery Cloud views associated with workspaces.
 
 paths:
   /api/workspaces:
