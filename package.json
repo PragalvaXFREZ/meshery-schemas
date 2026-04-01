@@ -5,6 +5,38 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./cloudApi": {
+      "types": "./dist/cloudApi.d.ts",
+      "import": "./dist/cloudApi.mjs",
+      "require": "./dist/cloudApi.js"
+    },
+    "./mesheryApi": {
+      "types": "./dist/mesheryApi.d.ts",
+      "import": "./dist/mesheryApi.mjs",
+      "require": "./dist/mesheryApi.js"
+    },
+    "./api": {
+      "types": "./dist/api.d.ts",
+      "import": "./dist/api.mjs",
+      "require": "./dist/api.js"
+    },
+    "./permissions": {
+      "types": "./dist/permissions.d.ts",
+      "import": "./dist/permissions.mjs",
+      "require": "./dist/permissions.js"
+    },
+    "./constructs/*": {
+      "types": "./dist/constructs/*.d.ts",
+      "import": "./dist/constructs/*.mjs",
+      "require": "./dist/constructs/*.js"
+    }
+  },
   "repository": {
     "url": "git+https://github.com/meshery/schemas.git",
     "type": "git"

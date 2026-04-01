@@ -118,6 +118,27 @@ audit-schemas-style-full:
 audit-schemas-debt-full:
 	node build/validate-schemas.js --warn --no-baseline --style-debt --contract-debt
 
+#-----------------------------------------------------------------------------
+# Schema information
+#-----------------------------------------------------------------------------
+.PHONY: schemas-versions schemas-versions-latest
+
+## List all schema constructs with their available API versions
+schemas-versions:
+	@ls -d schemas/constructs/v*/*/api.yml 2>/dev/null \
+		| sed 's|schemas/constructs/||;s|/api.yml||' \
+		| awk -F/ '{ constructs[$$2] = constructs[$$2] ? constructs[$$2] " " $$1 : $$1 } \
+			END { for (c in constructs) printf "%-20s %s\n", c, constructs[c] }' \
+		| sort
+
+## List only the latest API version of each schema construct
+schemas-versions-latest:
+	@ls -d schemas/constructs/v*/*/api.yml 2>/dev/null \
+		| sed 's|schemas/constructs/||;s|/api.yml||' \
+		| awk -F/ '{ constructs[$$2] = $$1 } \
+			END { for (c in constructs) printf "%-20s %s\n", c, constructs[c] }' \
+		| sort
+
 ## Generate and bundle schema package (bundles OpenAPI, generates Go, RTK, TypeScript, and permissions)
 build: validate-schemas bundle-openapi generate-golang  generate-rtk generate-ts generate-permissions build-ts test-golang
 
