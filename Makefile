@@ -119,6 +119,41 @@ audit-schemas-debt-full:
 	node build/validate-schemas.js --warn --no-baseline --style-debt --contract-debt
 
 #-----------------------------------------------------------------------------
+# API audit
+#-----------------------------------------------------------------------------
+.PHONY: api-audit-setup api-audit api-audit-refresh api-audit-update api-audit-update-check api-audit-spec-check
+
+API_AUDIT_VENV = build/.api-audit-venv
+API_AUDIT_PY   = $(API_AUDIT_VENV)/bin/python3
+
+## Install Python dependencies for the API schema audit tool
+api-audit-setup:
+	python3 -m venv $(API_AUDIT_VENV)
+	$(API_AUDIT_PY) -m pip install --quiet pyyaml gspread google-auth
+
+api-audit-spec-check:
+	@if [ ! -f "_openapi_build/merged_openapi.yml" ]; then echo "ERROR: _openapi_build/merged_openapi.yml not found. Run 'make bundle-openapi' or 'make api-audit-refresh' first."; exit 1; fi
+
+## Audit Meshery REST API endpoints (dry-run). Compares router registrations,
+## OpenAPI spec, and handler imports. Prints a summary only.
+## With MESHERY_REPO, runs the full dry-run audit.
+## Without MESHERY_REPO, falls back to a compact spec-only summary.
+## With SHEET_ID and Google credentials but no MESHERY_REPO, the summary
+## compares the current spec against the sheet's most recent audit snapshot.
+api-audit: api-audit-setup api-audit-spec-check
+	$(API_AUDIT_PY) build/scripts/api-audit.py --dry-run
+
+## Rebuild the bundled OpenAPI artifacts, then run api-audit.
+api-audit-refresh: api-audit-setup bundle-openapi
+	$(API_AUDIT_PY) build/scripts/api-audit.py --dry-run
+
+## Runs the same audit flow as api-audit, and additionally writes results to
+## the configured Google Sheet when MESHERY_REPO, SHEET_ID, and Google
+## credentials are available.
+api-audit-update: api-audit-update-check api-audit-setup api-audit-spec-check
+	$(API_AUDIT_PY) build/scripts/api-audit.py
+
+#-----------------------------------------------------------------------------
 # Schema information
 #-----------------------------------------------------------------------------
 .PHONY: schemas-versions schemas-versions-latest

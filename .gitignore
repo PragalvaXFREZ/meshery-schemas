@@ -60,6 +60,9 @@ yarn.lock
 **/bin
 *.Identifier
 _openapi_build
+build/.api-audit-venv
+__pycache__/
+*.pyc
 
 default.profraw
 **errorutil_analyze_errors.json
