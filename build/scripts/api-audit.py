@@ -37,6 +37,7 @@ import os
 import re
 import subprocess
 import sys
+import urllib.parse
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
@@ -1995,6 +1996,32 @@ def _get_sheet_client():
     return None
 
 
+def _get_google_credentials():
+    """Authenticate with Google credentials for direct Sheets API calls."""
+    try:
+        from google.oauth2.service_account import Credentials
+    except ImportError:
+        sys.exit(
+            "Missing packages. Run: pip install google-auth"
+        )
+
+    scopes = [
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive",
+    ]
+
+    creds_json = os.environ.get("GOOGLE_CREDENTIALS_JSON")
+    if creds_json:
+        info = json.loads(creds_json)
+        return Credentials.from_service_account_info(info, scopes=scopes)
+
+    creds_file = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+    if creds_file and os.path.exists(creds_file):
+        return Credentials.from_service_account_file(creds_file, scopes=scopes)
+
+    return None
+
+
 def _has_sheet_credentials_configured() -> bool:
     """Return True when sheet credentials are configured via env vars."""
     creds_json = os.environ.get("GOOGLE_CREDENTIALS_JSON")
@@ -2014,6 +2041,152 @@ def _col_letter(idx: int) -> str:
         if idx < 0:
             break
     return result
+
+
+MAGENTA_TEXT_RGB = {"red": 1.0, "green": 0.0, "blue": 1.0}
+BLACK_TEXT_RGB = {"red": 0.0, "green": 0.0, "blue": 0.0}
+
+
+def _colors_match(a: Optional[Dict[str, float]], b: Dict[str, float], tolerance: float = 1e-6) -> bool:
+    """Return True when two RGB color maps are effectively equal."""
+    if not a:
+        return False
+    return (
+        abs(float(a.get("red", 0.0)) - b["red"]) <= tolerance
+        and abs(float(a.get("green", 0.0)) - b["green"]) <= tolerance
+        and abs(float(a.get("blue", 0.0)) - b["blue"]) <= tolerance
+    )
+
+
+def _build_sheet_index(current_rows: List[List[str]]) -> Dict[str, List[Tuple[int, Set[str]]]]:
+    """Index worksheet rows by normalized endpoint path and methods."""
+    sheet_index: Dict[str, List[Tuple[int, Set[str]]]] = defaultdict(list)
+    for idx, row in enumerate(current_rows):
+        if idx == 0:
+            continue
+        ep = row[COL_ENDPOINTS].strip() if len(row) > COL_ENDPOINTS else ""
+        if not ep:
+            continue
+        if not ep.startswith("/"):
+            ep = "/" + ep
+        norm = normalize_path(ep)
+        raw_methods = row[COL_METHODS].strip() if len(row) > COL_METHODS else ""
+        mset = {
+            m.strip().upper()
+            for m in raw_methods.replace(";", ",").split(",")
+            if m.strip()
+        }
+        sheet_index[norm].append((idx, mset))
+    return sheet_index
+
+
+def _find_matching_row(
+    sheet_index: Dict[str, List[Tuple[int, Set[str]]]],
+    path: str,
+    methods: str,
+    matched_rows: Set[int],
+) -> Optional[int]:
+    """Find the worksheet row for a given endpoint."""
+    norm = normalize_path(path)
+    endpoint_methods = {m.strip().upper() for m in methods.split(",") if m.strip()}
+
+    for idx, sheet_methods in sheet_index.get(norm, []):
+        if idx in matched_rows:
+            continue
+        if (
+            "ALL" in endpoint_methods
+            or "ALL" in sheet_methods
+            or endpoint_methods & sheet_methods
+            or not sheet_methods
+            or not endpoint_methods
+        ):
+            return idx
+    return None
+
+
+def _make_text_color_request(worksheet_id: int, row_num: int, col_num: int, color: Dict[str, float]) -> Dict[str, Any]:
+    """Build a Sheets API repeatCell request for text color."""
+    return {
+        "repeatCell": {
+            "range": {
+                "sheetId": worksheet_id,
+                "startRowIndex": row_num - 1,
+                "endRowIndex": row_num,
+                "startColumnIndex": col_num - 1,
+                "endColumnIndex": col_num,
+            },
+            "cell": {
+                "userEnteredFormat": {
+                    "textFormat": {
+                        "foregroundColor": color,
+                    }
+                }
+            },
+            "fields": "userEnteredFormat.textFormat.foregroundColor",
+        }
+    }
+
+
+def _batch_set_text_color(
+    spreadsheet,
+    worksheet_id: int,
+    targets: List[Tuple[int, int]],
+    color: Dict[str, float],
+    changes: List[str],
+    label: str,
+) -> None:
+    """Apply a text color to the given worksheet cells."""
+    if not targets:
+        return
+    requests = [
+        _make_text_color_request(worksheet_id, row_num, col_num, color)
+        for row_num, col_num in targets
+    ]
+    try:
+        spreadsheet.batch_update({"requests": requests})
+        print(f"{label} text color on {len(targets)} cells")
+    except Exception as exc:
+        changes.append(f"{label.upper()} TEXT COLOR ERROR: {exc}")
+
+
+def _reset_existing_magenta_text(spreadsheet, worksheet, changes: List[str]) -> None:
+    """Turn any currently magenta text in the worksheet back to black."""
+    creds = _get_google_credentials()
+    if not creds:
+        return
+
+    try:
+        from google.auth.transport.requests import AuthorizedSession
+    except ImportError:
+        changes.append("RESET TEXT COLOR ERROR: google-auth transport support unavailable")
+        return
+
+    session = AuthorizedSession(creds)
+    encoded_title = urllib.parse.quote(worksheet.title, safe="")
+    url = (
+        f"https://sheets.googleapis.com/v4/spreadsheets/{spreadsheet.id}"
+        f"?includeGridData=true&ranges={encoded_title}"
+    )
+
+    try:
+        response = session.get(url)
+        response.raise_for_status()
+        payload = response.json()
+    except Exception as exc:
+        changes.append(f"RESET TEXT COLOR ERROR: {exc}")
+        return
+
+    targets: List[Tuple[int, int]] = []
+    sheets = payload.get("sheets", [])
+    row_data = sheets[0].get("data", [{}])[0].get("rowData", []) if sheets else []
+    for row_idx, row in enumerate(row_data, start=1):
+        for col_idx, cell in enumerate(row.get("values", []), start=1):
+            fmt = cell.get("effectiveFormat", {}).get("textFormat", {})
+            color = fmt.get("foregroundColor")
+            if _colors_match(color, MAGENTA_TEXT_RGB):
+                targets.append((row_idx, col_idx))
+
+    _batch_set_text_color(spreadsheet, worksheet.id, targets, BLACK_TEXT_RGB, changes, "reset")
 
 
 # Columns the script compares and updates on matched rows.
@@ -2056,52 +2229,21 @@ def update_sheet(
     ws = sheet.get_worksheet(AUDIT_WORKSHEET_INDEX)
 
     print(f"Connected to worksheet: {ws.title}")
-    current_rows = ws.get_all_values()
-
-    # Index sheet rows by normalized path
-    sheet_index: Dict[str, List[Tuple[int, Set[str]]]] = defaultdict(list)
-    for idx, row in enumerate(current_rows):
-        if idx == 0:
-            continue
-        ep = row[COL_ENDPOINTS].strip() if len(row) > COL_ENDPOINTS else ""
-        if not ep:
-            continue
-        if not ep.startswith("/"):
-            ep = "/" + ep
-        norm = normalize_path(ep)
-        raw_methods = row[COL_METHODS].strip() if len(row) > COL_METHODS else ""
-        mset = {
-            m.strip().upper()
-            for m in raw_methods.replace(";", ",").split(",")
-            if m.strip()
-        }
-        sheet_index[norm].append((idx, mset))
-
     changes: List[str] = []
+
+    if not dry_run:
+        _reset_existing_magenta_text(sheet, ws, changes)
+
+    current_rows = ws.get_all_values()
+    sheet_index = _build_sheet_index(current_rows)
     batch_updates: List[Dict[str, Any]] = []
     new_rows_info: List[Tuple[List[str], str, str]] = []
+    highlight_specs: List[Tuple[str, str, Set[int]]] = []
     matched_rows: Set[int] = set()
     today = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     for ep in endpoints:
-        norm = normalize_path(ep["path"])
-        ep_mset = {m.strip() for m in ep["methods"].split(",")}
-        candidates = sheet_index.get(norm, [])
-
-        # Find matching sheet row
-        matched_idx = None
-        for idx, sheet_mset in candidates:
-            if idx in matched_rows:
-                continue
-            if (
-                "ALL" in ep_mset
-                or "ALL" in sheet_mset
-                or ep_mset & sheet_mset
-                or not sheet_mset
-                or not ep_mset
-            ):
-                matched_idx = idx
-                break
+        matched_idx = _find_matching_row(sheet_index, ep["path"], ep["methods"], matched_rows)
 
         if matched_idx is not None:
             matched_rows.add(matched_idx)
@@ -2110,6 +2252,7 @@ def update_sheet(
                 row.append("")
 
             row_changed = False
+            changed_cols: Set[int] = set()
             for col_idx, field, label in _UPDATABLE_COLUMNS:
                 old_val = row[col_idx].strip() if len(row) > col_idx else ""
                 new_val = ep[field]
@@ -2124,6 +2267,7 @@ def update_sheet(
                         "values": [[new_val]],
                     })
                     row_changed = True
+                    changed_cols.add(col_idx + 1)
 
             if row_changed:
                 cl = _col_letter(COL_CHANGELOG)
@@ -2131,6 +2275,8 @@ def update_sheet(
                     "range": f"{cl}{matched_idx + 1}",
                     "values": [[today]],
                 })
+                changed_cols.add(COL_CHANGELOG + 1)
+                highlight_specs.append((ep["path"], ep["methods"], changed_cols))
         else:
             new_row = [
                 ep["category"],
@@ -2154,6 +2300,13 @@ def update_sheet(
                 f"driven={ep['driven']}"
             )
             new_rows_info.append((new_row, ep["category"], ep["subcategory"]))
+            highlight_specs.append(
+                (
+                    ep["path"],
+                    ep["methods"],
+                    set(range(1, len(SHEET_COLUMNS) + 1)),
+                )
+            )
 
     new_rows_info.sort(
         key=lambda item: endpoint_sort_key({
@@ -2175,6 +2328,23 @@ def update_sheet(
     # --- Insert new rows ---
     if not dry_run and new_rows_info:
         _insert_rows_by_group(ws, new_rows_info, changes)
+
+    if not dry_run and highlight_specs:
+        refreshed_rows = ws.get_all_values()
+        refreshed_index = _build_sheet_index(refreshed_rows)
+        resolved_targets: List[Tuple[int, int]] = []
+        highlighted_rows: Set[int] = set()
+
+        for path, methods, cols in highlight_specs:
+            row_idx = _find_matching_row(refreshed_index, path, methods, highlighted_rows)
+            if row_idx is None:
+                changes.append(f"HIGHLIGHT ERROR: unable to resolve row for {path} [{methods}]")
+                continue
+            highlighted_rows.add(row_idx)
+            row_num = row_idx + 1
+            resolved_targets.extend((row_num, col_num) for col_num in sorted(cols))
+
+        _batch_set_text_color(sheet, ws.id, resolved_targets, MAGENTA_TEXT_RGB, changes, "highlight")
 
     return changes
 
@@ -2595,7 +2765,7 @@ def main():
         help="Print per-endpoint details",
     )
     args = parser.parse_args()
-    schemas_root = Path(__file__).resolve().parent.parent
+    schemas_root = Path(__file__).resolve().parents[2]
 
     if args.spec:
         spec_file = Path(args.spec).resolve()
