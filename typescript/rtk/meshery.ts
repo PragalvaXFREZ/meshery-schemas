@@ -361,7 +361,7 @@ const injectedRtkApi = api
     }),
     overrideExisting: false,
   });
-export { injectedRtkApi as mesheryApi };
+export { injectedRtkApi as mesheryApi, injectedRtkApi };
 export type CreateEnvironmentApiResponse = /** status 201 Created environment */ {
   /** ID */
   id: string;
