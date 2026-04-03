@@ -141,7 +141,8 @@ COL_CHANGELOG = 14
 AUDIT_WORKSHEET_INDEX = 4
 
 SUMMARY_TABLE_ROWS: List[Tuple[str, str]] = [
-    ("endpoints", "Endpoints"),
+    ("endpoints_spec", "Endpoints (Spec)"),
+    ("endpoints_router", "Endpoints (Router)"),
     ("x_internal_tagged", "x-internal tagged"),
     ("not_tagged", "Not tagged"),
     ("schema_backed", "Schema-backed"),
@@ -2494,19 +2495,55 @@ def _is_driven_value(value: str) -> bool:
     return value in {"TRUE", "Partial"}
 
 
-def collect_endpoint_summary(endpoints: List[Dict[str, Any]]) -> Dict[str, Any]:
-    """Collect final CLI summary counts from computed endpoint rows."""
+def collect_endpoint_summary(
+    endpoints: List[Dict[str, Any]],
+    spec_data: Dict[str, Any],
+) -> Dict[str, Any]:
+    """Collect final CLI summary counts from spec and computed endpoint rows.
+
+    Summary semantics:
+      - Endpoints (Spec) comes from the bundled spec only.
+      - Endpoints (Router) and all other metrics come from route-aware analysis.
+    """
     summary = {
         "total": _empty_summary_counts(),
         "meshery": _empty_summary_counts(),
         "cloud": _empty_summary_counts(),
     }
 
+    operations = spec_data.get("operations", {})
+    x_internal = spec_data.get("x_internal", {})
+    all_paths = spec_data.get("all_paths")
+    if all_paths:
+        unique_paths = set(all_paths)
+    else:
+        unique_paths = {path for path, _method in operations}
+
+    tagged_paths: Set[str] = set()
+    meshery_tagged_paths: Set[str] = set()
+    cloud_tagged_paths: Set[str] = set()
+    for op_key in operations:
+        path, _method = op_key
+        xi_vals = set(x_internal.get(op_key, []))
+        if xi_vals & {"cloud", "meshery"}:
+            tagged_paths.add(path)
+        if "meshery" in xi_vals:
+            meshery_tagged_paths.add(path)
+        if "cloud" in xi_vals:
+            cloud_tagged_paths.add(path)
+
+    summary["total"]["endpoints_spec"] = len(unique_paths)
+    summary["total"]["x_internal_tagged"] = len(tagged_paths)
+    summary["total"]["not_tagged"] = summary["total"]["endpoints_spec"] - summary["total"]["x_internal_tagged"]
+    summary["meshery"]["x_internal_tagged"] = len(meshery_tagged_paths)
+    summary["cloud"]["x_internal_tagged"] = len(cloud_tagged_paths)
+
+    meshery_matches_cloud_tagged: List[str] = []
+
     for ep in endpoints:
         total = summary["total"]
-        total["endpoints"] += 1
-        if _is_tagged(ep.get("x_annotated", "")):
-            total["x_internal_tagged"] += 1
+        if ep.get("meshery_present") or ep.get("cloud_present"):
+            total["endpoints_router"] += 1
         if ep.get("backed_ms") == "TRUE" or ep.get("backed_mc") == "TRUE":
             total["schema_backed"] += 1
         if _is_complete_value(ep.get("completeness_ms", "")) or _is_complete_value(ep.get("completeness_mc", "")):
@@ -2516,21 +2553,21 @@ def collect_endpoint_summary(endpoints: List[Dict[str, Any]]) -> Dict[str, Any]:
 
         if ep.get("meshery_present"):
             meshery = summary["meshery"]
-            meshery["endpoints"] += 1
-            if _is_tagged(ep.get("x_annotated", "")):
-                meshery["x_internal_tagged"] += 1
+            meshery["endpoints_router"] += 1
             if ep.get("backed_ms") == "TRUE":
                 meshery["schema_backed"] += 1
             if _is_complete_value(ep.get("completeness_ms", "")):
                 meshery["complete"] += 1
             if _is_driven_value(ep.get("driven_ms", "")):
                 meshery["schema_driven"] += 1
+            if ep.get("x_annotated", "") == "Cloud-only":
+                meshery_matches_cloud_tagged.append(
+                    f"{ep.get('path', '')} [{ep.get('methods', '')}]"
+                )
 
         if ep.get("cloud_present"):
             cloud = summary["cloud"]
-            cloud["endpoints"] += 1
-            if _is_tagged(ep.get("x_annotated", "")):
-                cloud["x_internal_tagged"] += 1
+            cloud["endpoints_router"] += 1
             if ep.get("backed_mc") == "TRUE":
                 cloud["schema_backed"] += 1
             if _is_complete_value(ep.get("completeness_mc", "")):
@@ -2539,10 +2576,16 @@ def collect_endpoint_summary(endpoints: List[Dict[str, Any]]) -> Dict[str, Any]:
                 cloud["schema_driven"] += 1
 
     for group in summary.values():
-        group["not_tagged"] = group["endpoints"] - group["x_internal_tagged"]
-        group["not_schema_backed"] = group["endpoints"] - group["schema_backed"]
-        group["incomplete"] = group["endpoints"] - group["complete"]
-        group["not_schema_driven"] = group["endpoints"] - group["schema_driven"]
+        group["not_schema_backed"] = group["endpoints_router"] - group["schema_backed"]
+        group["incomplete"] = group["endpoints_router"] - group["complete"]
+        group["not_schema_driven"] = group["endpoints_router"] - group["schema_driven"]
+
+    summary["notes"] = []
+    if meshery_matches_cloud_tagged:
+        summary["notes"].append(
+            f"{len(meshery_matches_cloud_tagged)} Meshery router endpoints match spec endpoints tagged as cloud."
+        )
+        summary["notes"].extend(meshery_matches_cloud_tagged)
 
     return summary
 
@@ -2558,19 +2601,10 @@ def collect_spec_only_summary(spec_data: Dict[str, Any]) -> Dict[str, Dict[str, 
     else:
         unique_paths = {path for path, _method in operations}
 
-    tagged_paths: Set[str] = set()
-    for op_key in operations:
-        path, _method = op_key
-        if any(val in {"cloud", "meshery"} for val in x_internal.get(op_key, [])):
-            tagged_paths.add(path)
-
-    total["endpoints"] = len(unique_paths)
-    total["schema_backed"] = len(unique_paths)
-    total["x_internal_tagged"] = len(tagged_paths)
-    total["not_tagged"] = total["endpoints"] - total["x_internal_tagged"]
+    total["endpoints_spec"] = len(unique_paths)
     total["not_schema_backed"] = 0
-    total["incomplete"] = total["endpoints"]
-    total["not_schema_driven"] = total["endpoints"]
+    total["incomplete"] = total["endpoints_spec"]
+    total["not_schema_driven"] = total["endpoints_spec"]
     return {
         "total": total,
         "meshery": _empty_summary_counts(),
@@ -2590,7 +2624,7 @@ def collect_sheet_summary_totals(rows: List[List[str]]) -> Dict[str, int]:
         if not endpoint:
             continue
 
-        totals["endpoints"] += 1
+        totals["endpoints_router"] += 1
 
         x_annotated = row[COL_X_ANNOTATED].strip() if len(row) > COL_X_ANNOTATED else ""
         if _is_tagged(x_annotated):
@@ -2611,10 +2645,10 @@ def collect_sheet_summary_totals(rows: List[List[str]]) -> Dict[str, int]:
         if _is_driven_value(driven_ms) or _is_driven_value(driven_mc):
             totals["schema_driven"] += 1
 
-    totals["not_tagged"] = totals["endpoints"] - totals["x_internal_tagged"]
-    totals["not_schema_backed"] = totals["endpoints"] - totals["schema_backed"]
-    totals["incomplete"] = totals["endpoints"] - totals["complete"]
-    totals["not_schema_driven"] = totals["endpoints"] - totals["schema_driven"]
+    totals["not_tagged"] = totals["endpoints_router"] - totals["x_internal_tagged"]
+    totals["not_schema_backed"] = totals["endpoints_router"] - totals["schema_backed"]
+    totals["incomplete"] = totals["endpoints_router"] - totals["complete"]
+    totals["not_schema_driven"] = totals["endpoints_router"] - totals["schema_driven"]
     return totals
 
 
@@ -2635,11 +2669,16 @@ def render_audit_summary_table(
     rows: List[List[Any]] = []
     labels = dict(SUMMARY_TABLE_ROWS)
     for key in SUMMARY_KEYS:
+        meshery_value: Any = summary["meshery"].get(key, 0) if include_meshery else "-"
+        cloud_value: Any = summary["cloud"].get(key, 0) if include_cloud else "-"
+        if key in {"endpoints_spec", "not_tagged"}:
+            meshery_value = "-"
+            cloud_value = "-"
         row: List[Any] = [
             labels[key],
             summary["total"].get(key, 0),
-            summary["meshery"].get(key, 0) if include_meshery else "-",
-            summary["cloud"].get(key, 0) if include_cloud else "-",
+            meshery_value,
+            cloud_value,
         ]
         if include_change:
             if previous_totals is None:
@@ -2656,6 +2695,11 @@ def render_audit_summary_table(
         rows,
         numeric_cols=numeric_cols,
     )
+    notes = summary.get("notes", [])
+    if notes:
+        print("\nNotes:")
+        for note in notes:
+            print(note)
 
 
 def prefetch_sheet_snapshot(
@@ -2883,7 +2927,7 @@ def main():
             repo_source=repo_source,
         )
 
-    summary = collect_endpoint_summary(endpoints)
+    summary = collect_endpoint_summary(endpoints, spec_data)
     previous_totals = None
     notes: List[str] = []
     prefetched = None

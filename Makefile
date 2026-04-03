@@ -14,6 +14,7 @@
 
 include build/Makefile.core.mk
 include build/Makefile.show-help.mk
+-include .env.local
 
 #-----------------------------------------------------------------------------
 # Schemas Site and public reference
