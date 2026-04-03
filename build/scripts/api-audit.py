@@ -2034,6 +2034,119 @@ _UPDATABLE_COLUMNS = [
 ]
 
 
+def _method_sort_key(method: str) -> Tuple[int, str]:
+    order = {
+        "ALL": 0,
+        "GET": 1,
+        "POST": 2,
+        "PUT": 3,
+        "PATCH": 4,
+        "DELETE": 5,
+        "OPTIONS": 6,
+        "HEAD": 7,
+    }
+    return order.get(method, 99), method
+
+
+def _merge_methods(method_values: List[str]) -> str:
+    merged: Set[str] = set()
+    for raw in method_values:
+        for method in raw.replace(";", ",").split(","):
+            method = method.strip().upper()
+            if method:
+                merged.add(method)
+    return ", ".join(sorted(merged, key=_method_sort_key))
+
+
+def _reduce_backed(values: List[str]) -> str:
+    uniq = {v for v in values if v}
+    if not uniq:
+        return ""
+    if "TRUE" in uniq:
+        return "TRUE"
+    if "FALSE" in uniq:
+        return "FALSE"
+    return "N/A"
+
+
+def _reduce_driven(values: List[str]) -> str:
+    uniq = {v for v in values if v}
+    if not uniq:
+        return ""
+    if "Partial" in uniq:
+        return "Partial"
+    if "TRUE" in uniq and "FALSE" in uniq:
+        return "Partial"
+    if "TRUE" in uniq:
+        return "TRUE"
+    if "FALSE" in uniq:
+        return "FALSE"
+    return "N/A"
+
+
+def _reduce_path_completeness(values: List[str]) -> str:
+    uniq = {v for v in values if v}
+    if not uniq:
+        return ""
+    if uniq == {"Full"}:
+        return "Full"
+    if uniq == {"N/A"}:
+        return "N/A"
+    if "Partial" in uniq:
+        return "Partial"
+    if "Full" in uniq and ("Stub" in uniq or "N/A" in uniq):
+        return "Partial"
+    if "Full" in uniq:
+        return "Full"
+    if "Stub" in uniq:
+        return "Stub"
+    return "N/A"
+
+
+def _merge_notes_for_sheet(group: List[Dict[str, Any]]) -> str:
+    merged_notes: List[str] = []
+    seen: Set[str] = set()
+    for ep in sorted(group, key=endpoint_sort_key):
+        note = ep.get("notes", "").strip()
+        if not note:
+            continue
+        entry = f"[{ep['methods']}]\n{note}" if len(group) > 1 else note
+        if entry not in seen:
+            seen.add(entry)
+            merged_notes.append(entry)
+    return "\n\n".join(merged_notes)
+
+
+def _aggregate_endpoints_for_sheet(endpoints: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Collapse endpoint rows to one worksheet candidate per normalized path."""
+    grouped: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
+    for ep in endpoints:
+        grouped[normalize_path(ep["path"])].append(ep)
+
+    aggregated: List[Dict[str, Any]] = []
+    for norm_path, group in grouped.items():
+        if len(group) == 1:
+            aggregated.append(dict(group[0]))
+            continue
+
+        primary = max(group, key=lambda ep: (_COV_RANK.get(ep["coverage"], 0), endpoint_sort_key(ep)))
+        merged = dict(primary)
+        merged["path"] = primary["path"]
+        merged["methods"] = _merge_methods([ep["methods"] for ep in group])
+        merged["backed_ms"] = _reduce_backed([ep["backed_ms"] for ep in group])
+        merged["backed_mc"] = _reduce_backed([ep["backed_mc"] for ep in group])
+        merged["completeness_ms"] = _reduce_path_completeness([ep["completeness_ms"] for ep in group])
+        merged["completeness_mc"] = _reduce_path_completeness([ep["completeness_mc"] for ep in group])
+        merged["driven_ms"] = _reduce_driven([ep["driven_ms"] for ep in group])
+        merged["driven_mc"] = _reduce_driven([ep["driven_mc"] for ep in group])
+        merged["meshery_present"] = any(bool(ep.get("meshery_present")) for ep in group)
+        merged["cloud_present"] = any(bool(ep.get("cloud_present")) for ep in group)
+        merged["notes"] = _merge_notes_for_sheet(group)
+        aggregated.append(merged)
+
+    return sorted(aggregated, key=endpoint_sort_key)
+
+
 def update_sheet(
     endpoints: List[Dict[str, Any]],
     sheet_id: str,
@@ -2077,7 +2190,9 @@ def update_sheet(
     matched_rows: Set[int] = set()
     today = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    for ep in endpoints:
+    sheet_endpoints = _aggregate_endpoints_for_sheet(endpoints)
+
+    for ep in sheet_endpoints:
         matched_idx = _find_matching_row(sheet_index, ep["path"], ep["methods"], matched_rows)
 
         if matched_idx is not None:
@@ -2437,12 +2552,21 @@ def collect_spec_only_summary(spec_data: Dict[str, Any]) -> Dict[str, Dict[str, 
     total = _empty_summary_counts()
     operations = spec_data.get("operations", {})
     x_internal = spec_data.get("x_internal", {})
+    all_paths = spec_data.get("all_paths")
+    if all_paths:
+        unique_paths = set(all_paths)
+    else:
+        unique_paths = {path for path, _method in operations}
 
-    total["endpoints"] = len(operations)
-    total["schema_backed"] = len(operations)
+    tagged_paths: Set[str] = set()
     for op_key in operations:
+        path, _method = op_key
         if any(val in {"cloud", "meshery"} for val in x_internal.get(op_key, [])):
-            total["x_internal_tagged"] += 1
+            tagged_paths.add(path)
+
+    total["endpoints"] = len(unique_paths)
+    total["schema_backed"] = len(unique_paths)
+    total["x_internal_tagged"] = len(tagged_paths)
     total["not_tagged"] = total["endpoints"] - total["x_internal_tagged"]
     total["not_schema_backed"] = 0
     total["incomplete"] = total["endpoints"]

@@ -23,6 +23,7 @@ import (
 	"go/token"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 )
 
@@ -117,8 +118,12 @@ func main() {
 // schema packages.  Only one level of alias indirection is followed.
 func scanAliases(dir, schemaModule string, aliases map[string]string) {
 	fset := token.NewFileSet()
-	_ = filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
-		if err != nil || info.IsDir() {
+	if err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "WARNING: walk error in %s: %v\n", path, err)
+			return nil
+		}
+		if info.IsDir() {
 			return nil
 		}
 		if !strings.HasSuffix(path, ".go") || strings.HasSuffix(path, "_test.go") {
@@ -158,7 +163,9 @@ func scanAliases(dir, schemaModule string, aliases map[string]string) {
 			}
 		}
 		return nil
-	})
+	}); err != nil {
+		fmt.Fprintf(os.Stderr, "WARNING: unable to walk aliases dir %s: %v\n", dir, err)
+	}
 }
 
 // ---------------------------------------------------------------------------
@@ -266,8 +273,12 @@ func analyseHandler(
 // so callers should scan local models before the authoritative schemas models.
 func scanStructFields(dir string, fields map[string][]string) {
 	fset := token.NewFileSet()
-	_ = filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
-		if err != nil || info.IsDir() {
+	if err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "WARNING: walk error in %s: %v\n", path, err)
+			return nil
+		}
+		if info.IsDir() {
 			return nil
 		}
 		if !strings.HasSuffix(path, ".go") || strings.HasSuffix(path, "_test.go") {
@@ -275,11 +286,14 @@ func scanStructFields(dir string, fields map[string][]string) {
 		}
 		f, parseErr := parser.ParseFile(fset, path, nil, 0)
 		if parseErr != nil {
-			return nil // silently skip unparseable files
+			fmt.Fprintf(os.Stderr, "WARNING: parse error in %s: %v\n", path, parseErr)
+			return nil
 		}
 		extractStructFieldsFromFile(f, fields)
 		return nil
-	})
+	}); err != nil {
+		fmt.Fprintf(os.Stderr, "WARNING: unable to walk struct fields dir %s: %v\n", dir, err)
+	}
 }
 
 // extractStructFieldsFromFile harvests json tag field names from all struct
@@ -327,17 +341,10 @@ func collectJSONFields(st *ast.StructType) []string {
 // jsonTagName extracts the field name from a struct tag string.
 // e.g. `json:"field_name,omitempty" db:"field_name"` → "field_name"
 func jsonTagName(tag string) string {
-	const prefix = `json:"`
-	idx := strings.Index(tag, prefix)
-	if idx < 0 {
+	val := reflect.StructTag(tag).Get("json")
+	if val == "" {
 		return ""
 	}
-	rest := tag[idx+len(prefix):]
-	end := strings.IndexByte(rest, '"')
-	if end < 0 {
-		return ""
-	}
-	val := rest[:end]
 	if comma := strings.IndexByte(val, ','); comma >= 0 {
 		val = val[:comma]
 	}
@@ -620,8 +627,11 @@ func resolveExprType(body *ast.BlockStmt, expr string) string {
 	if clean == "" {
 		return ""
 	}
-	// If the expression already contains a dot it may be "pkg.TypeName{}" stripped
-	// to "pkg.TypeName" — return as-is (Python will bare-type it).
+	// Normalize composite literal expressions like "pkg.TypeName{}" to "pkg.TypeName"
+	// so downstream bare-type matching works consistently.
+	clean = strings.TrimSuffix(clean, "{}")
+	// If the expression already contains a dot it may be a package-qualified type or
+	// value reference; return the normalized form as-is.
 	if strings.Contains(clean, ".") {
 		return clean
 	}
@@ -746,6 +756,7 @@ func exprString(expr ast.Expr) string {
 // Examples: "*connections.ConnectionPage" → "ConnectionPage", "[]T" → "T"
 func bareTypeName(t string) string {
 	t = strings.TrimLeft(t, "*[]")
+	t = strings.TrimSuffix(t, "{}")
 	if dot := strings.LastIndex(t, "."); dot >= 0 {
 		return t[dot+1:]
 	}
