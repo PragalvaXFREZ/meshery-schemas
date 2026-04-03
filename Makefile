@@ -121,37 +121,75 @@ audit-schemas-debt-full:
 #-----------------------------------------------------------------------------
 # API audit
 #-----------------------------------------------------------------------------
-.PHONY: api-audit-setup api-audit api-audit-refresh api-audit-update api-audit-update-check api-audit-spec-check
+.PHONY: api-audit-setup api-audit api-audit-refresh api-audit-update api-audit-update-check api-audit-spec-check api-audit-cloud api-audit-cloud-update
 
 API_AUDIT_VENV = build/.api-audit-venv
 API_AUDIT_PY   = $(API_AUDIT_VENV)/bin/python3
 
 ## Install Python dependencies for the API schema audit tool
 api-audit-setup:
-	python3 -m venv $(API_AUDIT_VENV)
-	$(API_AUDIT_PY) -m pip install --quiet pyyaml gspread google-auth
+	@python3 -m venv $(API_AUDIT_VENV)
+	@$(API_AUDIT_PY) -m pip install --quiet pyyaml gspread google-auth
 
 api-audit-spec-check:
 	@if [ ! -f "_openapi_build/merged_openapi.yml" ]; then echo "ERROR: _openapi_build/merged_openapi.yml not found. Run 'make bundle-openapi' or 'make api-audit-refresh' first."; exit 1; fi
 
-## Audit Meshery REST API endpoints (dry-run). Compares router registrations,
-## OpenAPI spec, and handler imports. Prints a summary only.
-## With MESHERY_REPO, runs the full dry-run audit.
-## Without MESHERY_REPO, falls back to a compact spec-only summary.
-## With SHEET_ID and Google credentials but no MESHERY_REPO, the summary
-## compares the current spec against the sheet's most recent audit snapshot.
+## Dry-run audit of all available repos against the bundled OpenAPI spec.
+## Set MESHERY_REPO and/or CLOUD_REPO to include each repo's route analysis.
+## When both are set, both repos are analysed in a single combined run.
+## Falls back to a compact spec-only summary when neither is set.
 api-audit: api-audit-setup api-audit-spec-check
-	$(API_AUDIT_PY) build/scripts/api-audit.py --dry-run
+	@ if [ -n "$(MESHERY_REPO)" ] && [ -n "$(CLOUD_REPO)" ]; then \
+		$(API_AUDIT_PY) build/scripts/api-audit.py \
+			--meshery-repo "$(MESHERY_REPO)" --cloud-repo "$(CLOUD_REPO)" --dry-run; \
+	elif [ -n "$(MESHERY_REPO)" ]; then \
+		$(API_AUDIT_PY) build/scripts/api-audit.py --meshery-repo "$(MESHERY_REPO)" --dry-run; \
+	elif [ -n "$(CLOUD_REPO)" ]; then \
+		$(API_AUDIT_PY) build/scripts/api-audit.py --cloud-repo "$(CLOUD_REPO)" --dry-run; \
+	else \
+		$(API_AUDIT_PY) build/scripts/api-audit.py --dry-run; \
+	fi
 
-## Rebuild the bundled OpenAPI artifacts, then run api-audit.
+## Rebuild the bundled OpenAPI artifacts, then run the full audit.
 api-audit-refresh: api-audit-setup bundle-openapi
-	$(API_AUDIT_PY) build/scripts/api-audit.py --dry-run
+	@ if [ -n "$(MESHERY_REPO)" ] && [ -n "$(CLOUD_REPO)" ]; then \
+		$(API_AUDIT_PY) build/scripts/api-audit.py \
+			--meshery-repo "$(MESHERY_REPO)" --cloud-repo "$(CLOUD_REPO)" --dry-run; \
+	elif [ -n "$(MESHERY_REPO)" ]; then \
+		$(API_AUDIT_PY) build/scripts/api-audit.py --meshery-repo "$(MESHERY_REPO)" --dry-run; \
+	elif [ -n "$(CLOUD_REPO)" ]; then \
+		$(API_AUDIT_PY) build/scripts/api-audit.py --cloud-repo "$(CLOUD_REPO)" --dry-run; \
+	else \
+		$(API_AUDIT_PY) build/scripts/api-audit.py --dry-run; \
+	fi
 
-## Runs the same audit flow as api-audit, and additionally writes results to
-## the configured Google Sheet when MESHERY_REPO, SHEET_ID, and Google
-## credentials are available.
+## Audit all available repos and write results to the Google Sheet.
+## Requires SHEET_ID and Google credentials. Set MESHERY_REPO and/or CLOUD_REPO.
+## When both are set, both repos are analysed in a single combined run so the
+## sheet is written once — eliminating the overwrite loop that caused idempotency failures.
 api-audit-update: api-audit-update-check api-audit-setup api-audit-spec-check
-	$(API_AUDIT_PY) build/scripts/api-audit.py
+	@ if [ -n "$(MESHERY_REPO)" ] && [ -n "$(CLOUD_REPO)" ]; then \
+		$(API_AUDIT_PY) build/scripts/api-audit.py \
+			--meshery-repo "$(MESHERY_REPO)" --cloud-repo "$(CLOUD_REPO)"; \
+	elif [ -n "$(MESHERY_REPO)" ]; then \
+		$(API_AUDIT_PY) build/scripts/api-audit.py --meshery-repo "$(MESHERY_REPO)"; \
+	elif [ -n "$(CLOUD_REPO)" ]; then \
+		$(API_AUDIT_PY) build/scripts/api-audit.py --cloud-repo "$(CLOUD_REPO)"; \
+	else \
+		$(API_AUDIT_PY) build/scripts/api-audit.py; \
+	fi
+
+## Dry-run audit of meshery-cloud only (CLOUD_REPO must be set).
+api-audit-cloud: api-audit-setup api-audit-spec-check
+	@if [ -z "$(CLOUD_REPO)" ]; then echo "ERROR: set CLOUD_REPO to the meshery-cloud repo root"; exit 1; fi
+	@$(API_AUDIT_PY) build/scripts/api-audit.py --cloud-repo "$(CLOUD_REPO)" --dry-run
+
+## Audit meshery-cloud only and write results to the Google Sheet.
+## Requires: CLOUD_REPO, SHEET_ID, and Google credentials.
+api-audit-cloud-update: api-audit-setup api-audit-spec-check
+	@if [ -z "$(CLOUD_REPO)" ]; then echo "ERROR: set CLOUD_REPO to the meshery-cloud repo root"; exit 1; fi
+	@if [ -z "$(SHEET_ID)" ]; then echo "ERROR: set SHEET_ID to the Google Sheet ID"; exit 1; fi
+	@$(API_AUDIT_PY) build/scripts/api-audit.py --cloud-repo "$(CLOUD_REPO)" --sheet-id "$(SHEET_ID)"
 
 #-----------------------------------------------------------------------------
 # Schema information

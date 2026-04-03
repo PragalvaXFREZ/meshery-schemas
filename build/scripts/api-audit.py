@@ -37,7 +37,7 @@ import os
 import re
 import subprocess
 import sys
-import urllib.parse
+
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
@@ -57,10 +57,50 @@ except ImportError:
 # Paths relative to meshery/meshery repo root
 ROUTER_FILE = "server/router/server.go"
 HANDLERS_DIR = "server/handlers"
-GO_MOD_FILE = "go.mod"
 
 # Path relative to meshery-schemas repo root (produced by bundle-openapi)
 DEFAULT_SPEC_PATH = "_openapi_build/merged_openapi.yml"
+
+
+# ---------------------------------------------------------------------------
+# Repo configuration (replaces hardcoded path constants for multi-repo support)
+# ---------------------------------------------------------------------------
+
+class RepoConfig:
+    """Per-repo path and dialect settings for the audit pipeline."""
+
+    def __init__(
+        self,
+        name: str,
+        router_file: str,
+        handlers_dir: str,
+        go_mod: str = "go.mod",
+        provider_file: Optional[str] = None,
+        router_dialect: str = "gorilla",
+    ):
+        self.name = name
+        self.router_file = router_file
+        self.handlers_dir = handlers_dir
+        self.go_mod = go_mod
+        self.provider_file = provider_file
+        self.router_dialect = router_dialect  # "gorilla" | "echo"
+
+
+MESHERY_CONFIG = RepoConfig(
+    name="meshery",
+    router_file="server/router/server.go",
+    handlers_dir="server/handlers",
+    provider_file="server/models/providers.go",
+    router_dialect="gorilla",
+)
+
+MESHERY_CLOUD_CONFIG = RepoConfig(
+    name="meshery-cloud",
+    router_file="server/router/router.go",
+    handlers_dir="server/handlers",
+    provider_file=None,
+    router_dialect="echo",
+)
 
 # ---------------------------------------------------------------------------
 # Sheet configuration
@@ -73,9 +113,12 @@ SHEET_COLUMNS = [
     "Coverage",
     "Endpoint Status",
     "x-annotated",
-    "Schema-Backed",
-    "Schema Completeness",
-    "Schema Import Usage",
+    "Schema-Backed (Meshery Server)",
+    "Schema-Backed (Meshery Cloud)",
+    "Schema Completeness (Meshery Server)",
+    "Schema Completeness (Meshery Cloud)",
+    "Schema Driven (Meshery Server)",
+    "Schema Driven (Meshery Cloud)",
     "Notes",
     "Change Log",
 ]
@@ -86,37 +129,35 @@ COL_METHODS = 3
 COL_COVERAGE = 4
 COL_STATUS = 5
 COL_X_ANNOTATED = 6
-COL_BACKED = 7
-COL_COMPLETENESS = 8
-COL_DRIVEN = 9
-COL_NOTES = 10
-COL_CHANGELOG = 11
+COL_BACKED_MS = 7
+COL_BACKED_MC = 8
+COL_COMPLETENESS_MS = 9
+COL_COMPLETENESS_MC = 10
+COL_DRIVEN_MS = 11
+COL_DRIVEN_MC = 12
+COL_NOTES = 13
+COL_CHANGELOG = 14
 
-WORKSHEET_NAME = "Verification of Meshery Server API Endpoints"
 AUDIT_WORKSHEET_INDEX = 4
 
-SUMMARY_METRIC_ROWS: List[Tuple[str, str]] = [
-    ("total_api_endpoints_in_spec", "Total API endpoints in spec"),
-    ("schema_backed", "Schema backed"),
-    ("x_internal_cloud", "x-internal: cloud"),
-    ("x_internal_meshery", "x-internal: meshery"),
-    ("no_x_internal", "No x-internal"),
+SUMMARY_TABLE_ROWS: List[Tuple[str, str]] = [
+    ("endpoints", "Endpoints"),
+    ("x_internal_tagged", "x-internal tagged"),
+    ("not_tagged", "Not tagged"),
+    ("schema_backed", "Schema-backed"),
+    ("not_schema_backed", "Not schema-backed"),
+    ("complete", "Complete"),
+    ("incomplete", "Incomplete"),
+    ("schema_driven", "Schema-driven"),
+    ("not_schema_driven", "Not schema-driven"),
 ]
 
-SPEC_ONLY_SUMMARY_ROW_KEYS = [
-    "total_api_endpoints_in_spec",
-    "x_internal_cloud",
-    "x_internal_meshery",
-    "no_x_internal",
-]
+SUMMARY_KEYS = [key for key, _label in SUMMARY_TABLE_ROWS]
 
-COMPARISON_SUMMARY_ROW_KEYS = [
-    "total_api_endpoints_in_spec",
-    "schema_backed",
-    "x_internal_cloud",
-    "x_internal_meshery",
-    "no_x_internal",
-]
+PLATFORM_LABELS = {
+    "meshery": "Meshery",
+    "cloud": "Cloud",
+}
 
 HTTP_METHODS = frozenset({"get", "post", "put", "delete", "patch", "options", "head"})
 
@@ -182,13 +223,19 @@ CATEGORY_FALLBACK: List[Tuple[str, str, str]] = [
 # ---------------------------------------------------------------------------
 
 def normalize_path(path: str) -> str:
-    """Replace {paramName} with positional {p1}, {p2}, ... for matching."""
+    """Replace path parameter tokens with positional {p1}, {p2}, … for matching.
+
+    Handles both OpenAPI/Gorilla-Mux style ({paramName}) and Echo/Express
+    style (:paramName) so routes from either framework match spec paths.
+    """
     counter = [0]
 
     def _repl(_m):
         counter[0] += 1
         return f"{{p{counter[0]}}}"
 
+    # Normalise Echo-style :param segments first, then OpenAPI {param} style.
+    path = re.sub(r"/:([^/]+)", lambda m: "/{" + m.group(1) + "}", path)
     return re.sub(r"\{[^}]+\}", _repl, path)
 
 
@@ -234,14 +281,27 @@ def endpoint_sort_key(endpoint: Dict[str, Any]) -> Tuple[str, str, str, str]:
 # 1. Router parser — server/router/server.go
 # ---------------------------------------------------------------------------
 
-def parse_router(repo: Path) -> List[Dict[str, Any]]:
-    """Parse route registrations from server.go."""
-    router_file = repo / ROUTER_FILE
+def parse_router(
+    repo: Path, config: Optional["RepoConfig"] = None
+) -> List[Dict[str, Any]]:
+    """Parse route registrations from the repo's router file.
+
+    Uses *config.router_dialect* to pick the right parser:
+    - "gorilla" (default) — parses gMux.Handle/HandleFunc/PathPrefix calls
+    - "echo"              — parses Echo group and method calls (e.GET/POST/…)
+    """
+    router_file_rel = config.router_file if config else ROUTER_FILE
+    router_file = repo / router_file_rel
     if not router_file.exists():
         print(f"ERROR: {router_file} not found", file=sys.stderr)
         return []
 
     content = router_file.read_text(errors="replace")
+
+    dialect = config.router_dialect if config else "gorilla"
+    if dialect == "echo":
+        return _parse_echo_routes(content)
+
     lines = content.splitlines()
 
     # Accumulate multi-line gMux statements
@@ -332,6 +392,83 @@ def _extract_handler(line: str) -> str:
     if actual:
         return actual[-1]
 
+    return "<unknown>"
+
+
+def _parse_echo_routes(content: str) -> List[Dict[str, Any]]:
+    """Parse route registrations from an Echo-framework router file.
+
+    Handles:
+      - s.e.METHOD("/path", handler, middlewares...)
+      - group.METHOD("/path", handler, middlewares...)
+    where group is defined as  var = (...).Group("/prefix")
+
+    echo.WrapHandler(http.HandlerFunc(s.h.Name)) → handler name "Name"
+    s.h.Name or s.someHandler.Name              → handler name "Name"
+    func( ...                                   → "<inline>"
+    """
+    # 1. Build group base-path map: variable name → absolute path prefix
+    group_bases: Dict[str, str] = {}
+    for m in re.finditer(
+        r'(\w+)\s*:?=\s*(?:\w+\.)*(?:e|echo|s\.e)\.Group\("([^"]+)"\)',
+        content,
+    ):
+        group_bases[m.group(1)] = m.group(2)
+
+    routes: List[Dict[str, Any]] = []
+    http_methods = {"GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"}
+
+    # 2. Match method calls: (receiver).(METHOD)("path", handler_expr, ...)
+    for m in re.finditer(
+        r'(\w+|s\.e)\.(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS|Any)\s*\(\s*"([^"]+)"'
+        r'\s*,\s*([^)]+)',
+        content,
+    ):
+        receiver, method_raw, path_suffix, rest = (
+            m.group(1), m.group(2), m.group(3), m.group(4)
+        )
+        method = method_raw.upper() if method_raw != "Any" else "ALL"
+        methods = [method] if method != "ALL" else ["ALL"]
+
+        # Reconstruct full path
+        base = group_bases.get(receiver, "")
+        if receiver in ("s.e", "e"):
+            base = ""  # direct on server — path_suffix is absolute
+        full_path = (base.rstrip("/") + "/" + path_suffix.lstrip("/")).rstrip("/") or "/"
+
+        # Extract handler name from rest of the call
+        handler = _extract_echo_handler(rest)
+
+        commented = False  # Echo router doesn't use commented routes
+
+        routes.append({
+            "path": full_path,
+            "methods": sorted(methods) if methods != ["ALL"] else ["ALL"],
+            "handler": handler,
+            "commented": commented,
+        })
+
+    return routes
+
+
+def _extract_echo_handler(expr: str) -> str:
+    """Extract handler name from the second argument of an Echo route call."""
+    expr = expr.strip()
+    # Inline function
+    if "func(" in expr or "func (" in expr:
+        return "<inline>"
+    # echo.WrapHandler(http.HandlerFunc(s.h.Name))
+    m = re.search(r"http\.HandlerFunc\((?:\w+\.)*(\w+)\)", expr)
+    if m:
+        return m.group(1)
+    # s.h.Name or s.academyHandler.Name or s.someHandler.Name
+    m = re.search(r"s\.\w+\.([A-Z]\w+)", expr)
+    if m:
+        return m.group(1)
+    # Plain method reference
+    m = re.search(r"\.([A-Z]\w+)\b", expr)
+    if m:
+        return m.group(1)
     return "<unknown>"
 
 
@@ -631,159 +768,106 @@ def parse_openapi(spec_file: Path) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# 3. Schema-driven detector — server/handlers/*.go
+# Go AST analyzer — subprocess bridge
 # ---------------------------------------------------------------------------
 
-def _extract_function_body(text: str, func_name: str) -> Optional[str]:
-    """Extract the body of a Go function using brace-depth counting.
+def run_go_analyzer(
+    repo: Path,
+    config: Optional["RepoConfig"] = None,
+) -> Dict[str, Any]:
+    """Run the Go AST helper and return its parsed JSON output.
 
-    Skips braces inside string literals to avoid miscounting.
+    The helper (build/scripts/analyze_handlers/main.go) uses go/ast to extract:
+      - Per-handler schema import usage and request/response types
+      - Transitive type aliases from local models to schema packages
+      - JSON struct field names from handlers, models, and schemas models
+
+    Falls back to an empty result (triggering regex fallback in main) when Go
+    is not available or the helper fails.
     """
-    pat = re.compile(
-        rf"func\s+(?:\([^)]*\)\s+)?{re.escape(func_name)}\s*\("
-    )
-    m = pat.search(text)
-    if not m:
-        return None
+    schemas_root = Path(__file__).resolve().parents[2]
+    schemas_models = schemas_root / "models"
+    handlers_dir = config.handlers_dir if config else HANDLERS_DIR
 
-    brace_pos = text.find("{", m.end())
-    if brace_pos == -1:
-        return None
+    cmd = [
+        "go", "run", "./build/scripts/analyze_handlers/",
+        "--repo", str(repo),
+        "--handlers-dir", handlers_dir,
+        "--models-dir", "server/models",
+        "--schema-module", "github.com/meshery/schemas",
+    ]
+    if schemas_models.exists():
+        cmd += ["--schemas-models", str(schemas_models)]
 
-    depth = 1
-    i = brace_pos + 1
-    while i < len(text) and depth > 0:
-        ch = text[i]
-        if ch == "{":
-            depth += 1
-        elif ch == "}":
-            depth -= 1
-        elif ch == '"':
-            i += 1
-            while i < len(text) and text[i] != '"':
-                if text[i] == "\\":
-                    i += 1
-                i += 1
-        elif ch == "`":
-            i += 1
-            while i < len(text) and text[i] != "`":
-                i += 1
-        i += 1
+    try:
+        out = subprocess.check_output(
+            cmd,
+            cwd=str(schemas_root),
+            text=True,
+            stderr=subprocess.PIPE,
+        )
+        return json.loads(out)
+    except FileNotFoundError:
+        print(
+            "WARNING: 'go' not found — Go AST analyzer unavailable; "
+            "analysis will be empty — handler classification unavailable",
+            file=sys.stderr,
+        )
+    except subprocess.CalledProcessError as exc:
+        print(
+            f"WARNING: Go analyzer exited with code {exc.returncode} — "
+            "analysis will be empty — handler classification unavailable\n"
+            f"  stderr: {exc.stderr.strip()[:200]}",
+            file=sys.stderr,
+        )
+    except (json.JSONDecodeError, ValueError) as exc:
+        print(
+            f"WARNING: Go analyzer output could not be parsed ({exc}) — "
+            "analysis will be empty — handler classification unavailable",
+            file=sys.stderr,
+        )
+    return {"handlers": {}, "type_aliases": {}, "struct_fields": {}}
 
-    return text[brace_pos + 1 : i - 1] if depth == 0 else None
 
+def _upgrade_schema_map(
+    schema_map: Dict[str, Tuple[str, str]],
+    handler_io_map: Dict[str, Dict[str, Optional[str]]],
+    type_aliases: Dict[str, str],
+    schema_module: str = "github.com/meshery/schemas",
+) -> Dict[str, Tuple[str, str]]:
+    """Upgrade FALSE entries in schema_map using transitive type alias lookups.
 
-def build_schema_driven_map(repo: Path) -> Dict[str, Tuple[str, str]]:
-    """Scan handler files for meshery/schemas imports at function level.
+    When a handler's I/O type (request or response) resolves through a local
+    alias to a schema type, it should be classified TRUE/Partial, not FALSE.
+    This repairs the alias-blind gap in the direct-import check.
 
-    For each handler function, extracts its body and checks which schema
-    import aliases are actually used inside it — not just present in the file.
-
-    Returns {handler_name: (status, reason)} where status is:
-      TRUE    — function uses versioned schema types (models/v1beta1/*, etc.)
-      Partial — function uses only models/core (utility types)
-      FALSE   — function does not use any schema imports
+    Example:
+        GetConnections → resp_type "*connections.ConnectionPage"
+        type_aliases   → {"ConnectionPage": ".../models/v1beta1/connection"}
+        Result         → ("TRUE", "alias: ConnectionPage → models/v1beta1/connection")
     """
-    handlers_dir = repo / HANDLERS_DIR
-    if not handlers_dir.exists():
-        print(f"WARNING: {handlers_dir} not found", file=sys.stderr)
-        return {}
+    if not type_aliases or not handler_io_map:
+        return schema_map
 
-    # Read schema module path from go.mod
-    schema_module = "github.com/meshery/schemas"
-    go_mod = repo / GO_MOD_FILE
-    if go_mod.exists():
-        for line in go_mod.read_text().splitlines():
-            m = re.match(r"\s*(github\.com/meshery/schemas)\s+v[\d.]+", line.strip())
-            if m:
-                schema_module = m.group(1)
+    result = dict(schema_map)
+    for handler, (status, _reason) in result.items():
+        if status != "FALSE":
+            continue
+        io = handler_io_map.get(handler, {})
+        for t in [io.get("request_type"), io.get("response_type")]:
+            if not t:
+                continue
+            bare = t.lstrip("*[]").rsplit(".", 1)[-1]
+            imp = type_aliases.get(bare)
+            if not imp:
+                continue
+            rel = imp.replace(schema_module + "/", "")
+            if "models/v" in rel:
+                result[handler] = ("TRUE", f"alias: {bare} → {rel}")
                 break
-
-    escaped = re.escape(schema_module)
-    alias_pat = re.compile(rf'(\w+)\s+"({escaped}[^"]*)"')
-    bare_pat = re.compile(rf'"({escaped}[^"]*)"')
-
-    # Per-file data
-    handler_to_file: Dict[str, str] = {}
-    file_texts: Dict[str, str] = {}
-    file_aliases: Dict[str, Dict[str, str]] = {}  # fpath → {alias: import_path}
-
-    for go_file in sorted(handlers_dir.glob("*.go")):
-        if go_file.name.endswith("_test.go"):
-            continue
-
-        text = go_file.read_text(errors="replace")
-        fpath = str(go_file)
-        file_texts[fpath] = text
-
-        # Map handler names → file
-        for name in re.findall(
-            r"func\s+\([^)]*\*?Handler[^)]*\)\s+(\w+)\s*\(", text
-        ):
-            handler_to_file[name] = fpath
-        for name in re.findall(r"^func\s+(\w+)\s*\(", text, re.MULTILINE):
-            if name not in handler_to_file:
-                handler_to_file[name] = fpath
-
-        # Build alias map: alias → full import path
-        aliases: Dict[str, str] = {}
-        for alias, imp_path in alias_pat.findall(text):
-            aliases[alias] = imp_path
-        seen_paths = set(aliases.values())
-        for imp_path in bare_pat.findall(text):
-            if imp_path not in seen_paths:
-                last_seg = imp_path.rstrip("/").rsplit("/", 1)[-1]
-                aliases[last_seg] = imp_path
-                seen_paths.add(imp_path)
-        file_aliases[fpath] = aliases
-
-    # Classify each handler at function level
-    result: Dict[str, Tuple[str, str]] = {}
-    for name, fpath in handler_to_file.items():
-        aliases = file_aliases.get(fpath, {})
-        text = file_texts.get(fpath, "")
-
-        # No schema imports in this file at all → fast path
-        if not aliases:
-            result[name] = ("FALSE", "no schema imports")
-            continue
-
-        # Try function-level analysis
-        func_body = _extract_function_body(text, name)
-        if func_body is not None:
-            used: Set[str] = set()
-            for alias, imp_path in aliases.items():
-                if re.search(rf"\b{re.escape(alias)}\.", func_body):
-                    used.add(imp_path)
-
-            if used:
-                versioned = {p for p in used if re.search(r"models/v\d+", p)}
-                core_only = {p for p in used if "models/core" in p}
-                if versioned:
-                    pkgs = ", ".join(
-                        sorted(p.replace(schema_module + "/", "") for p in versioned)
-                    )
-                    result[name] = ("TRUE", f"imports: {pkgs}")
-                elif core_only:
-                    result[name] = ("Partial", "imports: models/core only")
-                else:
-                    result[name] = ("FALSE", "schema dep but no model types")
-            else:
-                result[name] = ("FALSE", "no schema usage in function body")
-        else:
-            # Couldn't extract body — fall back to file-level
-            all_imports = set(aliases.values())
-            versioned = {p for p in all_imports if re.search(r"models/v\d+", p)}
-            core_only = {p for p in all_imports if "models/core" in p}
-            if versioned:
-                pkgs = ", ".join(
-                    sorted(p.replace(schema_module + "/", "") for p in versioned)
-                )
-                result[name] = ("TRUE", f"imports: {pkgs} (file-level)")
-            elif core_only:
-                result[name] = ("Partial", "imports: models/core only (file-level)")
-            else:
-                result[name] = ("FALSE", "schema dep but no model types")
+            if "models/core" in rel:
+                result[handler] = ("Partial", f"alias: {bare} → models/core")
+                # don't break — a versioned import on the other type would win
 
     return result
 
@@ -791,499 +875,6 @@ def build_schema_driven_map(repo: Path) -> Dict[str, Tuple[str, str]]:
 # ---------------------------------------------------------------------------
 # 4. Handler I/O Type Extractor
 # ---------------------------------------------------------------------------
-
-def _find_var_type(body: str, var_name: str) -> Optional[str]:
-    """Find the Go type of a variable from its declaration in a function body.
-
-    Handles:
-      var x *pkg.Type             → pkg.Type
-      var x pkg.Type              → pkg.Type
-      x := &pkg.Type{}           → pkg.Type
-      x := pkg.Type{field: val}  → pkg.Type
-      x = &pkg.Type{}            → pkg.Type
-      x := make([]pkg.Type, 0)   → []pkg.Type
-    """
-    esc = re.escape(var_name)
-
-    # var x *Type  /  var x Type
-    m = re.search(rf"\bvar\s+{esc}\s+\*?([\[\]]*[A-Za-z_][\w.]*)", body)
-    if m:
-        return m.group(1)
-
-    # x := &Type{...}  /  x := Type{...}  /  x = &Type{...}
-    # Must not match keywords (e.g. "if", "for", "return") or function calls
-    m = re.search(
-        rf"\b{esc}\s*:?=\s*&?([\[\]]*[A-Za-z_][\w.]*)\s*\{{", body
-    )
-    if m:
-        candidate = m.group(1)
-        # Filter out Go keywords and common non-type tokens
-        if candidate not in (
-            "if", "for", "range", "return", "func", "switch", "select",
-            "map", "struct", "interface", "err", "nil",
-        ):
-            return candidate
-
-    # x := make([]Type, ...)
-    m = re.search(rf"\b{esc}\s*:?=\s*make\(([\[\]]+[A-Za-z_][\w.]*)", body)
-    if m:
-        return m.group(1)
-
-    return None
-
-
-def _build_provider_return_types(repo: Path) -> Dict[str, str]:
-    """Parse the Provider interface to build {MethodName: return_type}.
-
-    The Provider interface in server/models/providers.go defines the
-    return types for all provider methods.  Many return ([]byte, error)
-    which is opaque, but others return concrete typed values like
-    (*connections.ConnectionPage, error).
-
-    Returns {"GetConnections": "*connections.ConnectionPage", ...}.
-    Only includes methods that return a typed (non-[]byte) first value.
-    """
-    providers_file = repo / "server" / "models" / "providers.go"
-    if not providers_file.exists():
-        return {}
-
-    text = providers_file.read_text(errors="replace")
-
-    # Find the Provider interface block
-    m = re.search(r"type\s+Provider\s+interface\s*\{", text)
-    if not m:
-        return {}
-
-    # Walk braces to extract interface body
-    start = m.end()
-    depth = 1
-    i = start
-    while i < len(text) and depth > 0:
-        if text[i] == "{":
-            depth += 1
-        elif text[i] == "}":
-            depth -= 1
-        i += 1
-    iface_body = text[start : i - 1]
-
-    result: Dict[str, str] = {}
-
-    # Match method signatures:  MethodName(...) (RetType, error)
-    # or MethodName(...) (RetType, int, error) etc.
-    for m in re.finditer(
-        r"^\s*(\w+)\s*\([^)]*\)\s*\(([^)]+)\)",
-        iface_body,
-        re.MULTILINE,
-    ):
-        method_name = m.group(1)
-        returns = m.group(2).strip()
-
-        # Parse return types — split by comma
-        ret_parts = [r.strip() for r in returns.split(",")]
-        if len(ret_parts) < 2:
-            continue
-
-        first_ret = ret_parts[0]
-
-        # Skip []byte returns — opaque passthrough
-        if first_ret == "[]byte":
-            continue
-        # Skip string, int, bool, error returns — not typed structs
-        if first_ret in ("string", "int", "bool", "error"):
-            continue
-
-        result[method_name] = first_ret
-
-    return result
-
-
-def _resolve_resp_type(
-    body: str,
-    resp_var: str,
-    provider_types: Dict[str, str],
-) -> Optional[str]:
-    """Try to resolve the type of a response variable.
-
-    Checks in order:
-      1. Local type declaration (var, :=, make)
-      2. Provider method return type (x, err := provider.Method(...))
-      3. Config/field method return type (h.config.Client.Method(...))
-    """
-    # 1. Local declaration
-    t = _find_var_type(body, resp_var)
-    if t:
-        return t
-
-    esc = re.escape(resp_var)
-
-    # 2. x, err := provider.MethodName(...)
-    m = re.search(
-        rf"\b{esc}\s*(?:,\s*\w+)*\s*:?=\s*(?:\w+\.)*provider\.(\w+)\s*\(",
-        body,
-    )
-    if m:
-        method = m.group(1)
-        ptype = provider_types.get(method)
-        if ptype:
-            return ptype
-
-    # 3. x, err := provider.MethodName(...)  (provider as p, prov, etc.)
-    m = re.search(
-        rf"\b{esc}\s*(?:,\s*\w+)*\s*:?=\s*(?:p|prov|provider)\.(\w+)\s*\(",
-        body,
-    )
-    if m:
-        method = m.group(1)
-        ptype = provider_types.get(method)
-        if ptype:
-            return ptype
-
-    # 4. x, err := h.config.SomeClient.Method(...) — can't resolve generically
-    #    but at least return None cleanly
-
-    return None
-
-
-def extract_handler_io_types(
-    repo: Path,
-) -> Dict[str, Dict[str, Optional[str]]]:
-    """For each handler function, extract request-body and response Go types.
-
-    Scans server/handlers/*.go for json.Decode / json.Unmarshal (request)
-    and json.Encode / json.Marshal (response) calls, then resolves the
-    variable's declared type using local declarations and Provider interface
-    return types.
-
-    Returns {handler_name: {"request_type": "pkg.Type" | None,
-                            "response_type": "pkg.Type" | None}}.
-    """
-    handlers_dir = repo / HANDLERS_DIR
-    if not handlers_dir.exists():
-        return {}
-
-    provider_types = _build_provider_return_types(repo)
-
-    result: Dict[str, Dict[str, Optional[str]]] = {}
-
-    for go_file in sorted(handlers_dir.glob("*.go")):
-        if go_file.name.endswith("_test.go"):
-            continue
-
-        text = go_file.read_text(errors="replace")
-
-        # Collect handler function names (methods on *Handler receiver)
-        handler_names = re.findall(
-            r"func\s+\([^)]*\*?Handler[^)]*\)\s+(\w+)\s*\(", text
-        )
-
-        for name in handler_names:
-            func_body = _extract_function_body(text, name)
-            if not func_body:
-                continue
-
-            io: Dict[str, Optional[str]] = {
-                "request_type": None,
-                "response_type": None,
-            }
-
-            # --- Request type ---
-            # json.NewDecoder(r.Body).Decode(&var)
-            req_vars = re.findall(
-                r"json\.NewDecoder\(\w+\.Body\)\.Decode\(&(\w+)\)",
-                func_body,
-            )
-            # json.Unmarshal(bytes, &var) or json.Unmarshal(bytes, var)
-            # where var is already a pointer — only if preceded by io.ReadAll on Body
-            if not req_vars and re.search(
-                r"io\.ReadAll\(\w+\.Body\)", func_body
-            ):
-                req_vars = re.findall(
-                    r"json\.Unmarshal\(\w+,\s*&?(\w+)\)", func_body
-                )
-
-            if req_vars:
-                io["request_type"] = _find_var_type(func_body, req_vars[0])
-                # Fallback: check function parameters for request var type
-                if not io["request_type"]:
-                    sig_m = re.search(
-                        rf"func\s+\([^)]*\)\s+{re.escape(name)}"
-                        rf"\s*\(([^)]*)\)",
-                        text,
-                    )
-                    if sig_m:
-                        params = sig_m.group(1)
-                        pm = re.search(
-                            rf"\b{re.escape(req_vars[0])}\s+"
-                            rf"\*?([\[\]]*[A-Za-z_][\w.]*)",
-                            params,
-                        )
-                        if pm:
-                            io["request_type"] = pm.group(1)
-
-            # --- Response type ---
-            # json.NewEncoder(w).Encode(expr)  (chained)
-            enc_matches = re.findall(
-                r"json\.NewEncoder\(\w+\)\.Encode\(([^)]+)\)", func_body
-            )
-            # enc := json.NewEncoder(w) ... enc.Encode(expr) (stored encoder)
-            if not enc_matches:
-                enc_var_m = re.search(
-                    r"(\w+)\s*:?=\s*json\.NewEncoder\(\w+\)", func_body
-                )
-                if enc_var_m:
-                    enc_var = enc_var_m.group(1)
-                    enc_matches = re.findall(
-                        rf"{re.escape(enc_var)}\.Encode\(([^)]+)\)",
-                        func_body,
-                    )
-            # json.Marshal(expr)
-            marsh_matches = re.findall(
-                r"json\.Marshal\(([^)]+)\)", func_body
-            )
-
-            resp_expr = None
-            if enc_matches:
-                resp_expr = enc_matches[0].strip().lstrip("&*")
-            elif marsh_matches:
-                resp_expr = marsh_matches[0].strip().lstrip("&*")
-
-            if resp_expr:
-                # Direct struct literal: pkg.Type{...}
-                m = re.match(r"([\[\]]*[A-Za-z_][\w.]*)\s*\{", resp_expr)
-                if m:
-                    candidate = m.group(1)
-                    if candidate not in (
-                        "if", "for", "range", "return", "func",
-                        "map", "struct", "interface",
-                    ):
-                        io["response_type"] = candidate
-                # Package-level variable: pkg.VarName (no parens/braces)
-                elif re.match(r"[A-Za-z_]\w*\.[A-Z]\w*$", resp_expr):
-                    io["response_type"] = resp_expr
-                # Simple variable name — trace via local decls + provider types
-                elif re.match(r"[A-Za-z_]\w*$", resp_expr):
-                    io["response_type"] = _resolve_resp_type(
-                        func_body, resp_expr, provider_types
-                    )
-                    # Fallback: check function parameters
-                    if not io["response_type"]:
-                        sig_m = re.search(
-                            rf"func\s+\([^)]*\)\s+{re.escape(name)}"
-                            rf"\s*\(([^)]*)\)",
-                            text,
-                        )
-                        if sig_m:
-                            params = sig_m.group(1)
-                            pm = re.search(
-                                rf"\b{re.escape(resp_expr)}\s+"
-                                rf"\*?([\[\]]*[A-Za-z_][\w.]*)",
-                                params,
-                            )
-                            if pm:
-                                io["response_type"] = pm.group(1)
-
-            # --- Fallback: fmt.Fprint with provider response ---
-            # Pattern: resp, err := provider.X(...) then fmt.Fprint(w, string(resp))
-            if not io["response_type"]:
-                fprint_m = re.search(
-                    r"fmt\.Fprint\w*\(\w+,\s*string\((\w+)\)\)", func_body
-                )
-                if fprint_m:
-                    resolved = _resolve_resp_type(
-                        func_body, fprint_m.group(1), provider_types
-                    )
-                    if resolved:
-                        io["response_type"] = resolved
-                    else:
-                        # Provider returns []byte — opaque passthrough
-                        io["response_type"] = _PROVIDER_BYTES_SENTINEL
-
-            result[name] = io
-
-    return result
-
-
-# ---------------------------------------------------------------------------
-# 5. Go Struct Field Parser — json tags → field name set
-# ---------------------------------------------------------------------------
-
-def _gomodcache() -> Optional[Path]:
-    """Return GOMODCACHE path, or None."""
-    try:
-        out = subprocess.check_output(
-            ["go", "env", "GOMODCACHE"],
-            text=True,
-            stderr=subprocess.DEVNULL,
-        ).strip()
-        if out:
-            return Path(out)
-    except (FileNotFoundError, subprocess.CalledProcessError):
-        pass
-    fallback = Path.home() / "go" / "pkg" / "mod"
-    return fallback if fallback.exists() else None
-
-
-def _parse_struct_json_fields(text: str, type_name: str) -> Optional[Set[str]]:
-    """Extract the set of JSON field names from a Go struct definition.
-
-    Looks for ``type <type_name> struct { ... }`` and pulls out every
-    ``json:"<name>,..."`` tag.  Returns None if the struct is not found.
-    """
-    # Match: type TypeName struct {
-    pat = re.compile(
-        rf"\btype\s+{re.escape(type_name)}\s+struct\s*\{{", re.MULTILINE
-    )
-    m = pat.search(text)
-    if not m:
-        return None
-
-    # Walk braces to find end of struct
-    start = m.end()
-    depth = 1
-    i = start
-    while i < len(text) and depth > 0:
-        if text[i] == "{":
-            depth += 1
-        elif text[i] == "}":
-            depth -= 1
-        i += 1
-
-    struct_body = text[start : i - 1]
-    fields: Set[str] = set()
-    for tag_m in re.finditer(r'json:"([^"]+)"', struct_body):
-        json_name = tag_m.group(1).split(",")[0]
-        if json_name and json_name != "-":
-            fields.add(json_name)
-    return fields if fields else None
-
-
-def build_go_struct_fields(
-    repo: Path,
-) -> Dict[str, Set[str]]:
-    """Build a map of Go type → {json field names} for types used in handlers.
-
-    Searches:
-      1. server/handlers/*.go  (inline struct types)
-      2. server/models/**/*.go (models package + sub-packages)
-      3. GOMODCACHE/github.com/meshery/schemas/... (generated schema types)
-
-    Handles one level of type-alias indirection (common in meshery — e.g.
-    ``type EnvironmentPayload = schemasEnv.EnvironmentPayload``).
-
-    Returns {"TypeName": {"field_a", "field_b", ...}, ...}.
-    The key is the short type name (without package qualifier).
-    """
-    result: Dict[str, Set[str]] = {}
-    alias_map: Dict[str, str] = {}  # short_name → aliased_full_import
-
-    # --- Scan local Go files ---
-    search_dirs = [
-        repo / HANDLERS_DIR,
-        repo / "server" / "models",
-    ]
-
-    for search_dir in search_dirs:
-        if not search_dir.exists():
-            continue
-        for go_file in sorted(search_dir.rglob("*.go")):
-            if go_file.name.endswith("_test.go"):
-                continue
-            text = go_file.read_text(errors="replace")
-
-            # Find all struct definitions
-            for name in re.findall(
-                r"\btype\s+(\w+)\s+struct\s*\{", text
-            ):
-                fields = _parse_struct_json_fields(text, name)
-                if fields:
-                    result[name] = fields
-
-            # Find type aliases  (type X = pkg.Y)
-            for m in re.finditer(
-                r"\btype\s+(\w+)\s*=\s*(\w+)\.(\w+)", text
-            ):
-                local_name, _alias_pkg, remote_name = (
-                    m.group(1),
-                    m.group(2),
-                    m.group(3),
-                )
-                alias_map[local_name] = remote_name
-                # Also try to find the import path for the alias package
-                imp_match = re.search(
-                    rf'{re.escape(_alias_pkg)}\s+"([^"]+)"', text
-                )
-                if imp_match:
-                    alias_map[f"_imp_{local_name}"] = imp_match.group(1)
-
-    # --- Resolve schema types: prefer local workspace, fall back to GOMODCACHE ---
-    # The local meshery-schemas workspace is always the authoritative source.
-    # GOMODCACHE is only consulted when the local workspace models/ is absent,
-    # and a clear warning is emitted when the cached version is also unavailable
-    # so that cross-check results are not silently downgraded.
-    local_schemas_root = Path(__file__).resolve().parents[2]
-    local_models = local_schemas_root / "models"
-    schema_types_from_local = 0
-
-    if local_models.exists():
-        for go_file in sorted(local_models.rglob("*.go")):
-            if go_file.name.endswith("_test.go"):
-                continue
-            text = go_file.read_text(errors="replace")
-            for name in re.findall(r"\btype\s+(\w+)\s+struct\s*\{", text):
-                fields = _parse_struct_json_fields(text, name)
-                if fields and name not in result:
-                    result[name] = fields
-                    schema_types_from_local += 1
-
-    if not schema_types_from_local:
-        # Local workspace had no schema types; try GOMODCACHE.
-        go_mod = repo / GO_MOD_FILE
-        schema_version = None
-        if go_mod.exists():
-            for line in go_mod.read_text().splitlines():
-                vm = re.match(
-                    r"\s*github\.com/meshery/schemas\s+(v[\d.]+)", line.strip()
-                )
-                if vm:
-                    schema_version = vm.group(1)
-                    break
-
-        modcache = _gomodcache()
-        if modcache and schema_version:
-            schema_root = modcache / f"github.com/meshery/schemas@{schema_version}"
-            if schema_root.exists():
-                for go_file in sorted(schema_root.rglob("*.go")):
-                    if go_file.name.endswith("_test.go"):
-                        continue
-                    text = go_file.read_text(errors="replace")
-                    for name in re.findall(r"\btype\s+(\w+)\s+struct\s*\{", text):
-                        fields = _parse_struct_json_fields(text, name)
-                        if fields and name not in result:
-                            result[name] = fields
-            else:
-                print(
-                    f"WARNING: schema type map is incomplete — "
-                    f"github.com/meshery/schemas@{schema_version} not found in GOMODCACHE "
-                    f"and local models/ is absent. "
-                    f"Cross-check completeness results will be degraded. "
-                    f"Run 'go mod download' in the meshery repo or ensure models/ exists.",
-                    file=sys.stderr,
-                )
-        elif schema_version:
-            print(
-                "WARNING: schema type map is incomplete — GOMODCACHE not found. "
-                "Cross-check completeness results will be degraded.",
-                file=sys.stderr,
-            )
-
-    # --- Resolve aliases: if local name not found, use remote name ---
-    for local_name, remote_name in alias_map.items():
-        if local_name.startswith("_imp_"):
-            continue
-        if local_name not in result and remote_name in result:
-            result[local_name] = result[remote_name]
-
-    return result
 
 
 # ---------------------------------------------------------------------------
@@ -1535,8 +1126,6 @@ def cross_check_completeness(
         if resp_ratio is None:
             if is_resp_passthrough or (resp_type and resp_type != _PROVIDER_BYTES_SENTINEL):
                 return "Stub", notes
-            if spec_resp:
-                return "N/A", notes
             return "N/A", notes
 
         if resp_ratio >= GOOD_THRESHOLD:
@@ -1561,6 +1150,7 @@ def _build_actionable_notes(
     handler: str,
     cloud_methods: List[str],
     spec_methods: Set[str],
+    repo_source: str = "",
 ) -> str:
     """Build a structured, readable summary for the Notes column.
 
@@ -1599,7 +1189,7 @@ def _build_actionable_notes(
         if len(cloud_methods) == len(spec_methods):
             sections.append(
                 "[CLOUD] All methods marked x-internal: cloud in spec, "
-                "but an equivalent route exists in the server"
+                "and equivalent route exists in the server"
             )
         else:
             sections.append(
@@ -1636,29 +1226,36 @@ def _build_actionable_notes(
         )
 
     # ── SPEC QUALITY (legacy fallback) ─────────────────────────────────
+    _SOURCE_LABEL: Dict[str, str] = {
+        "meshery": " - Meshery Server",
+        "cloud": " - Meshery Cloud",
+    }
+    _src_label = _SOURCE_LABEL.get(repo_source, "")
+
     if legacy_lines:
         sections.append(
-            "[SPEC QUALITY]\n" + "\n".join(legacy_lines)
+            f"[SPEC QUALITY{_src_label}]\n" + "\n".join(legacy_lines)
         )
 
     # ── SCHEMA IMPORT USAGE ────────────────────────────────────────────
     # NOTE: This check only detects direct imports of meshery/schemas in the
     # handler file. Handlers that use schema types via local model aliases
     # (e.g. connections.ConnectionPage) will show FALSE even when schema-backed.
+    # The check is performed against the handler source of the labelled server.
     if driven == "FALSE" and coverage != "Schema Underlap":
         if handler in ("<inline>", "<unknown>"):
             sections.append(
-                f"[SCHEMA IMPORT] Handler is {handler} — "
+                f"[SCHEMA IMPORT{_src_label}] Handler is {handler} — "
                 "no direct schema imports detected (alias usage not checked)"
             )
         else:
             sections.append(
-                "[SCHEMA IMPORT] No direct meshery/schemas import found in "
+                f"[SCHEMA IMPORT{_src_label}] No direct meshery/schemas import found in "
                 "handler file — may use schema types via local aliases"
             )
     elif driven == "Partial":
         sections.append(
-            "[SCHEMA IMPORT] Only core schema types imported directly — "
+            f"[SCHEMA IMPORT{_src_label}] Only core schema types imported directly — "
             "versioned model types (v1beta1, etc.) may be used via aliases"
         )
 
@@ -1668,14 +1265,30 @@ def _build_actionable_notes(
 def _derive_sheet_status_and_annotation(
     status: str,
     x_annotated: str,
+    repo_source: str = "",
 ) -> Tuple[str, str]:
-    """Split combined internal status into sheet-friendly fields."""
+    """Split combined internal status into sheet-friendly fields.
+
+    *repo_source* ("meshery" | "cloud") is appended as a suffix so the
+    Endpoint Status column indicates where the route lives:
+      Active - Meshery Server
+      Active - Meshery Cloud
+      Unimplemented - Meshery Server
+      Unimplemented - Meshery Cloud
+    Omitting repo_source produces the legacy bare labels.
+    """
+    _SOURCE_SUFFIX: Dict[str, str] = {
+        "meshery": " - Meshery Server",
+        "cloud": " - Meshery Cloud",
+    }
+    suffix = _SOURCE_SUFFIX.get(repo_source, "")
+
     if status == "Deprecated":
-        sheet_status = "Deprecated"
+        sheet_status = f"Deprecated{suffix}"
     elif status in {"Unimplemented", "Cloud-only"}:
-        sheet_status = "Unimplemented"
+        sheet_status = f"Unimplemented{suffix}"
     else:
-        sheet_status = "Active"
+        sheet_status = f"Active{suffix}"
 
     return sheet_status, x_annotated
 
@@ -1751,6 +1364,7 @@ def classify_endpoints(
     schema_map: Dict[str, Tuple[str, str]],
     handler_io_map: Optional[Dict[str, Dict[str, Optional[str]]]] = None,
     go_fields_map: Optional[Dict[str, Set[str]]] = None,
+    repo_source: str = "",
 ) -> List[Dict[str, Any]]:
     """Classify endpoints from both router and spec (bidirectional walk).
 
@@ -1819,22 +1433,30 @@ def classify_endpoints(
             x_annotated = "Cloud-only"
         elif meshery_methods:
             x_annotated = "meshery"
+        elif coverage == "Server Underlap":
+            # Not in spec at all — x-internal annotation is inapplicable
+            x_annotated = "No Schema"
         else:
-            x_annotated = "N/A"
+            # In spec but no x-internal annotation (shared / no restriction)
+            x_annotated = "None"
 
         sheet_status, sheet_x_annotated = _derive_sheet_status_and_annotation(
             status,
             x_annotated,
+            repo_source=repo_source,
         )
 
-        # --- Schema-Backed ---
-        backed = "TRUE" if spec_methods else "FALSE"
+        # --- Schema-Backed (per platform) ---
+        _backed = "TRUE" if spec_methods else "FALSE"
 
         # --- Schema Completeness (cross-check or legacy fallback) ---
         handler = route["handler"]
+        # Require go_fields_map to be non-empty: an empty dict means the Go
+        # struct field scan failed and we should fall back to structural
+        # assessment instead of producing unreliable Stub/N/A results.
         use_crosscheck = (
             handler_io_map is not None
-            and go_fields_map is not None
+            and bool(go_fields_map)
             and handler in handler_io_map
             and spec_methods
         )
@@ -1894,8 +1516,11 @@ def classify_endpoints(
             handler=handler,
             cloud_methods=cloud_methods,
             spec_methods=spec_methods,
+            repo_source=repo_source,
         )
 
+        # Assign backed/completeness/driven to the correct platform column
+        _is_cloud = repo_source == "cloud"
         endpoints.append({
             "category": category,
             "subcategory": subcategory,
@@ -1905,10 +1530,16 @@ def classify_endpoints(
             "status": status,
             "sheet_status": sheet_status,
             "x_annotated": sheet_x_annotated,
-            "backed": backed,
-            "completeness": completeness,
-            "driven": driven,
+            "backed_ms": "N/A" if _is_cloud else _backed,
+            "backed_mc": _backed if _is_cloud else "N/A",
+            "completeness_ms": "N/A" if _is_cloud else completeness,
+            "completeness_mc": completeness if _is_cloud else "N/A",
+            "driven_ms": "N/A" if _is_cloud else driven,
+            "driven_mc": driven if _is_cloud else "N/A",
             "notes": notes,
+            "repo_source": repo_source,
+            "meshery_present": repo_source == "meshery",
+            "cloud_present": repo_source == "cloud",
         })
 
     # ------------------------------------------------------------------
@@ -1949,39 +1580,54 @@ def classify_endpoints(
         elif any_meshery:
             x_annotated = "meshery"
         else:
-            x_annotated = "N/A"
+            # In spec but no x-internal annotation (shared / no restriction)
+            x_annotated = "None"
 
+        # Spec-only endpoints have no router source; omit suffix so the status
+        # reads "Unimplemented" rather than "Unimplemented - Meshery Server".
         sheet_status, sheet_x_annotated = _derive_sheet_status_and_annotation(
             status,
             x_annotated,
         )
 
-        # --- Schema-Backed ---
-        backed = "TRUE"
-
-        # --- Schema-Driven ---
-        driven = "N/A"
-
-        # --- Schema Completeness & Notes ---
-        if status == "Cloud-only":
-            # No router equivalent — spec completeness checks don't apply
-            completeness = "N/A"
-            notes = "No equivalent route in Meshery server; defined in spec as x-internal: cloud"
+        # --- Schema-Backed & Completeness (per platform, driven always N/A for spec-only) ---
+        # x-internal: cloud  → cloud spec defines it, meshery server does not
+        # x-internal: meshery → meshery defines it, cloud does not
+        # no annotation (shared) → both platforms are expected to implement it
+        if all_cloud:
+            backed_ms = "FALSE"
+            backed_mc = "TRUE"
+        elif any_meshery and not any_cloud:
+            backed_ms = "TRUE"
+            backed_mc = "N/A"
         else:
-            completeness, compl_notes = _aggregate_completeness(
+            # shared (no x-internal) — unimplemented on both
+            backed_ms = "TRUE"
+            backed_mc = "TRUE"
+
+        cloud_methods_list = [
+            m for m in methods_sorted
+            if "cloud" in x_internal_map.get((norm_path, m), [])
+        ]
+
+        if all_cloud:
+            completeness_ms = "N/A"
+            completeness_mc, compl_notes = _aggregate_completeness(
                 norm_path, methods_sorted, spec_data
             )
-            cloud_methods_list = [
-                m for m in methods_sorted
-                if "cloud" in x_internal_map.get((norm_path, m), [])
-            ]
+            notes = "No equivalent route in Meshery server; defined in spec as x-internal: cloud"
+        else:
+            completeness_ms, compl_notes = _aggregate_completeness(
+                norm_path, methods_sorted, spec_data
+            )
+            completeness_mc = completeness_ms if not any_meshery else "N/A"
             notes = _build_actionable_notes(
                 coverage=coverage,
                 status=status,
                 is_commented=False,
-                completeness=completeness,
+                completeness=completeness_ms,
                 compl_notes=compl_notes,
-                driven=driven,
+                driven="N/A",
                 handler="",
                 cloud_methods=cloud_methods_list,
                 spec_methods=set(methods_sorted),
@@ -1996,13 +1642,186 @@ def classify_endpoints(
             "status": status,
             "sheet_status": sheet_status,
             "x_annotated": sheet_x_annotated,
-            "backed": backed,
-            "completeness": completeness,
-            "driven": driven,
+            "backed_ms": backed_ms,
+            "backed_mc": backed_mc,
+            "completeness_ms": completeness_ms,
+            "completeness_mc": completeness_mc,
+            "driven_ms": "N/A",
+            "driven_mc": "N/A",
             "notes": notes,
+            "repo_source": "",  # spec-only — no router source
+            "meshery_present": False,
+            "cloud_present": False,
         })
 
     return sorted(endpoints, key=endpoint_sort_key)
+
+
+# ---------------------------------------------------------------------------
+# Per-repo analysis helper
+# ---------------------------------------------------------------------------
+
+def _setup_repo_analysis(
+    repo_root: Path,
+    repo_config: "RepoConfig",
+) -> Tuple[
+    List[Dict[str, Any]],
+    Dict[str, Tuple[str, str]],
+    Dict[str, Dict[str, Optional[str]]],
+    Dict[str, Set[str]],
+    Dict[str, int],
+]:
+    """Parse routes and run handler analysis for one repo.
+
+    Returns (routes, schema_map, handler_io_map, go_fields_map).
+    """
+    routes = parse_router(repo_root, config=repo_config)
+    analysis = run_go_analyzer(repo_root, config=repo_config)
+
+    go_fields_map: Dict[str, Set[str]] = {
+        name: set(fields) for name, fields in analysis["struct_fields"].items()
+    }
+    handler_io_map: Dict[str, Dict[str, Optional[str]]] = {
+        name: {
+            "request_type": info["request_type"],
+            "response_type": info["response_type"],
+        }
+        for name, info in analysis["handlers"].items()
+    }
+
+    schema_map_direct: Dict[str, Tuple[str, str]] = {
+        name: (info["schema_import_usage"], info["schema_reason"])
+        for name, info in analysis["handlers"].items()
+    }
+
+    schema_map = _upgrade_schema_map(
+        schema_map_direct,
+        handler_io_map,
+        analysis.get("type_aliases", {}),
+    )
+
+    n_driven = sum(1 for s, _ in schema_map.values() if s == "TRUE")
+    n_io = sum(
+        1 for io in handler_io_map.values()
+        if io.get("request_type") or io.get("response_type")
+    )
+    analysis_stats = {
+        "handlers": len(analysis["handlers"]),
+        "struct_types": len(analysis["struct_fields"]),
+        "schema_aliases": len(analysis["type_aliases"]),
+        "extractable_io_handlers": n_io,
+        "direct_schema_imports": n_driven,
+    }
+
+    return routes, schema_map, handler_io_map, go_fields_map, analysis_stats
+
+
+# ---------------------------------------------------------------------------
+# Combined endpoint merger (used when both repos are analysed in one run)
+# ---------------------------------------------------------------------------
+
+_COV_RANK: Dict[str, int] = {"Overlap": 3, "Server Underlap": 2, "Schema Underlap": 1}
+
+
+def merge_endpoint_lists(
+    meshery_eps: List[Dict[str, Any]],
+    cloud_eps: List[Dict[str, Any]],
+) -> List[Dict[str, Any]]:
+    """Produce a single unified endpoint list from meshery + cloud analysis.
+
+    - Endpoints unique to one repo keep their "Active - Meshery Server" /
+      "Active - Meshery Cloud" sheet_status as set by classify_endpoints.
+    - Endpoints present in BOTH repos are merged into one row; the
+      sheet_status is upgraded to "Active - Both" when both are active.
+    - Spec-only endpoints that appear in both spec-only passes are
+      deduplicated (same path, keep one).
+    """
+    meshery_by_norm: Dict[str, Dict[str, Any]] = {}
+    for ep in meshery_eps:
+        norm = normalize_path(ep["path"])
+        # Prefer router-backed (Pass 1) over spec-only (Pass 2)
+        if norm not in meshery_by_norm or (
+            _COV_RANK.get(ep["coverage"], 0) > _COV_RANK.get(meshery_by_norm[norm]["coverage"], 0)
+        ):
+            meshery_by_norm[norm] = ep
+
+    cloud_by_norm: Dict[str, Dict[str, Any]] = {}
+    for ep in cloud_eps:
+        norm = normalize_path(ep["path"])
+        if norm not in cloud_by_norm or (
+            _COV_RANK.get(ep["coverage"], 0) > _COV_RANK.get(cloud_by_norm[norm]["coverage"], 0)
+        ):
+            cloud_by_norm[norm] = ep
+
+    merged: List[Dict[str, Any]] = []
+
+    for norm in sorted(set(meshery_by_norm) | set(cloud_by_norm)):
+        m_ep = meshery_by_norm.get(norm)
+        c_ep = cloud_by_norm.get(norm)
+
+        if m_ep and not c_ep:
+            merged.append(m_ep)
+            continue
+        if c_ep and not m_ep:
+            merged.append(c_ep)
+            continue
+
+        # Both repos have this path — merge.
+        # Primary = the one with higher coverage rank (router-backed wins over spec-only).
+        if _COV_RANK.get(m_ep["coverage"], 0) >= _COV_RANK.get(c_ep["coverage"], 0):
+            primary, secondary = m_ep, c_ep
+        else:
+            primary, secondary = c_ep, m_ep
+
+        ep = dict(primary)
+
+        # Combine methods from both repos
+        m_methods = {m.strip() for m in m_ep["methods"].split(",") if m.strip()}
+        c_methods = {m.strip() for m in c_ep["methods"].split(",") if m.strip()}
+        ep["methods"] = ", ".join(sorted(m_methods | c_methods))
+
+        # Combined sheet_status — reflect which repos are active
+        m_active = m_ep["status"] in {"Active", "Active (Cloud-annotated)"}
+        c_active = c_ep["status"] in {"Active", "Active (Cloud-annotated)"}
+
+        if m_active and c_active:
+            ep["sheet_status"] = "Active - Both"
+        elif m_active:
+            ep["sheet_status"] = "Active - Meshery Server"
+        elif c_active:
+            ep["sheet_status"] = "Active - Meshery Cloud"
+        elif m_ep["status"] == "Deprecated" or c_ep["status"] == "Deprecated":
+            ep["sheet_status"] = "Deprecated"
+        else:
+            ep["sheet_status"] = "Unimplemented"
+
+        # Per-platform columns: prefer the platform-specific value, fall back
+        # to the other only when the primary platform has "N/A" (e.g. a
+        # spec-only endpoint that both runs encountered independently).
+        def _prefer(a: str, b: str) -> str:
+            return a if a != "N/A" else b
+
+        ep["backed_ms"] = _prefer(m_ep["backed_ms"], c_ep["backed_ms"])
+        ep["backed_mc"] = _prefer(c_ep["backed_mc"], m_ep["backed_mc"])
+        ep["completeness_ms"] = _prefer(m_ep["completeness_ms"], c_ep["completeness_ms"])
+        ep["completeness_mc"] = _prefer(c_ep["completeness_mc"], m_ep["completeness_mc"])
+        ep["driven_ms"] = _prefer(m_ep["driven_ms"], c_ep["driven_ms"])
+        ep["driven_mc"] = _prefer(c_ep["driven_mc"], m_ep["driven_mc"])
+        ep["meshery_present"] = bool(m_ep.get("meshery_present"))
+        ep["cloud_present"] = bool(c_ep.get("cloud_present"))
+
+        # Combine notes when they differ
+        m_notes = m_ep.get("notes", "")
+        c_notes = c_ep.get("notes", "")
+        if m_notes and c_notes and m_notes != c_notes:
+            ep["notes"] = f"[Meshery Server]\n{m_notes}\n\n[Meshery Cloud]\n{c_notes}"
+        elif c_notes and not m_notes:
+            ep["notes"] = c_notes
+
+        ep["repo_source"] = "both"
+        merged.append(ep)
+
+    return sorted(merged, key=endpoint_sort_key)
 
 
 # ---------------------------------------------------------------------------
@@ -2055,11 +1874,6 @@ def _get_sheet_client():
     return gspread.authorize(creds)
 
 
-def _get_google_credentials():
-    """Return raw Google Credentials for direct Sheets API calls."""
-    return _load_google_service_account_creds()
-
-
 def _has_sheet_credentials_configured() -> bool:
     """Return True when sheet credentials are configured via env vars."""
     if os.environ.get("GOOGLE_CREDENTIALS_JSON"):
@@ -2081,17 +1895,6 @@ def _col_letter(idx: int) -> str:
 
 MAGENTA_TEXT_RGB = {"red": 1.0, "green": 0.0, "blue": 1.0}
 BLACK_TEXT_RGB = {"red": 0.0, "green": 0.0, "blue": 0.0}
-
-
-def _colors_match(a: Optional[Dict[str, float]], b: Dict[str, float], tolerance: float = 1e-6) -> bool:
-    """Return True when two RGB color maps are effectively equal."""
-    if not a:
-        return False
-    return (
-        abs(float(a.get("red", 0.0)) - b["red"]) <= tolerance
-        and abs(float(a.get("green", 0.0)) - b["green"]) <= tolerance
-        and abs(float(a.get("blue", 0.0)) - b["blue"]) <= tolerance
-    )
 
 
 def _build_sheet_index(current_rows: List[List[str]]) -> Dict[str, List[Tuple[int, Set[str]]]]:
@@ -2140,89 +1943,79 @@ def _find_matching_row(
     return None
 
 
-def _make_text_color_request(worksheet_id: int, row_num: int, col_num: int, color: Dict[str, float]) -> Dict[str, Any]:
-    """Build a Sheets API repeatCell request for text color."""
-    return {
-        "repeatCell": {
-            "range": {
-                "sheetId": worksheet_id,
-                "startRowIndex": row_num - 1,
-                "endRowIndex": row_num,
-                "startColumnIndex": col_num - 1,
-                "endColumnIndex": col_num,
-            },
-            "cell": {
-                "userEnteredFormat": {
-                    "textFormat": {
-                        "foregroundColor": color,
-                    }
-                }
-            },
-            "fields": "userEnteredFormat.textFormat.foregroundColor",
-        }
-    }
-
-
 def _batch_set_text_color(
     spreadsheet,
     worksheet_id: int,
     targets: List[Tuple[int, int]],
     color: Dict[str, float],
-    changes: List[str],
+    errors: List[str],
     label: str,
-) -> None:
-    """Apply a text color to the given worksheet cells."""
+) -> int:
+    """Apply *color* to each (row_num, col_num) cell in *targets* (1-based)."""
     if not targets:
-        return
+        return 0
     requests = [
-        _make_text_color_request(worksheet_id, row_num, col_num, color)
+        {
+            "repeatCell": {
+                "range": {
+                    "sheetId": worksheet_id,
+                    "startRowIndex": row_num - 1,
+                    "endRowIndex": row_num,
+                    "startColumnIndex": col_num - 1,
+                    "endColumnIndex": col_num,
+                },
+                "cell": {
+                    "userEnteredFormat": {"textFormat": {"foregroundColor": color}}
+                },
+                "fields": "userEnteredFormat.textFormat.foregroundColor",
+            }
+        }
         for row_num, col_num in targets
     ]
     try:
         spreadsheet.batch_update({"requests": requests})
-        print(f"{label} text color on {len(targets)} cells")
+        return len(targets)
     except Exception as exc:
-        changes.append(f"{label.upper()} TEXT COLOR ERROR: {exc}")
+        errors.append(f"{label.upper()} TEXT COLOR ERROR: {exc}")
+        return 0
 
 
-def _reset_existing_magenta_text(spreadsheet, worksheet, changes: List[str]) -> None:
-    """Turn any currently magenta text in the worksheet back to black."""
-    creds = _get_google_credentials()
-    if not creds:
-        return
+def _reset_worksheet_text_color(
+    spreadsheet,
+    worksheet_id: int,
+    n_rows: int,
+    errors: List[str],
+) -> bool:
+    """Reset all data rows (row 2 onward) to black text in one API call.
 
+    Replaces the previous approach of reading every cell's effectiveFormat via
+    a raw HTTP request to detect magenta cells before resetting them. A single
+    repeatCell covering the entire data range is faster, simpler, and removes
+    the AuthorizedSession / raw-HTTP dependency.
+    """
+    if n_rows <= 1:
+        return False
+    request = {
+        "repeatCell": {
+            "range": {
+                "sheetId": worksheet_id,
+                "startRowIndex": 1,  # skip header row
+                "endRowIndex": n_rows,
+                "startColumnIndex": 0,
+                "endColumnIndex": len(SHEET_COLUMNS),
+            },
+            "cell": {
+                "userEnteredFormat": {"textFormat": {"foregroundColor": BLACK_TEXT_RGB}}
+            },
+            "fields": "userEnteredFormat.textFormat.foregroundColor",
+        }
+    }
     try:
-        from google.auth.transport.requests import AuthorizedSession
-    except ImportError:
-        changes.append("RESET TEXT COLOR ERROR: google-auth transport support unavailable")
-        return
-
-    session = AuthorizedSession(creds)
-    encoded_title = urllib.parse.quote(worksheet.title, safe="")
-    url = (
-        f"https://sheets.googleapis.com/v4/spreadsheets/{spreadsheet.id}"
-        f"?includeGridData=true&ranges={encoded_title}"
-    )
-
-    try:
-        response = session.get(url)
-        response.raise_for_status()
-        payload = response.json()
+        spreadsheet.batch_update({"requests": [request]})
+        return True
     except Exception as exc:
-        changes.append(f"RESET TEXT COLOR ERROR: {exc}")
-        return
-
-    targets: List[Tuple[int, int]] = []
-    sheets = payload.get("sheets", [])
-    row_data = sheets[0].get("data", [{}])[0].get("rowData", []) if sheets else []
-    for row_idx, row in enumerate(row_data, start=1):
-        for col_idx, cell in enumerate(row.get("values", []), start=1):
-            fmt = cell.get("effectiveFormat", {}).get("textFormat", {})
-            color = fmt.get("foregroundColor")
-            if _colors_match(color, MAGENTA_TEXT_RGB):
-                targets.append((row_idx, col_idx))
-
-    _batch_set_text_color(spreadsheet, worksheet.id, targets, BLACK_TEXT_RGB, changes, "reset")
+        errors.append(f"RESET TEXT COLOR ERROR: {exc}")
+        return False
 
 
 # Columns the script compares and updates on matched rows.
@@ -2231,9 +2024,12 @@ _UPDATABLE_COLUMNS = [
     (COL_COVERAGE, "coverage", "coverage"),
     (COL_STATUS, "sheet_status", "endpoint status"),
     (COL_X_ANNOTATED, "x_annotated", "x-annotated"),
-    (COL_BACKED, "backed", "backed"),
-    (COL_COMPLETENESS, "completeness", "completeness"),
-    (COL_DRIVEN, "driven", "driven"),
+    (COL_BACKED_MS, "backed_ms", "backed (server)"),
+    (COL_BACKED_MC, "backed_mc", "backed (cloud)"),
+    (COL_COMPLETENESS_MS, "completeness_ms", "completeness (server)"),
+    (COL_COMPLETENESS_MC, "completeness_mc", "completeness (cloud)"),
+    (COL_DRIVEN_MS, "driven_ms", "driven (server)"),
+    (COL_DRIVEN_MC, "driven_mc", "driven (cloud)"),
     (COL_NOTES, "notes", "notes"),
 ]
 
@@ -2242,7 +2038,8 @@ def update_sheet(
     endpoints: List[Dict[str, Any]],
     sheet_id: str,
     dry_run: bool = False,
-) -> List[str]:
+    prefetched: Optional[Tuple[Any, Any, List[List[str]]]] = None,
+) -> Dict[str, Any]:
     """Diff computed endpoints against the sheet and apply updates.
 
     - Matches rows by normalized endpoint path + method overlap.
@@ -2250,27 +2047,29 @@ def update_sheet(
       Schema-Driven, and Notes columns when they differ.
     - Inserts new rows into matching category groups when possible.
     - Stamps the Change Log column on modified rows.
+
+    *prefetched* — optional (sheet, ws, rows) tuple from sheet_diff_analysis.
+    When supplied the sheet is not re-opened and rows are not re-fetched,
+    saving one full API round-trip.
     """
-    gc = _get_sheet_client()
-    if not gc:
-        print(
-            "ERROR: No credentials found.\n"
-            "  Set GOOGLE_CREDENTIALS_JSON (inline JSON for CI) or\n"
-            "  GOOGLE_APPLICATION_CREDENTIALS (file path for local dev).",
-            file=sys.stderr,
-        )
-        sys.exit(1)
+    if prefetched is not None:
+        sheet, ws, current_rows = prefetched
+    else:
+        gc = _get_sheet_client()
+        if not gc:
+            print(
+                "ERROR: No credentials found.\n"
+                "  Set GOOGLE_CREDENTIALS_JSON (inline JSON for CI) or\n"
+                "  GOOGLE_APPLICATION_CREDENTIALS (file path for local dev).",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        sheet = gc.open_by_key(sheet_id)
+        ws = sheet.get_worksheet(AUDIT_WORKSHEET_INDEX)
+        current_rows = ws.get_all_values()
 
-    sheet = gc.open_by_key(sheet_id)
-    ws = sheet.get_worksheet(AUDIT_WORKSHEET_INDEX)
-
-    print(f"Connected to worksheet: {ws.title}")
     changes: List[str] = []
-
-    if not dry_run:
-        _reset_existing_magenta_text(sheet, ws, changes)
-
-    current_rows = ws.get_all_values()
+    errors: List[str] = []
     sheet_index = _build_sheet_index(current_rows)
     batch_updates: List[Dict[str, Any]] = []
     new_rows_info: List[Tuple[List[str], str, str]] = []
@@ -2322,9 +2121,12 @@ def update_sheet(
                 ep["coverage"],
                 ep["sheet_status"],
                 ep["x_annotated"],
-                ep["backed"],
-                ep["completeness"],
-                ep["driven"],
+                ep["backed_ms"],
+                ep["backed_mc"],
+                ep["completeness_ms"],
+                ep["completeness_mc"],
+                ep["driven_ms"],
+                ep["driven_mc"],
                 ep["notes"],
                 today,
             ]
@@ -2332,8 +2134,9 @@ def update_sheet(
                 f"NEW ROW: {ep['path']} [{ep['methods']}] "
                 f"coverage={ep['coverage']} status={ep['sheet_status']} "
                 f"x-annotated={ep['x_annotated']} "
-                f"backed={ep['backed']} completeness={ep['completeness']} "
-                f"driven={ep['driven']}"
+                f"backed_ms={ep['backed_ms']} backed_mc={ep['backed_mc']} "
+                f"completeness_ms={ep['completeness_ms']} completeness_mc={ep['completeness_mc']} "
+                f"driven_ms={ep['driven_ms']} driven_mc={ep['driven_mc']}"
             )
             new_rows_info.append((new_row, ep["category"], ep["subcategory"]))
             highlight_specs.append(
@@ -2353,43 +2156,81 @@ def update_sheet(
         })
     )
 
-    # --- Apply batch cell updates ---
+    # --- Apply changes (reset text color only when there is something to update) ---
+    has_changes = bool(batch_updates or new_rows_info)
+    reset_applied = False
+    if not dry_run and has_changes:
+        reset_applied = _reset_worksheet_text_color(
+            sheet, ws.id, len(current_rows), errors
+        )
+
+    batch_update_count = 0
     if not dry_run and batch_updates:
         try:
             ws.batch_update(batch_updates, value_input_option="RAW")
-            print(f"Batch updated {len(batch_updates)} cells")
+            batch_update_count = len(batch_updates)
         except Exception as exc:
-            changes.append(f"BATCH UPDATE ERROR: {exc}")
+            errors.append(f"BATCH UPDATE ERROR: {exc}")
 
     # --- Insert new rows ---
+    inserted_rows = 0
+    appended_rows = 0
     if not dry_run and new_rows_info:
-        _insert_rows_by_group(ws, new_rows_info, changes)
+        inserted_rows, appended_rows = _insert_rows_by_group(
+            ws, new_rows_info, errors
+        )
 
+    highlighted_cells = 0
     if not dry_run and highlight_specs:
         refreshed_rows = ws.get_all_values()
         refreshed_index = _build_sheet_index(refreshed_rows)
-        resolved_targets: List[Tuple[int, int]] = []
-        highlighted_rows: Set[int] = set()
+        # Accumulate cols per row index so that multiple audit endpoints
+        # (e.g. GET and POST) that map to the same sheet row don't block
+        # each other via the exclusion set and generate false HIGHLIGHT ERRORs.
+        row_cols: Dict[int, Set[int]] = {}
 
         for path, methods, cols in highlight_specs:
-            row_idx = _find_matching_row(refreshed_index, path, methods, highlighted_rows)
+            # Pass an empty set so the same row can be matched for different
+            # method entries; dedup is handled by row_cols below.
+            row_idx = _find_matching_row(refreshed_index, path, methods, set())
             if row_idx is None:
                 changes.append(f"HIGHLIGHT ERROR: unable to resolve row for {path} [{methods}]")
                 continue
-            highlighted_rows.add(row_idx)
-            row_num = row_idx + 1
-            resolved_targets.extend((row_num, col_num) for col_num in sorted(cols))
+            row_cols.setdefault(row_idx, set()).update(cols)
 
-        _batch_set_text_color(sheet, ws.id, resolved_targets, MAGENTA_TEXT_RGB, changes, "highlight")
+        resolved_targets: List[Tuple[int, int]] = [
+            (row_idx + 1, col_num)
+            for row_idx, col_set in row_cols.items()
+            for col_num in sorted(col_set)
+        ]
+        highlighted_cells = _batch_set_text_color(
+            sheet,
+            ws.id,
+            resolved_targets,
+            MAGENTA_TEXT_RGB,
+            errors,
+            "highlight",
+        )
 
-    return changes
+    return {
+        "worksheet_title": ws.title,
+        "changes": changes,
+        "errors": errors,
+        "updated_rows": sum(1 for c in changes if c.startswith("UPDATE")),
+        "new_rows": sum(1 for c in changes if c.startswith("NEW ROW")),
+        "batch_update_cells": batch_update_count,
+        "inserted_rows": inserted_rows,
+        "appended_rows": appended_rows,
+        "highlighted_cells": highlighted_cells,
+        "reset_applied": reset_applied,
+    }
 
 
 def _insert_rows_by_group(
     ws,
     new_rows_info: List[Tuple[List[str], str, str]],
-    changes: List[str],
-) -> None:
+    errors: List[str],
+) -> Tuple[int, int]:
     """Insert new rows into the correct category/sub-category block.
 
     Groups insertions by target position and processes from bottom to top
@@ -2398,8 +2239,8 @@ def _insert_rows_by_group(
     try:
         all_rows = ws.get_all_values()
     except Exception as exc:
-        changes.append(f"INSERT ERROR (read failed): {exc}")
-        return
+        errors.append(f"INSERT ERROR (read failed): {exc}")
+        return 0, 0
 
     # Build index: last row for each (category, subcategory) and category
     group_last_row: Dict[Tuple[str, str], int] = {}
@@ -2424,7 +2265,13 @@ def _insert_rows_by_group(
         else:
             sub = last_sub
 
-        if cat:
+        # Only track rows that carry actual endpoint data so that blank
+        # separator rows between groups don't become the "insert after"
+        # target (which would leave a blank line between rows).
+        has_endpoint = bool(
+            row[COL_ENDPOINTS].strip() if len(row) > COL_ENDPOINTS else ""
+        )
+        if cat and has_endpoint:
             group_last_row[(cat, sub)] = idx
             cat_last_row[cat] = idx
 
@@ -2439,45 +2286,50 @@ def _insert_rows_by_group(
 
         if target is not None:
             inserts.append((target, row_data))
-            # Advance the group pointer so subsequent rows in the same
-            # group land after this one rather than on top of it.
-            group_last_row[(cat, sub)] = target + 1
-            cat_last_row[cat] = target + 1
         else:
             append_rows.append(row_data)
 
     # Insert from bottom to top to preserve indices
     inserts.sort(key=lambda item: item[0], reverse=True)
+    inserted_rows = 0
 
     for insert_after, row_data in inserts:
         try:
             ws.insert_row(row_data, insert_after + 2, value_input_option="RAW")
+            inserted_rows += 1
         except Exception as exc:
-            changes.append(f"INSERT ERROR at row {insert_after + 2}: {exc}")
+            errors.append(f"INSERT ERROR at row {insert_after + 2}: {exc}")
 
+    appended_rows = 0
     if append_rows:
         try:
             ws.append_rows(append_rows, value_input_option="RAW")
+            appended_rows = len(append_rows)
         except Exception as exc:
-            changes.append(f"APPEND ROWS ERROR: {exc}")
+            errors.append(f"APPEND ROWS ERROR: {exc}")
+
+    return inserted_rows, appended_rows
 
 
 # ---------------------------------------------------------------------------
 # Summary & Insights (spec-only and repo-aware)
 # ---------------------------------------------------------------------------
 
-def _print_table(title: str, headers: List[str], rows: List) -> None:
+def _print_table(
+    title: str,
+    headers: List[str],
+    rows: List[List[Any]],
+    numeric_cols: Optional[Set[int]] = None,
+) -> None:
     """Print a formatted ASCII table with box-drawing characters."""
     if not rows:
-        print(f"\n{title}")
+        if title:
+            print(f"\n{title}")
         print("  (no data)")
         return
 
     n_cols = len(headers)
-    is_numeric = [
-        all(isinstance(row[col], (int, float)) for row in rows)
-        for col in range(n_cols)
-    ]
+    numeric_cols = numeric_cols or set()
 
     widths = [len(str(h)) for h in headers]
     for row in rows:
@@ -2488,7 +2340,7 @@ def _print_table(title: str, headers: List[str], rows: List) -> None:
     def fmt_cell(val, col):
         s = str(val)
         w = widths[col]
-        return s.rjust(w - 1) + " " if is_numeric[col] else " " + s.ljust(w - 1)
+        return s.rjust(w - 1) + " " if col in numeric_cols else " " + s.ljust(w - 1)
 
     top = "\u250c" + "\u252c".join("\u2500" * w for w in widths) + "\u2510"
     mid = "\u251c" + "\u253c".join("\u2500" * w for w in widths) + "\u2524"
@@ -2497,7 +2349,8 @@ def _print_table(title: str, headers: List[str], rows: List) -> None:
         fmt_cell(cells[i], i) for i in range(n_cols)
     ) + "\u2502"
 
-    print(f"\n{title}")
+    if title:
+        print(f"\n{title}")
     print(top)
     print(fmt_row(headers))
     print(mid)
@@ -2506,254 +2359,196 @@ def _print_table(title: str, headers: List[str], rows: List) -> None:
     print(bot)
 
 
-def _empty_summary_metrics() -> Dict[str, int]:
-    """Return a zero-initialized metrics object with stable keys."""
-    return {key: 0 for key, _label in SUMMARY_METRIC_ROWS}
+def _empty_summary_counts() -> Dict[str, int]:
+    return {key: 0 for key in SUMMARY_KEYS}
 
 
-def collect_spec_summary_metrics(spec_data: dict) -> Dict[str, int]:
-    """Collect stable summary metrics from the current spec."""
-    metrics = _empty_summary_metrics()
+def _is_tagged(value: str) -> bool:
+    return value in {"Cloud-only", "meshery"}
+
+
+def _is_complete_value(value: str) -> bool:
+    return value == "Full"
+
+
+def _is_incomplete_value(value: str) -> bool:
+    return value in {"Partial", "Stub", "N/A"}
+
+
+def _is_driven_value(value: str) -> bool:
+    return value in {"TRUE", "Partial"}
+
+
+def collect_endpoint_summary(endpoints: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """Collect final CLI summary counts from computed endpoint rows."""
+    summary = {
+        "total": _empty_summary_counts(),
+        "meshery": _empty_summary_counts(),
+        "cloud": _empty_summary_counts(),
+    }
+
+    for ep in endpoints:
+        total = summary["total"]
+        total["endpoints"] += 1
+        if _is_tagged(ep.get("x_annotated", "")):
+            total["x_internal_tagged"] += 1
+        if ep.get("backed_ms") == "TRUE" or ep.get("backed_mc") == "TRUE":
+            total["schema_backed"] += 1
+        if _is_complete_value(ep.get("completeness_ms", "")) or _is_complete_value(ep.get("completeness_mc", "")):
+            total["complete"] += 1
+        if _is_driven_value(ep.get("driven_ms", "")) or _is_driven_value(ep.get("driven_mc", "")):
+            total["schema_driven"] += 1
+
+        if ep.get("meshery_present"):
+            meshery = summary["meshery"]
+            meshery["endpoints"] += 1
+            if _is_tagged(ep.get("x_annotated", "")):
+                meshery["x_internal_tagged"] += 1
+            if ep.get("backed_ms") == "TRUE":
+                meshery["schema_backed"] += 1
+            if _is_complete_value(ep.get("completeness_ms", "")):
+                meshery["complete"] += 1
+            if _is_driven_value(ep.get("driven_ms", "")):
+                meshery["schema_driven"] += 1
+
+        if ep.get("cloud_present"):
+            cloud = summary["cloud"]
+            cloud["endpoints"] += 1
+            if _is_tagged(ep.get("x_annotated", "")):
+                cloud["x_internal_tagged"] += 1
+            if ep.get("backed_mc") == "TRUE":
+                cloud["schema_backed"] += 1
+            if _is_complete_value(ep.get("completeness_mc", "")):
+                cloud["complete"] += 1
+            if _is_driven_value(ep.get("driven_mc", "")):
+                cloud["schema_driven"] += 1
+
+    for group in summary.values():
+        group["not_tagged"] = group["endpoints"] - group["x_internal_tagged"]
+        group["not_schema_backed"] = group["endpoints"] - group["schema_backed"]
+        group["incomplete"] = group["endpoints"] - group["complete"]
+        group["not_schema_driven"] = group["endpoints"] - group["schema_driven"]
+
+    return summary
+
+
+def collect_spec_only_summary(spec_data: Dict[str, Any]) -> Dict[str, Dict[str, int]]:
+    """Fallback summary when no repo analysis is requested."""
+    total = _empty_summary_counts()
     operations = spec_data.get("operations", {})
     x_internal = spec_data.get("x_internal", {})
 
-    metrics["total_api_endpoints_in_spec"] = len(operations)
-    metrics["schema_backed"] = len(operations)
-
+    total["endpoints"] = len(operations)
+    total["schema_backed"] = len(operations)
     for op_key in operations:
-        xi_list = x_internal.get(op_key, [])
-        if "cloud" in xi_list:
-            metrics["x_internal_cloud"] += 1
-        if "meshery" in xi_list:
-            metrics["x_internal_meshery"] += 1
-        if not xi_list:
-            metrics["no_x_internal"] += 1
-
-    return metrics
-
-
-def _split_methods(methods: str) -> List[str]:
-    """Split a sheet Methods cell into normalized HTTP methods."""
-    raw = [
-        part.strip().upper()
-        for part in methods.replace(";", ",").split(",")
-        if part.strip()
-    ]
-    http_methods = {m.upper() for m in HTTP_METHODS}
-    filtered = [m for m in raw if m in http_methods]
-    if filtered:
-        return filtered
-    if "ALL" in raw:
-        return ["ALL"]
-    return []
+        if any(val in {"cloud", "meshery"} for val in x_internal.get(op_key, [])):
+            total["x_internal_tagged"] += 1
+    total["not_tagged"] = total["endpoints"] - total["x_internal_tagged"]
+    total["not_schema_backed"] = 0
+    total["incomplete"] = total["endpoints"]
+    total["not_schema_driven"] = total["endpoints"]
+    return {
+        "total": total,
+        "meshery": _empty_summary_counts(),
+        "cloud": _empty_summary_counts(),
+    }
 
 
-def collect_sheet_summary_metrics(rows: List[List[str]]) -> Dict[str, int]:
-    """Collect the same summary metrics from the most recent sheet snapshot."""
-    metrics = _empty_summary_metrics()
+def collect_sheet_summary_totals(rows: List[List[str]]) -> Dict[str, int]:
+    """Collect comparable total counts from the latest sheet snapshot."""
+    totals = _empty_summary_counts()
 
     for idx, row in enumerate(rows):
         if idx == 0:
             continue
 
-        methods = (
-            _split_methods(row[COL_METHODS].strip())
-            if len(row) > COL_METHODS
-            else []
-        )
-        if not methods:
+        endpoint = row[COL_ENDPOINTS].strip() if len(row) > COL_ENDPOINTS else ""
+        if not endpoint:
             continue
 
-        op_count = len(methods)
-        backed = row[COL_BACKED].strip() if len(row) > COL_BACKED else ""
-        x_annotated = (
-            row[COL_X_ANNOTATED].strip() if len(row) > COL_X_ANNOTATED else ""
-        )
-        if backed != "TRUE":
-            continue
+        totals["endpoints"] += 1
 
-        metrics["total_api_endpoints_in_spec"] += op_count
-        metrics["schema_backed"] += op_count
+        x_annotated = row[COL_X_ANNOTATED].strip() if len(row) > COL_X_ANNOTATED else ""
+        if _is_tagged(x_annotated):
+            totals["x_internal_tagged"] += 1
 
-        cloud_methods: Set[str] = set()
-        meshery_methods: Set[str] = set()
+        backed_ms = row[COL_BACKED_MS].strip() if len(row) > COL_BACKED_MS else ""
+        backed_mc = row[COL_BACKED_MC].strip() if len(row) > COL_BACKED_MC else ""
+        if backed_ms == "TRUE" or backed_mc == "TRUE":
+            totals["schema_backed"] += 1
 
-        if x_annotated == "Cloud-only":
-            cloud_methods = set(methods)
-        elif x_annotated == "meshery":
-            meshery_methods = set(methods)
+        completeness_ms = row[COL_COMPLETENESS_MS].strip() if len(row) > COL_COMPLETENESS_MS else ""
+        completeness_mc = row[COL_COMPLETENESS_MC].strip() if len(row) > COL_COMPLETENESS_MC else ""
+        if _is_complete_value(completeness_ms) or _is_complete_value(completeness_mc):
+            totals["complete"] += 1
 
-        metrics["x_internal_cloud"] += len(cloud_methods)
-        metrics["x_internal_meshery"] += len(meshery_methods)
-        metrics["no_x_internal"] += max(
-            op_count - len(cloud_methods) - len(meshery_methods),
-            0,
-        )
+        driven_ms = row[COL_DRIVEN_MS].strip() if len(row) > COL_DRIVEN_MS else ""
+        driven_mc = row[COL_DRIVEN_MC].strip() if len(row) > COL_DRIVEN_MC else ""
+        if _is_driven_value(driven_ms) or _is_driven_value(driven_mc):
+            totals["schema_driven"] += 1
 
-    return metrics
+    totals["not_tagged"] = totals["endpoints"] - totals["x_internal_tagged"]
+    totals["not_schema_backed"] = totals["endpoints"] - totals["schema_backed"]
+    totals["incomplete"] = totals["endpoints"] - totals["complete"]
+    totals["not_schema_driven"] = totals["endpoints"] - totals["schema_driven"]
+    return totals
 
 
-def load_last_audit_summary_metrics(sheet_id: str) -> Dict[str, int]:
-    """Load summary metrics from the latest endpoint snapshot in the sheet."""
+def render_audit_summary_table(
+    summary: Dict[str, Dict[str, int]],
+    include_meshery: bool,
+    include_cloud: bool,
+    include_change: bool = False,
+    previous_totals: Optional[Dict[str, int]] = None,
+) -> None:
+    """Render the final audit summary table."""
+    headers = ["Category", "Total", "Meshery", "Cloud"]
+    numeric_cols = {1, 2, 3}
+    if include_change:
+        headers.append("Change")
+        numeric_cols.add(4)
+
+    rows: List[List[Any]] = []
+    labels = dict(SUMMARY_TABLE_ROWS)
+    for key in SUMMARY_KEYS:
+        row: List[Any] = [
+            labels[key],
+            summary["total"].get(key, 0),
+            summary["meshery"].get(key, 0) if include_meshery else "-",
+            summary["cloud"].get(key, 0) if include_cloud else "-",
+        ]
+        if include_change:
+            if previous_totals is None:
+                row.append("-")
+            else:
+                delta = summary["total"].get(key, 0) - previous_totals.get(key, 0)
+                row.append(f"{delta:+d}")
+        rows.append(row)
+
+    print("\nAPI Audit Summary")
+    _print_table(
+        "",
+        headers,
+        rows,
+        numeric_cols=numeric_cols,
+    )
+
+
+def prefetch_sheet_snapshot(
+    sheet_id: str,
+) -> Tuple[Optional[Tuple[Any, Any, List[List[str]]]], Optional[str]]:
+    """Open the audit worksheet once for comparison and update reuse."""
     gc = _get_sheet_client()
     if not gc:
-        print(
-            "ERROR: No credentials found.\n"
-            "  Set GOOGLE_CREDENTIALS_JSON (inline JSON for CI) or\n"
-            "  GOOGLE_APPLICATION_CREDENTIALS (file path for local dev).",
-            file=sys.stderr,
-        )
-        sys.exit(1)
+        return None, "Google Sheet comparison unavailable; credentials could not be loaded."
 
     try:
         sheet = gc.open_by_key(sheet_id)
         ws = sheet.get_worksheet(AUDIT_WORKSHEET_INDEX)
         rows = ws.get_all_values()
+        return (sheet, ws, rows), None
     except Exception as exc:
-        print(f"ERROR: Cannot read sheet summary: {exc}", file=sys.stderr)
-        sys.exit(1)
-
-    return collect_sheet_summary_metrics(rows)
-
-
-def enrich_summary_metrics_with_comparison(
-    current_metrics: Dict[str, int],
-    previous_metrics: Dict[str, int],
-) -> List[List[Any]]:
-    """Build stable comparison rows from two metrics objects."""
-    labels = dict(SUMMARY_METRIC_ROWS)
-    rows: List[List[Any]] = []
-    for key in COMPARISON_SUMMARY_ROW_KEYS:
-        label = labels[key]
-        current = current_metrics.get(key, 0)
-        previous = previous_metrics.get(key, 0)
-        rows.append([label, current, previous, current - previous])
-    return rows
-
-
-def render_summary_metrics_table(
-    current_metrics: Dict[str, int],
-    previous_metrics: Optional[Dict[str, int]] = None,
-) -> None:
-    """Render the compact CLI summary table."""
-    labels = dict(SUMMARY_METRIC_ROWS)
-    if previous_metrics is None:
-        rows = [
-            [labels[key], current_metrics.get(key, 0)]
-            for key in SPEC_ONLY_SUMMARY_ROW_KEYS
-        ]
-        _print_table("Spec Endpoint Summary", ["Category", "Count"], rows)
-        return
-
-    rows = enrich_summary_metrics_with_comparison(current_metrics, previous_metrics)
-    _print_table(
-        "Spec Endpoint Summary",
-        ["Category", "Current", "Last audit", "Change"],
-        rows,
-    )
-
-
-def sheet_diff_analysis(
-    endpoints: List[Dict[str, Any]], sheet_id: str
-) -> None:
-    """Compare current audit results with previous Google Sheet data.
-
-    Uses the same row-identity strategy as update_sheet() — normalized path
-    plus any-method-overlap — so that the diff preview and the actual update
-    agree on which rows are new, changed, or removed.
-    """
-    gc = _get_sheet_client()
-    if not gc:
-        print(
-            "\nWARNING: Cannot read sheet for diff analysis (no credentials).",
-            file=sys.stderr,
-        )
-        return
-
-    try:
-        sheet = gc.open_by_key(sheet_id)
-        ws = sheet.get_worksheet(AUDIT_WORKSHEET_INDEX)
-        current_rows = ws.get_all_values()
-    except Exception as exc:
-        print(f"\nWARNING: Cannot read sheet: {exc}", file=sys.stderr)
-        return
-
-    # Build row index using the same strategy as update_sheet()
-    sheet_index = _build_sheet_index(current_rows)
-
-    # Build a by-row-index map of previous endpoint data for comparison
-    prev_by_row: Dict[int, Dict[str, str]] = {}
-    for idx, row in enumerate(current_rows):
-        if idx == 0:
-            continue
-        ep = row[COL_ENDPOINTS].strip() if len(row) > COL_ENDPOINTS else ""
-        if not ep:
-            continue
-        if not ep.startswith("/"):
-            ep = "/" + ep
-        methods = row[COL_METHODS].strip() if len(row) > COL_METHODS else ""
-        prev_by_row[idx] = {
-            "path": ep,
-            "methods": methods,
-            "coverage": row[COL_COVERAGE].strip() if len(row) > COL_COVERAGE else "",
-            "sheet_status": row[COL_STATUS].strip() if len(row) > COL_STATUS else "",
-            "x_annotated": row[COL_X_ANNOTATED].strip() if len(row) > COL_X_ANNOTATED else "",
-            "backed": row[COL_BACKED].strip() if len(row) > COL_BACKED else "",
-            "completeness": row[COL_COMPLETENESS].strip() if len(row) > COL_COMPLETENESS else "",
-            "driven": row[COL_DRIVEN].strip() if len(row) > COL_DRIVEN else "",
-        }
-
-    new_eps: List[Dict[str, Any]] = []
-    removed_eps: List[Dict[str, str]] = []
-    changed_eps: List[Dict[str, Any]] = []
-    newly_internal: List[Dict[str, Any]] = []
-    matched_row_indices: Set[int] = set()
-
-    compare_fields = (
-        "coverage", "sheet_status", "x_annotated", "backed", "completeness", "driven",
-    )
-
-    for ep in endpoints:
-        row_idx = _find_matching_row(
-            sheet_index, ep["path"], ep["methods"], matched_row_indices
-        )
-        if row_idx is None:
-            new_eps.append(ep)
-            if ep.get("x_annotated", "N/A") != "N/A":
-                newly_internal.append(ep)
-        else:
-            matched_row_indices.add(row_idx)
-            prev = prev_by_row[row_idx]
-            diffs = {
-                f: (prev.get(f, ""), ep.get(f, ""))
-                for f in compare_fields
-                if ep.get(f, "") != prev.get(f, "")
-            }
-            if diffs:
-                changed_eps.append({"endpoint": ep, "changes": diffs})
-                old_x_annotated = prev.get("x_annotated", "")
-                new_x_annotated = ep.get("x_annotated", "")
-                if old_x_annotated == "N/A" and new_x_annotated != "N/A":
-                    newly_internal.append(ep)
-
-    for row_idx, prev in prev_by_row.items():
-        if row_idx not in matched_row_indices:
-            removed_eps.append(prev)
-
-    print("\n" + "=" * 60)
-    print("Changes Since Last Audit (sheet comparison)")
-    print("=" * 60)
-
-    _print_table(
-        "Change Summary",
-        ["Change Type", "Count"],
-        [
-            ["Newly discovered endpoints", len(new_eps)],
-            ["Removed endpoints", len(removed_eps)],
-            ["Endpoints with field changes", len(changed_eps)],
-            ["Newly marked x-internal", len(newly_internal)],
-        ],
-    )
+        return None, f"Google Sheet comparison unavailable: {exc}"
 
 
 # ---------------------------------------------------------------------------
@@ -2804,6 +2599,14 @@ def main():
         help="Print diff without writing to the sheet",
     )
     parser.add_argument(
+        "--cloud-repo",
+        default=os.environ.get("CLOUD_REPO", ""),
+        help=(
+            "Path to the meshery-cloud repo root (default: $CLOUD_REPO env var). "
+            "Uses the Echo router parser."
+        ),
+    )
+    parser.add_argument(
         "--verbose", "-v",
         action="store_true",
         help="Print per-endpoint details",
@@ -2826,16 +2629,13 @@ def main():
         sys.exit(1)
 
     spec_data = parse_openapi(spec_file)
-    current_metrics = collect_spec_summary_metrics(spec_data)
 
-    # Full sheet-update mode requires a meshery repo, sheet ID, and credentials.
-    # spec-only mode never writes to the sheet, so none of those are required.
-    if not args.dry_run and not args.spec_only:
+    # Sheet-update mode requires a sheet ID and credentials.
+    # spec-only mode and dry-run mode never write to the sheet.
+    if args.sheet_id and not args.spec_only and not args.dry_run:
         missing: List[str] = []
-        if not args.meshery_repo:
-            missing.append("MESHERY_REPO / --meshery-repo")
-        if not args.sheet_id:
-            missing.append("SHEET_ID / --sheet-id")
+        if not args.meshery_repo and not args.cloud_repo:
+            missing.append("MESHERY_REPO / --meshery-repo (or --cloud-repo)")
         if not _has_sheet_credentials_configured():
             missing.append(
                 "Google credentials "
@@ -2843,161 +2643,196 @@ def main():
             )
         if missing:
             print(
-                "ERROR: api-audit update mode requires:\n"
+                "ERROR: sheet-update mode requires:\n"
                 "  - " + "\n  - ".join(missing),
                 file=sys.stderr,
             )
             sys.exit(1)
 
-    if not args.meshery_repo or args.spec_only:
-        if args.sheet_id:
-            previous_metrics = load_last_audit_summary_metrics(args.sheet_id)
-            render_summary_metrics_table(current_metrics, previous_metrics)
-        else:
-            render_summary_metrics_table(current_metrics)
+    if not (args.meshery_repo or args.cloud_repo) or args.spec_only:
+        previous_totals = None
+        notes: List[str] = []
+        if not (args.meshery_repo or args.cloud_repo):
+            notes.append(
+                "This is a spec-only summary. Provide MESHERY_REPO and/or CLOUD_REPO for a more detailed audit."
+            )
+            notes.append(
+                "Handler-based checks were not run, so schema completeness and schema-driven counts do not reflect router or handler analysis."
+            )
+        if args.sheet_id and not args.dry_run:
+            prefetched, prefetch_note = prefetch_sheet_snapshot(args.sheet_id)
+            if prefetched is not None:
+                previous_totals = collect_sheet_summary_totals(prefetched[2])
+            elif prefetch_note:
+                notes.append(prefetch_note)
+        render_audit_summary_table(
+            collect_spec_only_summary(spec_data),
+            include_meshery=False,
+            include_cloud=False,
+            include_change=bool(args.sheet_id and not args.dry_run),
+            previous_totals=previous_totals,
+        )
+        if notes:
+            print("\nNotes:")
+            for note in notes:
+                print(note)
         sys.exit(0)
 
-    print(f"Schemas repo: {schemas_root}")
-    print(f"OpenAPI spec: {spec_file}")
+    print("Preparing API audit...")
 
-    meshery_repo = Path(args.meshery_repo).resolve()
-    if not (meshery_repo / ROUTER_FILE).exists():
-        print(
-            f"ERROR: {ROUTER_FILE} not found in {meshery_repo}\n"
-            "Use --meshery-repo to point to the meshery/meshery repo root.",
-            file=sys.stderr,
+    combined_mode = bool(args.meshery_repo and args.cloud_repo)
+    include_meshery = bool(args.meshery_repo)
+    include_cloud = bool(args.cloud_repo)
+
+    if combined_mode:
+        # ── Combined mode: analyse both repos in one pass, merge results ──────
+        meshery_root = Path(args.meshery_repo).resolve()
+        cloud_root = Path(args.cloud_repo).resolve()
+
+        for label, root, cfg in [
+            ("Meshery Server", meshery_root, MESHERY_CONFIG),
+            ("Meshery Cloud", cloud_root, MESHERY_CLOUD_CONFIG),
+        ]:
+            if not (root / cfg.router_file).exists():
+                print(
+                    f"ERROR: {cfg.router_file} not found in {root}\n"
+                    f"Check --meshery-repo / --cloud-repo paths.",
+                    file=sys.stderr,
+                )
+                sys.exit(1)
+
+        print("Analyzing Meshery...")
+        m_routes, m_schema_map, m_handler_io, m_go_fields, _m_stats = _setup_repo_analysis(
+            meshery_root, MESHERY_CONFIG
         )
-        sys.exit(1)
-
-    print(f"Meshery repo: {meshery_repo}")
-
-    routes = parse_router(meshery_repo)
-    n_spec = len(spec_data["all_paths"])
-    schema_map = build_schema_driven_map(meshery_repo)
-    n_driven = sum(1 for s, _ in schema_map.values() if s == "TRUE")
-
-    handler_io_map = extract_handler_io_types(meshery_repo)
-    go_fields_map = build_go_struct_fields(meshery_repo)
-    n_io_extracted = sum(
-        1 for io in handler_io_map.values()
-        if io.get("request_type") or io.get("response_type")
-    )
-    print(f"Cross-check: {n_io_extracted}/{len(handler_io_map)} handlers "
-          f"with extractable I/O types, {len(go_fields_map)} Go struct definitions")
-
-    endpoints = classify_endpoints(
-        routes, spec_data, schema_map,
-        handler_io_map=handler_io_map,
-        go_fields_map=go_fields_map,
-    )
-    total = len(endpoints)
-
-    n_srv_under = sum(1 for e in endpoints if e["coverage"] == "Server Underlap")
-    n_active = sum(1 for e in endpoints if e["status"] == "Active")
-    n_cloud_compat = sum(1 for e in endpoints if e["status"] == "Active (Cloud-annotated)")
-    n_deprecated = sum(1 for e in endpoints if e["status"] == "Deprecated")
-    n_unimpl = sum(1 for e in endpoints if e["status"] == "Unimplemented")
-    n_cloud = sum(1 for e in endpoints if e["status"] == "Cloud-only")
-    b_true = sum(1 for e in endpoints if e["backed"] == "TRUE")
-    comp_stub = sum(1 for e in endpoints if e["completeness"] == "Stub")
-    d_true = sum(1 for e in endpoints if e["driven"] == "TRUE")
-    d_part = sum(1 for e in endpoints if e["driven"] == "Partial")
-    n_na_driven = sum(1 for e in endpoints if e["driven"] == "N/A")
-
-    print("\nMeshery API Audit Summary")
-    print("=" * 25)
-    print(f"Sources: {len(routes)} routes | {n_spec} spec paths | "
-          f"{len(schema_map)} functions in server/handlers/ "
-          f"({n_driven} with direct schema imports)")
-
-    status_parts = []
-    for label, count in [
-        ("Active", n_active + n_cloud_compat),
-        ("Deprecated", n_deprecated),
-        ("Unimplemented", n_unimpl),
-        ("Cloud-only", n_cloud),
-    ]:
-        if count:
-            status_parts.append(f"{count} {label}")
-    print(f"\n{total} endpoint-rows (router + spec combined): {', '.join(status_parts)}")
-
-    # Separate /api/* gaps from non-API routes (UI, health, docs) which are
-    # intentionally absent from the OpenAPI spec.
-    n_srv_under_api = sum(
-        1 for e in endpoints
-        if e["coverage"] == "Server Underlap" and _is_api_route(e["path"])
-    )
-    n_srv_under_non_api = n_srv_under - n_srv_under_api
-
-    gaps = []
-    if n_srv_under_api:
-        gaps.append(f"  {n_srv_under_api} /api/* routes have no OpenAPI spec definition")
-    if n_srv_under_non_api:
-        gaps.append(
-            f"  {n_srv_under_non_api} non-/api/ routes have no spec definition "
-            "(UI/static/health — excluded from API coverage)"
-        )
-    if n_unimpl:
-        gaps.append(f"  {n_unimpl} spec-defined endpoints have no router registration")
-    not_backed = total - b_true
-    if not_backed:
-        gaps.append(f"  {not_backed}/{total} endpoint-rows are not schema-backed")
-    if comp_stub:
-        gaps.append(f"  {comp_stub} endpoint schemas are stubs")
-    # n_na_driven covers spec-only (Schema Underlap) rows which have no handler.
-    # The ratio is endpoint-rows, not unique handler functions.
-    router_total = total - n_na_driven
-    not_driven = router_total - d_true - d_part
-    if not_driven > 0:
-        gaps.append(
-            f"  {not_driven}/{router_total} endpoint-rows have no direct "
-            "schema import in handler (alias usage not checked)"
+        meshery_eps = classify_endpoints(
+            m_routes, spec_data, m_schema_map,
+            handler_io_map=m_handler_io,
+            go_fields_map=m_go_fields,
+            repo_source="meshery",
         )
 
-    if gaps:
-        print("\nNeeds attention:")
-        for g in gaps:
-            print(g)
+        print("Analyzing Meshery Cloud...")
+        c_routes, c_schema_map, c_handler_io, c_go_fields, _c_stats = _setup_repo_analysis(
+            cloud_root, MESHERY_CLOUD_CONFIG
+        )
+        cloud_eps = classify_endpoints(
+            c_routes, spec_data, c_schema_map,
+            handler_io_map=c_handler_io,
+            go_fields_map=c_go_fields,
+            repo_source="cloud",
+        )
+
+        endpoints = merge_endpoint_lists(meshery_eps, cloud_eps)
+
     else:
-        print("\nNo gaps found -- all endpoints are fully covered.")
+        # ── Single-repo mode ──────────────────────────────────────────────────
+        if args.cloud_repo:
+            repo_config = MESHERY_CLOUD_CONFIG
+            repo_root = Path(args.cloud_repo).resolve()
+            repo_source = "cloud"
+        else:
+            repo_config = MESHERY_CONFIG
+            repo_root = Path(args.meshery_repo).resolve()
+            repo_source = "meshery"
 
-    print("\nRun with --verbose for per-endpoint details.")
+        if not (repo_root / repo_config.router_file).exists():
+            print(
+                f"ERROR: {repo_config.router_file} not found in {repo_root}\n"
+                "Use --meshery-repo (or --cloud-repo) to point to the repo root.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+
+        print(
+            "Analyzing Meshery Cloud..."
+            if repo_source == "cloud"
+            else "Analyzing Meshery..."
+        )
+        routes, schema_map, handler_io_map, go_fields_map, _repo_stats = _setup_repo_analysis(
+            repo_root, repo_config
+        )
+        endpoints = classify_endpoints(
+            routes, spec_data, schema_map,
+            handler_io_map=handler_io_map,
+            go_fields_map=go_fields_map,
+            repo_source=repo_source,
+        )
+
+    summary = collect_endpoint_summary(endpoints)
+    previous_totals = None
+    notes: List[str] = []
+    prefetched = None
+
+    if args.dry_run or not args.sheet_id:
+        render_audit_summary_table(
+            summary,
+            include_meshery=include_meshery,
+            include_cloud=include_cloud,
+        )
+        if args.verbose:
+            print("\nDetailed endpoint output:")
+            for ep in endpoints:
+                print(
+                    f"  {ep['path']:55s} [{ep['methods']:20s}] "
+                    f"cov={ep['coverage']:16s} st={ep['status']:14s} "
+                    f"bk_ms={ep['backed_ms']:5s} bk_mc={ep['backed_mc']:5s} "
+                    f"comp_ms={ep['completeness_ms']:7s} comp_mc={ep['completeness_mc']:7s} "
+                    f"drv_ms={ep['driven_ms']:7s} drv_mc={ep['driven_mc']:7s}"
+                )
+        sys.exit(0)
+
+    prefetched, prefetch_note = prefetch_sheet_snapshot(args.sheet_id)
+    if prefetched is not None:
+        previous_totals = collect_sheet_summary_totals(prefetched[2])
+    elif prefetch_note:
+        notes.append(prefetch_note)
+
+    print("Updating Google Sheet...")
+    sheet_result = update_sheet(
+        endpoints,
+        args.sheet_id,
+        args.dry_run,
+        prefetched=prefetched,
+    )
+
+    render_audit_summary_table(
+        summary,
+        include_meshery=include_meshery,
+        include_cloud=include_cloud,
+        include_change=True,
+        previous_totals=previous_totals,
+    )
+
+    if sheet_result["errors"]:
+        notes.extend(sheet_result["errors"])
+
+    if notes:
+        print("\nNotes:")
+        for note in notes:
+            print(note)
 
     if args.verbose:
-        print()
+        print("\nDetailed endpoint output:")
         for ep in endpoints:
             print(
                 f"  {ep['path']:55s} [{ep['methods']:20s}] "
                 f"cov={ep['coverage']:16s} st={ep['status']:14s} "
-                f"bk={ep['backed']:5s} comp={ep['completeness']:7s} "
-                f"drv={ep['driven']:7s}"
+                f"bk_ms={ep['backed_ms']:5s} bk_mc={ep['backed_mc']:5s} "
+                f"comp_ms={ep['completeness_ms']:7s} comp_mc={ep['completeness_mc']:7s} "
+                f"drv_ms={ep['driven_ms']:7s} drv_mc={ep['driven_mc']:7s}"
             )
-
-    if not args.sheet_id:
-        if not args.dry_run:
-            print(
-                "\nNo --sheet-id provided. Set $SHEET_ID or pass --sheet-id "
-                "to write results to Google Sheet."
-            )
-        sys.exit(0)
-
-    sheet_diff_analysis(endpoints, args.sheet_id)
-
-    label = "DRY RUN -- previewing" if args.dry_run else "Updating"
-    print(f"\n{label} Google Sheet...")
-
-    changes = update_sheet(endpoints, args.sheet_id, args.dry_run)
-
-    if not changes:
-        print("Sheet is up to date.")
-    else:
-        n_updates = sum(1 for c in changes if c.startswith("UPDATE"))
-        n_new = sum(1 for c in changes if c.startswith("NEW ROW"))
-        n_errors = sum(1 for c in changes if "ERROR" in c)
-        print(f"\n{len(changes)} change(s): {n_updates} updated, {n_new} new, {n_errors} error(s)")
-        if args.verbose:
-            for ch in changes:
+        if sheet_result["changes"]:
+            print("\nDetailed sheet changes:")
+            for ch in sheet_result["changes"]:
                 print(f"  {ch}")
+
+    if sheet_result["errors"]:
+        print("\nGoogle Sheet update completed with errors")
+    elif sheet_result["changes"]:
+        print("\nGoogle Sheet updated successfully")
+    else:
+        print("\nGoogle Sheet already up to date")
 
 
 if __name__ == "__main__":
