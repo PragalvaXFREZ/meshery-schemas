@@ -75,7 +75,7 @@ SHEET_COLUMNS = [
     "x-annotated",
     "Schema-Backed",
     "Schema Completeness",
-    "Schema-Driven",
+    "Schema Import Usage",
     "Notes",
     "Change Log",
 ]
@@ -192,6 +192,16 @@ def normalize_path(path: str) -> str:
     return re.sub(r"\{[^}]+\}", _repl, path)
 
 
+def _is_api_route(path: str) -> bool:
+    """Return True for paths that belong to the /api namespace.
+
+    Non-API routes (UI, static assets, health checks, documentation) are
+    excluded from primary API coverage metrics because their absence from
+    the OpenAPI spec is intentional and not an audit gap.
+    """
+    return path.startswith("/api/") or path == "/api"
+
+
 def categorize(
     path: str,
     spec_categories: Optional[Dict[str, Tuple[str, str]]] = None,
@@ -300,7 +310,16 @@ def _parse_route(stmt: str) -> Optional[Dict[str, Any]]:
 
 
 def _extract_handler(line: str) -> str:
-    """Extract handler function name from a route registration line."""
+    """Extract handler function name from a route registration line.
+
+    Inline anonymous functions are detected first so that middleware or
+    helper calls inside the lambda body (h.SomeMethod) are not mistaken
+    for the route's named handler.
+    """
+    # Inline anonymous function — must check before h.* scanning
+    if "func(" in line or "func (" in line:
+        return "<inline>"
+
     # Exported methods on Handler receiver (h.FuncName)
     refs = re.findall(r"h\.([A-Z]\w+)", line)
     actual = [r for r in refs if r not in MIDDLEWARE_NAMES]
@@ -313,8 +332,6 @@ def _extract_handler(line: str) -> str:
     if actual:
         return actual[-1]
 
-    if "func(" in line or "func (" in line:
-        return "<inline>"
     return "<unknown>"
 
 
@@ -975,12 +992,13 @@ def extract_handler_io_types(
                 r"json\.NewDecoder\(\w+\.Body\)\.Decode\(&(\w+)\)",
                 func_body,
             )
-            # json.Unmarshal(bytes, &var)  (only if preceded by io.ReadAll on Body)
+            # json.Unmarshal(bytes, &var) or json.Unmarshal(bytes, var)
+            # where var is already a pointer — only if preceded by io.ReadAll on Body
             if not req_vars and re.search(
                 r"io\.ReadAll\(\w+\.Body\)", func_body
             ):
                 req_vars = re.findall(
-                    r"json\.Unmarshal\(\w+,\s*&(\w+)\)", func_body
+                    r"json\.Unmarshal\(\w+,\s*&?(\w+)\)", func_body
                 )
 
             if req_vars:
@@ -1139,17 +1157,6 @@ def _parse_struct_json_fields(text: str, type_name: str) -> Optional[Set[str]]:
     return fields if fields else None
 
 
-def _resolve_type_alias(text: str, type_name: str) -> Optional[str]:
-    """If ``type TypeName = pkg.Actual``, return the aliased type."""
-    m = re.search(
-        rf"\btype\s+{re.escape(type_name)}\s*=\s*([\w./]+\.(\w+))",
-        text,
-    )
-    if m:
-        return m.group(1)  # e.g. schemasEnvironment.EnvironmentPayload
-    return None
-
-
 def build_go_struct_fields(
     repo: Path,
 ) -> Dict[str, Set[str]]:
@@ -1208,35 +1215,66 @@ def build_go_struct_fields(
                 if imp_match:
                     alias_map[f"_imp_{local_name}"] = imp_match.group(1)
 
-    # --- Resolve aliases from GOMODCACHE ---
-    modcache = _gomodcache()
-    schema_version = None
-    go_mod = repo / GO_MOD_FILE
-    if go_mod.exists():
-        for line in go_mod.read_text().splitlines():
-            vm = re.match(
-                r"\s*github\.com/meshery/schemas\s+(v[\d.]+)", line.strip()
-            )
-            if vm:
-                schema_version = vm.group(1)
-                break
+    # --- Resolve schema types: prefer local workspace, fall back to GOMODCACHE ---
+    # The local meshery-schemas workspace is always the authoritative source.
+    # GOMODCACHE is only consulted when the local workspace models/ is absent,
+    # and a clear warning is emitted when the cached version is also unavailable
+    # so that cross-check results are not silently downgraded.
+    local_schemas_root = Path(__file__).resolve().parents[2]
+    local_models = local_schemas_root / "models"
+    schema_types_from_local = 0
 
-    if modcache and schema_version:
-        schema_root = (
-            modcache
-            / f"github.com/meshery/schemas@{schema_version}"
-        )
-        if schema_root.exists():
-            for go_file in sorted(schema_root.rglob("*.go")):
-                if go_file.name.endswith("_test.go"):
-                    continue
-                text = go_file.read_text(errors="replace")
-                for name in re.findall(
-                    r"\btype\s+(\w+)\s+struct\s*\{", text
-                ):
-                    fields = _parse_struct_json_fields(text, name)
-                    if fields and name not in result:
-                        result[name] = fields
+    if local_models.exists():
+        for go_file in sorted(local_models.rglob("*.go")):
+            if go_file.name.endswith("_test.go"):
+                continue
+            text = go_file.read_text(errors="replace")
+            for name in re.findall(r"\btype\s+(\w+)\s+struct\s*\{", text):
+                fields = _parse_struct_json_fields(text, name)
+                if fields and name not in result:
+                    result[name] = fields
+                    schema_types_from_local += 1
+
+    if not schema_types_from_local:
+        # Local workspace had no schema types; try GOMODCACHE.
+        go_mod = repo / GO_MOD_FILE
+        schema_version = None
+        if go_mod.exists():
+            for line in go_mod.read_text().splitlines():
+                vm = re.match(
+                    r"\s*github\.com/meshery/schemas\s+(v[\d.]+)", line.strip()
+                )
+                if vm:
+                    schema_version = vm.group(1)
+                    break
+
+        modcache = _gomodcache()
+        if modcache and schema_version:
+            schema_root = modcache / f"github.com/meshery/schemas@{schema_version}"
+            if schema_root.exists():
+                for go_file in sorted(schema_root.rglob("*.go")):
+                    if go_file.name.endswith("_test.go"):
+                        continue
+                    text = go_file.read_text(errors="replace")
+                    for name in re.findall(r"\btype\s+(\w+)\s+struct\s*\{", text):
+                        fields = _parse_struct_json_fields(text, name)
+                        if fields and name not in result:
+                            result[name] = fields
+            else:
+                print(
+                    f"WARNING: schema type map is incomplete — "
+                    f"github.com/meshery/schemas@{schema_version} not found in GOMODCACHE "
+                    f"and local models/ is absent. "
+                    f"Cross-check completeness results will be degraded. "
+                    f"Run 'go mod download' in the meshery repo or ensure models/ exists.",
+                    file=sys.stderr,
+                )
+        elif schema_version:
+            print(
+                "WARNING: schema type map is incomplete — GOMODCACHE not found. "
+                "Cross-check completeness results will be degraded.",
+                file=sys.stderr,
+            )
 
     # --- Resolve aliases: if local name not found, use remote name ---
     for local_name, remote_name in alias_map.items():
@@ -1603,22 +1641,25 @@ def _build_actionable_notes(
             "[SPEC QUALITY]\n" + "\n".join(legacy_lines)
         )
 
-    # ── SCHEMA-DRIVEN ──────────────────────────────────────────────────
+    # ── SCHEMA IMPORT USAGE ────────────────────────────────────────────
+    # NOTE: This check only detects direct imports of meshery/schemas in the
+    # handler file. Handlers that use schema types via local model aliases
+    # (e.g. connections.ConnectionPage) will show FALSE even when schema-backed.
     if driven == "FALSE" and coverage != "Schema Underlap":
         if handler in ("<inline>", "<unknown>"):
             sections.append(
-                f"[SCHEMA-DRIVEN] Handler is {handler} — "
-                "extract to a named function and adopt schema types"
+                f"[SCHEMA IMPORT] Handler is {handler} — "
+                "no direct schema imports detected (alias usage not checked)"
             )
         else:
             sections.append(
-                "[SCHEMA-DRIVEN] Handler does not import meshery/schemas "
-                "types — migrate to schema-driven"
+                "[SCHEMA IMPORT] No direct meshery/schemas import found in "
+                "handler file — may use schema types via local aliases"
             )
     elif driven == "Partial":
         sections.append(
-            "[SCHEMA-DRIVEN] Uses only core schema types — "
-            "adopt versioned model types (v1beta1, etc.)"
+            "[SCHEMA IMPORT] Only core schema types imported directly — "
+            "versioned model types (v1beta1, etc.) may be used via aliases"
         )
 
     return "\n\n".join(sections) if sections else ""
@@ -1643,12 +1684,43 @@ def _derive_sheet_status_and_annotation(
 # 5. Classification — bidirectional walk (Router ∪ Spec)
 # ---------------------------------------------------------------------------
 
+def _dedup_notes(notes: List[str]) -> List[str]:
+    """Return notes with duplicates removed, preserving insertion order."""
+    seen: Set[str] = set()
+    result = []
+    for n in notes:
+        if n not in seen:
+            seen.add(n)
+            result.append(n)
+    return result
+
+
+def _reduce_completeness(
+    method_comps: List[str], notes: List[str]
+) -> Tuple[str, List[str]]:
+    """Reduce a list of per-method completeness values to a single status.
+
+    Shared by the structural fallback path and the cross-check path so
+    that both produce identical aggregation semantics.
+    """
+    unique = _dedup_notes(notes)
+    if all(c == "Full" for c in method_comps):
+        return "Full", unique
+    if any(c == "Full" for c in method_comps) or any(
+        c == "Partial" for c in method_comps
+    ):
+        return "Partial", unique
+    if all(c == "N/A" for c in method_comps):
+        return "N/A", unique
+    return "Stub", unique
+
+
 def _aggregate_completeness(
     norm: str,
     methods: List[str],
     spec_data: dict,
 ) -> Tuple[str, List[str]]:
-    """Aggregate completeness across methods for a single endpoint."""
+    """Aggregate structural spec completeness across methods for one endpoint."""
     comp_map = spec_data["completeness"]
     cnotes_map = spec_data["compl_notes"]
     all_paths = spec_data["all_paths"]
@@ -1657,33 +1729,20 @@ def _aggregate_completeness(
     if not spec_methods:
         return "N/A", []
 
-    method_comps = []
-    agg_notes: List[str] = []
     check_methods = spec_methods if methods == ["ALL"] else [
         m for m in methods if m in spec_methods
     ]
 
+    method_comps: List[str] = []
+    agg_notes: List[str] = []
     for m in check_methods:
-        c = comp_map.get((norm, m), "Stub")
-        method_comps.append(c)
+        method_comps.append(comp_map.get((norm, m), "Stub"))
         agg_notes.extend(cnotes_map.get((norm, m), []))
 
     if not method_comps:
         return "Stub", ["spec path exists but no method match"]
 
-    # Deduplicate notes
-    seen: Set[str] = set()
-    unique_notes = []
-    for n in agg_notes:
-        if n not in seen:
-            seen.add(n)
-            unique_notes.append(n)
-
-    if all(c == "Full" for c in method_comps):
-        return "Full", unique_notes
-    if any(c == "Full" for c in method_comps) or any(c == "Partial" for c in method_comps):
-        return "Partial", unique_notes
-    return "Stub", unique_notes
+    return _reduce_completeness(method_comps, agg_notes)
 
 
 def classify_endpoints(
@@ -1804,24 +1863,9 @@ def classify_endpoints(
                     else:
                         method_comps.append("N/A")
 
-                # Aggregate: best-of across methods
-                if all(c == "Full" for c in method_comps):
-                    completeness = "Full"
-                elif any(c == "Full" for c in method_comps) or any(
-                    c == "Partial" for c in method_comps
-                ):
-                    completeness = "Partial"
-                elif all(c == "N/A" for c in method_comps):
-                    completeness = "N/A"
-                else:
-                    completeness = "Stub"
-                # Deduplicate notes
-                seen_n: Set[str] = set()
-                compl_notes = []
-                for n in agg_notes:
-                    if n not in seen_n:
-                        seen_n.add(n)
-                        compl_notes.append(n)
+                completeness, compl_notes = _reduce_completeness(
+                    method_comps, agg_notes
+                )
             else:
                 completeness, compl_notes = _aggregate_completeness(
                     norm, methods, spec_data
@@ -1965,69 +2009,61 @@ def classify_endpoints(
 # Google Sheet — credentials from environment only
 # ---------------------------------------------------------------------------
 
+_GOOGLE_SCOPES = [
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive",
+]
+
+
+def _load_google_service_account_creds():
+    """Load Google service account credentials from environment variables.
+
+    Checks GOOGLE_CREDENTIALS_JSON (inline JSON, for CI) first, then
+    GOOGLE_APPLICATION_CREDENTIALS (file path, for local dev).
+    Returns a Credentials object, or None if neither is set.
+    """
+    try:
+        from google.oauth2.service_account import Credentials
+    except ImportError:
+        sys.exit("Missing packages. Run: pip install google-auth")
+
+    creds_json = os.environ.get("GOOGLE_CREDENTIALS_JSON")
+    if creds_json:
+        return Credentials.from_service_account_info(
+            json.loads(creds_json), scopes=_GOOGLE_SCOPES
+        )
+
+    creds_file = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+    if creds_file and os.path.exists(creds_file):
+        return Credentials.from_service_account_file(
+            creds_file, scopes=_GOOGLE_SCOPES
+        )
+
+    return None
+
+
 def _get_sheet_client():
     """Authenticate with Google Sheets using env-var credentials."""
     try:
         import gspread
-        from google.oauth2.service_account import Credentials
     except ImportError:
-        sys.exit(
-            "Missing packages. Run: pip install gspread google-auth"
-        )
+        sys.exit("Missing packages. Run: pip install gspread google-auth")
 
-    scopes = [
-        "https://www.googleapis.com/auth/spreadsheets",
-        "https://www.googleapis.com/auth/drive",
-    ]
-
-    # Option 1: inline JSON (for CI / GitHub Actions)
-    creds_json = os.environ.get("GOOGLE_CREDENTIALS_JSON")
-    if creds_json:
-        info = json.loads(creds_json)
-        creds = Credentials.from_service_account_info(info, scopes=scopes)
-        return gspread.authorize(creds)
-
-    # Option 2: file path (for local development)
-    creds_file = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
-    if creds_file and os.path.exists(creds_file):
-        creds = Credentials.from_service_account_file(creds_file, scopes=scopes)
-        return gspread.authorize(creds)
-
-    return None
+    creds = _load_google_service_account_creds()
+    if creds is None:
+        return None
+    return gspread.authorize(creds)
 
 
 def _get_google_credentials():
-    """Authenticate with Google credentials for direct Sheets API calls."""
-    try:
-        from google.oauth2.service_account import Credentials
-    except ImportError:
-        sys.exit(
-            "Missing packages. Run: pip install google-auth"
-        )
-
-    scopes = [
-        "https://www.googleapis.com/auth/spreadsheets",
-        "https://www.googleapis.com/auth/drive",
-    ]
-
-    creds_json = os.environ.get("GOOGLE_CREDENTIALS_JSON")
-    if creds_json:
-        info = json.loads(creds_json)
-        return Credentials.from_service_account_info(info, scopes=scopes)
-
-    creds_file = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
-    if creds_file and os.path.exists(creds_file):
-        return Credentials.from_service_account_file(creds_file, scopes=scopes)
-
-    return None
+    """Return raw Google Credentials for direct Sheets API calls."""
+    return _load_google_service_account_creds()
 
 
 def _has_sheet_credentials_configured() -> bool:
     """Return True when sheet credentials are configured via env vars."""
-    creds_json = os.environ.get("GOOGLE_CREDENTIALS_JSON")
-    if creds_json:
+    if os.environ.get("GOOGLE_CREDENTIALS_JSON"):
         return True
-
     creds_file = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
     return bool(creds_file and os.path.exists(creds_file))
 
@@ -2620,7 +2656,12 @@ def render_summary_metrics_table(
 def sheet_diff_analysis(
     endpoints: List[Dict[str, Any]], sheet_id: str
 ) -> None:
-    """Compare current audit results with previous Google Sheet data."""
+    """Compare current audit results with previous Google Sheet data.
+
+    Uses the same row-identity strategy as update_sheet() — normalized path
+    plus any-method-overlap — so that the diff preview and the actual update
+    agree on which rows are new, changed, or removed.
+    """
     gc = _get_sheet_client()
     if not gc:
         print(
@@ -2637,7 +2678,11 @@ def sheet_diff_analysis(
         print(f"\nWARNING: Cannot read sheet: {exc}", file=sys.stderr)
         return
 
-    prev_endpoints: Dict[Tuple[str, str], Dict[str, str]] = {}
+    # Build row index using the same strategy as update_sheet()
+    sheet_index = _build_sheet_index(current_rows)
+
+    # Build a by-row-index map of previous endpoint data for comparison
+    prev_by_row: Dict[int, Dict[str, str]] = {}
     for idx, row in enumerate(current_rows):
         if idx == 0:
             continue
@@ -2646,9 +2691,8 @@ def sheet_diff_analysis(
             continue
         if not ep.startswith("/"):
             ep = "/" + ep
-        norm = normalize_path(ep)
         methods = row[COL_METHODS].strip() if len(row) > COL_METHODS else ""
-        prev_endpoints[(norm, methods)] = {
+        prev_by_row[idx] = {
             "path": ep,
             "methods": methods,
             "coverage": row[COL_COVERAGE].strip() if len(row) > COL_COVERAGE else "",
@@ -2659,29 +2703,29 @@ def sheet_diff_analysis(
             "driven": row[COL_DRIVEN].strip() if len(row) > COL_DRIVEN else "",
         }
 
-    curr_endpoints: Dict[Tuple[str, str], Dict[str, Any]] = {}
-    for ep in endpoints:
-        norm = normalize_path(ep["path"])
-        curr_endpoints[(norm, ep["methods"])] = ep
-
     new_eps: List[Dict[str, Any]] = []
     removed_eps: List[Dict[str, str]] = []
     changed_eps: List[Dict[str, Any]] = []
     newly_internal: List[Dict[str, Any]] = []
+    matched_row_indices: Set[int] = set()
 
     compare_fields = (
         "coverage", "sheet_status", "x_annotated", "backed", "completeness", "driven",
     )
 
-    for key, ep in curr_endpoints.items():
-        if key not in prev_endpoints:
+    for ep in endpoints:
+        row_idx = _find_matching_row(
+            sheet_index, ep["path"], ep["methods"], matched_row_indices
+        )
+        if row_idx is None:
             new_eps.append(ep)
             if ep.get("x_annotated", "N/A") != "N/A":
                 newly_internal.append(ep)
         else:
-            prev = prev_endpoints[key]
+            matched_row_indices.add(row_idx)
+            prev = prev_by_row[row_idx]
             diffs = {
-                f: (prev[f], ep[f])
+                f: (prev.get(f, ""), ep.get(f, ""))
                 for f in compare_fields
                 if ep.get(f, "") != prev.get(f, "")
             }
@@ -2692,8 +2736,8 @@ def sheet_diff_analysis(
                 if old_x_annotated == "N/A" and new_x_annotated != "N/A":
                     newly_internal.append(ep)
 
-    for key, prev in prev_endpoints.items():
-        if key not in curr_endpoints:
+    for row_idx, prev in prev_by_row.items():
+        if row_idx not in matched_row_indices:
             removed_eps.append(prev)
 
     print("\n" + "=" * 60)
@@ -2784,10 +2828,10 @@ def main():
     spec_data = parse_openapi(spec_file)
     current_metrics = collect_spec_summary_metrics(spec_data)
 
-    if not args.dry_run:
+    # Full sheet-update mode requires a meshery repo, sheet ID, and credentials.
+    # spec-only mode never writes to the sheet, so none of those are required.
+    if not args.dry_run and not args.spec_only:
         missing: List[str] = []
-        if args.spec_only:
-            missing.append("--spec-only cannot be used for sheet updates")
         if not args.meshery_repo:
             missing.append("MESHERY_REPO / --meshery-repo")
         if not args.sheet_id:
@@ -2800,7 +2844,7 @@ def main():
         if missing:
             print(
                 "ERROR: api-audit update mode requires:\n"
-                f"  - " + "\n  - ".join(missing),
+                "  - " + "\n  - ".join(missing),
                 file=sys.stderr,
             )
             sys.exit(1)
@@ -2863,8 +2907,8 @@ def main():
     print("\nMeshery API Audit Summary")
     print("=" * 25)
     print(f"Sources: {len(routes)} routes | {n_spec} spec paths | "
-          f"{len(schema_map)} handler functions in server/handlers/ "
-          f"({n_driven} schema-driven)")
+          f"{len(schema_map)} functions in server/handlers/ "
+          f"({n_driven} with direct schema imports)")
 
     status_parts = []
     for label, count in [
@@ -2875,22 +2919,40 @@ def main():
     ]:
         if count:
             status_parts.append(f"{count} {label}")
-    print(f"\n{total} endpoints (router + spec combined): {', '.join(status_parts)}")
+    print(f"\n{total} endpoint-rows (router + spec combined): {', '.join(status_parts)}")
+
+    # Separate /api/* gaps from non-API routes (UI, health, docs) which are
+    # intentionally absent from the OpenAPI spec.
+    n_srv_under_api = sum(
+        1 for e in endpoints
+        if e["coverage"] == "Server Underlap" and _is_api_route(e["path"])
+    )
+    n_srv_under_non_api = n_srv_under - n_srv_under_api
 
     gaps = []
-    if n_srv_under:
-        gaps.append(f"  {n_srv_under} routes have no OpenAPI spec definition")
+    if n_srv_under_api:
+        gaps.append(f"  {n_srv_under_api} /api/* routes have no OpenAPI spec definition")
+    if n_srv_under_non_api:
+        gaps.append(
+            f"  {n_srv_under_non_api} non-/api/ routes have no spec definition "
+            "(UI/static/health — excluded from API coverage)"
+        )
     if n_unimpl:
         gaps.append(f"  {n_unimpl} spec-defined endpoints have no router registration")
     not_backed = total - b_true
     if not_backed:
-        gaps.append(f"  {not_backed}/{total} endpoints are not schema-backed")
+        gaps.append(f"  {not_backed}/{total} endpoint-rows are not schema-backed")
     if comp_stub:
         gaps.append(f"  {comp_stub} endpoint schemas are stubs")
+    # n_na_driven covers spec-only (Schema Underlap) rows which have no handler.
+    # The ratio is endpoint-rows, not unique handler functions.
     router_total = total - n_na_driven
     not_driven = router_total - d_true - d_part
     if not_driven > 0:
-        gaps.append(f"  {not_driven}/{router_total} handlers are not schema-driven")
+        gaps.append(
+            f"  {not_driven}/{router_total} endpoint-rows have no direct "
+            "schema import in handler (alias usage not checked)"
+        )
 
     if gaps:
         print("\nNeeds attention:")
