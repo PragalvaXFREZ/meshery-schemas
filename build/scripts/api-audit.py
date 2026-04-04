@@ -1159,13 +1159,13 @@ def _build_actionable_notes(
 
     Sections (only included when relevant):
       ACTION                  — what to do (add spec, implement handler, remove route)
-      Completeness - MS/MC    — field-level and structural gap details
+      Completeness - Meshery Server/Cloud    — field-level and structural gap details
     """
     sections: List[str] = []
 
     _PLATFORM_LABEL: Dict[str, str] = {
-        "meshery": " - MS",
-        "cloud": " - MC",
+        "meshery": " - Meshery Server",
+        "cloud": " - Meshery Cloud",
     }
     _plat_label = _PLATFORM_LABEL.get(repo_source, "")
 
@@ -1533,20 +1533,6 @@ def classify_endpoints(
             repo_source=repo_source,
         )
 
-        # Append other-platform completeness notes if available
-        if compl_notes_other:
-            other_label = "MC" if repo_source == "meshery" else "MS"
-            legacy_other = [
-                n for n in compl_notes_other
-                if not n.startswith(("[REQ]", "[RESP]", "[INFO]"))
-            ]
-            if legacy_other:
-                other_section = (
-                    f"[Completeness - {other_label}]\n"
-                    + "\n".join(legacy_other)
-                )
-                notes = (notes + "\n\n" + other_section) if notes else other_section
-
         # Assign to correct platform columns
         if _is_cloud:
             backed_ms = backed_other
@@ -1692,11 +1678,11 @@ def classify_endpoints(
 
         if compl_notes_ms:
             note_sections.append(
-                "[Completeness - MS]\n" + "\n".join(compl_notes_ms)
+                "[Completeness - Meshery Server]\n" + "\n".join(compl_notes_ms)
             )
         if compl_notes_mc:
             note_sections.append(
-                "[Completeness - MC]\n" + "\n".join(compl_notes_mc)
+                "[Completeness - Meshery Cloud]\n" + "\n".join(compl_notes_mc)
             )
 
         notes = "\n\n".join(note_sections) if note_sections else ""
@@ -1877,12 +1863,22 @@ def merge_endpoint_lists(
         ep["meshery_present"] = bool(m_ep.get("meshery_present"))
         ep["cloud_present"] = bool(c_ep.get("cloud_present"))
 
-        # Combine notes when they differ
+        # Combine notes from both repos, keeping platforms separate.
+        # When both entries are spec-only (no router in either repo), they
+        # produce identical notes — avoid double-wrapping by using one copy.
         m_notes = m_ep.get("notes", "")
         c_notes = c_ep.get("notes", "")
-        if m_notes and c_notes and m_notes != c_notes:
+        both_spec_only = (
+            m_ep.get("repo_source", "") == ""
+            and c_ep.get("repo_source", "") == ""
+        )
+        if both_spec_only:
+            ep["notes"] = m_notes or c_notes
+        elif m_notes and c_notes:
             ep["notes"] = f"[Meshery Server]\n{m_notes}\n\n[Meshery Cloud]\n{c_notes}"
-        elif c_notes and not m_notes:
+        elif m_notes:
+            ep["notes"] = m_notes
+        elif c_notes:
             ep["notes"] = c_notes
 
         ep["repo_source"] = "both"
@@ -2498,7 +2494,7 @@ def _insert_rows_by_group(
 
 
 # ---------------------------------------------------------------------------
-# Summary & Insights (spec-only and repo-aware)
+# Summary & Insights
 # ---------------------------------------------------------------------------
 
 def _print_table(
@@ -2621,15 +2617,29 @@ def collect_endpoint_summary(
         elif cov == "Schema Underlap":
             total["unimplemented"] += 1
 
-        if ep.get("backed_ms") == "TRUE" or ep.get("backed_mc") == "TRUE":
+        _ms_present = ep.get("meshery_present")
+        _mc_present = ep.get("cloud_present")
+
+        # --- backed: priority TRUE > FALSE > No Schema (mutually exclusive per endpoint) ---
+        _ms_backed = ep.get("backed_ms") if _ms_present else None
+        _mc_backed = ep.get("backed_mc") if _mc_present else None
+        if "TRUE" in (_ms_backed, _mc_backed):
             total["schema_backed"] += 1
-        if ep.get("backed_ms") == "FALSE" or ep.get("backed_mc") == "FALSE":
+        elif "FALSE" in (_ms_backed, _mc_backed):
             total["not_schema_backed"] += 1
-        if _is_complete_value(ep.get("completeness_ms", "")) or _is_complete_value(ep.get("completeness_mc", "")):
+        # else: no_schema — derived at the end
+
+        # --- completeness: priority Complete > Not-audited > Incomplete (within backed) ---
+        _ms_compl = ep.get("completeness_ms") if _ms_present else None
+        _mc_compl = ep.get("completeness_mc") if _mc_present else None
+        if _is_complete_value(_ms_compl or "") or _is_complete_value(_mc_compl or ""):
             total["complete"] += 1
-        if ep.get("completeness_ms") == "Not-audited" or ep.get("completeness_mc") == "Not-audited":
+        elif _ms_compl == "Not-audited" or _mc_compl == "Not-audited":
             total["not_audited"] += 1
-        if _is_driven_value(ep.get("driven_ms", "")) or _is_driven_value(ep.get("driven_mc", "")):
+
+        if (_ms_present and _is_driven_value(ep.get("driven_ms", ""))) or (
+            _mc_present and _is_driven_value(ep.get("driven_mc", ""))
+        ):
             total["schema_driven"] += 1
 
         if ep.get("meshery_present"):
@@ -2700,30 +2710,6 @@ def collect_endpoint_summary(
     return summary
 
 
-def collect_spec_only_summary(spec_data: Dict[str, Any]) -> Dict[str, Dict[str, int]]:
-    """Fallback summary when no repo analysis is requested."""
-    total = _empty_summary_counts()
-    operations = spec_data.get("operations", {})
-    x_internal = spec_data.get("x_internal", {})
-    all_paths = spec_data.get("all_paths")
-    if all_paths:
-        unique_paths = set(all_paths)
-    else:
-        unique_paths = {path for path, _method in operations}
-
-    total["endpoints_spec"] = len(unique_paths)
-    total["implemented"] = 0
-    total["unimplemented"] = len(unique_paths)
-    total["not_schema_backed"] = 0
-    total["no_schema"] = 0
-    total["not_audited"] = len(unique_paths)
-    total["incomplete"] = 0
-    total["not_schema_driven"] = len(unique_paths)
-    return {
-        "total": total,
-        "meshery": _empty_summary_counts(),
-        "cloud": _empty_summary_counts(),
-    }
 
 
 
@@ -2757,6 +2743,8 @@ def render_audit_summary_table(
         rows.append(row)
 
     print("\nAPI Audit Summary")
+    print("  Total = unique endpoints (deduped); Meshery and Cloud are independent per-repo counts.")
+    print("  Meshery + Cloud may exceed Total for rows where an endpoint appears in both routers.")
     _print_table(
         "",
         headers,
@@ -2822,14 +2810,6 @@ def main():
         help="Google Sheet ID (default: $SHEET_ID env var)",
     )
     parser.add_argument(
-        "--spec-only",
-        action="store_true",
-        help=(
-            "Analyze only the bundled OpenAPI spec and skip meshery/meshery "
-            "router and handler analysis"
-        ),
-    )
-    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Print diff without writing to the sheet",
@@ -2867,8 +2847,8 @@ def main():
     spec_data = parse_openapi(spec_file)
 
     # Sheet-update mode requires a sheet ID and credentials.
-    # spec-only mode and dry-run mode never write to the sheet.
-    if args.sheet_id and not args.spec_only and not args.dry_run:
+    # Dry-run mode never writes to the sheet.
+    if args.sheet_id and not args.dry_run:
         missing: List[str] = []
         if not args.meshery_repo and not args.cloud_repo:
             missing.append("MESHERY_REPO / --meshery-repo (or --cloud-repo)")
@@ -2885,25 +2865,15 @@ def main():
             )
             sys.exit(1)
 
-    if not (args.meshery_repo or args.cloud_repo) or args.spec_only:
-        notes: List[str] = []
-        if not (args.meshery_repo or args.cloud_repo):
-            notes.append(
-                "This is a spec-only summary. Provide MESHERY_REPO and/or CLOUD_REPO for a more detailed audit."
-            )
-            notes.append(
-                "Handler-based checks were not run, so schema completeness and schema-driven counts do not reflect router or handler analysis."
-            )
-        render_audit_summary_table(
-            collect_spec_only_summary(spec_data),
-            include_meshery=False,
-            include_cloud=False,
+    if not (args.meshery_repo or args.cloud_repo):
+        print(
+            "ERROR: at least one of MESHERY_REPO or CLOUD_REPO must be set.\n"
+            "  make api-audit MESHERY_REPO=../meshery\n"
+            "  make api-audit CLOUD_REPO=../meshery-cloud\n"
+            "  make api-audit MESHERY_REPO=../meshery CLOUD_REPO=../meshery-cloud",
+            file=sys.stderr,
         )
-        if notes:
-            print("\nNotes:")
-            for note in notes:
-                print(note)
-        sys.exit(0)
+        sys.exit(1)
 
     print("Preparing API audit...")
 

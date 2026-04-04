@@ -133,9 +133,7 @@ api-audit-setup:
 	@$(API_AUDIT_PY) -m pip install --quiet pyyaml gspread google-auth
 
 ## Dry-run audit of all available repos against the bundled OpenAPI spec.
-## Set MESHERY_REPO and/or CLOUD_REPO to include each repo's route analysis.
-## When both are set, both repos are analysed in a single combined run.
-## Falls back to a compact spec-only summary when neither is set.
+## Set MESHERY_REPO and/or CLOUD_REPO (or both) to select which repos to analyse.
 api-audit: api-audit-setup
 	@ if [ -n "$(MESHERY_REPO)" ] && [ -n "$(CLOUD_REPO)" ]; then \
 		$(API_AUDIT_PY) build/scripts/api-audit.py \
@@ -145,13 +143,12 @@ api-audit: api-audit-setup
 	elif [ -n "$(CLOUD_REPO)" ]; then \
 		$(API_AUDIT_PY) build/scripts/api-audit.py --cloud-repo "$(CLOUD_REPO)" --dry-run; \
 	else \
-		$(API_AUDIT_PY) build/scripts/api-audit.py --dry-run; \
+		echo "ERROR: set MESHERY_REPO and/or CLOUD_REPO to run the audit." >&2; exit 1; \
 	fi
 
-## Audit all available repos and write results using the Python audit tool.
-## Set MESHERY_REPO and/or CLOUD_REPO to include each repo's route analysis.
-## When both are set, both repos are analysed in a single combined run so the
-## sheet is written once — eliminating the overwrite loop that caused idempotency failures.
+## Audit all available repos and write results to the Google Sheet.
+## Set MESHERY_REPO and/or CLOUD_REPO (or both). When both are set the sheet is
+## written once in a single combined run.
 api-audit-update: api-audit-setup
 	@ if [ -n "$(MESHERY_REPO)" ] && [ -n "$(CLOUD_REPO)" ]; then \
 		$(API_AUDIT_PY) build/scripts/api-audit.py \
@@ -161,7 +158,7 @@ api-audit-update: api-audit-setup
 	elif [ -n "$(CLOUD_REPO)" ]; then \
 		$(API_AUDIT_PY) build/scripts/api-audit.py --cloud-repo "$(CLOUD_REPO)"; \
 	else \
-		$(API_AUDIT_PY) build/scripts/api-audit.py; \
+		echo "ERROR: set MESHERY_REPO and/or CLOUD_REPO to run the audit." >&2; exit 1; \
 	fi
 
 #-----------------------------------------------------------------------------
