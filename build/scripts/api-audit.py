@@ -110,7 +110,6 @@ SHEET_COLUMNS = [
     "Sub-Category",
     "Endpoints",
     "Methods",
-    "Coverage",
     "Endpoint Status",
     "x-annotated",
     "Schema-Backed (Meshery Server)",
@@ -126,17 +125,16 @@ COL_CATEGORY = 0
 COL_SUBCATEGORY = 1
 COL_ENDPOINTS = 2
 COL_METHODS = 3
-COL_COVERAGE = 4
-COL_STATUS = 5
-COL_X_ANNOTATED = 6
-COL_BACKED_MS = 7
-COL_BACKED_MC = 8
-COL_COMPLETENESS_MS = 9
-COL_COMPLETENESS_MC = 10
-COL_DRIVEN_MS = 11
-COL_DRIVEN_MC = 12
-COL_NOTES = 13
-COL_CHANGELOG = 14
+COL_STATUS = 4
+COL_X_ANNOTATED = 5
+COL_BACKED_MS = 6
+COL_BACKED_MC = 7
+COL_COMPLETENESS_MS = 8
+COL_COMPLETENESS_MC = 9
+COL_DRIVEN_MS = 10
+COL_DRIVEN_MC = 11
+COL_NOTES = 12
+COL_CHANGELOG = 13
 
 AUDIT_WORKSHEET_INDEX = 4
 
@@ -1149,6 +1147,8 @@ def _build_actionable_notes(
     status: str,
     is_commented: bool,
     compl_notes: List[str],
+    completeness: str = "",
+    driven: str = "",
     repo_source: str = "",
 ) -> str:
     """Build a structured, actionable summary for the Notes column.
@@ -1158,8 +1158,9 @@ def _build_actionable_notes(
     level, and driven status — so notes focus on *specific gaps*.
 
     Sections (only included when relevant):
-      ACTION                  — what to do (add spec, implement handler, remove route)
-      Completeness - Meshery Server/Cloud    — field-level and structural gap details
+      ACTION                  — what to do (add spec, implement handler, remove route,
+                                migrate handler to use meshery/schemas types)
+      Completeness - Meshery Server/Cloud    — field-level gap details (omitted when Full)
     """
     sections: List[str] = []
 
@@ -1187,7 +1188,17 @@ def _build_actionable_notes(
                 "implement handler or remove from spec"
             )
 
+    if driven == "FALSE" and coverage == "Overlap":
+        sections.append(
+            f"[ACTION{_plat_label}] Not schema-driven — "
+            "handler does not import meshery/schemas types"
+        )
+
     # ── COMPLETENESS DETAILS (field-level + structural gaps) ─────────
+    # Skip when completeness is Full — the column already says so; no gaps to list.
+    if completeness == "Full":
+        return "\n\n".join(sections) if sections else ""
+
     req_lines = [n for n in compl_notes if n.startswith("[REQ]")]
     resp_lines = [n for n in compl_notes if n.startswith("[RESP]")]
     info_lines = [n for n in compl_notes if n.startswith("[INFO]")]
@@ -1530,6 +1541,8 @@ def classify_endpoints(
             status=status,
             is_commented=is_commented,
             compl_notes=compl_notes_this,
+            completeness=completeness_this,
+            driven=driven,
             repo_source=repo_source,
         )
 
@@ -1676,11 +1689,11 @@ def classify_endpoints(
                 "implement handler or remove from spec"
             )
 
-        if compl_notes_ms:
+        if compl_notes_ms and completeness_ms != "Full":
             note_sections.append(
                 "[Completeness - Meshery Server]\n" + "\n".join(compl_notes_ms)
             )
-        if compl_notes_mc:
+        if compl_notes_mc and completeness_mc != "Full":
             note_sections.append(
                 "[Completeness - Meshery Cloud]\n" + "\n".join(compl_notes_mc)
             )
@@ -2084,7 +2097,6 @@ def _reset_worksheet_text_color(
 # Columns the script compares and updates on matched rows.
 # (column_index, endpoint_dict_key, human_label)
 _UPDATABLE_COLUMNS = [
-    (COL_COVERAGE, "coverage", "coverage"),
     (COL_STATUS, "sheet_status", "endpoint status"),
     (COL_X_ANNOTATED, "x_annotated", "x-annotated"),
     (COL_BACKED_MS, "backed_ms", "backed (server)"),
@@ -2300,7 +2312,6 @@ def update_sheet(
                 ep["subcategory"],
                 ep["path"],
                 ep["methods"],
-                ep["coverage"],
                 ep["sheet_status"],
                 ep["x_annotated"],
                 ep["backed_ms"],
@@ -2314,7 +2325,7 @@ def update_sheet(
             ]
             changes.append(
                 f"NEW ROW: {ep['path']} [{ep['methods']}] "
-                f"coverage={ep['coverage']} status={ep['sheet_status']} "
+                f"status={ep['sheet_status']} "
                 f"x-annotated={ep['x_annotated']} "
                 f"backed_ms={ep['backed_ms']} backed_mc={ep['backed_mc']} "
                 f"completeness_ms={ep['completeness_ms']} completeness_mc={ep['completeness_mc']} "
@@ -2971,7 +2982,7 @@ def main():
             for ep in endpoints:
                 print(
                     f"  {ep['path']:55s} [{ep['methods']:20s}] "
-                    f"cov={ep['coverage']:16s} st={ep['status']:14s} "
+                    f"st={ep['status']:14s} "
                     f"bk_ms={ep['backed_ms']:5s} bk_mc={ep['backed_mc']:5s} "
                     f"comp_ms={ep['completeness_ms']:7s} comp_mc={ep['completeness_mc']:7s} "
                     f"drv_ms={ep['driven_ms']:7s} drv_mc={ep['driven_mc']:7s}"
