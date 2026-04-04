@@ -149,7 +149,19 @@ func scanAliases(dir, schemaModule string, aliases map[string]string) {
 				if !ok || !ts.Assign.IsValid() {
 					continue
 				}
-				sel, ok := ts.Type.(*ast.SelectorExpr)
+				// Unwrap pointer/slice wrappers so both
+				//   type X = pkg.Y      (*ast.SelectorExpr)
+				//   type X = *pkg.Y     (*ast.StarExpr → *ast.SelectorExpr)
+				//   type X = []pkg.Y    (*ast.ArrayType → *ast.SelectorExpr)
+				// are recognised as schema aliases.
+				typeExpr := ts.Type
+				switch w := typeExpr.(type) {
+				case *ast.StarExpr:
+					typeExpr = w.X
+				case *ast.ArrayType:
+					typeExpr = w.Elt
+				}
+				sel, ok := typeExpr.(*ast.SelectorExpr)
 				if !ok {
 					continue
 				}

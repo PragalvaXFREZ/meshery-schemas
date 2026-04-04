@@ -1156,6 +1156,7 @@ def _build_actionable_notes(
     completeness: str = "",
     driven: str = "",
     repo_source: str = "",
+    path: str = "",
 ) -> str:
     """Build a structured, actionable summary for the Notes column.
 
@@ -1183,9 +1184,12 @@ def _build_actionable_notes(
             "consider removal from router and spec"
         )
     elif coverage == "Server Underlap":
-        sections.append(
-            "[ACTION] Not in OpenAPI spec — add spec definition"
-        )
+        # Only flag missing spec for /api routes — non-API paths like
+        # /healthz, /swagger.yaml, /docs are intentionally undocumented.
+        if _is_api_route(path):
+            sections.append(
+                "[ACTION] Not in OpenAPI spec — add spec definition"
+            )
 
     if coverage == "Schema Underlap" and status == "Unimplemented":
         sections.append(
@@ -1578,6 +1582,7 @@ def classify_endpoints(
             completeness=completeness_this,
             driven=driven,
             repo_source=repo_source,
+            path=path,
         )
 
         # Assign to correct platform columns
@@ -1790,7 +1795,7 @@ def _setup_repo_analysis(
 ]:
     """Parse routes and run handler analysis for one repo.
 
-    Returns (routes, schema_map, handler_io_map, go_fields_map).
+    Returns (routes, schema_map, handler_io_map, go_fields_map, analysis_stats).
     """
     routes = parse_router(repo_root, config=repo_config)
     analysis = run_go_analyzer(repo_root, config=repo_config)
