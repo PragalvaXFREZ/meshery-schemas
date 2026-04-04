@@ -141,14 +141,17 @@ COL_CHANGELOG = 14
 AUDIT_WORKSHEET_INDEX = 4
 
 SUMMARY_TABLE_ROWS: List[Tuple[str, str]] = [
-    ("endpoints_spec", "Endpoints (Spec)"),
-    ("endpoints_router", "Endpoints (Router)"),
+    ("endpoints_spec", "Spec endpoints"),
+    ("implemented", "  \u251c Implemented (router match)"),
+    ("unimplemented", "  \u2514 Unimplemented (no router)"),
+    ("endpoints_router", "Router endpoints"),
+    ("schema_backed", "  \u251c Schema-backed"),
+    ("complete", "  \u2502   \u251c Complete"),
+    ("incomplete", "  \u2502   \u251c Incomplete"),
+    ("not_audited", "  \u2502   \u2514 Not audited"),
+    ("not_schema_backed", "  \u251c Not in spec"),
+    ("no_schema", "  \u2514 No schema"),
     ("x_internal_tagged", "x-internal tagged"),
-    ("not_tagged", "Not tagged"),
-    ("schema_backed", "Schema-backed"),
-    ("not_schema_backed", "Not schema-backed"),
-    ("complete", "Complete"),
-    ("incomplete", "Incomplete"),
     ("schema_driven", "Schema-driven"),
     ("not_schema_driven", "Not schema-driven"),
 ]
@@ -1023,7 +1026,7 @@ def cross_check_completeness(
     has_spec = bool(spec_req or spec_resp)
 
     if not has_spec:
-        return "N/A", ["[INFO] No spec schema to compare against"]
+        return "Not-audited", ["[INFO] No spec schema to compare against"]
 
     # --- Request side ---
     req_ratio, req_common, req_only_go, req_only_spec = _field_overlap(
@@ -1116,7 +1119,7 @@ def cross_check_completeness(
         if req_ratio is None and resp_ratio is None:
             if req_type or resp_type:
                 return "Stub", notes
-            return "N/A", notes
+            return "Not-audited", notes
 
         if req_good and resp_good:
             return "Full", notes
@@ -1127,7 +1130,7 @@ def cross_check_completeness(
         if resp_ratio is None:
             if is_resp_passthrough or (resp_type and resp_type != _PROVIDER_BYTES_SENTINEL):
                 return "Stub", notes
-            return "N/A", notes
+            return "Not-audited", notes
 
         if resp_ratio >= GOOD_THRESHOLD:
             return "Full", notes
@@ -1145,62 +1148,46 @@ def _build_actionable_notes(
     coverage: str,
     status: str,
     is_commented: bool,
-    completeness: str,
     compl_notes: List[str],
-    driven: str,
-    handler: str,
-    cloud_methods: List[str],
-    spec_methods: Set[str],
     repo_source: str = "",
 ) -> str:
-    """Build a structured, readable summary for the Notes column.
+    """Build a structured, actionable summary for the Notes column.
 
-    Organises findings into clearly labelled sections separated by
-    newlines so that the sheet cell (or verbose CLI output) is scannable.
+    Only includes information that cannot be derived from other columns.
+    Columns already convey: x-annotated scope, backed status, completeness
+    level, and driven status — so notes focus on *specific gaps*.
 
     Sections (only included when relevant):
-      COVERAGE / STATUS  — high-level action for the endpoint
-      CLOUD              — x-internal annotation info
-      CROSS-CHECK        — handler ↔ spec field comparison (request, response)
-      SPEC QUALITY       — legacy completeness notes (fallback path)
-      SCHEMA-DRIVEN      — whether handler imports meshery/schemas types
+      ACTION                  — what to do (add spec, implement handler, remove route)
+      Completeness - MS/MC    — field-level and structural gap details
     """
     sections: List[str] = []
 
-    # ── COVERAGE / STATUS ──────────────────────────────────────────────
+    _PLATFORM_LABEL: Dict[str, str] = {
+        "meshery": " - MS",
+        "cloud": " - MC",
+    }
+    _plat_label = _PLATFORM_LABEL.get(repo_source, "")
+
+    # ── ACTIONABLE ITEMS ──────────────────────────────────────────────
     if is_commented:
         sections.append(
-            "[COVERAGE] Route is commented out — "
+            "[ACTION] Route is commented out — "
             "consider removal from router and spec"
         )
 
     if coverage == "Server Underlap":
         sections.append(
-            "[COVERAGE] Not in OpenAPI spec — add spec definition"
+            "[ACTION] Not in OpenAPI spec — add spec definition"
         )
     elif coverage == "Schema Underlap":
         if status == "Unimplemented":
             sections.append(
-                "[COVERAGE] In spec but no server route — "
+                "[ACTION] In spec but no server route — "
                 "implement handler or remove from spec"
             )
 
-    # ── CLOUD ──────────────────────────────────────────────────────────
-    if coverage == "Overlap" and cloud_methods:
-        if len(cloud_methods) == len(spec_methods):
-            sections.append(
-                "[CLOUD] All methods marked x-internal: cloud in spec, "
-                "and equivalent route exists in the server"
-            )
-        else:
-            sections.append(
-                f"[CLOUD] Partially cloud-annotated: "
-                f"{', '.join(cloud_methods)} marked x-internal in spec"
-            )
-
-    # ── CROSS-CHECK ────────────────────────────────────────────────────
-    # compl_notes from cross_check_completeness carry [REQ]/[RESP]/[INFO]
-    # prefixes.  Group them for readability.
+    # ── COMPLETENESS DETAILS (field-level + structural gaps) ─────────
     req_lines = [n for n in compl_notes if n.startswith("[REQ]")]
     resp_lines = [n for n in compl_notes if n.startswith("[RESP]")]
     info_lines = [n for n in compl_notes if n.startswith("[INFO]")]
@@ -1209,55 +1196,24 @@ def _build_actionable_notes(
         if not n.startswith(("[REQ]", "[RESP]", "[INFO]"))
     ]
 
-    if req_lines or resp_lines or info_lines:
-        cross_parts: List[str] = []
-        if info_lines:
-            for line in info_lines:
-                cross_parts.append(line.replace("[INFO] ", ""))
-        if req_lines:
-            cross_parts.append("Request:")
-            for line in req_lines:
-                cross_parts.append("  " + line.replace("[REQ] ", ""))
-        if resp_lines:
-            cross_parts.append("Response:")
-            for line in resp_lines:
-                cross_parts.append("  " + line.replace("[RESP] ", ""))
-        sections.append(
-            "[CROSS-CHECK]\n" + "\n".join(cross_parts)
-        )
-
-    # ── SPEC QUALITY (legacy fallback) ─────────────────────────────────
-    _SOURCE_LABEL: Dict[str, str] = {
-        "meshery": " - Meshery Server",
-        "cloud": " - Meshery Cloud",
-    }
-    _src_label = _SOURCE_LABEL.get(repo_source, "")
-
+    compl_parts: List[str] = []
+    if info_lines:
+        for line in info_lines:
+            compl_parts.append(line.replace("[INFO] ", ""))
+    if req_lines:
+        compl_parts.append("Request:")
+        for line in req_lines:
+            compl_parts.append("  " + line.replace("[REQ] ", ""))
+    if resp_lines:
+        compl_parts.append("Response:")
+        for line in resp_lines:
+            compl_parts.append("  " + line.replace("[RESP] ", ""))
     if legacy_lines:
-        sections.append(
-            f"[SPEC QUALITY{_src_label}]\n" + "\n".join(legacy_lines)
-        )
+        compl_parts.extend(legacy_lines)
 
-    # ── SCHEMA IMPORT USAGE ────────────────────────────────────────────
-    # NOTE: This check only detects direct imports of meshery/schemas in the
-    # handler file. Handlers that use schema types via local model aliases
-    # (e.g. connections.ConnectionPage) will show FALSE even when schema-backed.
-    # The check is performed against the handler source of the labelled server.
-    if driven == "FALSE" and coverage != "Schema Underlap":
-        if handler in ("<inline>", "<unknown>"):
-            sections.append(
-                f"[SCHEMA IMPORT{_src_label}] Handler is {handler} — "
-                "no direct schema imports detected (alias usage not checked)"
-            )
-        else:
-            sections.append(
-                f"[SCHEMA IMPORT{_src_label}] No direct meshery/schemas import found in "
-                "handler file — may use schema types via local aliases"
-            )
-    elif driven == "Partial":
+    if compl_parts:
         sections.append(
-            f"[SCHEMA IMPORT{_src_label}] Only core schema types imported directly — "
-            "versioned model types (v1beta1, etc.) may be used via aliases"
+            f"[Completeness{_plat_label}]\n" + "\n".join(compl_parts)
         )
 
     return "\n\n".join(sections) if sections else ""
@@ -1278,18 +1234,27 @@ def _derive_sheet_status_and_annotation(
       Unimplemented - Meshery Cloud
     Omitting repo_source produces the legacy bare labels.
     """
-    _SOURCE_SUFFIX: Dict[str, str] = {
-        "meshery": " - Meshery Server",
-        "cloud": " - Meshery Cloud",
-    }
-    suffix = _SOURCE_SUFFIX.get(repo_source, "")
-
     if status == "Deprecated":
-        sheet_status = f"Deprecated{suffix}"
+        if repo_source == "meshery":
+            sheet_status = "Deprecated - Meshery Server"
+        elif repo_source == "cloud":
+            sheet_status = "Deprecated - Meshery Cloud"
+        else:
+            sheet_status = "Deprecated - Both"
     elif status in {"Unimplemented", "Cloud-only"}:
-        sheet_status = f"Unimplemented{suffix}"
+        if x_annotated == "Cloud-only":
+            sheet_status = "Unimplemented - Meshery Cloud"
+        elif x_annotated == "Meshery":
+            sheet_status = "Unimplemented - Meshery Server"
+        else:
+            sheet_status = "Unimplemented - Both"
     else:
-        sheet_status = f"Active{suffix}"
+        if repo_source == "meshery":
+            sheet_status = "Active - Meshery Server"
+        elif repo_source == "cloud":
+            sheet_status = "Active - Meshery Cloud"
+        else:
+            sheet_status = "Active - Both"
 
     return sheet_status, x_annotated
 
@@ -1324,9 +1289,23 @@ def _reduce_completeness(
         c == "Partial" for c in method_comps
     ):
         return "Partial", unique
-    if all(c == "N/A" for c in method_comps):
-        return "N/A", unique
+    if all(c == "Not-audited" for c in method_comps):
+        return "Not-audited", unique
     return "Stub", unique
+
+
+def _sheet_completeness_value(value: str) -> str:
+    """Map internal completeness to sheet value."""
+    if value in ("N/A", "No Schema"):
+        return "No Schema"
+    return value
+
+
+def _sheet_driven_value(value: str) -> str:
+    """Map internal driven value to sheet value."""
+    if value in ("N/A", "No Schema"):
+        return "FALSE"
+    return value
 
 
 def _aggregate_completeness(
@@ -1341,7 +1320,7 @@ def _aggregate_completeness(
     spec_methods = all_paths.get(norm, set())
 
     if not spec_methods:
-        return "N/A", []
+        return "No Schema", []
 
     check_methods = spec_methods if methods == ["ALL"] else [
         m for m in methods if m in spec_methods
@@ -1433,7 +1412,7 @@ def classify_endpoints(
         if cloud_methods:
             x_annotated = "Cloud-only"
         elif meshery_methods:
-            x_annotated = "meshery"
+            x_annotated = "Meshery"
         elif coverage == "Server Underlap":
             # Not in spec at all — x-internal annotation is inapplicable
             x_annotated = "No Schema"
@@ -1447,14 +1426,44 @@ def classify_endpoints(
             repo_source=repo_source,
         )
 
+        # --- Per-platform method filtering ---
+        # ms_methods_list: methods Meshery Server owns (excludes x-internal: cloud)
+        # mc_methods_list: methods Meshery Cloud owns (excludes x-internal: meshery)
+        _is_cloud = repo_source == "cloud"
+        if coverage == "Server Underlap":
+            ms_methods_list: List[str] = []
+            mc_methods_list: List[str] = []
+        else:
+            all_check = (
+                sorted(spec_methods)
+                if methods == ["ALL"]
+                else [m for m in methods if m in spec_methods]
+            )
+            ms_methods_list = [
+                m for m in all_check
+                if "cloud" not in x_internal_map.get((norm, m), [])
+            ]
+            mc_methods_list = [
+                m for m in all_check
+                if "meshery" not in x_internal_map.get((norm, m), [])
+            ]
+
+        # Resolve which list belongs to the source platform vs the other
+        this_methods = mc_methods_list if _is_cloud else ms_methods_list
+        other_methods = ms_methods_list if _is_cloud else mc_methods_list
+
         # --- Schema-Backed (per platform) ---
-        _backed = "TRUE" if spec_methods else "FALSE"
+        # No Schema = not in spec at all; FALSE = spec has path but methods
+        # are owned by the other platform; TRUE = platform has relevant methods
+        if coverage == "Server Underlap":
+            backed_this = "No Schema"
+            backed_other = "No Schema"
+        else:
+            backed_this = "TRUE" if this_methods else "FALSE"
+            backed_other = "TRUE" if other_methods else "FALSE"
 
         # --- Schema Completeness (cross-check or legacy fallback) ---
         handler = route["handler"]
-        # Require go_fields_map to be non-empty: an empty dict means the Go
-        # struct field scan failed and we should fall back to structural
-        # assessment instead of producing unreliable Stub/N/A results.
         use_crosscheck = (
             handler_io_map is not None
             and bool(go_fields_map)
@@ -1462,41 +1471,49 @@ def classify_endpoints(
             and spec_methods
         )
 
-        if use_crosscheck:
-            # Cross-check: pick the first matching method for comparison
-            check_methods_list = (
-                sorted(spec_methods)
-                if methods == ["ALL"]
-                else [m for m in methods if m in spec_methods]
+        # -- Source platform's completeness (cross-check when available) --
+        if backed_this in ("FALSE", "No Schema"):
+            completeness_this = "No Schema"
+            compl_notes_this: List[str] = []
+        elif use_crosscheck and this_methods:
+            method_comps: List[str] = []
+            agg_notes: List[str] = []
+            for m in this_methods:
+                op = operations_map.get((norm, m))
+                if op:
+                    sf = extract_spec_schema_fields(op, m)
+                    comp, cnotes = cross_check_completeness(
+                        handler, handler_io_map[handler],
+                        go_fields_map, sf, m,
+                    )
+                    method_comps.append(comp)
+                    agg_notes.extend(cnotes)
+                else:
+                    method_comps.append("Not-audited")
+            completeness_this, compl_notes_this = _reduce_completeness(
+                method_comps, agg_notes
             )
-            if check_methods_list:
-                # Aggregate cross-check across all matching methods
-                method_comps: List[str] = []
-                agg_notes: List[str] = []
-                for m in check_methods_list:
-                    op = operations_map.get((norm, m))
-                    if op:
-                        sf = extract_spec_schema_fields(op, m)
-                        comp, cnotes = cross_check_completeness(
-                            handler, handler_io_map[handler],
-                            go_fields_map, sf, m,
-                        )
-                        method_comps.append(comp)
-                        agg_notes.extend(cnotes)
-                    else:
-                        method_comps.append("N/A")
-
-                completeness, compl_notes = _reduce_completeness(
-                    method_comps, agg_notes
-                )
-            else:
-                completeness, compl_notes = _aggregate_completeness(
-                    norm, methods, spec_data
-                )
+        elif this_methods:
+            completeness_this, compl_notes_this = _aggregate_completeness(
+                norm, this_methods, spec_data
+            )
         else:
-            completeness, compl_notes = _aggregate_completeness(
-                norm, methods, spec_data
+            completeness_this = "No Schema"
+            compl_notes_this = []
+        completeness_this = _sheet_completeness_value(completeness_this)
+
+        # -- Other platform's completeness (structural only, no cross-check) --
+        if backed_other in ("FALSE", "No Schema"):
+            completeness_other = "No Schema"
+            compl_notes_other: List[str] = []
+        elif other_methods:
+            completeness_other, compl_notes_other = _aggregate_completeness(
+                norm, other_methods, spec_data
             )
+            completeness_other = _sheet_completeness_value(completeness_other)
+        else:
+            completeness_other = "No Schema"
+            compl_notes_other = []
 
         # --- Schema-Driven ---
         if handler in ("<inline>", "<unknown>"):
@@ -1505,23 +1522,47 @@ def classify_endpoints(
             driven, driven_reason = schema_map.get(
                 handler, ("FALSE", "handler not mapped")
             )
+        driven = _sheet_driven_value(driven)
 
         # --- Notes (actionable summary) ---
         notes = _build_actionable_notes(
             coverage=coverage,
             status=status,
             is_commented=is_commented,
-            completeness=completeness,
-            compl_notes=compl_notes,
-            driven=driven,
-            handler=handler,
-            cloud_methods=cloud_methods,
-            spec_methods=spec_methods,
+            compl_notes=compl_notes_this,
             repo_source=repo_source,
         )
 
-        # Assign backed/completeness/driven to the correct platform column
-        _is_cloud = repo_source == "cloud"
+        # Append other-platform completeness notes if available
+        if compl_notes_other:
+            other_label = "MC" if repo_source == "meshery" else "MS"
+            legacy_other = [
+                n for n in compl_notes_other
+                if not n.startswith(("[REQ]", "[RESP]", "[INFO]"))
+            ]
+            if legacy_other:
+                other_section = (
+                    f"[Completeness - {other_label}]\n"
+                    + "\n".join(legacy_other)
+                )
+                notes = (notes + "\n\n" + other_section) if notes else other_section
+
+        # Assign to correct platform columns
+        if _is_cloud:
+            backed_ms = backed_other
+            backed_mc = backed_this
+            completeness_ms = completeness_other
+            completeness_mc = completeness_this
+            driven_ms = "FALSE"
+            driven_mc = driven
+        else:
+            backed_ms = backed_this
+            backed_mc = backed_other
+            completeness_ms = completeness_this
+            completeness_mc = completeness_other
+            driven_ms = driven
+            driven_mc = "FALSE"
+
         endpoints.append({
             "category": category,
             "subcategory": subcategory,
@@ -1531,12 +1572,12 @@ def classify_endpoints(
             "status": status,
             "sheet_status": sheet_status,
             "x_annotated": sheet_x_annotated,
-            "backed_ms": "N/A" if _is_cloud else _backed,
-            "backed_mc": _backed if _is_cloud else "N/A",
-            "completeness_ms": "N/A" if _is_cloud else completeness,
-            "completeness_mc": completeness if _is_cloud else "N/A",
-            "driven_ms": "N/A" if _is_cloud else driven,
-            "driven_mc": driven if _is_cloud else "N/A",
+            "backed_ms": backed_ms,
+            "backed_mc": backed_mc,
+            "completeness_ms": completeness_ms,
+            "completeness_mc": completeness_mc,
+            "driven_ms": driven_ms,
+            "driven_mc": driven_mc,
             "notes": notes,
             "repo_source": repo_source,
             "meshery_present": repo_source == "meshery",
@@ -1579,7 +1620,7 @@ def classify_endpoints(
         if any_cloud:
             x_annotated = "Cloud-only"
         elif any_meshery:
-            x_annotated = "meshery"
+            x_annotated = "Meshery"
         else:
             # In spec but no x-internal annotation (shared / no restriction)
             x_annotated = "None"
@@ -1591,48 +1632,74 @@ def classify_endpoints(
             x_annotated,
         )
 
-        # --- Schema-Backed & Completeness (per platform, driven always N/A for spec-only) ---
-        # x-internal: cloud  → cloud spec defines it, meshery server does not
-        # x-internal: meshery → meshery defines it, cloud does not
-        # no annotation (shared) → both platforms are expected to implement it
-        if all_cloud:
-            backed_ms = "FALSE"
-            backed_mc = "TRUE"
-        elif any_meshery and not any_cloud:
-            backed_ms = "TRUE"
-            backed_mc = "N/A"
-        else:
-            # shared (no x-internal) — unimplemented on both
-            backed_ms = "TRUE"
-            backed_mc = "TRUE"
-
-        cloud_methods_list = [
+        # --- Per-platform method filtering ---
+        ms_methods = [
             m for m in methods_sorted
-            if "cloud" in x_internal_map.get((norm_path, m), [])
+            if "cloud" not in x_internal_map.get((norm_path, m), [])
+        ]
+        mc_methods = [
+            m for m in methods_sorted
+            if "meshery" not in x_internal_map.get((norm_path, m), [])
         ]
 
-        if all_cloud:
-            completeness_ms = "N/A"
-            completeness_mc, compl_notes = _aggregate_completeness(
-                norm_path, methods_sorted, spec_data
-            )
-            notes = "No equivalent route in Meshery server; defined in spec as x-internal: cloud"
+        # --- Schema-Backed (per platform) ---
+        # TRUE  = platform owns methods in the spec for this path
+        # FALSE = spec has the path but all methods are owned by the other platform
+        # No Schema = should not occur in Pass 2 (path is always in spec)
+        if x_annotated == "Cloud-only":
+            backed_ms = "FALSE"
+            backed_mc = "TRUE"
+        elif x_annotated == "Meshery":
+            backed_ms = "TRUE"
+            backed_mc = "FALSE"
         else:
-            completeness_ms, compl_notes = _aggregate_completeness(
-                norm_path, methods_sorted, spec_data
+            # shared (None) — both platforms own it
+            backed_ms = "TRUE"
+            backed_mc = "TRUE"
+
+        # --- Schema Completeness (per platform, independent) ---
+        compl_notes_ms: List[str] = []
+        compl_notes_mc: List[str] = []
+
+        if backed_ms in ("FALSE", "No Schema"):
+            completeness_ms = "No Schema"
+        elif ms_methods:
+            completeness_ms, compl_notes_ms = _aggregate_completeness(
+                norm_path, ms_methods, spec_data
             )
-            completeness_mc = completeness_ms if not any_meshery else "N/A"
-            notes = _build_actionable_notes(
-                coverage=coverage,
-                status=status,
-                is_commented=False,
-                completeness=completeness_ms,
-                compl_notes=compl_notes,
-                driven="N/A",
-                handler="",
-                cloud_methods=cloud_methods_list,
-                spec_methods=set(methods_sorted),
+            completeness_ms = _sheet_completeness_value(completeness_ms)
+        else:
+            completeness_ms = "No Schema"
+
+        if backed_mc in ("FALSE", "No Schema"):
+            completeness_mc = "No Schema"
+        elif mc_methods:
+            completeness_mc, compl_notes_mc = _aggregate_completeness(
+                norm_path, mc_methods, spec_data
             )
+            completeness_mc = _sheet_completeness_value(completeness_mc)
+        else:
+            completeness_mc = "No Schema"
+
+        # --- Notes (per-platform gaps, actionable only) ---
+        note_sections: List[str] = []
+
+        if status == "Unimplemented":
+            note_sections.append(
+                "[ACTION] In spec but no server route — "
+                "implement handler or remove from spec"
+            )
+
+        if compl_notes_ms:
+            note_sections.append(
+                "[Completeness - MS]\n" + "\n".join(compl_notes_ms)
+            )
+        if compl_notes_mc:
+            note_sections.append(
+                "[Completeness - MC]\n" + "\n".join(compl_notes_mc)
+            )
+
+        notes = "\n\n".join(note_sections) if note_sections else ""
 
         endpoints.append({
             "category": category,
@@ -1647,8 +1714,8 @@ def classify_endpoints(
             "backed_mc": backed_mc,
             "completeness_ms": completeness_ms,
             "completeness_mc": completeness_mc,
-            "driven_ms": "N/A",
-            "driven_mc": "N/A",
+            "driven_ms": "FALSE",
+            "driven_mc": "FALSE",
             "notes": notes,
             "repo_source": "",  # spec-only — no router source
             "meshery_present": False,
@@ -1792,15 +1859,14 @@ def merge_endpoint_lists(
         elif c_active:
             ep["sheet_status"] = "Active - Meshery Cloud"
         elif m_ep["status"] == "Deprecated" or c_ep["status"] == "Deprecated":
-            ep["sheet_status"] = "Deprecated"
+            ep["sheet_status"] = "Deprecated - Both"
         else:
-            ep["sheet_status"] = "Unimplemented"
+            ep["sheet_status"] = "Unimplemented - Both"
 
         # Per-platform columns: prefer the platform-specific value, fall back
-        # to the other only when the primary platform has "N/A" (e.g. a
-        # spec-only endpoint that both runs encountered independently).
+        # to the other only when the primary platform has "No Schema".
         def _prefer(a: str, b: str) -> str:
-            return a if a != "N/A" else b
+            return a if a != "No Schema" else b
 
         ep["backed_ms"] = _prefer(m_ep["backed_ms"], c_ep["backed_ms"])
         ep["backed_mc"] = _prefer(c_ep["backed_mc"], m_ep["backed_mc"])
@@ -2067,7 +2133,7 @@ def _reduce_backed(values: List[str]) -> str:
         return "TRUE"
     if "FALSE" in uniq:
         return "FALSE"
-    return "N/A"
+    return "No Schema"
 
 
 def _reduce_driven(values: List[str]) -> str:
@@ -2082,7 +2148,7 @@ def _reduce_driven(values: List[str]) -> str:
         return "TRUE"
     if "FALSE" in uniq:
         return "FALSE"
-    return "N/A"
+    return "FALSE"
 
 
 def _reduce_path_completeness(values: List[str]) -> str:
@@ -2091,17 +2157,21 @@ def _reduce_path_completeness(values: List[str]) -> str:
         return ""
     if uniq == {"Full"}:
         return "Full"
-    if uniq == {"N/A"}:
-        return "N/A"
+    if uniq == {"No Schema"}:
+        return "No Schema"
+    if uniq == {"Not-audited"}:
+        return "Not-audited"
     if "Partial" in uniq:
         return "Partial"
-    if "Full" in uniq and ("Stub" in uniq or "N/A" in uniq):
+    if "Full" in uniq and ("Stub" in uniq or "No Schema" in uniq or "Not-audited" in uniq):
         return "Partial"
     if "Full" in uniq:
         return "Full"
     if "Stub" in uniq:
         return "Stub"
-    return "N/A"
+    if "Not-audited" in uniq:
+        return "Not-audited"
+    return "No Schema"
 
 
 def _merge_notes_for_sheet(group: List[Dict[str, Any]]) -> str:
@@ -2480,7 +2550,7 @@ def _empty_summary_counts() -> Dict[str, int]:
 
 
 def _is_tagged(value: str) -> bool:
-    return value in {"Cloud-only", "meshery"}
+    return value in {"Cloud-only", "Meshery"}
 
 
 def _is_complete_value(value: str) -> bool:
@@ -2488,7 +2558,7 @@ def _is_complete_value(value: str) -> bool:
 
 
 def _is_incomplete_value(value: str) -> bool:
-    return value in {"Partial", "Stub", "N/A"}
+    return value in {"Partial", "Stub", "No Schema", "Not-audited"}
 
 
 def _is_driven_value(value: str) -> bool:
@@ -2534,7 +2604,7 @@ def collect_endpoint_summary(
 
     summary["total"]["endpoints_spec"] = len(unique_paths)
     summary["total"]["x_internal_tagged"] = len(tagged_paths)
-    summary["total"]["not_tagged"] = summary["total"]["endpoints_spec"] - summary["total"]["x_internal_tagged"]
+    # not_tagged removed from summary table — x_internal_tagged is sufficient
     summary["meshery"]["x_internal_tagged"] = len(meshery_tagged_paths)
     summary["cloud"]["x_internal_tagged"] = len(cloud_tagged_paths)
 
@@ -2542,22 +2612,41 @@ def collect_endpoint_summary(
 
     for ep in endpoints:
         total = summary["total"]
+        cov = ep.get("coverage", "")
+
         if ep.get("meshery_present") or ep.get("cloud_present"):
             total["endpoints_router"] += 1
+        if cov == "Overlap":
+            total["implemented"] += 1
+        elif cov == "Schema Underlap":
+            total["unimplemented"] += 1
+
         if ep.get("backed_ms") == "TRUE" or ep.get("backed_mc") == "TRUE":
             total["schema_backed"] += 1
+        if ep.get("backed_ms") == "FALSE" or ep.get("backed_mc") == "FALSE":
+            total["not_schema_backed"] += 1
         if _is_complete_value(ep.get("completeness_ms", "")) or _is_complete_value(ep.get("completeness_mc", "")):
             total["complete"] += 1
+        if ep.get("completeness_ms") == "Not-audited" or ep.get("completeness_mc") == "Not-audited":
+            total["not_audited"] += 1
         if _is_driven_value(ep.get("driven_ms", "")) or _is_driven_value(ep.get("driven_mc", "")):
             total["schema_driven"] += 1
 
         if ep.get("meshery_present"):
             meshery = summary["meshery"]
             meshery["endpoints_router"] += 1
+            if cov == "Overlap":
+                meshery["implemented"] += 1
             if ep.get("backed_ms") == "TRUE":
                 meshery["schema_backed"] += 1
+            elif ep.get("backed_ms") == "FALSE":
+                meshery["not_schema_backed"] += 1
+            else:
+                meshery["no_schema"] += 1
             if _is_complete_value(ep.get("completeness_ms", "")):
                 meshery["complete"] += 1
+            elif ep.get("completeness_ms") == "Not-audited":
+                meshery["not_audited"] += 1
             if _is_driven_value(ep.get("driven_ms", "")):
                 meshery["schema_driven"] += 1
             if ep.get("x_annotated", "") == "Cloud-only":
@@ -2568,17 +2657,38 @@ def collect_endpoint_summary(
         if ep.get("cloud_present"):
             cloud = summary["cloud"]
             cloud["endpoints_router"] += 1
+            if cov == "Overlap":
+                cloud["implemented"] += 1
             if ep.get("backed_mc") == "TRUE":
                 cloud["schema_backed"] += 1
+            elif ep.get("backed_mc") == "FALSE":
+                cloud["not_schema_backed"] += 1
+            else:
+                cloud["no_schema"] += 1
             if _is_complete_value(ep.get("completeness_mc", "")):
                 cloud["complete"] += 1
+            elif ep.get("completeness_mc") == "Not-audited":
+                cloud["not_audited"] += 1
             if _is_driven_value(ep.get("driven_mc", "")):
                 cloud["schema_driven"] += 1
 
-    for group in summary.values():
-        group["not_schema_backed"] = group["endpoints_router"] - group["schema_backed"]
-        group["incomplete"] = group["endpoints_router"] - group["complete"]
-        group["not_schema_driven"] = group["endpoints_router"] - group["schema_driven"]
+    # Derive remaining counts
+    for key in ("total", "meshery", "cloud"):
+        group = summary[key]
+        group["no_schema"] = (
+            group["endpoints_router"]
+            - group["schema_backed"]
+            - group["not_schema_backed"]
+        )
+        group["incomplete"] = (
+            group["schema_backed"]
+            - group["complete"]
+            - group["not_audited"]
+        )
+        group["not_schema_driven"] = (
+            group["endpoints_router"]
+            - group["schema_driven"]
+        )
 
     summary["notes"] = []
     if meshery_matches_cloud_tagged:
@@ -2602,9 +2712,13 @@ def collect_spec_only_summary(spec_data: Dict[str, Any]) -> Dict[str, Dict[str, 
         unique_paths = {path for path, _method in operations}
 
     total["endpoints_spec"] = len(unique_paths)
+    total["implemented"] = 0
+    total["unimplemented"] = len(unique_paths)
     total["not_schema_backed"] = 0
-    total["incomplete"] = total["endpoints_spec"]
-    total["not_schema_driven"] = total["endpoints_spec"]
+    total["no_schema"] = 0
+    total["not_audited"] = len(unique_paths)
+    total["incomplete"] = 0
+    total["not_schema_driven"] = len(unique_paths)
     return {
         "total": total,
         "meshery": _empty_summary_counts(),
@@ -2612,80 +2726,34 @@ def collect_spec_only_summary(spec_data: Dict[str, Any]) -> Dict[str, Dict[str, 
     }
 
 
-def collect_sheet_summary_totals(rows: List[List[str]]) -> Dict[str, int]:
-    """Collect comparable total counts from the latest sheet snapshot."""
-    totals = _empty_summary_counts()
-
-    for idx, row in enumerate(rows):
-        if idx == 0:
-            continue
-
-        endpoint = row[COL_ENDPOINTS].strip() if len(row) > COL_ENDPOINTS else ""
-        if not endpoint:
-            continue
-
-        totals["endpoints_router"] += 1
-
-        x_annotated = row[COL_X_ANNOTATED].strip() if len(row) > COL_X_ANNOTATED else ""
-        if _is_tagged(x_annotated):
-            totals["x_internal_tagged"] += 1
-
-        backed_ms = row[COL_BACKED_MS].strip() if len(row) > COL_BACKED_MS else ""
-        backed_mc = row[COL_BACKED_MC].strip() if len(row) > COL_BACKED_MC else ""
-        if backed_ms == "TRUE" or backed_mc == "TRUE":
-            totals["schema_backed"] += 1
-
-        completeness_ms = row[COL_COMPLETENESS_MS].strip() if len(row) > COL_COMPLETENESS_MS else ""
-        completeness_mc = row[COL_COMPLETENESS_MC].strip() if len(row) > COL_COMPLETENESS_MC else ""
-        if _is_complete_value(completeness_ms) or _is_complete_value(completeness_mc):
-            totals["complete"] += 1
-
-        driven_ms = row[COL_DRIVEN_MS].strip() if len(row) > COL_DRIVEN_MS else ""
-        driven_mc = row[COL_DRIVEN_MC].strip() if len(row) > COL_DRIVEN_MC else ""
-        if _is_driven_value(driven_ms) or _is_driven_value(driven_mc):
-            totals["schema_driven"] += 1
-
-    totals["not_tagged"] = totals["endpoints_router"] - totals["x_internal_tagged"]
-    totals["not_schema_backed"] = totals["endpoints_router"] - totals["schema_backed"]
-    totals["incomplete"] = totals["endpoints_router"] - totals["complete"]
-    totals["not_schema_driven"] = totals["endpoints_router"] - totals["schema_driven"]
-    return totals
-
 
 def render_audit_summary_table(
     summary: Dict[str, Dict[str, int]],
     include_meshery: bool,
     include_cloud: bool,
-    include_change: bool = False,
-    previous_totals: Optional[Dict[str, int]] = None,
 ) -> None:
     """Render the final audit summary table."""
     headers = ["Category", "Total", "Meshery", "Cloud"]
     numeric_cols = {1, 2, 3}
-    if include_change:
-        headers.append("Change")
-        numeric_cols.add(4)
+
+    # Keys where per-platform breakdown doesn't apply
+    _TOTAL_ONLY_KEYS = {"endpoints_spec", "unimplemented"}
 
     rows: List[List[Any]] = []
     labels = dict(SUMMARY_TABLE_ROWS)
     for key in SUMMARY_KEYS:
-        meshery_value: Any = summary["meshery"].get(key, 0) if include_meshery else "-"
-        cloud_value: Any = summary["cloud"].get(key, 0) if include_cloud else "-"
-        if key in {"endpoints_spec", "not_tagged"}:
-            meshery_value = "-"
-            cloud_value = "-"
+        if key in _TOTAL_ONLY_KEYS:
+            meshery_value: Any = "-"
+            cloud_value: Any = "-"
+        else:
+            meshery_value = summary["meshery"].get(key, 0) if include_meshery else "-"
+            cloud_value = summary["cloud"].get(key, 0) if include_cloud else "-"
         row: List[Any] = [
             labels[key],
             summary["total"].get(key, 0),
             meshery_value,
             cloud_value,
         ]
-        if include_change:
-            if previous_totals is None:
-                row.append("-")
-            else:
-                delta = summary["total"].get(key, 0) - previous_totals.get(key, 0)
-                row.append(f"{delta:+d}")
         rows.append(row)
 
     print("\nAPI Audit Summary")
@@ -2818,7 +2886,6 @@ def main():
             sys.exit(1)
 
     if not (args.meshery_repo or args.cloud_repo) or args.spec_only:
-        previous_totals = None
         notes: List[str] = []
         if not (args.meshery_repo or args.cloud_repo):
             notes.append(
@@ -2827,18 +2894,10 @@ def main():
             notes.append(
                 "Handler-based checks were not run, so schema completeness and schema-driven counts do not reflect router or handler analysis."
             )
-        if args.sheet_id and not args.dry_run:
-            prefetched, prefetch_note = prefetch_sheet_snapshot(args.sheet_id)
-            if prefetched is not None:
-                previous_totals = collect_sheet_summary_totals(prefetched[2])
-            elif prefetch_note:
-                notes.append(prefetch_note)
         render_audit_summary_table(
             collect_spec_only_summary(spec_data),
             include_meshery=False,
             include_cloud=False,
-            include_change=bool(args.sheet_id and not args.dry_run),
-            previous_totals=previous_totals,
         )
         if notes:
             print("\nNotes:")
@@ -2928,7 +2987,6 @@ def main():
         )
 
     summary = collect_endpoint_summary(endpoints, spec_data)
-    previous_totals = None
     notes: List[str] = []
     prefetched = None
 
@@ -2951,9 +3009,7 @@ def main():
         sys.exit(0)
 
     prefetched, prefetch_note = prefetch_sheet_snapshot(args.sheet_id)
-    if prefetched is not None:
-        previous_totals = collect_sheet_summary_totals(prefetched[2])
-    elif prefetch_note:
+    if prefetch_note:
         notes.append(prefetch_note)
 
     print("Updating Google Sheet...")
@@ -2968,8 +3024,6 @@ def main():
         summary,
         include_meshery=include_meshery,
         include_cloud=include_cloud,
-        include_change=True,
-        previous_totals=previous_totals,
     )
 
     if sheet_result["errors"]:
