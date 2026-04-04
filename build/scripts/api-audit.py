@@ -229,6 +229,10 @@ def normalize_path(path: str) -> str:
 
     Handles both OpenAPI/Gorilla-Mux style ({paramName}) and Echo/Express
     style (:paramName) so routes from either framework match spec paths.
+
+    Path segments are lowercased so that casing variants of the same path
+    (e.g. /api/academy/Curricula vs /api/academy/curricula) resolve to the
+    same key and their x-internal annotations are correctly applied.
     """
     counter = [0]
 
@@ -236,6 +240,9 @@ def normalize_path(path: str) -> str:
         counter[0] += 1
         return f"{{p{counter[0]}}}"
 
+    # Lowercase before parameter replacement so static segments are
+    # case-insensitive; parameter tokens get replaced anyway.
+    path = path.lower()
     # Normalise Echo-style :param segments first, then OpenAPI {param} style.
     path = re.sub(r"/:([^/]+)", lambda m: "/{" + m.group(1) + "}", path)
     return re.sub(r"\{[^}]+\}", _repl, path)
@@ -563,7 +570,11 @@ def _assess_completeness(operation: dict, method: str) -> Tuple[str, List[str]]:
     specific finding (missing fields, bare types, property gaps, etc.).
     """
     notes: List[str] = []
-    expects_body = method.upper() in BODY_METHODS
+
+    # Derive whether a request body is expected from the spec itself —
+    # not from the HTTP method name. The spec is the source of truth.
+    req_body_spec = operation.get("requestBody", {})
+    expects_body = bool(isinstance(req_body_spec, dict) and req_body_spec)
 
     # --- Operation-level checks ---
     if not operation.get("operationId"):
@@ -585,28 +596,23 @@ def _assess_completeness(operation: dict, method: str) -> Tuple[str, List[str]]:
 
     # --- Request side ---
     request_meaningful = False
-    req_body = operation.get("requestBody", {})
-    if isinstance(req_body, dict) and req_body:
-        if "$ref" in req_body:
+    if expects_body:
+        if "$ref" in req_body_spec:
             request_meaningful = True
-            ref = req_body["$ref"].rsplit("/", 1)[-1]
+            ref = req_body_spec["$ref"].rsplit("/", 1)[-1]
             notes.append(f"requestBody: references {ref}")
         else:
-            req_content = req_body.get("content", {})
+            req_content = req_body_spec.get("content", {})
             req_schema = _get_content_schema(req_content)
             request_meaningful = _has_meaningful_schema(req_schema)
             notes.extend(_describe_schema(req_schema, "requestBody"))
-    elif expects_body:
-        notes.append("requestBody: not defined (method expects a body)")
 
     # --- Response side ---
     response_meaningful = False
     responses = operation.get("responses", {})
-    defined_codes: Set[str] = set()
 
     if isinstance(responses, dict):
         for code, resp in responses.items():
-            defined_codes.add(str(code))
             if not isinstance(resp, dict):
                 continue
 
@@ -624,14 +630,8 @@ def _assess_completeness(operation: dict, method: str) -> Tuple[str, List[str]]:
                         _describe_schema(resp_schema, f"response {code}")
                     )
 
-    if not any(str(c).startswith("2") for c in defined_codes):
+    if not any(str(c).startswith("2") for c in responses or {}):
         notes.append("no 2xx success response defined")
-
-    # Missing common error responses
-    common_errors = {"400", "401", "404", "500"}
-    missing_errors = sorted(common_errors - defined_codes)
-    if missing_errors:
-        notes.append(f"missing error responses: {', '.join(missing_errors)}")
 
     # --- Classify ---
     if expects_body:
@@ -641,7 +641,6 @@ def _assess_completeness(operation: dict, method: str) -> Tuple[str, List[str]]:
             return "Partial", notes
         return "Stub", notes
     else:
-        # GET, DELETE, HEAD, OPTIONS — only response matters
         if response_meaningful:
             return "Full", notes
         return "Stub", notes
@@ -997,7 +996,6 @@ def cross_check_completeness(
       [INFO] — general info
     """
     notes: List[str] = []
-    expects_body = method.upper() in BODY_METHODS
 
     req_type = handler_io.get("request_type")
     resp_type = handler_io.get("response_type")
@@ -1025,6 +1023,11 @@ def cross_check_completeness(
 
     if not has_spec:
         return "Not-audited", ["[INFO] No spec schema to compare against"]
+
+    # Derive expects_body from both sides — spec may be incomplete and
+    # not yet document a requestBody the handler already uses, or the
+    # handler may not yet consume a body the spec requires.
+    expects_body = bool(spec_req) or bool(req_type)
 
     # --- Request side ---
     req_ratio, req_common, req_only_go, req_only_spec = _field_overlap(
@@ -1103,7 +1106,10 @@ def cross_check_completeness(
                 "[RESP] Could not extract response type from handler"
             )
         else:
-            notes.append("[RESP] No response body in spec (expected)")
+            notes.append(
+                "[RESP] No response body in spec — "
+                "spec may be incomplete or handler returns nothing"
+            )
 
     # --- Classify ---
     GOOD_THRESHOLD = 0.70
@@ -1158,53 +1164,83 @@ def _build_actionable_notes(
     level, and driven status — so notes focus on *specific gaps*.
 
     Sections (only included when relevant):
-      ACTION                  — what to do (add spec, implement handler, remove route,
-                                migrate handler to use meshery/schemas types)
-      Completeness - Meshery Server/Cloud    — field-level gap details (omitted when Full)
+      ACTION        — what to do (add spec, implement handler, remove route,
+                      migrate handler to use meshery/schemas types)
+      Completeness  — actionable gap details only (omitted when Full)
+
+    Platform labels (e.g. "- Meshery Server") are NOT added here; the
+    caller is responsible for wrapping this output in a platform header
+    when combining notes from multiple repos.
     """
     sections: List[str] = []
 
-    _PLATFORM_LABEL: Dict[str, str] = {
-        "meshery": " - Meshery Server",
-        "cloud": " - Meshery Cloud",
-    }
-    _plat_label = _PLATFORM_LABEL.get(repo_source, "")
-
     # ── ACTIONABLE ITEMS ──────────────────────────────────────────────
+    # Commented-out route: suppress the "add spec" action — the route is on
+    # its way out, not missing coverage.
     if is_commented:
         sections.append(
             "[ACTION] Route is commented out — "
             "consider removal from router and spec"
         )
-
-    if coverage == "Server Underlap":
+    elif coverage == "Server Underlap":
         sections.append(
             "[ACTION] Not in OpenAPI spec — add spec definition"
         )
-    elif coverage == "Schema Underlap":
-        if status == "Unimplemented":
-            sections.append(
-                "[ACTION] In spec but no server route — "
-                "implement handler or remove from spec"
-            )
+
+    if coverage == "Schema Underlap" and status == "Unimplemented":
+        sections.append(
+            "[ACTION] In spec but no server route — "
+            "implement handler or remove from spec"
+        )
 
     if driven == "FALSE" and coverage == "Overlap":
         sections.append(
-            f"[ACTION{_plat_label}] Not schema-driven — "
+            "[ACTION] Not schema-driven — "
             "handler does not import meshery/schemas types"
         )
 
-    # ── COMPLETENESS DETAILS (field-level + structural gaps) ─────────
+    # ── COMPLETENESS DETAILS (actionable gaps only) ───────────────────
     # Skip when completeness is Full — the column already says so; no gaps to list.
     if completeness == "Full":
         return "\n\n".join(sections) if sections else ""
 
-    req_lines = [n for n in compl_notes if n.startswith("[REQ]")]
-    resp_lines = [n for n in compl_notes if n.startswith("[RESP]")]
+    # Cross-check notes ([REQ]/[RESP]/[INFO]): only emit lines that
+    # describe actual gaps ("In spec only", "In handler only",
+    # "Could not extract", "No response body"). Drop verbose match
+    # statistics (Handler type, Field match %, Matching fields) —
+    # those are useful during development but create noise in the sheet.
+    _GAP_KEYWORDS = ("In spec only", "In handler only", "Could not extract",
+                     "No response body", "Struct fields not found",
+                     "Provider returns raw")
+
+    def _is_gap_line(line: str) -> bool:
+        return any(kw in line for kw in _GAP_KEYWORDS)
+
+    req_lines = [n for n in compl_notes
+                 if n.startswith("[REQ]") and _is_gap_line(n)]
+    resp_lines = [n for n in compl_notes
+                  if n.startswith("[RESP]") and _is_gap_line(n)]
     info_lines = [n for n in compl_notes if n.startswith("[INFO]")]
+
+    # Legacy structural notes from _assess_completeness have no prefix.
+    # Drop lines that describe what *exists* in the schema (informational)
+    # rather than what is *missing* (actionable).  Patterns covered:
+    #   "requestBody: references X"          — schema exists via $ref
+    #   "response NNN: references X"         — response schema exists
+    #   "{label}: allOf/oneOf/anyOf with N sub-schemas"  — schema exists
+    #   "{label}: array of X"                — array schema exists via $ref
+    #   "{label}: object with properties [..]" — object schema exists
+    _INFORMATIONAL_PATTERN = re.compile(
+        r"^(requestBody|response \d+): "
+        r"(references \S+"
+        r"|(?:allOf|oneOf|anyOf) with \d+ sub-schemas"
+        r"|array of \S+"
+        r"|object with properties \[)"
+    )
     legacy_lines = [
         n for n in compl_notes
         if not n.startswith(("[REQ]", "[RESP]", "[INFO]"))
+        and not _INFORMATIONAL_PATTERN.match(n)
     ]
 
     compl_parts: List[str] = []
@@ -1223,9 +1259,7 @@ def _build_actionable_notes(
         compl_parts.extend(legacy_lines)
 
     if compl_parts:
-        sections.append(
-            f"[Completeness{_plat_label}]\n" + "\n".join(compl_parts)
-        )
+        sections.append("[Completeness]\n" + "\n".join(compl_parts))
 
     return "\n\n".join(sections) if sections else ""
 
@@ -1681,24 +1715,40 @@ def classify_endpoints(
             completeness_mc = "No Schema"
 
         # --- Notes (per-platform gaps, actionable only) ---
-        note_sections: List[str] = []
+        # Use _build_actionable_notes for consistency with Pass 1.
+        # MS and MC completeness notes are labelled separately so a reader
+        # can distinguish which platform has which gap.
+        ms_note = _build_actionable_notes(
+            coverage=coverage,
+            status=status,
+            is_commented=False,
+            compl_notes=compl_notes_ms,
+            completeness=completeness_ms,
+            driven="",
+            repo_source="",
+        )
+        mc_note = _build_actionable_notes(
+            coverage=coverage,
+            status=status,
+            is_commented=False,
+            compl_notes=compl_notes_mc,
+            completeness=completeness_mc,
+            driven="",
+            repo_source="",
+        )
 
-        if status == "Unimplemented":
-            note_sections.append(
-                "[ACTION] In spec but no server route — "
-                "implement handler or remove from spec"
-            )
-
-        if compl_notes_ms and completeness_ms != "Full":
-            note_sections.append(
-                "[Completeness - Meshery Server]\n" + "\n".join(compl_notes_ms)
-            )
-        if compl_notes_mc and completeness_mc != "Full":
-            note_sections.append(
-                "[Completeness - Meshery Cloud]\n" + "\n".join(compl_notes_mc)
-            )
-
-        notes = "\n\n".join(note_sections) if note_sections else ""
+        # Emit plain [Completeness] — no platform labels here.
+        # _merge_endpoints adds platform labels when combining the two
+        # repo passes. Pre-labeling here causes double-labeling there.
+        if ms_note == mc_note:
+            notes = ms_note
+        else:
+            note_parts: List[str] = []
+            if ms_note:
+                note_parts.append(ms_note)
+            if mc_note:
+                note_parts.append(mc_note)
+            notes = "\n\n".join(note_parts)
 
         endpoints.append({
             "category": category,
@@ -1876,23 +1926,54 @@ def merge_endpoint_lists(
         ep["meshery_present"] = bool(m_ep.get("meshery_present"))
         ep["cloud_present"] = bool(c_ep.get("cloud_present"))
 
-        # Combine notes from both repos, keeping platforms separate.
-        # When both entries are spec-only (no router in either repo), they
-        # produce identical notes — avoid double-wrapping by using one copy.
-        m_notes = m_ep.get("notes", "")
-        c_notes = c_ep.get("notes", "")
-        both_spec_only = (
-            m_ep.get("repo_source", "") == ""
-            and c_ep.get("repo_source", "") == ""
-        )
-        if both_spec_only:
-            ep["notes"] = m_notes or c_notes
-        elif m_notes and c_notes:
-            ep["notes"] = f"[Meshery Server]\n{m_notes}\n\n[Meshery Cloud]\n{c_notes}"
-        elif m_notes:
+        # Combine notes from both repos.
+        # Sections identical in both are emitted once (no label needed).
+        # Sections unique to one repo are labelled by platform so the
+        # reader knows which side has the gap.
+        m_notes = m_ep.get("notes", "").strip()
+        c_notes = c_ep.get("notes", "").strip()
+
+        def _note_sections(note: str) -> List[str]:
+            return [s.strip() for s in note.split("\n\n") if s.strip()]
+
+        if m_notes == c_notes:
             ep["notes"] = m_notes
-        elif c_notes:
+        elif not m_notes:
             ep["notes"] = c_notes
+        elif not c_notes:
+            ep["notes"] = m_notes
+        else:
+            m_secs = _note_sections(m_notes)
+            c_secs = _note_sections(c_notes)
+            common_secs: Set[str] = set(m_secs) & set(c_secs)
+
+            result: List[str] = []
+            seen_common: Set[str] = set()
+            # Shared sections first, in their original order.
+            for sec in m_secs:
+                if sec in common_secs and sec not in seen_common:
+                    seen_common.add(sec)
+                    result.append(sec)
+
+            # Meshery-only sections — label [Completeness] by platform.
+            ms_only = [s for s in m_secs if s not in common_secs]
+            if ms_only:
+                labeled_ms = "\n\n".join(
+                    s.replace("[Completeness]", "[Completeness - Meshery Server]")
+                    for s in ms_only
+                )
+                result.append(f"[Meshery Server]\n{labeled_ms}")
+
+            # Cloud-only sections — label [Completeness] by platform.
+            mc_only = [s for s in c_secs if s not in common_secs]
+            if mc_only:
+                labeled_mc = "\n\n".join(
+                    s.replace("[Completeness]", "[Completeness - Meshery Cloud]")
+                    for s in mc_only
+                )
+                result.append(f"[Meshery Cloud]\n{labeled_mc}")
+
+            ep["notes"] = "\n\n".join(result)
 
         ep["repo_source"] = "both"
         merged.append(ep)
@@ -2179,21 +2260,61 @@ def _reduce_path_completeness(values: List[str]) -> str:
         return "Stub"
     if "Not-audited" in uniq:
         return "Not-audited"
-    return "No Schema"
+    # Fallback: we have spec data but combinations don't cleanly resolve —
+    # return Stub (conservative) rather than No Schema (which means absent).
+    return "Stub"
 
 
 def _merge_notes_for_sheet(group: List[Dict[str, Any]]) -> str:
-    merged_notes: List[str] = []
-    seen: Set[str] = set()
+    """Merge Notes cells for a group of endpoints sharing a normalised path.
+
+    ACTION lines that are identical across every method (e.g. "Not in
+    OpenAPI spec") are hoisted to a single shared header so they don't
+    repeat once per HTTP method.  Method-specific completeness details
+    retain their [METHOD] prefix.
+    """
+    if len(group) == 1:
+        return group[0].get("notes", "").strip()
+
+    # Collect per-method note blocks, skipping empties.
+    method_notes: List[Tuple[str, str]] = []
     for ep in sorted(group, key=endpoint_sort_key):
         note = ep.get("notes", "").strip()
-        if not note:
-            continue
-        entry = f"[{ep['methods']}]\n{note}" if len(group) > 1 else note
-        if entry not in seen:
-            seen.add(entry)
-            merged_notes.append(entry)
-    return "\n\n".join(merged_notes)
+        if note:
+            method_notes.append((ep["methods"], note))
+
+    if not method_notes:
+        return ""
+
+    # Split each note into individual sections (double-newline separated).
+    def _sections(note: str) -> List[str]:
+        return [s.strip() for s in note.split("\n\n") if s.strip()]
+
+    all_section_sets = [set(_sections(n)) for _, n in method_notes]
+
+    # Sections present in ALL method notes are path-level; hoist them.
+    common = all_section_sets[0].intersection(*all_section_sets[1:])
+
+    result: List[str] = []
+    seen_common: Set[str] = set()
+
+    # Emit common sections once (preserve order from the first entry).
+    for sec in _sections(method_notes[0][1]):
+        if sec in common and sec not in seen_common:
+            seen_common.add(sec)
+            result.append(sec)
+
+    # Emit method-specific sections with a method prefix.
+    seen_specific: Set[str] = set()
+    for methods_str, note in method_notes:
+        specific = [s for s in _sections(note) if s not in common]
+        if specific:
+            entry = f"[{methods_str}]\n" + "\n\n".join(specific)
+            if entry not in seen_specific:
+                seen_specific.add(entry)
+                result.append(entry)
+
+    return "\n\n".join(result)
 
 
 def _aggregate_endpoints_for_sheet(endpoints: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
