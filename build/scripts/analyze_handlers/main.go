@@ -33,11 +33,20 @@ import (
 
 // HandlerInfo holds the analysis result for one handler function.
 type HandlerInfo struct {
-	File              string  `json:"file"`
-	SchemaImportUsage string  `json:"schema_import_usage"` // "TRUE", "Partial", "FALSE"
-	SchemaReason      string  `json:"schema_reason"`
-	RequestType       *string `json:"request_type"`  // null when not found
-	ResponseType      *string `json:"response_type"` // null when not found
+	File              string   `json:"file"`
+	SchemaImportUsage string   `json:"schema_import_usage"` // "TRUE", "Partial", "FALSE"
+	SchemaReason      string   `json:"schema_reason"`
+	RequestTypes      []string `json:"request_types"`       // all decoded types found
+	ResponseTypes     []string `json:"response_types"`      // all encoded types found
+	BodyReadViaReadAll bool    `json:"body_read_via_readall"` // true if io.ReadAll/ioutil.ReadAll detected
+}
+
+// RouteEntry represents a single registered HTTP route.
+type RouteEntry struct {
+	Path      string   `json:"path"`
+	Methods   []string `json:"methods"`
+	Handler   string   `json:"handler"`
+	Commented bool     `json:"commented"`
 }
 
 // AnalysisOutput is the top-level JSON object written to stdout.
@@ -49,6 +58,9 @@ type AnalysisOutput struct {
 	TypeAliases map[string]string `json:"type_aliases"`
 	// StructFields maps a type name to its JSON field names extracted from json tags.
 	StructFields map[string][]string `json:"struct_fields"`
+	// Routes contains registered HTTP routes extracted from the router file.
+	// Only populated when --router-file is provided.
+	Routes []RouteEntry `json:"routes,omitempty"`
 }
 
 // ---------------------------------------------------------------------------
@@ -61,6 +73,8 @@ var (
 	modelsDirFlag     = flag.String("models-dir", "server/models", "Relative path to models dir within repo")
 	schemasModelsFlag = flag.String("schemas-models", "", "Absolute path to schemas repo models/ dir")
 	schemaModuleFlag  = flag.String("schema-module", "github.com/meshery/schemas", "Schema module import path")
+	routerFileFlag    = flag.String("router-file", "", "Path to router file for route extraction (optional)")
+	routerDialectFlag = flag.String("router-dialect", "gorilla", "Router framework: gorilla or echo")
 )
 
 // ---------------------------------------------------------------------------
@@ -82,6 +96,10 @@ func main() {
 		StructFields: make(map[string][]string),
 	}
 
+	// allStructDefs accumulates AST struct definitions across all scanned
+	// directories so embedded struct fields can be resolved after scanning.
+	allStructDefs := make(map[string]*ast.StructType)
+
 	handlersDir := filepath.Join(*repoFlag, *handlersDirFlag)
 	modelsDir := filepath.Join(*repoFlag, *modelsDirFlag)
 
@@ -91,15 +109,29 @@ func main() {
 
 	// 2. Scan handler files for per-handler analysis.
 	//    Also picks up struct definitions from handler files.
-	scanHandlers(handlersDir, *schemaModuleFlag, out.TypeAliases, out)
+	scanHandlers(handlersDir, *schemaModuleFlag, out.TypeAliases, out, allStructDefs)
 
 	// 3. Collect struct field maps from local models dir.
-	scanStructFields(modelsDir, out.StructFields)
+	scanStructFields(modelsDir, out.StructFields, allStructDefs)
 
 	// 4. Collect struct field maps from schemas models dir (authoritative — scanned
 	//    last so schemas definitions overwrite any local redefinitions).
 	if *schemasModelsFlag != "" {
-		scanStructFields(*schemasModelsFlag, out.StructFields)
+		scanStructFields(*schemasModelsFlag, out.StructFields, allStructDefs)
+	}
+
+	// 5. Resolve embedded struct fields: re-compute JSON fields for all structs
+	//    using the full set of struct definitions collected across all directories.
+	resolveEmbeddedFields(out.StructFields, allStructDefs)
+
+	// 6. Parse router file for route extraction (optional).
+	if *routerFileFlag != "" {
+		routes, err := parseRouterFile(*routerFileFlag, *routerDialectFlag)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "WARNING: router parsing failed: %v\n", err)
+		} else {
+			out.Routes = routes
+		}
 	}
 
 	enc := json.NewEncoder(os.Stdout)
@@ -186,7 +218,7 @@ func scanAliases(dir, schemaModule string, aliases map[string]string) {
 
 // scanHandlers parses all non-test .go files in dir (non-recursive) and
 // analyses every handler method found.
-func scanHandlers(dir, schemaModule string, typeAliases map[string]string, out *AnalysisOutput) {
+func scanHandlers(dir, schemaModule string, typeAliases map[string]string, out *AnalysisOutput, allStructDefs map[string]*ast.StructType) {
 	entries, err := os.ReadDir(dir)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "WARNING: cannot read handlers dir %s: %v\n", dir, err)
@@ -211,8 +243,8 @@ func scanHandlers(dir, schemaModule string, typeAliases map[string]string, out *
 
 		schemaImports := fileSchemaImports(f, schemaModule)
 
-		// Collect struct fields from handler files too
-		extractStructFieldsFromFile(f, out.StructFields)
+		// Collect struct fields and definitions from handler files too
+		extractStructFieldsFromFile(f, out.StructFields, allStructDefs)
 
 		for _, decl := range f.Decls {
 			fn, ok := decl.(*ast.FuncDecl)
@@ -237,13 +269,12 @@ func analyseHandler(
 	usedImports := findUsedSchemaImports(fn.Body, schemaImports)
 	info.SchemaImportUsage, info.SchemaReason = classifyDirectUsage(usedImports, schemaModule)
 
-	// ── Request type ──────────────────────────────────────────────────────
-	reqVar := findJSONDecodeVar(fn.Body)
-	if reqVar != "" {
+	// ── Request types (all json.Decode/Unmarshal targets) ─────────────────
+	reqVars := findAllJSONDecodeVars(fn.Body)
+	for _, reqVar := range reqVars {
 		t := resolveVarType(fn.Body, reqVar)
 		if t != "" {
-			info.RequestType = strPtr(t)
-			// Upgrade schema usage via transitive alias if direct check missed it
+			info.RequestTypes = append(info.RequestTypes, t)
 			if info.SchemaImportUsage == "FALSE" {
 				if imp, ok := typeAliases[bareTypeName(t)]; ok {
 					info.SchemaImportUsage, info.SchemaReason =
@@ -253,13 +284,12 @@ func analyseHandler(
 		}
 	}
 
-	// ── Response type ─────────────────────────────────────────────────────
-	respExpr := findJSONEncodeExpr(fn.Body)
-	if respExpr != "" {
+	// ── Response types (all json.Encode/Marshal expressions) ──────────────
+	respExprs := findAllJSONEncodeExprs(fn.Body)
+	for _, respExpr := range respExprs {
 		t := resolveExprType(fn.Body, respExpr)
 		if t != "" {
-			info.ResponseType = strPtr(t)
-			// Upgrade schema usage via transitive alias if direct check missed it
+			info.ResponseTypes = append(info.ResponseTypes, t)
 			if info.SchemaImportUsage == "FALSE" {
 				if imp, ok := typeAliases[bareTypeName(t)]; ok {
 					info.SchemaImportUsage, info.SchemaReason =
@@ -268,6 +298,9 @@ func analyseHandler(
 			}
 		}
 	}
+
+	// ── io.ReadAll / ioutil.ReadAll detection ─────────────────────────────
+	info.BodyReadViaReadAll = findBodyReadAll(fn.Body)
 
 	if info.SchemaImportUsage == "" {
 		info.SchemaImportUsage = "FALSE"
@@ -283,7 +316,8 @@ func analyseHandler(
 // scanStructFields walks dir recursively and collects JSON field names for
 // every struct type it finds.  Entries written later overwrite earlier ones,
 // so callers should scan local models before the authoritative schemas models.
-func scanStructFields(dir string, fields map[string][]string) {
+// allStructDefs accumulates raw AST definitions for later embedded-field resolution.
+func scanStructFields(dir string, fields map[string][]string, allStructDefs map[string]*ast.StructType) {
 	fset := token.NewFileSet()
 	if err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -301,7 +335,7 @@ func scanStructFields(dir string, fields map[string][]string) {
 			fmt.Fprintf(os.Stderr, "WARNING: parse error in %s: %v\n", path, parseErr)
 			return nil
 		}
-		extractStructFieldsFromFile(f, fields)
+		extractStructFieldsFromFile(f, fields, allStructDefs)
 		return nil
 	}); err != nil {
 		fmt.Fprintf(os.Stderr, "WARNING: unable to walk struct fields dir %s: %v\n", dir, err)
@@ -309,8 +343,9 @@ func scanStructFields(dir string, fields map[string][]string) {
 }
 
 // extractStructFieldsFromFile harvests json tag field names from all struct
-// definitions in one parsed file.
-func extractStructFieldsFromFile(f *ast.File, fields map[string][]string) {
+// definitions in one parsed file and records raw AST definitions for embedded-field
+// resolution.
+func extractStructFieldsFromFile(f *ast.File, fields map[string][]string, allStructDefs map[string]*ast.StructType) {
 	for _, decl := range f.Decls {
 		gd, ok := decl.(*ast.GenDecl)
 		if !ok {
@@ -325,6 +360,10 @@ func extractStructFieldsFromFile(f *ast.File, fields map[string][]string) {
 			if !ok || st.Fields == nil {
 				continue
 			}
+			// Record AST definition for embedded-field resolution later.
+			allStructDefs[ts.Name.Name] = st
+			// Collect direct (non-embedded) JSON fields as a first pass.
+			// Embedded fields are resolved in resolveEmbeddedFields after all scanning.
 			jsonFields := collectJSONFields(st)
 			if len(jsonFields) > 0 {
 				fields[ts.Name.Name] = jsonFields
@@ -348,6 +387,68 @@ func collectJSONFields(st *ast.StructType) []string {
 		}
 	}
 	return result
+}
+
+// resolveEmbeddedFields re-computes JSON field lists for all structs by
+// recursively expanding embedded (anonymous) struct fields.  This must be
+// called after all directories have been scanned so that allStructDefs
+// contains definitions from both local models and schema models.
+func resolveEmbeddedFields(fields map[string][]string, allStructDefs map[string]*ast.StructType) {
+	for name, st := range allStructDefs {
+		visited := make(map[string]bool)
+		resolved := collectJSONFieldsRecursive(st, allStructDefs, visited)
+		if len(resolved) > 0 {
+			fields[name] = resolved
+		}
+	}
+}
+
+// collectJSONFieldsRecursive returns json field names from a struct type,
+// recursively expanding anonymous (embedded) fields.  The visited set
+// prevents infinite recursion from self-referential struct embeddings.
+func collectJSONFieldsRecursive(st *ast.StructType, allStructDefs map[string]*ast.StructType, visited map[string]bool) []string {
+	var result []string
+	for _, field := range st.Fields.List {
+		// Named field with a json tag — normal case.
+		if field.Tag != nil {
+			tag := strings.Trim(field.Tag.Value, "`")
+			name := jsonTagName(tag)
+			if name != "" && name != "-" {
+				result = append(result, name)
+			}
+			continue
+		}
+		// Anonymous (embedded) field — no names and typically no tag.
+		// Resolve the embedded type and recursively collect its fields.
+		if len(field.Names) == 0 {
+			embeddedName := embeddedTypeName(field.Type)
+			if embeddedName == "" || visited[embeddedName] {
+				continue
+			}
+			visited[embeddedName] = true
+			if embSt, ok := allStructDefs[embeddedName]; ok {
+				result = append(result, collectJSONFieldsRecursive(embSt, allStructDefs, visited)...)
+			}
+		}
+	}
+	return result
+}
+
+// embeddedTypeName extracts the base type name from an embedded field's type expression.
+// Handles: Ident (T), StarExpr (*T), SelectorExpr (pkg.T), *pkg.T.
+func embeddedTypeName(expr ast.Expr) string {
+	// Unwrap pointer
+	if star, ok := expr.(*ast.StarExpr); ok {
+		expr = star.X
+	}
+	switch e := expr.(type) {
+	case *ast.Ident:
+		return e.Name
+	case *ast.SelectorExpr:
+		// pkg.Type — use the type name part only since allStructDefs is keyed by name.
+		return e.Sel.Name
+	}
+	return ""
 }
 
 // jsonTagName extracts the field name from a struct tag string.
@@ -453,15 +554,13 @@ func classifyByImportPath(importPath, schemaModule, prefix string) (status, reas
 // JSON decode/encode detection
 // ---------------------------------------------------------------------------
 
-// findJSONDecodeVar finds the variable name used as the decode target in the
-// first json.NewDecoder(...).Decode(arg) or json.Unmarshal(data, arg) call.
+// findAllJSONDecodeVars finds ALL variable names used as decode targets in
+// json.NewDecoder(...).Decode(arg) or json.Unmarshal(data, arg) calls.
 // Handles both &var and var (already-pointer) forms.
-func findJSONDecodeVar(body *ast.BlockStmt) string {
-	var result string
+func findAllJSONDecodeVars(body *ast.BlockStmt) []string {
+	seen := make(map[string]bool)
+	var result []string
 	ast.Inspect(body, func(n ast.Node) bool {
-		if result != "" {
-			return false
-		}
 		call, ok := n.(*ast.CallExpr)
 		if !ok {
 			return true
@@ -472,24 +571,24 @@ func findJSONDecodeVar(body *ast.BlockStmt) string {
 		}
 		switch sel.Sel.Name {
 		case "Decode":
-			// Accept any .Decode(arg) whose receiver is a NewDecoder call or a stored var.
 			if !isJSONDecoderExpr(sel.X) {
 				return true
 			}
 			if len(call.Args) > 0 {
-				if v := identNameFromExpr(call.Args[0]); v != "" {
-					result = v
+				if v := identNameFromExpr(call.Args[0]); v != "" && !seen[v] {
+					seen[v] = true
+					result = append(result, v)
 				}
 			}
 		case "Unmarshal":
-			// json.Unmarshal(data, arg)
 			pkgIdent, ok := sel.X.(*ast.Ident)
 			if !ok || pkgIdent.Name != "json" {
 				return true
 			}
 			if len(call.Args) >= 2 {
-				if v := identNameFromExpr(call.Args[1]); v != "" {
-					result = v
+				if v := identNameFromExpr(call.Args[1]); v != "" && !seen[v] {
+					seen[v] = true
+					result = append(result, v)
 				}
 			}
 		}
@@ -516,15 +615,13 @@ func isJSONDecoderExpr(expr ast.Expr) bool {
 	return false
 }
 
-// findJSONEncodeExpr finds the expression encoded in the first
-// json.NewEncoder(w).Encode(expr), enc.Encode(expr), or json.Marshal(expr) call.
-// Returns the expression as a string, or "" if not found.
-func findJSONEncodeExpr(body *ast.BlockStmt) string {
-	var result string
+// findAllJSONEncodeExprs finds ALL expressions encoded via
+// json.NewEncoder(w).Encode(expr), enc.Encode(expr), or json.Marshal(expr) calls.
+// Returns expressions as strings.
+func findAllJSONEncodeExprs(body *ast.BlockStmt) []string {
+	seen := make(map[string]bool)
+	var result []string
 	ast.Inspect(body, func(n ast.Node) bool {
-		if result != "" {
-			return false
-		}
 		call, ok := n.(*ast.CallExpr)
 		if !ok {
 			return true
@@ -539,7 +636,10 @@ func findJSONEncodeExpr(body *ast.BlockStmt) string {
 				return true
 			}
 			if len(call.Args) > 0 {
-				result = exprString(call.Args[0])
+				if s := exprString(call.Args[0]); s != "" && !seen[s] {
+					seen[s] = true
+					result = append(result, s)
+				}
 			}
 		case "Marshal":
 			pkgIdent, ok := sel.X.(*ast.Ident)
@@ -547,7 +647,10 @@ func findJSONEncodeExpr(body *ast.BlockStmt) string {
 				return true
 			}
 			if len(call.Args) > 0 {
-				result = exprString(call.Args[0])
+				if s := exprString(call.Args[0]); s != "" && !seen[s] {
+					seen[s] = true
+					result = append(result, s)
+				}
 			}
 		}
 		return true
@@ -779,22 +882,399 @@ func bareTypeName(t string) string {
 // Handler method detection
 // ---------------------------------------------------------------------------
 
-// isHandlerMethod returns true if the function has a receiver type whose name
-// contains "Handler" (matches both *Handler and *Handlers).
+// isHandlerMethod returns true if the function is a handler:
+//   - Method with receiver type containing "Handler" (Gorilla Mux pattern), OR
+//   - Function (no receiver) whose first parameter is echo.Context (Echo pattern).
 func isHandlerMethod(fn *ast.FuncDecl) bool {
-	if fn.Recv == nil || len(fn.Recv.List) == 0 {
+	// Check receiver-based pattern (Gorilla Mux: func (h *Handler) Foo(...))
+	if fn.Recv != nil && len(fn.Recv.List) > 0 {
+		recv := fn.Recv.List[0].Type
+		if star, ok := recv.(*ast.StarExpr); ok {
+			recv = star.X
+		}
+		ident, ok := recv.(*ast.Ident)
+		if ok && strings.Contains(ident.Name, "Handler") {
+			return true
+		}
+	}
+	// Check Echo-style handler: func Foo(c echo.Context) or func (s *Server) Foo(c echo.Context)
+	if fn.Type != nil && fn.Type.Params != nil {
+		for _, param := range fn.Type.Params.List {
+			if isEchoContextType(param.Type) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// isEchoContextType returns true if the type expression refers to echo.Context.
+func isEchoContextType(expr ast.Expr) bool {
+	sel, ok := expr.(*ast.SelectorExpr)
+	if !ok {
 		return false
 	}
-	recv := fn.Recv.List[0].Type
-	if star, ok := recv.(*ast.StarExpr); ok {
-		recv = star.X
-	}
-	ident, ok := recv.(*ast.Ident)
-	return ok && strings.Contains(ident.Name, "Handler")
+	pkgIdent, ok := sel.X.(*ast.Ident)
+	return ok && pkgIdent.Name == "echo" && sel.Sel.Name == "Context"
 }
 
 // ---------------------------------------------------------------------------
 // Utilities
 // ---------------------------------------------------------------------------
 
-func strPtr(s string) *string { return &s }
+// findBodyReadAll returns true if the function body contains a call to
+// io.ReadAll or ioutil.ReadAll, indicating the handler reads the request
+// body as raw bytes rather than via json.Decode/Unmarshal.
+func findBodyReadAll(body *ast.BlockStmt) bool {
+	found := false
+	ast.Inspect(body, func(n ast.Node) bool {
+		if found {
+			return false
+		}
+		call, ok := n.(*ast.CallExpr)
+		if !ok {
+			return true
+		}
+		sel, ok := call.Fun.(*ast.SelectorExpr)
+		if !ok {
+			return true
+		}
+		if sel.Sel.Name != "ReadAll" {
+			return true
+		}
+		pkgIdent, ok := sel.X.(*ast.Ident)
+		if ok && (pkgIdent.Name == "io" || pkgIdent.Name == "ioutil") {
+			found = true
+		}
+		return true
+	})
+	return found
+}
+
+// ---------------------------------------------------------------------------
+// Router file parsing
+// ---------------------------------------------------------------------------
+
+// middlewareNames lists known middleware wrapper function names.
+// These are stripped when extracting the actual handler from a middleware chain.
+var middlewareNames = map[string]bool{
+	"ProviderMiddleware":         true,
+	"AuthMiddleware":             true,
+	"SessionInjectorMiddleware":  true,
+	"KubernetesMiddleware":       true,
+	"K8sFSMMiddleware":           true,
+	"GraphqlMiddleware":          true,
+	"NoCacheMiddleware":          true,
+}
+
+// parseRouterFile parses a Go router file and extracts registered routes.
+func parseRouterFile(filePath, dialect string) ([]RouteEntry, error) {
+	fset := token.NewFileSet()
+	f, err := parser.ParseFile(fset, filePath, nil, parser.ParseComments)
+	if err != nil {
+		return nil, fmt.Errorf("parse %s: %w", filePath, err)
+	}
+
+	switch dialect {
+	case "gorilla":
+		return parseGorillaRoutes(f, fset), nil
+	case "echo":
+		return parseEchoRoutes(f, fset), nil
+	default:
+		return nil, fmt.Errorf("unknown router dialect: %s", dialect)
+	}
+}
+
+// parseGorillaRoutes extracts routes from a Gorilla Mux router file.
+// It walks all function bodies looking for chains like:
+//
+//	gMux.Handle("/path", handler).Methods("GET", "POST")
+//	gMux.HandleFunc("/path", handler).Methods("GET")
+//	gMux.PathPrefix("/path").Handler(handler).Methods("GET")
+func parseGorillaRoutes(f *ast.File, fset *token.FileSet) []RouteEntry {
+	var routes []RouteEntry
+
+	// Walk all function declarations for route registration statements.
+	for _, decl := range f.Decls {
+		fn, ok := decl.(*ast.FuncDecl)
+		if !ok || fn.Body == nil {
+			continue
+		}
+		for _, stmt := range fn.Body.List {
+			exprStmt, ok := stmt.(*ast.ExprStmt)
+			if !ok {
+				continue
+			}
+			entry := extractGorillaRoute(exprStmt.X)
+			if entry != nil {
+				routes = append(routes, *entry)
+			}
+		}
+	}
+	return routes
+}
+
+// extractGorillaRoute extracts a RouteEntry from a Gorilla Mux registration expression.
+// Returns nil if the expression is not a recognized route registration.
+func extractGorillaRoute(expr ast.Expr) *RouteEntry {
+	// The expression may be a chain of method calls. We need to find:
+	// 1. The .Methods("GET", "POST") call (outermost, optional)
+	// 2. The .Handle/.HandleFunc/.PathPrefix call (provides path)
+	// 3. The handler argument
+
+	var methods []string
+	current := expr
+
+	// Peel off .Methods(...) if present at the top level.
+	if call, ok := current.(*ast.CallExpr); ok {
+		if sel, ok := call.Fun.(*ast.SelectorExpr); ok && sel.Sel.Name == "Methods" {
+			methods = extractStringArgs(call.Args)
+			current = sel.X
+		}
+	}
+
+	// Peel off .Handler(handler) if present (PathPrefix pattern).
+	var handlerArg ast.Expr
+	if call, ok := current.(*ast.CallExpr); ok {
+		if sel, ok := call.Fun.(*ast.SelectorExpr); ok && sel.Sel.Name == "Handler" {
+			if len(call.Args) > 0 {
+				handlerArg = call.Args[0]
+			}
+			current = sel.X
+		}
+	}
+
+	// Now we should be at the core registration call: gMux.Handle/HandleFunc/PathPrefix
+	call, ok := current.(*ast.CallExpr)
+	if !ok {
+		return nil
+	}
+	sel, ok := call.Fun.(*ast.SelectorExpr)
+	if !ok {
+		return nil
+	}
+
+	// Verify the receiver is a router variable (heuristic: any identifier is accepted).
+	switch sel.Sel.Name {
+	case "Handle", "HandleFunc":
+		if len(call.Args) < 1 {
+			return nil
+		}
+		path := extractStringLiteral(call.Args[0])
+		if path == "" {
+			return nil
+		}
+		// Handler is the last argument (index 1 for Handle, or a func literal for HandleFunc).
+		handler := ""
+		if len(call.Args) >= 2 {
+			if handlerArg == nil {
+				handlerArg = call.Args[1]
+			}
+		}
+		if handlerArg != nil {
+			handler = extractHandlerName(handlerArg)
+		} else if len(call.Args) >= 2 {
+			handler = extractHandlerName(call.Args[1])
+		}
+		return &RouteEntry{
+			Path:    path,
+			Methods: methods,
+			Handler: handler,
+		}
+
+	case "PathPrefix":
+		if len(call.Args) < 1 {
+			return nil
+		}
+		path := extractStringLiteral(call.Args[0])
+		if path == "" {
+			return nil
+		}
+		handler := ""
+		if handlerArg != nil {
+			handler = extractHandlerName(handlerArg)
+		}
+		return &RouteEntry{
+			Path:    path,
+			Methods: methods,
+			Handler: handler,
+		}
+	}
+
+	return nil
+}
+
+// parseEchoRoutes extracts routes from an Echo framework router file.
+// It supports multi-level group nesting:
+//
+//	g1 := e.Group("/api")
+//	g2 := g1.Group("/v1")
+//	g2.GET("/users", handler)
+func parseEchoRoutes(f *ast.File, fset *token.FileSet) []RouteEntry {
+	var routes []RouteEntry
+
+	// echoHTTPMethods maps Echo method names to HTTP methods.
+	echoHTTPMethods := map[string]string{
+		"GET": "GET", "POST": "POST", "PUT": "PUT", "DELETE": "DELETE",
+		"PATCH": "PATCH", "OPTIONS": "OPTIONS", "HEAD": "HEAD",
+		"Any": "", // special: all methods
+	}
+
+	for _, decl := range f.Decls {
+		fn, ok := decl.(*ast.FuncDecl)
+		if !ok || fn.Body == nil {
+			continue
+		}
+
+		// Pass 1: build group base paths.
+		// Maps variable name → accumulated base path.
+		groupBases := make(map[string]string)
+
+		for _, stmt := range fn.Body.List {
+			// Look for: g := expr.Group("/prefix")
+			assignStmt, ok := stmt.(*ast.AssignStmt)
+			if !ok || len(assignStmt.Lhs) == 0 || len(assignStmt.Rhs) == 0 {
+				continue
+			}
+			ident, ok := assignStmt.Lhs[0].(*ast.Ident)
+			if !ok {
+				continue
+			}
+			call, ok := assignStmt.Rhs[0].(*ast.CallExpr)
+			if !ok {
+				continue
+			}
+			sel, ok := call.Fun.(*ast.SelectorExpr)
+			if !ok || sel.Sel.Name != "Group" {
+				continue
+			}
+			if len(call.Args) < 1 {
+				continue
+			}
+			prefix := extractStringLiteral(call.Args[0])
+			if prefix == "" {
+				continue
+			}
+			// Resolve parent group base path for multi-level nesting.
+			parentBase := ""
+			if parentIdent, ok := sel.X.(*ast.Ident); ok {
+				parentBase = groupBases[parentIdent.Name]
+			}
+			groupBases[ident.Name] = parentBase + prefix
+		}
+
+		// Pass 2: extract route registrations.
+		for _, stmt := range fn.Body.List {
+			exprStmt, ok := stmt.(*ast.ExprStmt)
+			if !ok {
+				continue
+			}
+			call, ok := exprStmt.X.(*ast.CallExpr)
+			if !ok {
+				continue
+			}
+			sel, ok := call.Fun.(*ast.SelectorExpr)
+			if !ok {
+				continue
+			}
+			httpMethod, isEchoMethod := echoHTTPMethods[sel.Sel.Name]
+			if !isEchoMethod {
+				continue
+			}
+			if len(call.Args) < 2 {
+				continue
+			}
+			pathSuffix := extractStringLiteral(call.Args[0])
+			handler := extractHandlerName(call.Args[1])
+
+			// Resolve receiver's group base.
+			basePath := ""
+			if recvIdent, ok := sel.X.(*ast.Ident); ok {
+				basePath = groupBases[recvIdent.Name]
+			}
+			fullPath := basePath + pathSuffix
+
+			var methods []string
+			if httpMethod != "" {
+				methods = []string{httpMethod}
+			}
+			routes = append(routes, RouteEntry{
+				Path:    fullPath,
+				Methods: methods,
+				Handler: handler,
+			})
+		}
+	}
+	return routes
+}
+
+// extractStringLiteral extracts a string value from a basic literal expression.
+func extractStringLiteral(expr ast.Expr) string {
+	lit, ok := expr.(*ast.BasicLit)
+	if !ok || lit.Kind != token.STRING {
+		return ""
+	}
+	return strings.Trim(lit.Value, `"` + "`")
+}
+
+// extractStringArgs extracts string values from a list of argument expressions.
+func extractStringArgs(args []ast.Expr) []string {
+	var result []string
+	for _, arg := range args {
+		if s := extractStringLiteral(arg); s != "" {
+			result = append(result, s)
+		}
+	}
+	return result
+}
+
+// extractHandlerName extracts the handler function name from a possibly
+// nested middleware chain like:
+//
+//	h.ProviderMiddleware(h.AuthMiddleware(h.SessionInjectorMiddleware(h.ActualHandler), ...))
+//
+// It recursively unwraps known middleware names to find the innermost handler.
+func extractHandlerName(expr ast.Expr) string {
+	// Unwrap parenthesized expressions: ((handler)) → handler
+	if paren, ok := expr.(*ast.ParenExpr); ok {
+		return extractHandlerName(paren.X)
+	}
+	switch e := expr.(type) {
+	case *ast.SelectorExpr:
+		// h.HandlerName (direct reference)
+		return e.Sel.Name
+	case *ast.CallExpr:
+		// Could be middleware wrapping: h.Middleware(innerHandler, ...)
+		if sel, ok := e.Fun.(*ast.SelectorExpr); ok {
+			if middlewareNames[sel.Sel.Name] {
+				// Unwrap: the first argument is the inner handler
+				if len(e.Args) > 0 {
+					return extractHandlerName(e.Args[0])
+				}
+			}
+			// Type conversion wrappers like http.HandlerFunc(h.Foo)
+			if sel.Sel.Name == "HandlerFunc" {
+				if len(e.Args) > 0 {
+					return extractHandlerName(e.Args[0])
+				}
+			}
+			// Not middleware — check arguments for handler references
+			for _, arg := range e.Args {
+				if name := extractHandlerName(arg); name != "" && !middlewareNames[name] {
+					return name
+				}
+			}
+			// Fall back to the function name itself
+			return sel.Sel.Name
+		}
+		// Local HandlerFunc(h.Foo) — check first argument
+		if ident, ok := e.Fun.(*ast.Ident); ok {
+			if ident.Name == "HandlerFunc" && len(e.Args) > 0 {
+				return extractHandlerName(e.Args[0])
+			}
+		}
+	case *ast.Ident:
+		return e.Name
+	}
+	return ""
+}
