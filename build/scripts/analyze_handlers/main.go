@@ -150,12 +150,12 @@ func main() {
 // schema packages.  Only one level of alias indirection is followed.
 func scanAliases(dir, schemaModule string, aliases map[string]string) {
 	fset := token.NewFileSet()
-	if err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+	if err := filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "WARNING: walk error in %s: %v\n", path, err)
 			return nil
 		}
-		if info.IsDir() {
+		if d.IsDir() {
 			return nil
 		}
 		if !strings.HasSuffix(path, ".go") || strings.HasSuffix(path, "_test.go") {
@@ -319,12 +319,12 @@ func analyseHandler(
 // allStructDefs accumulates raw AST definitions for later embedded-field resolution.
 func scanStructFields(dir string, fields map[string][]string, allStructDefs map[string]*ast.StructType) {
 	fset := token.NewFileSet()
-	if err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+	if err := filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "WARNING: walk error in %s: %v\n", path, err)
 			return nil
 		}
-		if info.IsDir() {
+		if d.IsDir() {
 			return nil
 		}
 		if !strings.HasSuffix(path, ".go") || strings.HasSuffix(path, "_test.go") {

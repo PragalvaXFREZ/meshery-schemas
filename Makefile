@@ -135,16 +135,11 @@ api-audit-setup:
 ## Dry-run audit of all available repos against the bundled OpenAPI spec.
 ## Set MESHERY_REPO and/or CLOUD_REPO (or both) to select which repos to analyse.
 api-audit: api-audit-setup
-	@ if [ -n "$(MESHERY_REPO)" ] && [ -n "$(CLOUD_REPO)" ]; then \
-		$(API_AUDIT_PY) build/scripts/api-audit.py \
-			--meshery-repo "$(MESHERY_REPO)" --cloud-repo "$(CLOUD_REPO)" --dry-run; \
-	elif [ -n "$(MESHERY_REPO)" ]; then \
-		$(API_AUDIT_PY) build/scripts/api-audit.py --meshery-repo "$(MESHERY_REPO)" --dry-run; \
-	elif [ -n "$(CLOUD_REPO)" ]; then \
-		$(API_AUDIT_PY) build/scripts/api-audit.py --cloud-repo "$(CLOUD_REPO)" --dry-run; \
-	else \
-		echo "ERROR: set MESHERY_REPO and/or CLOUD_REPO to run the audit." >&2; exit 1; \
-	fi
+	@ [ -n "$(MESHERY_REPO)" ] || [ -n "$(CLOUD_REPO)" ] || { echo "ERROR: set MESHERY_REPO and/or CLOUD_REPO to run the audit." >&2; exit 1; }
+	@ $(API_AUDIT_PY) build/scripts/api-audit.py \
+		$(if $(MESHERY_REPO),--meshery-repo "$(MESHERY_REPO)") \
+		$(if $(CLOUD_REPO),--cloud-repo "$(CLOUD_REPO)") \
+		--dry-run
 
 ## Audit all available repos and write results to the Google Sheet.
 ## Set MESHERY_REPO and/or CLOUD_REPO (or both) and SHEET_ID. When both repos
@@ -152,22 +147,12 @@ api-audit: api-audit-setup
 ## Google credentials must be set via GOOGLE_CREDENTIALS_JSON or
 ## GOOGLE_APPLICATION_CREDENTIALS before running this target.
 api-audit-update: api-audit-setup
-	@ if [ -z "$(SHEET_ID)" ]; then \
-		echo "ERROR: SHEET_ID is required to write results to Google Sheets." >&2; exit 1; \
-	fi
-	@ if [ -n "$(MESHERY_REPO)" ] && [ -n "$(CLOUD_REPO)" ]; then \
-		$(API_AUDIT_PY) build/scripts/api-audit.py \
-			--meshery-repo "$(MESHERY_REPO)" --cloud-repo "$(CLOUD_REPO)" \
-			--sheet-id "$(SHEET_ID)"; \
-	elif [ -n "$(MESHERY_REPO)" ]; then \
-		$(API_AUDIT_PY) build/scripts/api-audit.py --meshery-repo "$(MESHERY_REPO)" \
-			--sheet-id "$(SHEET_ID)"; \
-	elif [ -n "$(CLOUD_REPO)" ]; then \
-		$(API_AUDIT_PY) build/scripts/api-audit.py --cloud-repo "$(CLOUD_REPO)" \
-			--sheet-id "$(SHEET_ID)"; \
-	else \
-		echo "ERROR: set MESHERY_REPO and/or CLOUD_REPO to run the audit." >&2; exit 1; \
-	fi
+	@ [ -n "$(SHEET_ID)" ] || { echo "ERROR: SHEET_ID is required to write results to Google Sheets." >&2; exit 1; }
+	@ [ -n "$(MESHERY_REPO)" ] || [ -n "$(CLOUD_REPO)" ] || { echo "ERROR: set MESHERY_REPO and/or CLOUD_REPO to run the audit." >&2; exit 1; }
+	@ $(API_AUDIT_PY) build/scripts/api-audit.py \
+		$(if $(MESHERY_REPO),--meshery-repo "$(MESHERY_REPO)") \
+		$(if $(CLOUD_REPO),--cloud-repo "$(CLOUD_REPO)") \
+		--sheet-id "$(SHEET_ID)"
 
 #-----------------------------------------------------------------------------
 # Schema information

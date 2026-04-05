@@ -271,7 +271,7 @@ def categorize(
     if spec_categories and norm in spec_categories:
         return spec_categories[norm]
     for prefix, cat, sub in CATEGORY_FALLBACK:
-        if path.startswith(prefix):
+        if norm.startswith(prefix):
             return cat, sub
     return "Other", ""
 
@@ -1451,7 +1451,7 @@ def classify_endpoints(
         method_in_spec = method in spec_methods or (method == "ALL" and spec_methods)
 
         # --- Coverage ---
-        coverage = "Overlap" if spec_methods else "Server Underlap"
+        coverage = "Overlap" if method_in_spec else "Server Underlap"
 
         # --- x-internal for this specific method ---
         xi = x_internal_map.get((norm, method), []) if method_in_spec else []
@@ -1595,7 +1595,7 @@ def classify_endpoints(
         category, subcategory = categorize(original, path_categories)
 
         for method in sorted(spec_methods):
-            if (norm_path, method) in router_norm_keys:
+            if (norm_path, method) in router_norm_keys or (norm_path, "ALL") in router_norm_keys:
                 continue
 
             xi = x_internal_map.get((norm_path, method), [])
