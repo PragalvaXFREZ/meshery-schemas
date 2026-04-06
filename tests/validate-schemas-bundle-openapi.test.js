@@ -1,7 +1,9 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
+const path = require("node:path");
 
-const { mergeOpenapiSpec } = require("../build/bundle-openapi");
+const config = require("../build/lib/config");
+const { dereferenceOpenapiSpec, mergeOpenapiSpec } = require("../build/bundle-openapi");
 
 test("mergeOpenapiSpec prefixes tags, components, refs, and security requirements", () => {
   const baseSpec = {
@@ -154,4 +156,16 @@ test("mergeOpenapiSpec lets later component definitions override earlier ones", 
     baseSpec.components.schemas.Catalog_CatalogData.properties.publishedVersion.maxLength,
     500,
   );
+});
+
+test("dereferenceOpenapiSpec resolves a construct api.yml in-process", async () => {
+  const projectRoot = config.getProjectRoot();
+  const entryPath = path.join(projectRoot, "schemas/constructs/v1beta1/key/api.yml");
+
+  const document = await dereferenceOpenapiSpec(entryPath);
+
+  assert.equal(document.openapi, "3.0.0");
+  assert.equal(document.info.title, "Key");
+  assert.equal(document.paths["/api/auth/keys"].get.tags[0], "Key");
+  assert.ok(document.components.schemas.KeyPage);
 });

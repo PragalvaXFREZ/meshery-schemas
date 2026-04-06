@@ -877,10 +877,10 @@ Validate your schema updates before committing by running:
 make build
 ```
 
-Or validate a single file for OpenAPI structure:
+For repository validation checks:
 
 ```bash
-npx --yes swagger-cli validate schemas/constructs/v1beta1/pattern/api.yml
+make validate-schemas
 ```
 
 ### Schema Validation Modes
@@ -919,7 +919,7 @@ schemas/constructs/          (OpenAPI YAML source files)
         |                    34 rules: casing, dual-schema, templates, pagination
         v
 [2] bundle-openapi           node build/bundle-openapi.js
-        |                    Per-construct: swagger-cli bundle --dereference
+        |                    Per-construct: in-repo dereference to merged-openapi.json
         |                    Merge all: in-repo prefixing merge → merged_openapi.yml
         |                    Filter: cloud_openapi.yml, meshery_openapi.yml
         v
@@ -970,7 +970,6 @@ The **property name is the single source of truth** for the json wire format. oa
 | Build TypeScript dist        | `npm run build`                  |
 | Generate Go code only        | `make golang-generate`           |
 | Generate TS types + schemas  | `make generate-ts`               |
-| Validate one OpenAPI file    | `npx --yes swagger-cli validate` |
 | Schema validation (blocking) | `make validate-schemas`          |
 | Schema audit (advisory)      | `make audit-schemas`             |
 | Full schema debt report      | `make audit-schemas-debt-full`   |

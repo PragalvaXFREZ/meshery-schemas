@@ -350,7 +350,6 @@ Install via `npm install`:
 
 ### CLI Tools (via npx)
 
-- `swagger-cli` - OpenAPI bundling and validation
 - `@rtk-query/codegen-openapi` - RTK Query client generation
 - `json2ts` - JSON Schema to TypeScript
 - `openapi-typescript` - OpenAPI to TypeScript

@@ -19,9 +19,6 @@
  * USAGE:
  *   node build/bundle-openapi.js
  *
- * DEPENDENCIES:
- *   - swagger-cli (via npx)
- *
  * OUTPUT:
  *   - _openapi_build/constructs/<version>/<package>/merged-openapi.json
  *   - _openapi_build/merged_openapi.yml
@@ -31,12 +28,12 @@
 
 const fs = require("fs");
 const path = require("path");
+const $RefParser = require("@apidevtools/json-schema-ref-parser");
 const yaml = require("js-yaml");
 const { execSync } = require("child_process");
 const logger = require("./lib/logger");
 const config = require("./lib/config");
 const paths = require("./lib/paths");
-const { npx } = require("./lib/exec");
 
 function toPrefix(title) {
   return String(title || "").trim().replace(/\s+/g, "_");
@@ -180,6 +177,10 @@ function mergeOpenapiSpec(baseSpec, specToMerge) {
   return baseSpec;
 }
 
+async function dereferenceOpenapiSpec(inputPath) {
+  return $RefParser.dereference(inputPath);
+}
+
 /**
  * Bundle a single OpenAPI schema
  * @param {Object} pkg - Package definition
@@ -199,13 +200,8 @@ async function bundleSchema(pkg) {
 
   logger.step(`Bundling: ${pkg.name} (${pkg.version})...`);
 
-  await npx("swagger-cli", [
-    "bundle",
-    "--dereference",
-    inputPath,
-    "-o",
-    outputPath,
-  ]);
+  const dereferencedSpec = await dereferenceOpenapiSpec(inputPath);
+  fs.writeFileSync(outputPath, `${JSON.stringify(dereferencedSpec, null, 2)}\n`, "utf-8");
 
   logger.success(`Bundled: ${paths.relativePath(outputPath)}`);
 }
@@ -332,6 +328,7 @@ if (require.main === module) {
 }
 
 module.exports = {
+  dereferenceOpenapiSpec,
   mergeOpenapiSpec,
   prefixComponentRef,
   prefixInternalReferences,

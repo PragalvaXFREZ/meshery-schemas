@@ -399,9 +399,9 @@ The **Academy** construct in `meshery/schemas` serves as the primary exemplar fo
 ## Validation Commands
 
 ```bash
-# Validate OpenAPI schema structure
+# Run schema validation
 cd /Users/l/code/schemas
-npx --yes swagger-cli validate schemas/constructs/v1beta1/<construct>/api.yml
+make validate-schemas
 
 # Full build (validates + generates)
 make build
