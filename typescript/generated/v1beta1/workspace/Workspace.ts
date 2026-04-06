@@ -62,18 +62,70 @@ export interface paths {
 
 export interface components {
   schemas: {
+    /** @description A workspace is a logical grouping of resources within an organization. Workspaces provide a way to organize environments, designs, teams, and views. Learn more at https://docs.meshery.io/concepts/logical/workspaces */
     Workspace: {
       /** Format: uuid */
-      id?: string;
-      name?: string;
+      id: string;
+      /** @description Name of the workspace. */
+      name: string;
+      /** @description Description of the workspace. */
       description?: string;
       /**
        * Format: uuid
-       * @description Workspace organization ID
+       * @description Organization to which this workspace belongs.
+       */
+      organization_id: string;
+      /**
+       * Format: uuid
+       * @description User ID of the workspace owner.
+       */
+      owner?: string;
+      /** @description Metadata associated with the workspace. */
+      metadata?: { [key: string]: unknown };
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was created.
+       */
+      created_at: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was updated.
+       */
+      updated_at: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was deleted.
+       */
+      deleted_at?: string;
+    };
+    /** @description Workspace with resolved owner details, as returned in list and get responses. */
+    AvailableWorkspace: {
+      /** Format: uuid */
+      id?: string;
+      /** @description Name of the workspace. */
+      name?: string;
+      /** @description Description of the workspace. */
+      description?: string;
+      /** @description Name of the owning organization. */
+      org_name?: string;
+      /** @description Display name of the workspace owner. */
+      owner?: string;
+      /**
+       * Format: uuid
+       * @description User ID of the workspace owner.
+       */
+      owner_id?: string;
+      /** @description Email address of the workspace owner. */
+      owner_email?: string;
+      /** @description Avatar URL of the workspace owner. */
+      owner_avatar?: string;
+      /** @description Metadata associated with the workspace. */
+      metadata?: { [key: string]: unknown };
+      /**
+       * Format: uuid
+       * @description Organization to which this workspace belongs.
        */
       organization_id?: string;
-      owner?: string;
-      metadata?: { [key: string]: string };
       /**
        * Format: date-time
        * @description Timestamp when the resource was created.
@@ -90,98 +142,7 @@ export interface components {
        */
       deleted_at?: string;
     };
-    WorkspacesTeamsMapping: {
-      /** Format: uuid */
-      id?: string;
-      /** Format: uuid */
-      team_id?: string;
-      /** Format: uuid */
-      workspace_id?: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the resource was created.
-       */
-      created_at?: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the resource was updated.
-       */
-      updated_at?: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the resource was deleted.
-       */
-      deleted_at?: string;
-    };
-    WorkspacesEnvironmentsMapping: {
-      /** Format: uuid */
-      id?: string;
-      /** Format: uuid */
-      environment_id?: string;
-      /** Format: uuid */
-      workspace_id?: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the resource was created.
-       */
-      created_at?: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the resource was updated.
-       */
-      updated_at?: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the resource was deleted.
-       */
-      deleted_at?: string;
-    };
-    WorkspacesViewsMapping: {
-      /** Format: uuid */
-      id?: string;
-      /** Format: uuid */
-      view_id?: string;
-      /** Format: uuid */
-      workspace_id?: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the resource was created.
-       */
-      created_at?: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the resource was updated.
-       */
-      updated_at?: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the resource was deleted.
-       */
-      deleted_at?: string;
-    };
-    WorkspacesDesignsMapping: {
-      /** Format: uuid */
-      id?: string;
-      /** Format: uuid */
-      design_id?: string;
-      /** Format: uuid */
-      workspace_id?: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the resource was created.
-       */
-      created_at?: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the resource was updated.
-       */
-      updated_at?: string;
-      /**
-       * Format: date-time
-       * @description Timestamp when the resource was deleted.
-       */
-      deleted_at?: string;
-    };
+    /** @description Payload for creating a workspace. */
     WorkspacePayload: {
       /** @description Name of the workspace. */
       name: string;
@@ -192,7 +153,10 @@ export interface components {
        * @description Organization ID.
        */
       organization_id: string;
+      /** @description Metadata associated with the workspace. */
+      metadata?: { [key: string]: unknown };
     };
+    /** @description Payload for updating a workspace. */
     WorkspaceUpdatePayload: {
       /** @description Name of the workspace. */
       name?: string;
@@ -203,24 +167,42 @@ export interface components {
        * @description Organization ID.
        */
       organization_id: string;
+      /** @description Metadata associated with the workspace. */
+      metadata?: { [key: string]: unknown };
     };
+    /** @description Paginated list of workspaces. */
     WorkspacePage: {
       page?: number;
       page_size?: number;
       total_count?: number;
-      /** @description The workspaces of the workspacepage. */
+      /** @description List of workspaces with resolved owner details. */
       workspaces?: {
         /** Format: uuid */
         id?: string;
+        /** @description Name of the workspace. */
         name?: string;
+        /** @description Description of the workspace. */
         description?: string;
+        /** @description Name of the owning organization. */
+        org_name?: string;
+        /** @description Display name of the workspace owner. */
+        owner?: string;
         /**
          * Format: uuid
-         * @description Workspace organization ID
+         * @description User ID of the workspace owner.
+         */
+        owner_id?: string;
+        /** @description Email address of the workspace owner. */
+        owner_email?: string;
+        /** @description Avatar URL of the workspace owner. */
+        owner_avatar?: string;
+        /** @description Metadata associated with the workspace. */
+        metadata?: { [key: string]: unknown };
+        /**
+         * Format: uuid
+         * @description Organization to which this workspace belongs.
          */
         organization_id?: string;
-        owner?: string;
-        metadata?: { [key: string]: string };
         /**
          * Format: date-time
          * @description Timestamp when the resource was created.
@@ -238,18 +220,43 @@ export interface components {
         deleted_at?: string;
       }[];
     };
+    /** @description Junction record linking a workspace to a team. */
+    WorkspacesTeamsMapping: {
+      /** Format: uuid */
+      id?: string;
+      /** Format: uuid */
+      workspace_id?: string;
+      /** Format: uuid */
+      team_id?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was created.
+       */
+      created_at?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was updated.
+       */
+      updated_at?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was deleted.
+       */
+      deleted_at?: string;
+    };
+    /** @description Paginated list of workspace-team mappings. */
     WorkspacesTeamsMappingPage: {
       page?: number;
       page_size?: number;
       total_count?: number;
-      /** @description The workspaces teams mapping of the workspacesteamsmappingpage. */
+      /** @description Workspace-team mapping entries. */
       workspacesTeamsMapping?: {
         /** Format: uuid */
         id?: string;
         /** Format: uuid */
-        team_id?: string;
-        /** Format: uuid */
         workspace_id?: string;
+        /** Format: uuid */
+        team_id?: string;
         /**
          * Format: date-time
          * @description Timestamp when the resource was created.
@@ -267,18 +274,43 @@ export interface components {
         deleted_at?: string;
       }[];
     };
+    /** @description Junction record linking a workspace to an environment. */
+    WorkspacesEnvironmentsMapping: {
+      /** Format: uuid */
+      id?: string;
+      /** Format: uuid */
+      workspace_id?: string;
+      /** Format: uuid */
+      environment_id?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was created.
+       */
+      created_at?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was updated.
+       */
+      updated_at?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was deleted.
+       */
+      deleted_at?: string;
+    };
+    /** @description Paginated list of workspace-environment mappings. */
     WorkspacesEnvironmentsMappingPage: {
       page?: number;
       page_size?: number;
       total_count?: number;
-      /** @description The workspaces environments mapping of the workspacesenvironmentsmappingpage. */
+      /** @description Workspace-environment mapping entries. */
       workspacesEnvironmentsMapping?: {
         /** Format: uuid */
         id?: string;
         /** Format: uuid */
-        environment_id?: string;
-        /** Format: uuid */
         workspace_id?: string;
+        /** Format: uuid */
+        environment_id?: string;
         /**
          * Format: date-time
          * @description Timestamp when the resource was created.
@@ -296,18 +328,43 @@ export interface components {
         deleted_at?: string;
       }[];
     };
+    /** @description Junction record linking a workspace to a design. */
+    WorkspacesDesignsMapping: {
+      /** Format: uuid */
+      id?: string;
+      /** Format: uuid */
+      workspace_id?: string;
+      /** Format: uuid */
+      design_id?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was created.
+       */
+      created_at?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was updated.
+       */
+      updated_at?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was deleted.
+       */
+      deleted_at?: string;
+    };
+    /** @description Paginated list of workspace-design mappings. */
     WorkspacesDesignsMappingPage: {
       page?: number;
       page_size?: number;
       total_count?: number;
-      /** @description The workspaces designs mapping of the workspacesdesignsmappingpage. */
+      /** @description Workspace-design mapping entries. */
       workspacesDesignsMapping?: {
         /** Format: uuid */
         id?: string;
         /** Format: uuid */
-        design_id?: string;
-        /** Format: uuid */
         workspace_id?: string;
+        /** Format: uuid */
+        design_id?: string;
         /**
          * Format: date-time
          * @description Timestamp when the resource was created.
@@ -325,18 +382,43 @@ export interface components {
         deleted_at?: string;
       }[];
     };
+    /** @description Junction record linking a workspace to a view. */
+    WorkspacesViewsMapping: {
+      /** Format: uuid */
+      id?: string;
+      /** Format: uuid */
+      workspace_id?: string;
+      /** Format: uuid */
+      view_id?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was created.
+       */
+      created_at?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was updated.
+       */
+      updated_at?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was deleted.
+       */
+      deleted_at?: string;
+    };
+    /** @description Paginated list of workspace-view mappings. */
     WorkspacesViewsMappingPage: {
       page?: number;
       page_size?: number;
       total_count?: number;
-      /** @description The workspaces views mapping of the workspacesviewsmappingpage. */
+      /** @description Workspace-view mapping entries. */
       workspacesViewsMapping?: {
         /** Format: uuid */
         id?: string;
         /** Format: uuid */
-        view_id?: string;
-        /** Format: uuid */
         workspace_id?: string;
+        /** Format: uuid */
+        view_id?: string;
         /**
          * Format: date-time
          * @description Timestamp when the resource was created.
@@ -354,11 +436,12 @@ export interface components {
         deleted_at?: string;
       }[];
     };
+    /** @description Paginated list of designs. */
     MesheryDesignPage: {
       page?: number;
       page_size?: number;
       total_count?: number;
-      /** @description The designs of the mesherydesignpage. */
+      /** @description Designs in this page. */
       designs?: {
         catalogData?: {
           /** @description Tracks the specific content version that has been made available in the Catalog. */
@@ -1923,6 +2006,7 @@ export interface components {
         visibility?: string;
       }[];
     };
+    /** @description A saved view with filters and metadata. */
     MesheryView: {
       /** Format: uuid */
       id?: string;
@@ -1947,11 +2031,12 @@ export interface components {
        */
       deleted_at?: string;
     };
+    /** @description Paginated list of views. */
     MesheryViewPage: {
       page?: number;
       page_size?: number;
       total_count?: number;
-      /** @description The views of the mesheryviewpage. */
+      /** @description Views in this page. */
       views?: {
         /** Format: uuid */
         id?: string;
@@ -2046,6 +2131,8 @@ export interface components {
            * @description Organization ID.
            */
           organization_id: string;
+          /** @description Metadata associated with the workspace. */
+          metadata?: { [key: string]: unknown };
         };
       };
     };
@@ -2062,6 +2149,8 @@ export interface components {
            * @description Organization ID.
            */
           organization_id: string;
+          /** @description Metadata associated with the workspace. */
+          metadata?: { [key: string]: unknown };
         };
       };
     };
@@ -2093,19 +2182,34 @@ export interface operations {
             page?: number;
             page_size?: number;
             total_count?: number;
-            /** @description The workspaces of the workspacepage. */
+            /** @description List of workspaces with resolved owner details. */
             workspaces?: {
               /** Format: uuid */
               id?: string;
+              /** @description Name of the workspace. */
               name?: string;
+              /** @description Description of the workspace. */
               description?: string;
+              /** @description Name of the owning organization. */
+              org_name?: string;
+              /** @description Display name of the workspace owner. */
+              owner?: string;
               /**
                * Format: uuid
-               * @description Workspace organization ID
+               * @description User ID of the workspace owner.
+               */
+              owner_id?: string;
+              /** @description Email address of the workspace owner. */
+              owner_email?: string;
+              /** @description Avatar URL of the workspace owner. */
+              owner_avatar?: string;
+              /** @description Metadata associated with the workspace. */
+              metadata?: { [key: string]: unknown };
+              /**
+               * Format: uuid
+               * @description Organization to which this workspace belongs.
                */
               organization_id?: string;
-              owner?: string;
-              metadata?: { [key: string]: string };
               /**
                * Format: date-time
                * @description Timestamp when the resource was created.
@@ -2147,26 +2251,33 @@ export interface operations {
         content: {
           "application/json": {
             /** Format: uuid */
-            id?: string;
-            name?: string;
+            id: string;
+            /** @description Name of the workspace. */
+            name: string;
+            /** @description Description of the workspace. */
             description?: string;
             /**
              * Format: uuid
-             * @description Workspace organization ID
+             * @description Organization to which this workspace belongs.
              */
-            organization_id?: string;
+            organization_id: string;
+            /**
+             * Format: uuid
+             * @description User ID of the workspace owner.
+             */
             owner?: string;
-            metadata?: { [key: string]: string };
+            /** @description Metadata associated with the workspace. */
+            metadata?: { [key: string]: unknown };
             /**
              * Format: date-time
              * @description Timestamp when the resource was created.
              */
-            created_at?: string;
+            created_at: string;
             /**
              * Format: date-time
              * @description Timestamp when the resource was updated.
              */
-            updated_at?: string;
+            updated_at: string;
             /**
              * Format: date-time
              * @description Timestamp when the resource was deleted.
@@ -2207,6 +2318,8 @@ export interface operations {
            * @description Organization ID.
            */
           organization_id: string;
+          /** @description Metadata associated with the workspace. */
+          metadata?: { [key: string]: unknown };
         };
       };
     };
@@ -2225,26 +2338,33 @@ export interface operations {
         content: {
           "application/json": {
             /** Format: uuid */
-            id?: string;
-            name?: string;
+            id: string;
+            /** @description Name of the workspace. */
+            name: string;
+            /** @description Description of the workspace. */
             description?: string;
             /**
              * Format: uuid
-             * @description Workspace organization ID
+             * @description Organization to which this workspace belongs.
              */
-            organization_id?: string;
+            organization_id: string;
+            /**
+             * Format: uuid
+             * @description User ID of the workspace owner.
+             */
             owner?: string;
-            metadata?: { [key: string]: string };
+            /** @description Metadata associated with the workspace. */
+            metadata?: { [key: string]: unknown };
             /**
              * Format: date-time
              * @description Timestamp when the resource was created.
              */
-            created_at?: string;
+            created_at: string;
             /**
              * Format: date-time
              * @description Timestamp when the resource was updated.
              */
-            updated_at?: string;
+            updated_at: string;
             /**
              * Format: date-time
              * @description Timestamp when the resource was deleted.
@@ -2293,26 +2413,33 @@ export interface operations {
         content: {
           "application/json": {
             /** Format: uuid */
-            id?: string;
-            name?: string;
+            id: string;
+            /** @description Name of the workspace. */
+            name: string;
+            /** @description Description of the workspace. */
             description?: string;
             /**
              * Format: uuid
-             * @description Workspace organization ID
+             * @description Organization to which this workspace belongs.
              */
-            organization_id?: string;
+            organization_id: string;
+            /**
+             * Format: uuid
+             * @description User ID of the workspace owner.
+             */
             owner?: string;
-            metadata?: { [key: string]: string };
+            /** @description Metadata associated with the workspace. */
+            metadata?: { [key: string]: unknown };
             /**
              * Format: date-time
              * @description Timestamp when the resource was created.
              */
-            created_at?: string;
+            created_at: string;
             /**
              * Format: date-time
              * @description Timestamp when the resource was updated.
              */
-            updated_at?: string;
+            updated_at: string;
             /**
              * Format: date-time
              * @description Timestamp when the resource was deleted.
@@ -2359,6 +2486,8 @@ export interface operations {
            * @description Organization ID.
            */
           organization_id: string;
+          /** @description Metadata associated with the workspace. */
+          metadata?: { [key: string]: unknown };
         };
       };
     };
@@ -2503,14 +2632,14 @@ export interface operations {
             page?: number;
             page_size?: number;
             total_count?: number;
-            /** @description The workspaces teams mapping of the workspacesteamsmappingpage. */
+            /** @description Workspace-team mapping entries. */
             workspacesTeamsMapping?: {
               /** Format: uuid */
               id?: string;
               /** Format: uuid */
-              team_id?: string;
-              /** Format: uuid */
               workspace_id?: string;
+              /** Format: uuid */
+              team_id?: string;
               /**
                * Format: date-time
                * @description Timestamp when the resource was created.
@@ -2722,14 +2851,14 @@ export interface operations {
             page?: number;
             page_size?: number;
             total_count?: number;
-            /** @description The workspaces environments mapping of the workspacesenvironmentsmappingpage. */
+            /** @description Workspace-environment mapping entries. */
             workspacesEnvironmentsMapping?: {
               /** Format: uuid */
               id?: string;
               /** Format: uuid */
-              environment_id?: string;
-              /** Format: uuid */
               workspace_id?: string;
+              /** Format: uuid */
+              environment_id?: string;
               /**
                * Format: date-time
                * @description Timestamp when the resource was created.
@@ -2842,7 +2971,7 @@ export interface operations {
             page?: number;
             page_size?: number;
             total_count?: number;
-            /** @description The designs of the mesherydesignpage. */
+            /** @description Designs in this page. */
             designs?: {
               catalogData?: {
                 /** @description Tracks the specific content version that has been made available in the Catalog. */
@@ -4463,14 +4592,14 @@ export interface operations {
             page?: number;
             page_size?: number;
             total_count?: number;
-            /** @description The workspaces designs mapping of the workspacesdesignsmappingpage. */
+            /** @description Workspace-design mapping entries. */
             workspacesDesignsMapping?: {
               /** Format: uuid */
               id?: string;
               /** Format: uuid */
-              design_id?: string;
-              /** Format: uuid */
               workspace_id?: string;
+              /** Format: uuid */
+              design_id?: string;
               /**
                * Format: date-time
                * @description Timestamp when the resource was created.
@@ -4583,7 +4712,7 @@ export interface operations {
             page?: number;
             page_size?: number;
             total_count?: number;
-            /** @description The views of the mesheryviewpage. */
+            /** @description Views in this page. */
             views?: {
               /** Format: uuid */
               id?: string;
@@ -4655,14 +4784,14 @@ export interface operations {
             page?: number;
             page_size?: number;
             total_count?: number;
-            /** @description The workspaces views mapping of the workspacesviewsmappingpage. */
+            /** @description Workspace-view mapping entries. */
             workspacesViewsMapping?: {
               /** Format: uuid */
               id?: string;
               /** Format: uuid */
-              view_id?: string;
-              /** Format: uuid */
               workspace_id?: string;
+              /** Format: uuid */
+              view_id?: string;
               /**
                * Format: date-time
                * @description Timestamp when the resource was created.

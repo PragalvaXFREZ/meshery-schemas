@@ -3805,17 +3805,27 @@ export type GetWorkspacesApiResponse = /** status 200 Workspaces */ {
   page?: number;
   page_size?: number;
   total_count?: number;
-  /** The workspaces of the workspacepage. */
+  /** List of workspaces with resolved owner details. */
   workspaces?: {
     id?: string;
+    /** Name of the workspace. */
     name?: string;
+    /** Description of the workspace. */
     description?: string;
-    /** Workspace organization ID */
-    organization_id?: string;
+    /** Name of the owning organization. */
+    org_name?: string;
+    /** Display name of the workspace owner. */
     owner?: string;
-    metadata?: {
-      [key: string]: string;
-    };
+    /** User ID of the workspace owner. */
+    owner_id?: string;
+    /** Email address of the workspace owner. */
+    owner_email?: string;
+    /** Avatar URL of the workspace owner. */
+    owner_avatar?: string;
+    /** Metadata associated with the workspace. */
+    metadata?: object;
+    /** Organization to which this workspace belongs. */
+    organization_id?: string;
     /** Timestamp when the resource was created. */
     created_at?: string;
     /** Timestamp when the resource was updated. */
@@ -3837,19 +3847,21 @@ export type GetWorkspacesApiArg = {
   filter?: string;
 };
 export type CreateWorkspaceApiResponse = /** status 201 Created workspace */ {
-  id?: string;
-  name?: string;
+  id: string;
+  /** Name of the workspace. */
+  name: string;
+  /** Description of the workspace. */
   description?: string;
-  /** Workspace organization ID */
-  organization_id?: string;
+  /** Organization to which this workspace belongs. */
+  organization_id: string;
+  /** User ID of the workspace owner. */
   owner?: string;
-  metadata?: {
-    [key: string]: string;
-  };
+  /** Metadata associated with the workspace. */
+  metadata?: object;
   /** Timestamp when the resource was created. */
-  created_at?: string;
+  created_at: string;
   /** Timestamp when the resource was updated. */
-  updated_at?: string;
+  updated_at: string;
   /** Timestamp when the resource was deleted. */
   deleted_at?: string;
 };
@@ -3862,22 +3874,26 @@ export type CreateWorkspaceApiArg = {
     description?: string;
     /** Organization ID. */
     organization_id: string;
+    /** Metadata associated with the workspace. */
+    metadata?: object;
   };
 };
 export type GetWorkspaceByIdApiResponse = /** status 200 Workspace */ {
-  id?: string;
-  name?: string;
+  id: string;
+  /** Name of the workspace. */
+  name: string;
+  /** Description of the workspace. */
   description?: string;
-  /** Workspace organization ID */
-  organization_id?: string;
+  /** Organization to which this workspace belongs. */
+  organization_id: string;
+  /** User ID of the workspace owner. */
   owner?: string;
-  metadata?: {
-    [key: string]: string;
-  };
+  /** Metadata associated with the workspace. */
+  metadata?: object;
   /** Timestamp when the resource was created. */
-  created_at?: string;
+  created_at: string;
   /** Timestamp when the resource was updated. */
-  updated_at?: string;
+  updated_at: string;
   /** Timestamp when the resource was deleted. */
   deleted_at?: string;
 };
@@ -3886,19 +3902,21 @@ export type GetWorkspaceByIdApiArg = {
   workspaceId: string;
 };
 export type UpdateWorkspaceApiResponse = /** status 200 Workspace */ {
-  id?: string;
-  name?: string;
+  id: string;
+  /** Name of the workspace. */
+  name: string;
+  /** Description of the workspace. */
   description?: string;
-  /** Workspace organization ID */
-  organization_id?: string;
+  /** Organization to which this workspace belongs. */
+  organization_id: string;
+  /** User ID of the workspace owner. */
   owner?: string;
-  metadata?: {
-    [key: string]: string;
-  };
+  /** Metadata associated with the workspace. */
+  metadata?: object;
   /** Timestamp when the resource was created. */
-  created_at?: string;
+  created_at: string;
   /** Timestamp when the resource was updated. */
-  updated_at?: string;
+  updated_at: string;
   /** Timestamp when the resource was deleted. */
   deleted_at?: string;
 };
@@ -3913,6 +3931,8 @@ export type UpdateWorkspaceApiArg = {
     description?: string;
     /** Organization ID. */
     organization_id: string;
+    /** Metadata associated with the workspace. */
+    metadata?: object;
   };
 };
 export type DeleteWorkspaceApiResponse = unknown;
@@ -3960,11 +3980,11 @@ export type AssignTeamToWorkspaceApiResponse = /** status 200 Workspace team map
   page?: number;
   page_size?: number;
   total_count?: number;
-  /** The workspaces teams mapping of the workspacesteamsmappingpage. */
+  /** Workspace-team mapping entries. */
   workspacesTeamsMapping?: {
     id?: string;
-    team_id?: string;
     workspace_id?: string;
+    team_id?: string;
     /** Timestamp when the resource was created. */
     created_at?: string;
     /** Timestamp when the resource was updated. */
@@ -4032,11 +4052,11 @@ export type AssignEnvironmentToWorkspaceApiResponse = /** status 200 Workspace e
   page?: number;
   page_size?: number;
   total_count?: number;
-  /** The workspaces environments mapping of the workspacesenvironmentsmappingpage. */
+  /** Workspace-environment mapping entries. */
   workspacesEnvironmentsMapping?: {
     id?: string;
-    environment_id?: string;
     workspace_id?: string;
+    environment_id?: string;
     /** Timestamp when the resource was created. */
     created_at?: string;
     /** Timestamp when the resource was updated. */
@@ -4062,7 +4082,7 @@ export type GetDesignsOfWorkspaceApiResponse = /** status 200 Designs */ {
   page?: number;
   page_size?: number;
   total_count?: number;
-  /** The designs of the mesherydesignpage. */
+  /** Designs in this page. */
   designs?: {
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
@@ -5092,11 +5112,11 @@ export type AssignDesignToWorkspaceApiResponse = /** status 200 Workspace design
   page?: number;
   page_size?: number;
   total_count?: number;
-  /** The workspaces designs mapping of the workspacesdesignsmappingpage. */
+  /** Workspace-design mapping entries. */
   workspacesDesignsMapping?: {
     id?: string;
-    design_id?: string;
     workspace_id?: string;
+    design_id?: string;
     /** Timestamp when the resource was created. */
     created_at?: string;
     /** Timestamp when the resource was updated. */
@@ -5122,7 +5142,7 @@ export type GetViewsOfWorkspaceApiResponse = /** status 200 Views */ {
   page?: number;
   page_size?: number;
   total_count?: number;
-  /** The views of the mesheryviewpage. */
+  /** Views in this page. */
   views?: {
     id?: string;
     name?: string;
@@ -5160,11 +5180,11 @@ export type AssignViewToWorkspaceApiResponse = /** status 200 Workspace view map
   page?: number;
   page_size?: number;
   total_count?: number;
-  /** The workspaces views mapping of the workspacesviewsmappingpage. */
+  /** Workspace-view mapping entries. */
   workspacesViewsMapping?: {
     id?: string;
-    view_id?: string;
     workspace_id?: string;
+    view_id?: string;
     /** Timestamp when the resource was created. */
     created_at?: string;
     /** Timestamp when the resource was updated. */
