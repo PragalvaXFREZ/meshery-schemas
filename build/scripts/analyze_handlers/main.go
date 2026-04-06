@@ -33,12 +33,12 @@ import (
 
 // HandlerInfo holds the analysis result for one handler function.
 type HandlerInfo struct {
-	File              string   `json:"file"`
-	SchemaImportUsage string   `json:"schema_import_usage"` // "TRUE", "Partial", "FALSE"
-	SchemaReason      string   `json:"schema_reason"`
-	RequestTypes      []string `json:"request_types"`       // all decoded types found
-	ResponseTypes     []string `json:"response_types"`      // all encoded types found
-	BodyReadViaReadAll bool    `json:"body_read_via_readall"` // true if io.ReadAll/ioutil.ReadAll detected
+	File               string   `json:"file"`
+	SchemaImportUsage  string   `json:"schema_import_usage"` // "TRUE", "Partial", "FALSE"
+	SchemaReason       string   `json:"schema_reason"`
+	RequestTypes       []string `json:"request_types"`         // all decoded types found
+	ResponseTypes      []string `json:"response_types"`        // all encoded types found
+	BodyReadViaReadAll bool     `json:"body_read_via_readall"` // true if io.ReadAll/ioutil.ReadAll detected
 }
 
 // RouteEntry represents a single registered HTTP route.
@@ -53,14 +53,22 @@ type RouteEntry struct {
 type AnalysisOutput struct {
 	SchemaModule string                  `json:"schema_module"`
 	Handlers     map[string]*HandlerInfo `json:"handlers"`
-	// TypeAliases maps a locally-defined type name to the full schema import path
-	// it aliases.  Example: "ConnectionPage" → "github.com/meshery/schemas/models/v1beta1/connection"
+	// TypeAliases maps a package-qualified local type name to the full schema
+	// import path it aliases. Example:
+	// "models.ConnectionPage" → "github.com/meshery/schemas/models/v1beta1/connection"
 	TypeAliases map[string]string `json:"type_aliases"`
-	// StructFields maps a type name to its JSON field names extracted from json tags.
+	// StructFields maps a package-qualified type name to its JSON field names
+	// extracted from json tags.
 	StructFields map[string][]string `json:"struct_fields"`
 	// Routes contains registered HTTP routes extracted from the router file.
 	// Only populated when --router-file is provided.
 	Routes []RouteEntry `json:"routes,omitempty"`
+}
+
+type StructDef struct {
+	Type           *ast.StructType
+	PackageName    string
+	ImportPackages map[string]string
 }
 
 // ---------------------------------------------------------------------------
@@ -98,7 +106,7 @@ func main() {
 
 	// allStructDefs accumulates AST struct definitions across all scanned
 	// directories so embedded struct fields can be resolved after scanning.
-	allStructDefs := make(map[string]*ast.StructType)
+	allStructDefs := make(map[string]StructDef)
 
 	handlersDir := filepath.Join(*repoFlag, *handlersDirFlag)
 	modelsDir := filepath.Join(*repoFlag, *modelsDirFlag)
@@ -170,6 +178,7 @@ func scanAliases(dir, schemaModule string, aliases map[string]string) {
 		if len(schemaImports) == 0 {
 			return nil
 		}
+		pkgName := filePackageName(f)
 		for _, decl := range f.Decls {
 			genDecl, ok := decl.(*ast.GenDecl)
 			if !ok {
@@ -202,7 +211,7 @@ func scanAliases(dir, schemaModule string, aliases map[string]string) {
 					continue
 				}
 				if importPath, found := schemaImports[pkgIdent.Name]; found {
-					aliases[ts.Name.Name] = importPath
+					aliases[qualifiedTypeName(pkgName, ts.Name.Name)] = importPath
 				}
 			}
 		}
@@ -216,52 +225,53 @@ func scanAliases(dir, schemaModule string, aliases map[string]string) {
 // Step 2: handler scanner
 // ---------------------------------------------------------------------------
 
-// scanHandlers parses all non-test .go files in dir (non-recursive) and
+// scanHandlers parses all non-test .go files in dir (recursively) and
 // analyses every handler method found.
-func scanHandlers(dir, schemaModule string, typeAliases map[string]string, out *AnalysisOutput, allStructDefs map[string]*ast.StructType) {
-	entries, err := os.ReadDir(dir)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "WARNING: cannot read handlers dir %s: %v\n", dir, err)
-		return
-	}
-
+func scanHandlers(dir, schemaModule string, typeAliases map[string]string, out *AnalysisOutput, allStructDefs map[string]StructDef) {
 	fset := token.NewFileSet()
-	for _, entry := range entries {
-		if entry.IsDir() {
-			continue
+	if err := filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "WARNING: walk error in %s: %v\n", path, err)
+			return nil
 		}
-		name := entry.Name()
-		if !strings.HasSuffix(name, ".go") || strings.HasSuffix(name, "_test.go") {
-			continue
+		if d.IsDir() {
+			return nil
 		}
-		path := filepath.Join(dir, name)
+		if !strings.HasSuffix(path, ".go") || strings.HasSuffix(path, "_test.go") {
+			return nil
+		}
 		f, parseErr := parser.ParseFile(fset, path, nil, 0)
 		if parseErr != nil {
 			fmt.Fprintf(os.Stderr, "WARNING: parse error in %s: %v\n", path, parseErr)
-			continue
+			return nil
 		}
 
+		pkgName := filePackageName(f)
 		schemaImports := fileSchemaImports(f, schemaModule)
+		importPackages := fileImportPackageNames(f)
 
 		// Collect struct fields and definitions from handler files too
-		extractStructFieldsFromFile(f, out.StructFields, allStructDefs)
+		extractStructFieldsFromFile(f, pkgName, out.StructFields, allStructDefs)
 
 		for _, decl := range f.Decls {
 			fn, ok := decl.(*ast.FuncDecl)
 			if !ok || fn.Body == nil || !isHandlerMethod(fn) {
 				continue
 			}
-			info := analyseHandler(fn, path, schemaModule, schemaImports, typeAliases)
+			info := analyseHandler(fn, path, pkgName, schemaModule, schemaImports, typeAliases, importPackages)
 			out.Handlers[fn.Name.Name] = info
 		}
+		return nil
+	}); err != nil {
+		fmt.Fprintf(os.Stderr, "WARNING: unable to walk handlers dir %s: %v\n", dir, err)
 	}
 }
 
 // analyseHandler derives the HandlerInfo for a single function declaration.
 func analyseHandler(
 	fn *ast.FuncDecl,
-	filePath, schemaModule string,
-	schemaImports, typeAliases map[string]string,
+	filePath, pkgName, schemaModule string,
+	schemaImports, typeAliases, importPackages map[string]string,
 ) *HandlerInfo {
 	info := &HandlerInfo{File: filePath}
 
@@ -272,11 +282,11 @@ func analyseHandler(
 	// ── Request types (all json.Decode/Unmarshal targets) ─────────────────
 	reqVars := findAllJSONDecodeVars(fn.Body)
 	for _, reqVar := range reqVars {
-		t := resolveVarType(fn.Body, reqVar)
+		t := resolveVarType(fn.Body, reqVar, pkgName, importPackages)
 		if t != "" {
 			info.RequestTypes = append(info.RequestTypes, t)
 			if info.SchemaImportUsage == "FALSE" {
-				if imp, ok := typeAliases[bareTypeName(t)]; ok {
+				if imp, ok := typeAliases[typeLookupKey(t, pkgName, importPackages)]; ok {
 					info.SchemaImportUsage, info.SchemaReason =
 						classifyByImportPath(imp, schemaModule, "alias: "+bareTypeName(t))
 				}
@@ -287,11 +297,11 @@ func analyseHandler(
 	// ── Response types (all json.Encode/Marshal expressions) ──────────────
 	respExprs := findAllJSONEncodeExprs(fn.Body)
 	for _, respExpr := range respExprs {
-		t := resolveExprType(fn.Body, respExpr)
+		t := resolveExprType(fn.Body, respExpr, pkgName, importPackages)
 		if t != "" {
 			info.ResponseTypes = append(info.ResponseTypes, t)
 			if info.SchemaImportUsage == "FALSE" {
-				if imp, ok := typeAliases[bareTypeName(t)]; ok {
+				if imp, ok := typeAliases[typeLookupKey(t, pkgName, importPackages)]; ok {
 					info.SchemaImportUsage, info.SchemaReason =
 						classifyByImportPath(imp, schemaModule, "alias: "+bareTypeName(t))
 				}
@@ -317,7 +327,7 @@ func analyseHandler(
 // every struct type it finds.  Entries written later overwrite earlier ones,
 // so callers should scan local models before the authoritative schemas models.
 // allStructDefs accumulates raw AST definitions for later embedded-field resolution.
-func scanStructFields(dir string, fields map[string][]string, allStructDefs map[string]*ast.StructType) {
+func scanStructFields(dir string, fields map[string][]string, allStructDefs map[string]StructDef) {
 	fset := token.NewFileSet()
 	if err := filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
@@ -335,7 +345,7 @@ func scanStructFields(dir string, fields map[string][]string, allStructDefs map[
 			fmt.Fprintf(os.Stderr, "WARNING: parse error in %s: %v\n", path, parseErr)
 			return nil
 		}
-		extractStructFieldsFromFile(f, fields, allStructDefs)
+		extractStructFieldsFromFile(f, filePackageName(f), fields, allStructDefs)
 		return nil
 	}); err != nil {
 		fmt.Fprintf(os.Stderr, "WARNING: unable to walk struct fields dir %s: %v\n", dir, err)
@@ -345,7 +355,8 @@ func scanStructFields(dir string, fields map[string][]string, allStructDefs map[
 // extractStructFieldsFromFile harvests json tag field names from all struct
 // definitions in one parsed file and records raw AST definitions for embedded-field
 // resolution.
-func extractStructFieldsFromFile(f *ast.File, fields map[string][]string, allStructDefs map[string]*ast.StructType) {
+func extractStructFieldsFromFile(f *ast.File, pkgName string, fields map[string][]string, allStructDefs map[string]StructDef) {
+	importPackages := fileImportPackageNames(f)
 	for _, decl := range f.Decls {
 		gd, ok := decl.(*ast.GenDecl)
 		if !ok {
@@ -360,13 +371,18 @@ func extractStructFieldsFromFile(f *ast.File, fields map[string][]string, allStr
 			if !ok || st.Fields == nil {
 				continue
 			}
+			typeKey := qualifiedTypeName(pkgName, ts.Name.Name)
 			// Record AST definition for embedded-field resolution later.
-			allStructDefs[ts.Name.Name] = st
+			allStructDefs[typeKey] = StructDef{
+				Type:           st,
+				PackageName:    pkgName,
+				ImportPackages: importPackages,
+			}
 			// Collect direct (non-embedded) JSON fields as a first pass.
 			// Embedded fields are resolved in resolveEmbeddedFields after all scanning.
 			jsonFields := collectJSONFields(st)
 			if len(jsonFields) > 0 {
-				fields[ts.Name.Name] = jsonFields
+				fields[typeKey] = jsonFields
 			}
 		}
 	}
@@ -393,10 +409,10 @@ func collectJSONFields(st *ast.StructType) []string {
 // recursively expanding embedded (anonymous) struct fields.  This must be
 // called after all directories have been scanned so that allStructDefs
 // contains definitions from both local models and schema models.
-func resolveEmbeddedFields(fields map[string][]string, allStructDefs map[string]*ast.StructType) {
-	for name, st := range allStructDefs {
-		visited := make(map[string]bool)
-		resolved := collectJSONFieldsRecursive(st, allStructDefs, visited)
+func resolveEmbeddedFields(fields map[string][]string, allStructDefs map[string]StructDef) {
+	for name, def := range allStructDefs {
+		visited := map[string]bool{name: true}
+		resolved := collectJSONFieldsRecursive(def, allStructDefs, visited)
 		if len(resolved) > 0 {
 			fields[name] = resolved
 		}
@@ -406,9 +422,9 @@ func resolveEmbeddedFields(fields map[string][]string, allStructDefs map[string]
 // collectJSONFieldsRecursive returns json field names from a struct type,
 // recursively expanding anonymous (embedded) fields.  The visited set
 // prevents infinite recursion from self-referential struct embeddings.
-func collectJSONFieldsRecursive(st *ast.StructType, allStructDefs map[string]*ast.StructType, visited map[string]bool) []string {
+func collectJSONFieldsRecursive(def StructDef, allStructDefs map[string]StructDef, visited map[string]bool) []string {
 	var result []string
-	for _, field := range st.Fields.List {
+	for _, field := range def.Type.Fields.List {
 		// Named field with a json tag — normal case.
 		if field.Tag != nil {
 			tag := strings.Trim(field.Tag.Value, "`")
@@ -421,32 +437,39 @@ func collectJSONFieldsRecursive(st *ast.StructType, allStructDefs map[string]*as
 		// Anonymous (embedded) field — no names and typically no tag.
 		// Resolve the embedded type and recursively collect its fields.
 		if len(field.Names) == 0 {
-			embeddedName := embeddedTypeName(field.Type)
+			embeddedName := embeddedTypeKey(field.Type, def.PackageName, def.ImportPackages)
 			if embeddedName == "" || visited[embeddedName] {
 				continue
 			}
 			visited[embeddedName] = true
-			if embSt, ok := allStructDefs[embeddedName]; ok {
-				result = append(result, collectJSONFieldsRecursive(embSt, allStructDefs, visited)...)
+			if embDef, ok := allStructDefs[embeddedName]; ok {
+				result = append(result, collectJSONFieldsRecursive(embDef, allStructDefs, visited)...)
 			}
 		}
 	}
 	return result
 }
 
-// embeddedTypeName extracts the base type name from an embedded field's type expression.
-// Handles: Ident (T), StarExpr (*T), SelectorExpr (pkg.T), *pkg.T.
-func embeddedTypeName(expr ast.Expr) string {
+// embeddedTypeKey extracts the package-qualified type key from an embedded field's
+// type expression. Handles: Ident (T), StarExpr (*T), SelectorExpr (pkg.T), *pkg.T.
+func embeddedTypeKey(expr ast.Expr, currentPkg string, importPackages map[string]string) string {
 	// Unwrap pointer
 	if star, ok := expr.(*ast.StarExpr); ok {
 		expr = star.X
 	}
 	switch e := expr.(type) {
 	case *ast.Ident:
-		return e.Name
+		return qualifiedTypeName(currentPkg, e.Name)
 	case *ast.SelectorExpr:
-		// pkg.Type — use the type name part only since allStructDefs is keyed by name.
-		return e.Sel.Name
+		pkgIdent, ok := e.X.(*ast.Ident)
+		if !ok {
+			return ""
+		}
+		pkgName := importPackages[pkgIdent.Name]
+		if pkgName == "" {
+			pkgName = pkgIdent.Name
+		}
+		return qualifiedTypeName(pkgName, e.Sel.Name)
 	}
 	return ""
 }
@@ -487,6 +510,40 @@ func fileSchemaImports(f *ast.File, schemaModule string) map[string]string {
 		result[alias] = path
 	}
 	return result
+}
+
+func filePackageName(f *ast.File) string {
+	if f != nil && f.Name != nil {
+		return f.Name.Name
+	}
+	return ""
+}
+
+func fileImportPackageNames(f *ast.File) map[string]string {
+	result := make(map[string]string)
+	for _, imp := range f.Imports {
+		path := strings.Trim(imp.Path.Value, `"`)
+		if path == "" {
+			continue
+		}
+		if imp.Name != nil && (imp.Name.Name == "_" || imp.Name.Name == ".") {
+			continue
+		}
+		alias := importPathBase(path)
+		if imp.Name != nil && imp.Name.Name != "" {
+			alias = imp.Name.Name
+		}
+		result[alias] = importPathBase(path)
+	}
+	return result
+}
+
+func importPathBase(path string) string {
+	parts := strings.Split(strings.TrimRight(path, "/"), "/")
+	if len(parts) == 0 {
+		return ""
+	}
+	return parts[len(parts)-1]
 }
 
 // ---------------------------------------------------------------------------
@@ -558,6 +615,7 @@ func classifyByImportPath(importPath, schemaModule, prefix string) (status, reas
 // json.NewDecoder(...).Decode(arg) or json.Unmarshal(data, arg) calls.
 // Handles both &var and var (already-pointer) forms.
 func findAllJSONDecodeVars(body *ast.BlockStmt) []string {
+	decoderVars := findJSONDecoderVars(body)
 	seen := make(map[string]bool)
 	var result []string
 	ast.Inspect(body, func(n ast.Node) bool {
@@ -571,7 +629,7 @@ func findAllJSONDecodeVars(body *ast.BlockStmt) []string {
 		}
 		switch sel.Sel.Name {
 		case "Decode":
-			if !isJSONDecoderExpr(sel.X) {
+			if !isJSONDecoderExpr(sel.X, decoderVars) {
 				return true
 			}
 			if len(call.Args) > 0 {
@@ -597,9 +655,43 @@ func findAllJSONDecodeVars(body *ast.BlockStmt) []string {
 	return result
 }
 
-// isJSONDecoderExpr returns true if expr is json.NewDecoder(...) or any
-// identifier (a stored decoder variable).
-func isJSONDecoderExpr(expr ast.Expr) bool {
+func findJSONDecoderVars(body *ast.BlockStmt) map[string]bool {
+	result := make(map[string]bool)
+	ast.Inspect(body, func(n ast.Node) bool {
+		switch stmt := n.(type) {
+		case *ast.DeclStmt:
+			gd, ok := stmt.Decl.(*ast.GenDecl)
+			if !ok {
+				return true
+			}
+			for _, spec := range gd.Specs {
+				vs, ok := spec.(*ast.ValueSpec)
+				if !ok {
+					continue
+				}
+				for i, value := range vs.Values {
+					if !isJSONNewDecoderCall(value) || i >= len(vs.Names) {
+						continue
+					}
+					result[vs.Names[i].Name] = true
+				}
+			}
+		case *ast.AssignStmt:
+			for i, rhs := range stmt.Rhs {
+				if !isJSONNewDecoderCall(rhs) || i >= len(stmt.Lhs) {
+					continue
+				}
+				if ident, ok := stmt.Lhs[i].(*ast.Ident); ok {
+					result[ident.Name] = true
+				}
+			}
+		}
+		return true
+	})
+	return result
+}
+
+func isJSONNewDecoderCall(expr ast.Expr) bool {
 	switch e := expr.(type) {
 	case *ast.CallExpr:
 		sel, ok := e.Fun.(*ast.SelectorExpr)
@@ -608,9 +700,18 @@ func isJSONDecoderExpr(expr ast.Expr) bool {
 		}
 		pkg, ok := sel.X.(*ast.Ident)
 		return ok && pkg.Name == "json" && sel.Sel.Name == "NewDecoder"
+	}
+	return false
+}
+
+// isJSONDecoderExpr returns true if expr is json.NewDecoder(...) or a stored
+// decoder variable previously assigned from json.NewDecoder(...).
+func isJSONDecoderExpr(expr ast.Expr, decoderVars map[string]bool) bool {
+	switch e := expr.(type) {
+	case *ast.CallExpr:
+		return isJSONNewDecoderCall(expr)
 	case *ast.Ident:
-		// Stored decoder: dec := json.NewDecoder(...); dec.Decode(...)
-		return true
+		return decoderVars[e.Name]
 	}
 	return false
 }
@@ -681,7 +782,7 @@ func isJSONEncoderExpr(expr ast.Expr) bool {
 // resolveVarType searches the function body for the declared type of varName.
 // Handles: var x *T, var x T, x := &T{}, x := T{}, x := make([]T, n).
 // Returns the type string, or "" if not found.
-func resolveVarType(body *ast.BlockStmt, varName string) string {
+func resolveVarType(body *ast.BlockStmt, varName, currentPkg string, importPackages map[string]string) string {
 	var result string
 	ast.Inspect(body, func(n ast.Node) bool {
 		if result != "" {
@@ -703,12 +804,12 @@ func resolveVarType(body *ast.BlockStmt, varName string) string {
 						continue
 					}
 					if vs.Type != nil {
-						result = typeExprString(vs.Type)
+						result = canonicalizeTypeRef(typeExprString(vs.Type), currentPkg, importPackages)
 						return false
 					}
 					// var x = expr — infer from RHS
 					if len(vs.Values) > 0 {
-						result = typeFromRHS(vs.Values[0])
+						result = typeFromRHS(vs.Values[0], currentPkg, importPackages)
 						return false
 					}
 				}
@@ -720,7 +821,7 @@ func resolveVarType(body *ast.BlockStmt, varName string) string {
 					continue
 				}
 				if i < len(stmt.Rhs) {
-					t := typeFromRHS(stmt.Rhs[i])
+					t := typeFromRHS(stmt.Rhs[i], currentPkg, importPackages)
 					if t != "" {
 						result = t
 						return false
@@ -736,7 +837,7 @@ func resolveVarType(body *ast.BlockStmt, varName string) string {
 // resolveExprType resolves the type of an expression used in json.Encode/Marshal.
 // For simple variable names it delegates to resolveVarType.
 // For "pkg.VarName" forms it returns the expression unchanged.
-func resolveExprType(body *ast.BlockStmt, expr string) string {
+func resolveExprType(body *ast.BlockStmt, expr, currentPkg string, importPackages map[string]string) string {
 	// Strip leading & or *
 	clean := strings.TrimLeft(expr, "&*")
 	if clean == "" {
@@ -748,10 +849,16 @@ func resolveExprType(body *ast.BlockStmt, expr string) string {
 	// If the expression already contains a dot it may be a package-qualified type or
 	// value reference; return the normalized form as-is.
 	if strings.Contains(clean, ".") {
-		return clean
+		return canonicalizeTypeRef(clean, currentPkg, importPackages)
 	}
 	// Simple identifier — try to resolve via declaration
-	return resolveVarType(body, clean)
+	if resolved := resolveVarType(body, clean, currentPkg, importPackages); resolved != "" {
+		return resolved
+	}
+	if isLocalTypeName(clean) {
+		return canonicalizeTypeRef(clean, currentPkg, importPackages)
+	}
+	return ""
 }
 
 // typeFromRHS extracts a type string from an RHS expression:
@@ -759,28 +866,109 @@ func resolveExprType(body *ast.BlockStmt, expr string) string {
 //	&pkg.Type{}  → "*pkg.Type"
 //	pkg.Type{}   → "pkg.Type"
 //	make([]T, n) → "[]T"
-func typeFromRHS(expr ast.Expr) string {
+func typeFromRHS(expr ast.Expr, currentPkg string, importPackages map[string]string) string {
 	switch e := expr.(type) {
 	case *ast.UnaryExpr:
 		if e.Op.String() == "&" {
-			t := typeFromRHS(e.X)
+			t := typeFromRHS(e.X, currentPkg, importPackages)
 			if t != "" {
 				return "*" + t
 			}
 		}
 	case *ast.CompositeLit:
 		if e.Type != nil {
-			return typeExprString(e.Type)
+			return canonicalizeTypeRef(typeExprString(e.Type), currentPkg, importPackages)
 		}
 	case *ast.CallExpr:
 		// make([]T, n) or make(map[K]V, n)
 		if ident, ok := e.Fun.(*ast.Ident); ok && ident.Name == "make" {
 			if len(e.Args) > 0 {
-				return typeExprString(e.Args[0])
+				return canonicalizeTypeRef(typeExprString(e.Args[0]), currentPkg, importPackages)
+			}
+		}
+		if ident, ok := e.Fun.(*ast.Ident); ok && ident.Name == "new" {
+			if len(e.Args) > 0 {
+				return canonicalizeTypeRef("*"+typeExprString(e.Args[0]), currentPkg, importPackages)
 			}
 		}
 	}
 	return ""
+}
+
+func qualifiedTypeName(pkgName, typeName string) string {
+	if pkgName == "" || typeName == "" {
+		return typeName
+	}
+	return pkgName + "." + typeName
+}
+
+func canonicalizeTypeRef(typeName, currentPkg string, importPackages map[string]string) string {
+	if typeName == "" {
+		return ""
+	}
+
+	prefix := ""
+	for {
+		switch {
+		case strings.HasPrefix(typeName, "*"):
+			prefix += "*"
+			typeName = typeName[1:]
+		case strings.HasPrefix(typeName, "[]"):
+			prefix += "[]"
+			typeName = typeName[2:]
+		default:
+			goto normalize
+		}
+	}
+
+normalize:
+	if typeName == "" {
+		return prefix
+	}
+	if strings.Contains(typeName, ".") {
+		parts := strings.SplitN(typeName, ".", 2)
+		pkgName := importPackages[parts[0]]
+		if pkgName == "" {
+			pkgName = parts[0]
+		}
+		return prefix + qualifiedTypeName(pkgName, parts[1])
+	}
+	if isLocalTypeName(typeName) {
+		return prefix + qualifiedTypeName(currentPkg, typeName)
+	}
+	return prefix + typeName
+}
+
+func typeLookupKey(typeName, currentPkg string, importPackages map[string]string) string {
+	key := canonicalizeTypeRef(strings.TrimSuffix(typeName, "{}"), currentPkg, importPackages)
+	for strings.HasPrefix(key, "*") {
+		key = key[1:]
+	}
+	for strings.HasPrefix(key, "[]") {
+		key = key[2:]
+	}
+	return key
+}
+
+func isLocalTypeName(typeName string) bool {
+	if typeName == "" || builtinTypeNames[typeName] {
+		return false
+	}
+	for i, r := range typeName {
+		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || r == '_' || (i > 0 && r >= '0' && r <= '9') {
+			continue
+		}
+		return false
+	}
+	return true
+}
+
+var builtinTypeNames = map[string]bool{
+	"any": true, "bool": true, "byte": true, "comparable": true, "complex64": true,
+	"complex128": true, "error": true, "float32": true, "float64": true, "int": true,
+	"int8": true, "int16": true, "int32": true, "int64": true, "rune": true,
+	"string": true, "uint": true, "uint8": true, "uint16": true, "uint32": true,
+	"uint64": true, "uintptr": true,
 }
 
 // typeExprString converts a type expression to a string.
@@ -958,13 +1146,13 @@ func findBodyReadAll(body *ast.BlockStmt) bool {
 // middlewareNames lists known middleware wrapper function names.
 // These are stripped when extracting the actual handler from a middleware chain.
 var middlewareNames = map[string]bool{
-	"ProviderMiddleware":         true,
-	"AuthMiddleware":             true,
-	"SessionInjectorMiddleware":  true,
-	"KubernetesMiddleware":       true,
-	"K8sFSMMiddleware":           true,
-	"GraphqlMiddleware":          true,
-	"NoCacheMiddleware":          true,
+	"ProviderMiddleware":        true,
+	"AuthMiddleware":            true,
+	"SessionInjectorMiddleware": true,
+	"KubernetesMiddleware":      true,
+	"K8sFSMMiddleware":          true,
+	"GraphqlMiddleware":         true,
+	"NoCacheMiddleware":         true,
 }
 
 // parseRouterFile parses a Go router file and extracts registered routes.
@@ -1214,7 +1402,7 @@ func extractStringLiteral(expr ast.Expr) string {
 	if !ok || lit.Kind != token.STRING {
 		return ""
 	}
-	return strings.Trim(lit.Value, `"` + "`")
+	return strings.Trim(lit.Value, `"`+"`")
 }
 
 // extractStringArgs extracts string values from a list of argument expressions.

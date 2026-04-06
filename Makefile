@@ -126,15 +126,19 @@ audit-schemas-debt-full:
 
 API_AUDIT_VENV = build/.api-audit-venv
 API_AUDIT_PY   = $(API_AUDIT_VENV)/bin/python3
+API_AUDIT_STAMP = $(API_AUDIT_VENV)/.installed
 
 ## Install Python dependencies for the API schema audit tool
-api-audit-setup:
+$(API_AUDIT_STAMP):
 	@python3 -m venv $(API_AUDIT_VENV)
 	@$(API_AUDIT_PY) -m pip install --quiet pyyaml gspread google-auth
+	@touch $(API_AUDIT_STAMP)
+
+api-audit-setup: $(API_AUDIT_STAMP)
 
 ## Dry-run audit of all available repos against the bundled OpenAPI spec.
 ## Set MESHERY_REPO and/or CLOUD_REPO (or both) to select which repos to analyse.
-api-audit: api-audit-setup
+api-audit: $(API_AUDIT_STAMP)
 	@ [ -n "$(MESHERY_REPO)" ] || [ -n "$(CLOUD_REPO)" ] || { echo "ERROR: set MESHERY_REPO and/or CLOUD_REPO to run the audit." >&2; exit 1; }
 	@ $(API_AUDIT_PY) build/scripts/api-audit.py \
 		$(if $(MESHERY_REPO),--meshery-repo "$(MESHERY_REPO)") \
@@ -146,7 +150,7 @@ api-audit: api-audit-setup
 ## are set the sheet is written once in a single combined run.
 ## Google credentials must be set via GOOGLE_CREDENTIALS_JSON or
 ## GOOGLE_APPLICATION_CREDENTIALS before running this target.
-api-audit-update: api-audit-setup
+api-audit-update: $(API_AUDIT_STAMP)
 	@ [ -n "$(SHEET_ID)" ] || { echo "ERROR: SHEET_ID is required to write results to Google Sheets." >&2; exit 1; }
 	@ [ -n "$(MESHERY_REPO)" ] || [ -n "$(CLOUD_REPO)" ] || { echo "ERROR: set MESHERY_REPO and/or CLOUD_REPO to run the audit." >&2; exit 1; }
 	@ $(API_AUDIT_PY) build/scripts/api-audit.py \

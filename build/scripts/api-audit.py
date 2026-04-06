@@ -240,25 +240,32 @@ def format_record_for_sheet(rec: "EndpointRecord") -> Dict[str, Any]:
             if m_active and c_active:
                 sheet_status = "Active - Both"
             elif m_active:
-                sheet_status = "Active - Meshery Server, Un-implemented - Meshery Cloud"
+                sheet_status = "Active - Meshery Server, Unimplemented - Meshery Cloud"
             elif c_active:
-                sheet_status = "Active - Meshery Cloud, Un-implemented - Meshery Server"
+                sheet_status = "Active - Meshery Cloud, Unimplemented - Meshery Server"
             else:
-                sheet_status = "Un-implemented - Both"
+                sheet_status = "Unimplemented - Both"
         elif rec.belongs_to_cloud:
-            sheet_status = "Active - Meshery Cloud" if c_active else "Un-implemented - Meshery Cloud"
+            sheet_status = "Active - Meshery Cloud" if c_active else "Unimplemented - Meshery Cloud"
         elif rec.belongs_to_meshery:
-            sheet_status = "Active - Meshery Server" if m_active else "Un-implemented - Meshery Server"
+            sheet_status = "Active - Meshery Server" if m_active else "Unimplemented - Meshery Server"
         else:
             # Fallback: not owned by either (shouldn't happen normally)
             if m_active or c_active:
                 sheet_status = "Active - Both"
             else:
-                sheet_status = "Un-implemented - Both"
+                sheet_status = "Unimplemented - Both"
+
+    # When no schema exists, show only the active consumer.
+    if not rec.in_spec:
+        if sheet_status == "Active - Meshery Server, Unimplemented - Meshery Cloud":
+            sheet_status = "Active - Meshery Server"
+        elif sheet_status == "Active - Meshery Cloud, Unimplemented - Meshery Server":
+            sheet_status = "Active - Meshery Cloud"
 
     # --- x-annotated ---
     if not rec.in_spec:
-        x_annotated = "Schema Missing"
+        x_annotated = "No Schema"
     else:
         x_annotated = rec.x_annotation  # "Cloud-only" | "Meshery" | "None"
 
@@ -267,14 +274,14 @@ def format_record_for_sheet(rec: "EndpointRecord") -> Dict[str, Any]:
         if not belongs:
             return "-"
         if not rec.in_spec:
-            return "No Schema"
+            return "-"
         return "True" if schema_backed else "False"
 
     def _fmt_completeness(belongs: bool, raw: Optional[str], schema_backed: bool) -> str:
         if not belongs:
             return "-"
         if not rec.in_spec or not schema_backed:
-            return "No Schema"
+            return "-"
         if raw == "Full":
             return "True"
         if raw == "Partial":
@@ -282,8 +289,8 @@ def format_record_for_sheet(rec: "EndpointRecord") -> Dict[str, Any]:
         # "Stub", "Not-audited", None → "False"
         return "False"
 
-    def _fmt_driven(belongs: bool, raw: Optional[str]) -> str:
-        if not belongs:
+    def _fmt_driven(present: bool, raw: Optional[str]) -> str:
+        if not present:
             return "-"
         if raw == "TRUE":
             return "True"
@@ -300,8 +307,8 @@ def format_record_for_sheet(rec: "EndpointRecord") -> Dict[str, Any]:
     completeness_mc = _fmt_completeness(
         rec.belongs_to_cloud, rec.cloud_schema_completeness, rec.cloud_schema_backed,
     )
-    driven_ms = _fmt_driven(rec.belongs_to_meshery, rec.meshery_schema_driven)
-    driven_mc = _fmt_driven(rec.belongs_to_cloud, rec.cloud_schema_driven)
+    driven_ms = _fmt_driven(rec.exists_in_meshery_router, rec.meshery_schema_driven)
+    driven_mc = _fmt_driven(rec.exists_in_cloud_router, rec.cloud_schema_driven)
 
     return {
         "category": rec.category,
@@ -1007,6 +1014,19 @@ def run_go_analyzer(
     return {"handlers": {}, "type_aliases": {}, "struct_fields": {}}
 
 
+def _go_type_lookup_key(type_name: Optional[str]) -> Optional[str]:
+    """Normalize a Go type string to the qualified lookup key emitted by the analyzer."""
+    if not type_name or type_name == _PROVIDER_BYTES_SENTINEL:
+        return None
+
+    key = type_name.strip()
+    while key.startswith("*"):
+        key = key[1:]
+    while key.startswith("[]"):
+        key = key[2:]
+    return key.removesuffix("{}") or None
+
+
 def _upgrade_schema_map(
     schema_map: Dict[str, Tuple[str, str]],
     handler_io_map: Dict[str, Dict[str, Optional[str]]],
@@ -1033,12 +1053,13 @@ def _upgrade_schema_map(
             continue
         io = handler_io_map.get(handler, {})
         for t in [io.get("request_type"), io.get("response_type")]:
-            if not t:
+            key = _go_type_lookup_key(t)
+            if not key:
                 continue
-            bare = t.lstrip("*[]").rsplit(".", 1)[-1]
-            imp = type_aliases.get(bare)
+            imp = type_aliases.get(key)
             if not imp:
                 continue
+            bare = key.rsplit(".", 1)[-1]
             rel = imp.replace(schema_module + "/", "")
             if "models/v" in rel:
                 result[handler] = ("TRUE", f"alias: {bare} → {rel}")
@@ -1178,21 +1199,11 @@ def cross_check_completeness(
     resp_type = handler_io.get("response_type")
     is_resp_passthrough = resp_type == _PROVIDER_BYTES_SENTINEL
 
-    # Strip pointer/slice prefix for type lookup
-    def _bare_type(t: Optional[str]) -> Optional[str]:
-        if t is None or t == _PROVIDER_BYTES_SENTINEL:
-            return None
-        return t.lstrip("*[]").split(".")[-1]
+    req_type_key = _go_type_lookup_key(req_type)
+    resp_type_key = _go_type_lookup_key(resp_type)
 
-    req_type_short = _bare_type(req_type)
-    resp_type_short = _bare_type(resp_type)
-
-    req_go_fields = (
-        go_fields_map.get(req_type_short) if req_type_short else None
-    )
-    resp_go_fields = (
-        go_fields_map.get(resp_type_short) if resp_type_short else None
-    )
+    req_go_fields = go_fields_map.get(req_type_key) if req_type_key else None
+    resp_go_fields = go_fields_map.get(resp_type_key) if resp_type_key else None
 
     spec_req = spec_fields.get("request_fields", set())
     spec_resp = spec_fields.get("response_fields", set())
@@ -1830,6 +1841,8 @@ def _setup_repo_analysis(
     go_routes = analysis.get("routes")
     if go_routes:
         routes = _routes_from_go_analysis(go_routes)
+        regex_routes = parse_router(repo_root, config=repo_config)
+        routes = _merge_comment_routes(routes, regex_routes)
     else:
         routes = parse_router(repo_root, config=repo_config)
 
@@ -1899,6 +1912,39 @@ def _routes_from_go_analysis(go_routes: List[Dict[str, Any]]) -> List[Dict[str, 
             "commented": r.get("commented", False),
         })
     return routes
+
+
+def _merge_comment_routes(
+    primary_routes: List[Dict[str, Any]],
+    fallback_routes: List[Dict[str, Any]],
+) -> List[Dict[str, Any]]:
+    """Supplement Go-AST routes with regex-detected commented routes."""
+    merged = list(primary_routes)
+    seen = {
+        (
+            route["path"],
+            tuple(route.get("methods", [])),
+            route.get("handler", "<unknown>"),
+            route.get("commented", False),
+        )
+        for route in merged
+    }
+
+    for route in fallback_routes:
+        if not route.get("commented", False):
+            continue
+        key = (
+            route["path"],
+            tuple(route.get("methods", [])),
+            route.get("handler", "<unknown>"),
+            True,
+        )
+        if key in seen:
+            continue
+        seen.add(key)
+        merged.append(route)
+
+    return merged
 
 
 def _explode_routes_to_per_verb(routes: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -2014,13 +2060,9 @@ def merge_endpoint_lists(
             cloud_schema_completeness=_prefer_raw(
                 c_rec.cloud_schema_completeness, m_rec.cloud_schema_completeness
             ),
-            # Driven: prefer meshery's own analysis for meshery, cloud's for cloud
-            meshery_schema_driven=_prefer_raw(
-                m_rec.meshery_schema_driven, c_rec.meshery_schema_driven
-            ),
-            cloud_schema_driven=_prefer_raw(
-                c_rec.cloud_schema_driven, m_rec.cloud_schema_driven
-            ),
+            # Driven: keep each consumer's own handler analysis isolated.
+            meshery_schema_driven=m_rec.meshery_schema_driven,
+            cloud_schema_driven=c_rec.cloud_schema_driven,
             coverage=primary.coverage,
             status=primary.status,
             compl_notes=primary.compl_notes,
