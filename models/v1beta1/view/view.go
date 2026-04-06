@@ -57,7 +57,7 @@ type MesheryViewWithLocation struct {
 	ID      core.GeneralId `db:"id" json:"id" yaml:"id"`
 
 	// Metadata Metadata associated with the view.
-	Metadata core.Map `db:"metadata" json:"metadata" yaml:"metadata"`
+	Metadata core.Map `db:"metadata" json:"metadata,omitempty" yaml:"metadata,omitempty"`
 
 	// Name Display name of the view.
 	Name string `db:"name" json:"name,omitempty" yaml:"name,omitempty"`
@@ -71,11 +71,11 @@ type MesheryViewWithLocation struct {
 	// UpdatedAt Timestamp when the resource was updated.
 	UpdatedAt core.UpdatedAt `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 
-	// UserId ID of the user who created the view.
-	UserId uuid.UUID `db:"user_id" json:"user_id,omitempty" yaml:"user_id,omitempty"`
+	// UserID ID of the user who created the view.
+	UserID uuid.UUID `db:"user_id" json:"user_id,omitempty" yaml:"user_id,omitempty"`
 
 	// Visibility Visibility level of the view.
-	Visibility string `db:"visibility" json:"visibility" yaml:"visibility"`
+	Visibility string `db:"visibility" json:"visibility,omitempty" yaml:"visibility,omitempty"`
 
 	// WorkspaceId ID of the workspace this view belongs to.
 	WorkspaceId *uuid.UUID `db:"workspace_id" json:"workspace_id,omitempty" yaml:"workspace_id,omitempty"`
