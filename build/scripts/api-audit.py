@@ -55,8 +55,7 @@ except ImportError:
 # Paths relative to repos
 # ---------------------------------------------------------------------------
 
-# Paths relative to meshery/meshery repo root
-ROUTER_FILE = "server/router/server.go"
+# Path relative to meshery/meshery repo root
 HANDLERS_DIR = "server/handlers"
 
 # Path relative to meshery-schemas repo root (produced by bundle-openapi)
@@ -314,7 +313,6 @@ def format_record_for_sheet(rec: "EndpointRecord") -> Dict[str, Any]:
         "category": rec.category,
         "subcategory": rec.subcategory,
         "path": rec.path,
-        "method": rec.method,
         "methods": rec.method,
         "sheet_status": sheet_status,
         "x_annotated": x_annotated,
@@ -340,12 +338,6 @@ BODY_METHODS = frozenset({"POST", "PUT", "PATCH"})
 # Sentinel value for handler response types that are []byte passthrough
 # from the Provider interface (opaque JSON forwarded without typed struct).
 _PROVIDER_BYTES_SENTINEL = "<provider-[]byte>"
-
-MIDDLEWARE_NAMES = frozenset({
-    "ProviderMiddleware", "AuthMiddleware", "SessionInjectorMiddleware",
-    "KubernetesMiddleware", "K8sFSMMiddleware", "GraphqlMiddleware",
-    "NoCacheMiddleware",
-})
 
 # Fallback category rules for router-only endpoints that have no OpenAPI tags.
 # Spec-backed endpoints derive their category from x-tagGroups / tags instead.
@@ -458,203 +450,52 @@ def endpoint_sort_key(endpoint) -> Tuple[str, str, str, str]:
         endpoint["category"],
         endpoint["subcategory"],
         endpoint["path"],
-        endpoint.get("method", endpoint.get("methods", "")),
+        endpoint.get("methods", ""),
     )
 
 
 # ---------------------------------------------------------------------------
-# 1. Router parser — server/router/server.go
+# 1. Commented-route scanner (active routes come from Go AST helper)
 # ---------------------------------------------------------------------------
 
-def parse_router(
-    repo: Path, config: Optional["RepoConfig"] = None
-) -> List[Dict[str, Any]]:
-    """Parse route registrations from the repo's router file.
+def _scan_commented_gorilla_routes(repo: Path, router_file_rel: str) -> List[Dict[str, Any]]:
+    """Scan a Gorilla Mux router file for commented-out route registrations.
 
-    Uses *config.router_dialect* to pick the right parser:
-    - "gorilla" (default) — parses gMux.Handle/HandleFunc/PathPrefix calls
-    - "echo"              — parses Echo group and method calls (e.GET/POST/…)
+    The Go AST helper handles active routes.  Commented-out lines like
+    ``// gMux.Handle("/path", h.Handler).Methods("GET")`` are not valid Go
+    syntax, so the AST parser cannot see them.  This lightweight regex
+    scanner fills that gap.
+
+    Returns route dicts with ``commented: True``.
     """
-    router_file_rel = config.router_file if config else ROUTER_FILE
     router_file = repo / router_file_rel
     if not router_file.exists():
-        print(f"ERROR: {router_file} not found", file=sys.stderr)
         return []
 
-    content = router_file.read_text(errors="replace")
-
-    dialect = config.router_dialect if config else "gorilla"
-    if dialect == "echo":
-        return _parse_echo_routes(content)
-
-    lines = content.splitlines()
-
-    # Accumulate multi-line gMux statements
-    statements: List[str] = []
-    current = ""
-    paren_depth = 0
-    in_stmt = False
-    current_commented = False
-
-    for line in lines:
-        stripped = line.strip()
-        if re.match(r"^\s*(//\s*)?gMux\.(Handle|HandleFunc|PathPrefix)", line):
-            if current and in_stmt:
-                statements.append(current)
-            current = stripped
-            in_stmt = True
-            current_commented = stripped.startswith("//")
-            paren_depth = current.count("(") - current.count(")")
-            if paren_depth <= 0 and not stripped.rstrip().endswith("."):
-                statements.append(current)
-                current, in_stmt, paren_depth, current_commented = "", False, 0, False
-            continue
-        if in_stmt:
-            continuation = stripped
-            if current_commented:
-                continuation = re.sub(r"^//\s*", "", continuation)
-            current += " " + continuation
-            paren_depth += continuation.count("(") - continuation.count(")")
-            if paren_depth <= 0 and not continuation.rstrip().endswith("."):
-                statements.append(current)
-                current, in_stmt, paren_depth, current_commented = "", False, 0, False
-
-    if current:
-        statements.append(current)
-
-    routes = []
-    for stmt in statements:
-        route = _parse_route(stmt)
-        if route:
-            routes.append(route)
-    return routes
-
-
-def _parse_route(stmt: str) -> Optional[Dict[str, Any]]:
-    """Parse a single gMux statement into a route dict."""
-    commented = stmt.lstrip().startswith("//")
-    clean = re.sub(r"^//\s*", "", stmt.strip()) if commented else stmt.strip()
-
-    path_m = re.search(
-        r'gMux\.(Handle|HandleFunc|PathPrefix)\s*\(\s*"([^"]+)"', clean
-    )
-    if not path_m:
-        return None
-
-    path = path_m.group(2)
-    methods_m = re.search(r"\.\s*Methods\(\s*(.+?)\s*\)", clean)
-    methods = re.findall(r'"([A-Z]+)"', methods_m.group(1)) if methods_m else ["ALL"]
-    handler = _extract_handler(clean)
-
-    return {
-        "path": path,
-        "methods": sorted(methods),
-        "handler": handler,
-        "commented": commented,
-    }
-
-
-def _extract_handler(line: str) -> str:
-    """Extract handler function name from a route registration line.
-
-    Inline anonymous functions are detected first so that middleware or
-    helper calls inside the lambda body (h.SomeMethod) are not mistaken
-    for the route's named handler.
-    """
-    # Inline anonymous function — must check before h.* scanning
-    if "func(" in line or "func (" in line:
-        return "<inline>"
-
-    # Exported methods on Handler receiver (h.FuncName)
-    refs = re.findall(r"h\.([A-Z]\w+)", line)
-    actual = [r for r in refs if r not in MIDDLEWARE_NAMES]
-    if actual:
-        return actual[-1]
-
-    # Any h.funcName (including unexported)
-    refs = re.findall(r"h\.([A-Za-z]\w+)", line)
-    actual = [r for r in refs if r not in MIDDLEWARE_NAMES]
-    if actual:
-        return actual[-1]
-
-    return "<unknown>"
-
-
-def _parse_echo_routes(content: str) -> List[Dict[str, Any]]:
-    """Parse route registrations from an Echo-framework router file.
-
-    Handles:
-      - s.e.METHOD("/path", handler, middlewares...)
-      - group.METHOD("/path", handler, middlewares...)
-    where group is defined as  var = (...).Group("/prefix")
-
-    echo.WrapHandler(http.HandlerFunc(s.h.Name)) → handler name "Name"
-    s.h.Name or s.someHandler.Name              → handler name "Name"
-    func( ...                                   → "<inline>"
-    """
-    # 1. Build group base-path map: variable name → absolute path prefix
-    group_bases: Dict[str, str] = {}
-    for m in re.finditer(
-        r'(\w+)\s*:?=\s*(?:\w+\.)*(?:e|echo|s\.e)\.Group\("([^"]+)"\)',
-        content,
-    ):
-        group_bases[m.group(1)] = m.group(2)
-
     routes: List[Dict[str, Any]] = []
-    http_methods = {"GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"}
-
-    # 2. Match method calls: (receiver).(METHOD)("path", handler_expr, ...)
-    for m in re.finditer(
-        r'(\w+|s\.e)\.(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS|Any)\s*\(\s*"([^"]+)"'
-        r'\s*,\s*([^)]+)',
-        content,
-    ):
-        receiver, method_raw, path_suffix, rest = (
-            m.group(1), m.group(2), m.group(3), m.group(4)
+    for line in router_file.read_text(errors="replace").splitlines():
+        stripped = line.strip()
+        if not stripped.startswith("//"):
+            continue
+        clean = re.sub(r"^//\s*", "", stripped)
+        path_m = re.search(
+            r'gMux\.(Handle|HandleFunc|PathPrefix)\s*\(\s*"([^"]+)"', clean
         )
-        method = method_raw.upper() if method_raw != "Any" else "ALL"
-        methods = [method] if method != "ALL" else ["ALL"]
-
-        # Reconstruct full path
-        base = group_bases.get(receiver, "")
-        if receiver in ("s.e", "e"):
-            base = ""  # direct on server — path_suffix is absolute
-        full_path = (base.rstrip("/") + "/" + path_suffix.lstrip("/")).rstrip("/") or "/"
-
-        # Extract handler name from rest of the call
-        handler = _extract_echo_handler(rest)
-
-        commented = False  # Echo router doesn't use commented routes
-
+        if not path_m:
+            continue
+        path = path_m.group(2)
+        methods_m = re.search(r"\.\s*Methods\(\s*(.+?)\s*\)", clean)
+        methods = re.findall(r'"([A-Z]+)"', methods_m.group(1)) if methods_m else ["ALL"]
+        # Extract handler name: last h.FuncName reference
+        handler_m = re.findall(r"h\.([A-Z]\w+)", clean)
+        handler = handler_m[-1] if handler_m else "<unknown>"
         routes.append({
-            "path": full_path,
-            "methods": sorted(methods) if methods != ["ALL"] else ["ALL"],
+            "path": path,
+            "methods": sorted(methods),
             "handler": handler,
-            "commented": commented,
+            "commented": True,
         })
-
     return routes
-
-
-def _extract_echo_handler(expr: str) -> str:
-    """Extract handler name from the second argument of an Echo route call."""
-    expr = expr.strip()
-    # Inline function
-    if "func(" in expr or "func (" in expr:
-        return "<inline>"
-    # echo.WrapHandler(http.HandlerFunc(s.h.Name))
-    m = re.search(r"http\.HandlerFunc\((?:\w+\.)*(\w+)\)", expr)
-    if m:
-        return m.group(1)
-    # s.h.Name or s.academyHandler.Name or s.someHandler.Name
-    m = re.search(r"s\.\w+\.([A-Z]\w+)", expr)
-    if m:
-        return m.group(1)
-    # Plain method reference
-    m = re.search(r"\.([A-Z]\w+)\b", expr)
-    if m:
-        return m.group(1)
-    return "<unknown>"
 
 
 # ---------------------------------------------------------------------------
@@ -994,21 +835,18 @@ def run_go_analyzer(
         return json.loads(out)
     except FileNotFoundError:
         print(
-            "WARNING: 'go' not found — Go AST analyzer unavailable; "
-            "analysis will be empty — handler classification unavailable",
+            "ERROR: 'go' not found — Go AST analyzer requires Go to be installed",
             file=sys.stderr,
         )
     except subprocess.CalledProcessError as exc:
         print(
-            f"WARNING: Go analyzer exited with code {exc.returncode} — "
-            "analysis will be empty — handler classification unavailable\n"
+            f"ERROR: Go analyzer exited with code {exc.returncode}\n"
             f"  stderr: {exc.stderr.strip()[:200]}",
             file=sys.stderr,
         )
     except (json.JSONDecodeError, ValueError) as exc:
         print(
-            f"WARNING: Go analyzer output could not be parsed ({exc}) — "
-            "analysis will be empty — handler classification unavailable",
+            f"ERROR: Go analyzer output could not be parsed: {exc}",
             file=sys.stderr,
         )
     return {"handlers": {}, "type_aliases": {}, "struct_fields": {}}
@@ -1072,12 +910,7 @@ def _upgrade_schema_map(
 
 
 # ---------------------------------------------------------------------------
-# 4. Handler I/O Type Extractor
-# ---------------------------------------------------------------------------
-
-
-# ---------------------------------------------------------------------------
-# 6. Spec Schema Field Extractor
+# 4. Spec Schema Field Extractor
 # ---------------------------------------------------------------------------
 
 def _collect_property_names(schema: Any) -> Set[str]:
@@ -1145,7 +978,7 @@ def extract_spec_schema_fields(
 
 
 # ---------------------------------------------------------------------------
-# 7. Cross-Check Completeness
+# 5. Cross-Check Completeness
 # ---------------------------------------------------------------------------
 
 def _field_overlap(
@@ -1332,7 +1165,7 @@ def cross_check_completeness(
 
 
 # ---------------------------------------------------------------------------
-# 8. Actionable Notes Builder
+# 6. Actionable Notes Builder
 # ---------------------------------------------------------------------------
 
 def _build_actionable_notes(
@@ -1466,8 +1299,17 @@ def _build_actionable_notes(
 
 
 # ---------------------------------------------------------------------------
-# 5. Classification — bidirectional walk (Router ∪ Spec)
+# 7. Classification — bidirectional walk (Router ∪ Spec)
 # ---------------------------------------------------------------------------
+
+def _derive_ownership(x_annotation: str) -> Tuple[bool, bool]:
+    """Return (belongs_to_meshery, belongs_to_cloud) from an x-annotation value."""
+    if x_annotation == "Cloud-only":
+        return False, True
+    if x_annotation == "Meshery":
+        return True, False
+    return True, True
+
 
 def _dedup_notes(notes: List[str]) -> List[str]:
     """Return notes with duplicates removed, preserving insertion order."""
@@ -1597,16 +1439,7 @@ def classify_endpoints(
             x_annotation = "None"
 
         # --- Ownership ---
-        # "None" annotation = shared (belongs to both)
-        if x_annotation == "Cloud-only":
-            belongs_to_meshery = False
-            belongs_to_cloud = True
-        elif x_annotation == "Meshery":
-            belongs_to_meshery = True
-            belongs_to_cloud = False
-        else:
-            belongs_to_meshery = True
-            belongs_to_cloud = True
+        belongs_to_meshery, belongs_to_cloud = _derive_ownership(x_annotation)
 
         # --- Router presence ---
         exists_in_meshery = not _is_cloud
@@ -1748,15 +1581,7 @@ def classify_endpoints(
                 x_annotation = "None"
 
             # Ownership
-            if x_annotation == "Cloud-only":
-                belongs_to_meshery = False
-                belongs_to_cloud = True
-            elif x_annotation == "Meshery":
-                belongs_to_meshery = True
-                belongs_to_cloud = False
-            else:
-                belongs_to_meshery = True
-                belongs_to_cloud = True
+            belongs_to_meshery, belongs_to_cloud = _derive_ownership(x_annotation)
 
             # Schema-Backed: in spec and belongs to platform
             meshery_schema_backed = belongs_to_meshery
@@ -1836,15 +1661,19 @@ def _setup_repo_analysis(
     """
     analysis = run_go_analyzer(repo_root, config=repo_config)
 
-    # --- Routes ---
-    # Prefer Go AST routes when available (more robust than regex).
+    # --- Routes (from Go AST; commented routes via lightweight regex scan) ---
     go_routes = analysis.get("routes")
-    if go_routes:
-        routes = _routes_from_go_analysis(go_routes)
-        regex_routes = parse_router(repo_root, config=repo_config)
-        routes = _merge_comment_routes(routes, regex_routes)
-    else:
-        routes = parse_router(repo_root, config=repo_config)
+    if not go_routes:
+        print(
+            "ERROR: Go AST analyzer returned no routes — "
+            "ensure 'go' is installed and --router-file is correct.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    routes = _routes_from_go_analysis(go_routes)
+    if repo_config.router_dialect == "gorilla":
+        commented = _scan_commented_gorilla_routes(repo_root, repo_config.router_file)
+        routes = _merge_comment_routes(routes, commented)
 
     # Explode multi-method routes into per-verb entries.
     routes = _explode_routes_to_per_verb(routes)
@@ -1916,34 +1745,19 @@ def _routes_from_go_analysis(go_routes: List[Dict[str, Any]]) -> List[Dict[str, 
 
 def _merge_comment_routes(
     primary_routes: List[Dict[str, Any]],
-    fallback_routes: List[Dict[str, Any]],
+    commented_routes: List[Dict[str, Any]],
 ) -> List[Dict[str, Any]]:
-    """Supplement Go-AST routes with regex-detected commented routes."""
+    """Append commented routes that aren't already in the primary list."""
     merged = list(primary_routes)
     seen = {
-        (
-            route["path"],
-            tuple(route.get("methods", [])),
-            route.get("handler", "<unknown>"),
-            route.get("commented", False),
-        )
+        (route["path"], tuple(route.get("methods", [])))
         for route in merged
     }
-
-    for route in fallback_routes:
-        if not route.get("commented", False):
-            continue
-        key = (
-            route["path"],
-            tuple(route.get("methods", [])),
-            route.get("handler", "<unknown>"),
-            True,
-        )
-        if key in seen:
-            continue
-        seen.add(key)
-        merged.append(route)
-
+    for route in commented_routes:
+        key = (route["path"], tuple(route.get("methods", [])))
+        if key not in seen:
+            seen.add(key)
+            merged.append(route)
     return merged
 
 
@@ -2336,7 +2150,7 @@ def update_sheet(
     sheet_endpoints = endpoints
 
     for ep in sheet_endpoints:
-        method_str = ep.get("method", ep.get("methods", ""))
+        method_str = ep.get("methods", "")
         matched_idx = _find_matching_row(sheet_index, ep["path"], method_str, matched_rows)
 
         if matched_idx is not None:
@@ -2652,16 +2466,8 @@ def _empty_summary_counts() -> Dict[str, int]:
     return {key: 0 for key in SUMMARY_KEYS}
 
 
-def _is_tagged(value: str) -> bool:
-    return value in {"Cloud-only", "Meshery"}
-
-
 def _is_complete_value(value: str) -> bool:
     return value == "True"
-
-
-def _is_incomplete_value(value: str) -> bool:
-    return value in {"False", "Partial", "No Schema"}
 
 
 def _is_driven_value(value: str) -> bool:
@@ -2820,8 +2626,6 @@ def collect_endpoint_summary(
 
 
 
-
-
 def render_audit_summary_table(
     summary: Dict[str, Dict[str, int]],
     include_meshery: bool,
@@ -2887,6 +2691,23 @@ def prefetch_sheet_snapshot(
 # ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
+
+def _print_verbose_endpoints(
+    endpoints: List[Dict[str, Any]],
+    include_coverage: bool = False,
+) -> None:
+    """Print per-endpoint details in verbose mode."""
+    print("\nDetailed endpoint output:")
+    for ep in endpoints:
+        cov_part = f"cov={ep['coverage']:16s} " if include_coverage else ""
+        print(
+            f"  {ep['path']:55s} [{ep['methods']:20s}] "
+            f"{cov_part}st={ep['status']:14s} "
+            f"bk_ms={ep['backed_ms']:5s} bk_mc={ep['backed_mc']:5s} "
+            f"comp_ms={ep['completeness_ms']:7s} comp_mc={ep['completeness_mc']:7s} "
+            f"drv_ms={ep['driven_ms']:7s} drv_mc={ep['driven_mc']:7s}"
+        )
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -3079,15 +2900,7 @@ def main():
             include_cloud=include_cloud,
         )
         if args.verbose:
-            print("\nDetailed endpoint output:")
-            for ep in endpoints:
-                print(
-                    f"  {ep['path']:55s} [{ep['methods']:20s}] "
-                    f"st={ep['status']:14s} "
-                    f"bk_ms={ep['backed_ms']:5s} bk_mc={ep['backed_mc']:5s} "
-                    f"comp_ms={ep['completeness_ms']:7s} comp_mc={ep['completeness_mc']:7s} "
-                    f"drv_ms={ep['driven_ms']:7s} drv_mc={ep['driven_mc']:7s}"
-                )
+            _print_verbose_endpoints(endpoints)
         sys.exit(0)
 
     prefetched, prefetch_note = prefetch_sheet_snapshot(args.sheet_id)
@@ -3117,15 +2930,7 @@ def main():
             print(note)
 
     if args.verbose:
-        print("\nDetailed endpoint output:")
-        for ep in endpoints:
-            print(
-                f"  {ep['path']:55s} [{ep['methods']:20s}] "
-                f"cov={ep['coverage']:16s} st={ep['status']:14s} "
-                f"bk_ms={ep['backed_ms']:5s} bk_mc={ep['backed_mc']:5s} "
-                f"comp_ms={ep['completeness_ms']:7s} comp_mc={ep['completeness_mc']:7s} "
-                f"drv_ms={ep['driven_ms']:7s} drv_mc={ep['driven_mc']:7s}"
-            )
+        _print_verbose_endpoints(endpoints, include_coverage=True)
         if sheet_result["changes"]:
             print("\nDetailed sheet changes:")
             for ch in sheet_result["changes"]:

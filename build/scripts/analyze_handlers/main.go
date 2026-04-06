@@ -692,16 +692,16 @@ func findJSONDecoderVars(body *ast.BlockStmt) map[string]bool {
 }
 
 func isJSONNewDecoderCall(expr ast.Expr) bool {
-	switch e := expr.(type) {
-	case *ast.CallExpr:
-		sel, ok := e.Fun.(*ast.SelectorExpr)
-		if !ok {
-			return false
-		}
-		pkg, ok := sel.X.(*ast.Ident)
-		return ok && pkg.Name == "json" && sel.Sel.Name == "NewDecoder"
+	call, ok := expr.(*ast.CallExpr)
+	if !ok {
+		return false
 	}
-	return false
+	sel, ok := call.Fun.(*ast.SelectorExpr)
+	if !ok {
+		return false
+	}
+	pkg, ok := sel.X.(*ast.Ident)
+	return ok && pkg.Name == "json" && sel.Sel.Name == "NewDecoder"
 }
 
 // isJSONDecoderExpr returns true if expr is json.NewDecoder(...) or a stored
@@ -709,7 +709,7 @@ func isJSONNewDecoderCall(expr ast.Expr) bool {
 func isJSONDecoderExpr(expr ast.Expr, decoderVars map[string]bool) bool {
 	switch e := expr.(type) {
 	case *ast.CallExpr:
-		return isJSONNewDecoderCall(expr)
+		return isJSONNewDecoderCall(e)
 	case *ast.Ident:
 		return decoderVars[e.Name]
 	}
