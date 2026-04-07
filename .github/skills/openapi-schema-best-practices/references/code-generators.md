@@ -14,13 +14,11 @@ Detailed reference for how the build scripts consume OpenAPI schemas and produce
 ## Bundle OpenAPI
 
 **Script**: `build/bundle-openapi.js`
-**Dependencies**: `swagger-cli`, `@redocly/cli`
-
 ### What it does
 
 1. Walks `schemas/constructs/` and discovers packages (directories with `api.yml`)
-2. Bundles each `api.yml` with `swagger-cli bundle --dereference` into JSON
-3. Merges all bundles (minus excluded packages) using `@redocly/cli join`
+2. Dereferences each `api.yml` in-process into JSON
+3. Merges all bundles (minus excluded packages) using the in-repo merge step in `build/bundle-openapi.js`
 4. Filters the merged spec by `x-internal` tags into separate outputs
 
 ### Outputs

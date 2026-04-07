@@ -438,7 +438,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                         "schemaVersion",
                                         "name",
                                         "type",
-                                        "sub_type",
+                                        "subType",
                                         "kind",
                                         "status"
                                       ],
@@ -467,7 +467,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                           "type": "string",
                                           "description": "Connection Name"
                                         },
-                                        "credential_id": {
+                                        "credentialId": {
                                           "type": "string",
                                           "format": "uuid",
                                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -478,7 +478,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                           "x-go-name": "CredentialID",
                                           "x-oapi-codegen-extra-tags": {
                                             "db": "credential_id",
-                                            "yaml": "credential_id"
+                                            "yaml": "credentialId"
                                           },
                                           "x-order": 3
                                         },
@@ -491,10 +491,10 @@ const EvaluationSchema: Record<string, unknown> = {
                                           "type": "string",
                                           "description": "Connection Type (platform, telemetry, collaboration)"
                                         },
-                                        "sub_type": {
+                                        "subType": {
                                           "x-oapi-codegen-extra-tags": {
                                             "db": "sub_type",
-                                            "yaml": "sub_type"
+                                            "yaml": "subType"
                                           },
                                           "x-order": 5,
                                           "type": "string",
@@ -2695,9 +2695,9 @@ const EvaluationSchema: Record<string, unknown> = {
                                   "x-go-type": "Relationship_Metadata",
                                   "x-order": 5,
                                   "x-oapi-codegen-extra-tags": {
+                                    "gorm": "type:bytes;serializer:json",
                                     "yaml": "metadata",
-                                    "json": "metadata,omitempty",
-                                    "gorm": "type:bytes;serializer:json"
+                                    "json": "metadata,omitempty"
                                   },
                                   "type": "object",
                                   "description": "Metadata contains additional information associated with the Relationship.",
@@ -3190,9 +3190,9 @@ const EvaluationSchema: Record<string, unknown> = {
                                   "x-go-type": "SelectorSet",
                                   "x-order": 9,
                                   "x-oapi-codegen-extra-tags": {
+                                    "gorm": "type:bytes;serializer:json",
                                     "yaml": "selectors,omitempty",
-                                    "json": "selectors,omitempty",
-                                    "gorm": "type:bytes;serializer:json"
+                                    "json": "selectors,omitempty"
                                   },
                                   "type": "array",
                                   "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -5101,7 +5101,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                           "schemaVersion",
                                           "name",
                                           "type",
-                                          "sub_type",
+                                          "subType",
                                           "kind",
                                           "status"
                                         ],
@@ -5130,7 +5130,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                             "type": "string",
                                             "description": "Connection Name"
                                           },
-                                          "credential_id": {
+                                          "credentialId": {
                                             "type": "string",
                                             "format": "uuid",
                                             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -5141,7 +5141,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                             "x-go-name": "CredentialID",
                                             "x-oapi-codegen-extra-tags": {
                                               "db": "credential_id",
-                                              "yaml": "credential_id"
+                                              "yaml": "credentialId"
                                             },
                                             "x-order": 3
                                           },
@@ -5154,10 +5154,10 @@ const EvaluationSchema: Record<string, unknown> = {
                                             "type": "string",
                                             "description": "Connection Type (platform, telemetry, collaboration)"
                                           },
-                                          "sub_type": {
+                                          "subType": {
                                             "x-oapi-codegen-extra-tags": {
                                               "db": "sub_type",
-                                              "yaml": "sub_type"
+                                              "yaml": "subType"
                                             },
                                             "x-order": 5,
                                             "type": "string",
@@ -7358,9 +7358,9 @@ const EvaluationSchema: Record<string, unknown> = {
                                     "x-go-type": "Relationship_Metadata",
                                     "x-order": 5,
                                     "x-oapi-codegen-extra-tags": {
+                                      "gorm": "type:bytes;serializer:json",
                                       "yaml": "metadata",
-                                      "json": "metadata,omitempty",
-                                      "gorm": "type:bytes;serializer:json"
+                                      "json": "metadata,omitempty"
                                     },
                                     "type": "object",
                                     "description": "Metadata contains additional information associated with the Relationship.",
@@ -7853,9 +7853,9 @@ const EvaluationSchema: Record<string, unknown> = {
                                     "x-go-type": "SelectorSet",
                                     "x-order": 9,
                                     "x-oapi-codegen-extra-tags": {
+                                      "gorm": "type:bytes;serializer:json",
                                       "yaml": "selectors,omitempty",
-                                      "json": "selectors,omitempty",
-                                      "gorm": "type:bytes;serializer:json"
+                                      "json": "selectors,omitempty"
                                     },
                                     "type": "array",
                                     "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -9819,7 +9819,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                 "schemaVersion",
                                 "name",
                                 "type",
-                                "sub_type",
+                                "subType",
                                 "kind",
                                 "status"
                               ],
@@ -9848,7 +9848,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                   "type": "string",
                                   "description": "Connection Name"
                                 },
-                                "credential_id": {
+                                "credentialId": {
                                   "type": "string",
                                   "format": "uuid",
                                   "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -9859,7 +9859,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                   "x-go-name": "CredentialID",
                                   "x-oapi-codegen-extra-tags": {
                                     "db": "credential_id",
-                                    "yaml": "credential_id"
+                                    "yaml": "credentialId"
                                   },
                                   "x-order": 3
                                 },
@@ -9872,10 +9872,10 @@ const EvaluationSchema: Record<string, unknown> = {
                                   "type": "string",
                                   "description": "Connection Type (platform, telemetry, collaboration)"
                                 },
-                                "sub_type": {
+                                "subType": {
                                   "x-oapi-codegen-extra-tags": {
                                     "db": "sub_type",
-                                    "yaml": "sub_type"
+                                    "yaml": "subType"
                                   },
                                   "x-order": 5,
                                   "type": "string",
@@ -12076,9 +12076,9 @@ const EvaluationSchema: Record<string, unknown> = {
                           "x-go-type": "Relationship_Metadata",
                           "x-order": 5,
                           "x-oapi-codegen-extra-tags": {
+                            "gorm": "type:bytes;serializer:json",
                             "yaml": "metadata",
-                            "json": "metadata,omitempty",
-                            "gorm": "type:bytes;serializer:json"
+                            "json": "metadata,omitempty"
                           },
                           "type": "object",
                           "description": "Metadata contains additional information associated with the Relationship.",
@@ -12571,9 +12571,9 @@ const EvaluationSchema: Record<string, unknown> = {
                           "x-go-type": "SelectorSet",
                           "x-order": 9,
                           "x-oapi-codegen-extra-tags": {
+                            "gorm": "type:bytes;serializer:json",
                             "yaml": "selectors,omitempty",
-                            "json": "selectors,omitempty",
-                            "gorm": "type:bytes;serializer:json"
+                            "json": "selectors,omitempty"
                           },
                           "type": "array",
                           "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -14474,7 +14474,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                 "schemaVersion",
                                 "name",
                                 "type",
-                                "sub_type",
+                                "subType",
                                 "kind",
                                 "status"
                               ],
@@ -14503,7 +14503,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                   "type": "string",
                                   "description": "Connection Name"
                                 },
-                                "credential_id": {
+                                "credentialId": {
                                   "type": "string",
                                   "format": "uuid",
                                   "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -14514,7 +14514,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                   "x-go-name": "CredentialID",
                                   "x-oapi-codegen-extra-tags": {
                                     "db": "credential_id",
-                                    "yaml": "credential_id"
+                                    "yaml": "credentialId"
                                   },
                                   "x-order": 3
                                 },
@@ -14527,10 +14527,10 @@ const EvaluationSchema: Record<string, unknown> = {
                                   "type": "string",
                                   "description": "Connection Type (platform, telemetry, collaboration)"
                                 },
-                                "sub_type": {
+                                "subType": {
                                   "x-oapi-codegen-extra-tags": {
                                     "db": "sub_type",
-                                    "yaml": "sub_type"
+                                    "yaml": "subType"
                                   },
                                   "x-order": 5,
                                   "type": "string",
@@ -16731,9 +16731,9 @@ const EvaluationSchema: Record<string, unknown> = {
                           "x-go-type": "Relationship_Metadata",
                           "x-order": 5,
                           "x-oapi-codegen-extra-tags": {
+                            "gorm": "type:bytes;serializer:json",
                             "yaml": "metadata",
-                            "json": "metadata,omitempty",
-                            "gorm": "type:bytes;serializer:json"
+                            "json": "metadata,omitempty"
                           },
                           "type": "object",
                           "description": "Metadata contains additional information associated with the Relationship.",
@@ -17226,9 +17226,9 @@ const EvaluationSchema: Record<string, unknown> = {
                           "x-go-type": "SelectorSet",
                           "x-order": 9,
                           "x-oapi-codegen-extra-tags": {
+                            "gorm": "type:bytes;serializer:json",
                             "yaml": "selectors,omitempty",
-                            "json": "selectors,omitempty",
-                            "gorm": "type:bytes;serializer:json"
+                            "json": "selectors,omitempty"
                           },
                           "type": "array",
                           "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
