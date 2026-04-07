@@ -438,7 +438,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                         "schemaVersion",
                                         "name",
                                         "type",
-                                        "sub_type",
+                                        "subType",
                                         "kind",
                                         "status"
                                       ],
@@ -467,7 +467,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                           "type": "string",
                                           "description": "Connection Name"
                                         },
-                                        "credential_id": {
+                                        "credentialId": {
                                           "type": "string",
                                           "format": "uuid",
                                           "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -478,7 +478,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                           "x-go-name": "CredentialID",
                                           "x-oapi-codegen-extra-tags": {
                                             "db": "credential_id",
-                                            "yaml": "credential_id"
+                                            "yaml": "credentialId"
                                           },
                                           "x-order": 3
                                         },
@@ -491,10 +491,10 @@ const EvaluationSchema: Record<string, unknown> = {
                                           "type": "string",
                                           "description": "Connection Type (platform, telemetry, collaboration)"
                                         },
-                                        "sub_type": {
+                                        "subType": {
                                           "x-oapi-codegen-extra-tags": {
                                             "db": "sub_type",
-                                            "yaml": "sub_type"
+                                            "yaml": "subType"
                                           },
                                           "x-order": 5,
                                           "type": "string",
@@ -5101,7 +5101,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                           "schemaVersion",
                                           "name",
                                           "type",
-                                          "sub_type",
+                                          "subType",
                                           "kind",
                                           "status"
                                         ],
@@ -5130,7 +5130,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                             "type": "string",
                                             "description": "Connection Name"
                                           },
-                                          "credential_id": {
+                                          "credentialId": {
                                             "type": "string",
                                             "format": "uuid",
                                             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -5141,7 +5141,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                             "x-go-name": "CredentialID",
                                             "x-oapi-codegen-extra-tags": {
                                               "db": "credential_id",
-                                              "yaml": "credential_id"
+                                              "yaml": "credentialId"
                                             },
                                             "x-order": 3
                                           },
@@ -5154,10 +5154,10 @@ const EvaluationSchema: Record<string, unknown> = {
                                             "type": "string",
                                             "description": "Connection Type (platform, telemetry, collaboration)"
                                           },
-                                          "sub_type": {
+                                          "subType": {
                                             "x-oapi-codegen-extra-tags": {
                                               "db": "sub_type",
-                                              "yaml": "sub_type"
+                                              "yaml": "subType"
                                             },
                                             "x-order": 5,
                                             "type": "string",
@@ -9819,7 +9819,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                 "schemaVersion",
                                 "name",
                                 "type",
-                                "sub_type",
+                                "subType",
                                 "kind",
                                 "status"
                               ],
@@ -9848,7 +9848,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                   "type": "string",
                                   "description": "Connection Name"
                                 },
-                                "credential_id": {
+                                "credentialId": {
                                   "type": "string",
                                   "format": "uuid",
                                   "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -9859,7 +9859,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                   "x-go-name": "CredentialID",
                                   "x-oapi-codegen-extra-tags": {
                                     "db": "credential_id",
-                                    "yaml": "credential_id"
+                                    "yaml": "credentialId"
                                   },
                                   "x-order": 3
                                 },
@@ -9872,10 +9872,10 @@ const EvaluationSchema: Record<string, unknown> = {
                                   "type": "string",
                                   "description": "Connection Type (platform, telemetry, collaboration)"
                                 },
-                                "sub_type": {
+                                "subType": {
                                   "x-oapi-codegen-extra-tags": {
                                     "db": "sub_type",
-                                    "yaml": "sub_type"
+                                    "yaml": "subType"
                                   },
                                   "x-order": 5,
                                   "type": "string",
@@ -14474,7 +14474,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                 "schemaVersion",
                                 "name",
                                 "type",
-                                "sub_type",
+                                "subType",
                                 "kind",
                                 "status"
                               ],
@@ -14503,7 +14503,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                   "type": "string",
                                   "description": "Connection Name"
                                 },
-                                "credential_id": {
+                                "credentialId": {
                                   "type": "string",
                                   "format": "uuid",
                                   "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -14514,7 +14514,7 @@ const EvaluationSchema: Record<string, unknown> = {
                                   "x-go-name": "CredentialID",
                                   "x-oapi-codegen-extra-tags": {
                                     "db": "credential_id",
-                                    "yaml": "credential_id"
+                                    "yaml": "credentialId"
                                   },
                                   "x-order": 3
                                 },
@@ -14527,10 +14527,10 @@ const EvaluationSchema: Record<string, unknown> = {
                                   "type": "string",
                                   "description": "Connection Type (platform, telemetry, collaboration)"
                                 },
-                                "sub_type": {
+                                "subType": {
                                   "x-oapi-codegen-extra-tags": {
                                     "db": "sub_type",
-                                    "yaml": "sub_type"
+                                    "yaml": "subType"
                                   },
                                   "x-order": 5,
                                   "type": "string",

@@ -638,11 +638,11 @@ export interface components {
                  * Format: uuid
                  * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
-                credential_id?: string;
+                credentialId?: string;
                 /** @description Connection Type (platform, telemetry, collaboration) */
                 type: string;
                 /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-                sub_type: string;
+                subType: string;
                 /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
                 kind: string;
                 /** @description Additional connection metadata */
@@ -2010,10 +2010,18 @@ export interface components {
     MesheryView: {
       /** Format: uuid */
       id?: string;
+      /** @description Name of the view. */
       name?: string;
-      filters?: { [key: string]: string };
+      /** @description Filter configuration for this view. */
+      filters?: { [key: string]: unknown };
+      /** @description Visibility of the view. */
       visibility?: string;
-      metadata?: { [key: string]: string };
+      /** @description Metadata associated with the view. */
+      metadata?: { [key: string]: unknown };
+      /**
+       * Format: uuid
+       * @description User ID of the view creator.
+       */
       user_id?: string;
       /**
        * Format: date-time
@@ -2040,10 +2048,18 @@ export interface components {
       views?: {
         /** Format: uuid */
         id?: string;
+        /** @description Name of the view. */
         name?: string;
-        filters?: { [key: string]: string };
+        /** @description Filter configuration for this view. */
+        filters?: { [key: string]: unknown };
+        /** @description Visibility of the view. */
         visibility?: string;
-        metadata?: { [key: string]: string };
+        /** @description Metadata associated with the view. */
+        metadata?: { [key: string]: unknown };
+        /**
+         * Format: uuid
+         * @description User ID of the view creator.
+         */
         user_id?: string;
         /**
          * Format: date-time
@@ -3168,11 +3184,11 @@ export interface operations {
                        * Format: uuid
                        * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                        */
-                      credential_id?: string;
+                      credentialId?: string;
                       /** @description Connection Type (platform, telemetry, collaboration) */
                       type: string;
                       /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-                      sub_type: string;
+                      subType: string;
                       /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
                       kind: string;
                       /** @description Additional connection metadata */
@@ -4716,10 +4732,18 @@ export interface operations {
             views?: {
               /** Format: uuid */
               id?: string;
+              /** @description Name of the view. */
               name?: string;
-              filters?: { [key: string]: string };
+              /** @description Filter configuration for this view. */
+              filters?: { [key: string]: unknown };
+              /** @description Visibility of the view. */
               visibility?: string;
-              metadata?: { [key: string]: string };
+              /** @description Metadata associated with the view. */
+              metadata?: { [key: string]: unknown };
+              /**
+               * Format: uuid
+               * @description User ID of the view creator.
+               */
               user_id?: string;
               /**
                * Format: date-time
