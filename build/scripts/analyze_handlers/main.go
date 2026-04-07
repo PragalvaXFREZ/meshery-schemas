@@ -27,6 +27,8 @@ import (
 	"strings"
 )
 
+const providerBytesSentinel = "<provider-[]byte>"
+
 // ---------------------------------------------------------------------------
 // Output types
 // ---------------------------------------------------------------------------
@@ -57,6 +59,10 @@ type AnalysisOutput struct {
 	// import path it aliases. Example:
 	// "models.ConnectionPage" → "github.com/meshery/schemas/models/v1beta1/connection"
 	TypeAliases map[string]string `json:"type_aliases"`
+	// TypeAliasTargets maps a package-qualified local type alias to the
+	// package-qualified schema type it aliases. Example:
+	// "models.ConnectionPage" → "connection.ConnectionPage"
+	TypeAliasTargets map[string]string `json:"type_alias_targets"`
 	// StructFields maps a package-qualified type name to its JSON field names
 	// extracted from json tags.
 	StructFields map[string][]string `json:"struct_fields"`
@@ -98,10 +104,11 @@ func main() {
 	}
 
 	out := &AnalysisOutput{
-		SchemaModule: *schemaModuleFlag,
-		Handlers:     make(map[string]*HandlerInfo),
-		TypeAliases:  make(map[string]string),
-		StructFields: make(map[string][]string),
+		SchemaModule:     *schemaModuleFlag,
+		Handlers:         make(map[string]*HandlerInfo),
+		TypeAliases:      make(map[string]string),
+		TypeAliasTargets: make(map[string]string),
+		StructFields:     make(map[string][]string),
 	}
 
 	// allStructDefs accumulates AST struct definitions across all scanned
@@ -113,7 +120,7 @@ func main() {
 
 	// 1. Build transitive alias map from local models:
 	//    type LocalName = schemaPkg.RemoteName → records LocalName → schema import path
-	scanAliases(modelsDir, *schemaModuleFlag, out.TypeAliases)
+	scanAliases(modelsDir, *schemaModuleFlag, out.TypeAliases, out.TypeAliasTargets)
 
 	// 2. Scan handler files for per-handler analysis.
 	//    Also picks up struct definitions from handler files.
@@ -155,9 +162,10 @@ func main() {
 // ---------------------------------------------------------------------------
 
 // scanAliases walks dir recursively and records type aliases that point to
-// schema packages.  Only one level of alias indirection is followed.
-func scanAliases(dir, schemaModule string, aliases map[string]string) {
+// schema packages, including local aliases that chain to schema aliases.
+func scanAliases(dir, schemaModule string, aliases, aliasTargets map[string]string) {
 	fset := token.NewFileSet()
+	pendingLocalAliases := make(map[string]string)
 	if err := filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "WARNING: walk error in %s: %v\n", path, err)
@@ -175,9 +183,6 @@ func scanAliases(dir, schemaModule string, aliases map[string]string) {
 			return nil
 		}
 		schemaImports := fileSchemaImports(f, schemaModule)
-		if len(schemaImports) == 0 {
-			return nil
-		}
 		pkgName := filePackageName(f)
 		for _, decl := range f.Decls {
 			genDecl, ok := decl.(*ast.GenDecl)
@@ -202,22 +207,43 @@ func scanAliases(dir, schemaModule string, aliases map[string]string) {
 				case *ast.ArrayType:
 					typeExpr = w.Elt
 				}
-				sel, ok := typeExpr.(*ast.SelectorExpr)
-				if !ok {
-					continue
-				}
-				pkgIdent, ok := sel.X.(*ast.Ident)
-				if !ok {
-					continue
-				}
-				if importPath, found := schemaImports[pkgIdent.Name]; found {
-					aliases[qualifiedTypeName(pkgName, ts.Name.Name)] = importPath
+				aliasKey := qualifiedTypeName(pkgName, ts.Name.Name)
+				switch t := typeExpr.(type) {
+				case *ast.SelectorExpr:
+					pkgIdent, ok := t.X.(*ast.Ident)
+					if !ok {
+						continue
+					}
+					if importPath, found := schemaImports[pkgIdent.Name]; found {
+						aliases[aliasKey] = importPath
+						aliasTargets[aliasKey] = qualifiedTypeName(importPathBase(importPath), t.Sel.Name)
+					}
+				case *ast.Ident:
+					pendingLocalAliases[aliasKey] = qualifiedTypeName(pkgName, t.Name)
 				}
 			}
 		}
 		return nil
 	}); err != nil {
 		fmt.Fprintf(os.Stderr, "WARNING: unable to walk aliases dir %s: %v\n", dir, err)
+	}
+
+	for changed := true; changed; {
+		changed = false
+		for aliasKey, targetKey := range pendingLocalAliases {
+			if _, exists := aliases[aliasKey]; exists {
+				continue
+			}
+			importPath, ok := aliases[targetKey]
+			if !ok {
+				continue
+			}
+			aliases[aliasKey] = importPath
+			if target, ok := aliasTargets[targetKey]; ok {
+				aliasTargets[aliasKey] = target
+			}
+			changed = true
+		}
 	}
 }
 
@@ -249,6 +275,7 @@ func scanHandlers(dir, schemaModule string, typeAliases map[string]string, out *
 		pkgName := filePackageName(f)
 		schemaImports := fileSchemaImports(f, schemaModule)
 		importPackages := fileImportPackageNames(f)
+		functionReturnTypes := collectFunctionReturnTypes(f, pkgName, importPackages)
 
 		// Collect struct fields and definitions from handler files too
 		extractStructFieldsFromFile(f, pkgName, out.StructFields, allStructDefs)
@@ -258,7 +285,7 @@ func scanHandlers(dir, schemaModule string, typeAliases map[string]string, out *
 			if !ok || fn.Body == nil || !isHandlerMethod(fn) {
 				continue
 			}
-			info := analyseHandler(fn, path, pkgName, schemaModule, schemaImports, typeAliases, importPackages)
+			info := analyseHandler(fn, path, pkgName, schemaModule, schemaImports, typeAliases, importPackages, functionReturnTypes)
 			out.Handlers[fn.Name.Name] = info
 		}
 		return nil
@@ -267,11 +294,28 @@ func scanHandlers(dir, schemaModule string, typeAliases map[string]string, out *
 	}
 }
 
+func collectFunctionReturnTypes(f *ast.File, currentPkg string, importPackages map[string]string) map[string]string {
+	result := make(map[string]string)
+	for _, decl := range f.Decls {
+		fn, ok := decl.(*ast.FuncDecl)
+		if !ok || fn.Type == nil || fn.Type.Results == nil || len(fn.Type.Results.List) != 1 {
+			continue
+		}
+		resultType := typeExprString(fn.Type.Results.List[0].Type)
+		if resultType == "" {
+			continue
+		}
+		result[fn.Name.Name] = canonicalizeTypeRef(resultType, currentPkg, importPackages)
+	}
+	return result
+}
+
 // analyseHandler derives the HandlerInfo for a single function declaration.
 func analyseHandler(
 	fn *ast.FuncDecl,
 	filePath, pkgName, schemaModule string,
 	schemaImports, typeAliases, importPackages map[string]string,
+	functionReturnTypes map[string]string,
 ) *HandlerInfo {
 	info := &HandlerInfo{File: filePath}
 
@@ -282,7 +326,7 @@ func analyseHandler(
 	// ── Request types (all json.Decode/Unmarshal targets) ─────────────────
 	reqVars := findAllJSONDecodeVars(fn.Body)
 	for _, reqVar := range reqVars {
-		t := resolveVarType(fn.Body, reqVar, pkgName, importPackages)
+		t := resolveVarType(fn.Body, reqVar, pkgName, importPackages, functionReturnTypes)
 		if t != "" {
 			info.RequestTypes = append(info.RequestTypes, t)
 			if info.SchemaImportUsage == "FALSE" {
@@ -297,7 +341,7 @@ func analyseHandler(
 	// ── Response types (all json.Encode/Marshal expressions) ──────────────
 	respExprs := findAllJSONEncodeExprs(fn.Body)
 	for _, respExpr := range respExprs {
-		t := resolveExprType(fn.Body, respExpr, pkgName, importPackages)
+		t := resolveExprType(fn.Body, respExpr, pkgName, importPackages, functionReturnTypes)
 		if t != "" {
 			info.ResponseTypes = append(info.ResponseTypes, t)
 			if info.SchemaImportUsage == "FALSE" {
@@ -307,6 +351,9 @@ func analyseHandler(
 				}
 			}
 		}
+	}
+	if len(info.ResponseTypes) == 0 && hasProviderBytesPassthrough(fn.Body) {
+		info.ResponseTypes = append(info.ResponseTypes, providerBytesSentinel)
 	}
 
 	// ── io.ReadAll / ioutil.ReadAll detection ─────────────────────────────
@@ -759,6 +806,96 @@ func findAllJSONEncodeExprs(body *ast.BlockStmt) []string {
 	return result
 }
 
+func hasProviderBytesPassthrough(body *ast.BlockStmt) bool {
+	providerVars := findProviderResultVars(body)
+	if len(providerVars) == 0 {
+		return false
+	}
+	found := false
+	ast.Inspect(body, func(n ast.Node) bool {
+		if found {
+			return false
+		}
+		call, ok := n.(*ast.CallExpr)
+		if !ok {
+			return true
+		}
+		sel, ok := call.Fun.(*ast.SelectorExpr)
+		if !ok {
+			return true
+		}
+		if isFmtPrintCall(sel) {
+			for _, arg := range call.Args {
+				if exprUsesAnyIdent(arg, providerVars) {
+					found = true
+					return false
+				}
+			}
+			return true
+		}
+		if sel.Sel.Name == "Write" && len(call.Args) > 0 && exprUsesAnyIdent(call.Args[0], providerVars) {
+			found = true
+			return false
+		}
+		return true
+	})
+	return found
+}
+
+func findProviderResultVars(body *ast.BlockStmt) map[string]bool {
+	result := make(map[string]bool)
+	ast.Inspect(body, func(n ast.Node) bool {
+		assign, ok := n.(*ast.AssignStmt)
+		if !ok {
+			return true
+		}
+		for i, rhs := range assign.Rhs {
+			call, ok := rhs.(*ast.CallExpr)
+			if !ok || !isProviderMethodCall(call) || i >= len(assign.Lhs) {
+				continue
+			}
+			if ident, ok := assign.Lhs[i].(*ast.Ident); ok && ident.Name != "_" {
+				result[ident.Name] = true
+			}
+		}
+		return true
+	})
+	return result
+}
+
+func isProviderMethodCall(call *ast.CallExpr) bool {
+	sel, ok := call.Fun.(*ast.SelectorExpr)
+	if !ok {
+		return false
+	}
+	ident, ok := sel.X.(*ast.Ident)
+	return ok && ident.Name == "provider"
+}
+
+func isFmtPrintCall(sel *ast.SelectorExpr) bool {
+	pkg, ok := sel.X.(*ast.Ident)
+	if !ok || pkg.Name != "fmt" {
+		return false
+	}
+	return sel.Sel.Name == "Fprint" || sel.Sel.Name == "Fprintln" || sel.Sel.Name == "Fprintf"
+}
+
+func exprUsesAnyIdent(expr ast.Expr, names map[string]bool) bool {
+	found := false
+	ast.Inspect(expr, func(n ast.Node) bool {
+		if found {
+			return false
+		}
+		ident, ok := n.(*ast.Ident)
+		if ok && names[ident.Name] {
+			found = true
+			return false
+		}
+		return true
+	})
+	return found
+}
+
 // isJSONEncoderExpr returns true if expr is json.NewEncoder(...) or any identifier.
 func isJSONEncoderExpr(expr ast.Expr) bool {
 	switch e := expr.(type) {
@@ -782,7 +919,12 @@ func isJSONEncoderExpr(expr ast.Expr) bool {
 // resolveVarType searches the function body for the declared type of varName.
 // Handles: var x *T, var x T, x := &T{}, x := T{}, x := make([]T, n).
 // Returns the type string, or "" if not found.
-func resolveVarType(body *ast.BlockStmt, varName, currentPkg string, importPackages map[string]string) string {
+func resolveVarType(
+	body *ast.BlockStmt,
+	varName, currentPkg string,
+	importPackages map[string]string,
+	functionReturnTypes map[string]string,
+) string {
 	var result string
 	ast.Inspect(body, func(n ast.Node) bool {
 		if result != "" {
@@ -809,7 +951,7 @@ func resolveVarType(body *ast.BlockStmt, varName, currentPkg string, importPacka
 					}
 					// var x = expr — infer from RHS
 					if len(vs.Values) > 0 {
-						result = typeFromRHS(vs.Values[0], currentPkg, importPackages)
+						result = typeFromRHS(vs.Values[0], currentPkg, importPackages, functionReturnTypes)
 						return false
 					}
 				}
@@ -821,7 +963,7 @@ func resolveVarType(body *ast.BlockStmt, varName, currentPkg string, importPacka
 					continue
 				}
 				if i < len(stmt.Rhs) {
-					t := typeFromRHS(stmt.Rhs[i], currentPkg, importPackages)
+					t := typeFromRHS(stmt.Rhs[i], currentPkg, importPackages, functionReturnTypes)
 					if t != "" {
 						result = t
 						return false
@@ -837,7 +979,12 @@ func resolveVarType(body *ast.BlockStmt, varName, currentPkg string, importPacka
 // resolveExprType resolves the type of an expression used in json.Encode/Marshal.
 // For simple variable names it delegates to resolveVarType.
 // For "pkg.VarName" forms it returns the expression unchanged.
-func resolveExprType(body *ast.BlockStmt, expr, currentPkg string, importPackages map[string]string) string {
+func resolveExprType(
+	body *ast.BlockStmt,
+	expr, currentPkg string,
+	importPackages map[string]string,
+	functionReturnTypes map[string]string,
+) string {
 	// Strip leading & or *
 	clean := strings.TrimLeft(expr, "&*")
 	if clean == "" {
@@ -849,13 +996,29 @@ func resolveExprType(body *ast.BlockStmt, expr, currentPkg string, importPackage
 	// If the expression already contains a dot it may be a package-qualified type or
 	// value reference; return the normalized form as-is.
 	if strings.Contains(clean, ".") {
+		lookup := clean
+		for {
+			switch {
+			case strings.HasPrefix(lookup, "*"):
+				lookup = lookup[1:]
+			case strings.HasPrefix(lookup, "[]"):
+				lookup = lookup[2:]
+			default:
+				goto checkPackage
+			}
+		}
+	checkPackage:
+		parts := strings.SplitN(lookup, ".", 2)
+		if _, ok := importPackages[parts[0]]; !ok || strings.Contains(parts[1], ".") {
+			return ""
+		}
 		return canonicalizeTypeRef(clean, currentPkg, importPackages)
 	}
 	// Simple identifier — try to resolve via declaration
-	if resolved := resolveVarType(body, clean, currentPkg, importPackages); resolved != "" {
+	if resolved := resolveVarType(body, clean, currentPkg, importPackages, functionReturnTypes); resolved != "" {
 		return resolved
 	}
-	if isLocalTypeName(clean) {
+	if isTypeLikeLocalName(clean) {
 		return canonicalizeTypeRef(clean, currentPkg, importPackages)
 	}
 	return ""
@@ -866,11 +1029,11 @@ func resolveExprType(body *ast.BlockStmt, expr, currentPkg string, importPackage
 //	&pkg.Type{}  → "*pkg.Type"
 //	pkg.Type{}   → "pkg.Type"
 //	make([]T, n) → "[]T"
-func typeFromRHS(expr ast.Expr, currentPkg string, importPackages map[string]string) string {
+func typeFromRHS(expr ast.Expr, currentPkg string, importPackages map[string]string, functionReturnTypes map[string]string) string {
 	switch e := expr.(type) {
 	case *ast.UnaryExpr:
 		if e.Op.String() == "&" {
-			t := typeFromRHS(e.X, currentPkg, importPackages)
+			t := typeFromRHS(e.X, currentPkg, importPackages, functionReturnTypes)
 			if t != "" {
 				return "*" + t
 			}
@@ -889,6 +1052,11 @@ func typeFromRHS(expr ast.Expr, currentPkg string, importPackages map[string]str
 		if ident, ok := e.Fun.(*ast.Ident); ok && ident.Name == "new" {
 			if len(e.Args) > 0 {
 				return canonicalizeTypeRef("*"+typeExprString(e.Args[0]), currentPkg, importPackages)
+			}
+		}
+		if ident, ok := e.Fun.(*ast.Ident); ok {
+			if t := functionReturnTypes[ident.Name]; t != "" {
+				return t
 			}
 		}
 	}
@@ -961,6 +1129,14 @@ func isLocalTypeName(typeName string) bool {
 		return false
 	}
 	return true
+}
+
+func isTypeLikeLocalName(typeName string) bool {
+	if !isLocalTypeName(typeName) {
+		return false
+	}
+	r := rune(typeName[0])
+	return r >= 'A' && r <= 'Z'
 }
 
 var builtinTypeNames = map[string]bool{

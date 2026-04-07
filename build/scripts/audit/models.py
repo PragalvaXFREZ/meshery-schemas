@@ -45,7 +45,7 @@ class EndpointRecord:
     cloud_schema_backed: bool = False
 
     # Schema completeness (raw internal values)
-    # "Full" | "Partial" | "Stub" | "Not-audited" | None
+    # "Full" | "Partial" | "Stub" | "Audit Failed" | None
     meshery_schema_completeness: Optional[str] = None
     cloud_schema_completeness: Optional[str] = None
 
@@ -69,37 +69,46 @@ def format_record_for_sheet(rec: EndpointRecord) -> Dict[str, Any]:
     Every display-facing value is computed here from raw facts.
     """
     # --- Endpoint Status ---
+    meshery_present = rec.exists_in_meshery_router
+    cloud_present = rec.exists_in_cloud_router
+
     if rec.is_commented:
-        if rec.belongs_to_meshery and rec.belongs_to_cloud:
+        if meshery_present and cloud_present:
+            sheet_status = "Deprecated - Both"
+        elif meshery_present:
+            sheet_status = "Deprecated - Meshery Server"
+        elif cloud_present:
+            sheet_status = "Deprecated - Meshery Cloud"
+        elif rec.belongs_to_meshery and rec.belongs_to_cloud:
             sheet_status = "Deprecated - Both"
         elif rec.belongs_to_cloud:
             sheet_status = "Deprecated - Meshery Cloud"
         else:
             sheet_status = "Deprecated - Meshery Server"
     else:
-        m_active = rec.exists_in_meshery_router and not rec.is_commented
-        c_active = rec.exists_in_cloud_router and not rec.is_commented
+        m_active = meshery_present
+        c_active = cloud_present
 
-        if rec.belongs_to_meshery and rec.belongs_to_cloud:
-            # Shared endpoint
-            if m_active and c_active:
-                sheet_status = "Active - Both"
-            elif m_active:
+        if m_active and c_active:
+            sheet_status = "Active - Both"
+        elif m_active:
+            if rec.belongs_to_meshery and rec.belongs_to_cloud:
                 sheet_status = "Active - Meshery Server, Unimplemented - Meshery Cloud"
-            elif c_active:
+            else:
+                sheet_status = "Active - Meshery Server"
+        elif c_active:
+            if rec.belongs_to_meshery and rec.belongs_to_cloud:
                 sheet_status = "Active - Meshery Cloud, Unimplemented - Meshery Server"
             else:
-                sheet_status = "Unimplemented - Both"
+                sheet_status = "Active - Meshery Cloud"
+        elif rec.belongs_to_meshery and rec.belongs_to_cloud:
+            sheet_status = "Unimplemented - Both"
         elif rec.belongs_to_cloud:
-            sheet_status = "Active - Meshery Cloud" if c_active else "Unimplemented - Meshery Cloud"
+            sheet_status = "Unimplemented - Meshery Cloud"
         elif rec.belongs_to_meshery:
-            sheet_status = "Active - Meshery Server" if m_active else "Unimplemented - Meshery Server"
+            sheet_status = "Unimplemented - Meshery Server"
         else:
-            # Fallback: not owned by either (shouldn't happen normally)
-            if m_active or c_active:
-                sheet_status = "Active - Both"
-            else:
-                sheet_status = "Unimplemented - Both"
+            sheet_status = "Unimplemented - Both"
 
     # When no schema exists, show only the active consumer.
     if not rec.in_spec:
@@ -115,15 +124,17 @@ def format_record_for_sheet(rec: EndpointRecord) -> Dict[str, Any]:
         x_annotated = rec.x_annotation  # "Cloud-only" | "Meshery" | "None"
 
     # --- Helper: format per-platform columns ---
-    def _fmt_backed(belongs: bool, schema_backed: bool) -> str:
-        if not belongs:
+    def _fmt_backed(belongs: bool, present: bool, schema_backed: bool) -> str:
+        if not (belongs or present):
             return "-"
         if not rec.in_spec:
             return "-"
         return "True" if schema_backed else "False"
 
-    def _fmt_completeness(belongs: bool, raw: Optional[str], schema_backed: bool) -> str:
-        if not belongs:
+    def _fmt_completeness(
+        belongs: bool, present: bool, raw: Optional[str], schema_backed: bool
+    ) -> str:
+        if not (belongs or present):
             return "-"
         if not rec.in_spec or not schema_backed:
             return "-"
@@ -131,7 +142,11 @@ def format_record_for_sheet(rec: EndpointRecord) -> Dict[str, Any]:
             return "True"
         if raw == "Partial":
             return "Partial"
-        # "Stub", "Not-audited", None → "False"
+        if raw == "Stub":
+            return "Stub"
+        if raw == "Audit Failed":
+            return "Audit Failed"
+        # None
         return "False"
 
     def _fmt_driven(present: bool, raw: Optional[str]) -> str:
@@ -144,13 +159,23 @@ def format_record_for_sheet(rec: EndpointRecord) -> Dict[str, Any]:
         # "FALSE", None → "False"
         return "False"
 
-    backed_ms = _fmt_backed(rec.belongs_to_meshery, rec.meshery_schema_backed)
-    backed_mc = _fmt_backed(rec.belongs_to_cloud, rec.cloud_schema_backed)
+    backed_ms = _fmt_backed(
+        rec.belongs_to_meshery, rec.exists_in_meshery_router, rec.meshery_schema_backed
+    )
+    backed_mc = _fmt_backed(
+        rec.belongs_to_cloud, rec.exists_in_cloud_router, rec.cloud_schema_backed
+    )
     completeness_ms = _fmt_completeness(
-        rec.belongs_to_meshery, rec.meshery_schema_completeness, rec.meshery_schema_backed,
+        rec.belongs_to_meshery,
+        rec.exists_in_meshery_router,
+        rec.meshery_schema_completeness,
+        rec.meshery_schema_backed,
     )
     completeness_mc = _fmt_completeness(
-        rec.belongs_to_cloud, rec.cloud_schema_completeness, rec.cloud_schema_backed,
+        rec.belongs_to_cloud,
+        rec.exists_in_cloud_router,
+        rec.cloud_schema_completeness,
+        rec.cloud_schema_backed,
     )
     driven_ms = _fmt_driven(rec.exists_in_meshery_router, rec.meshery_schema_driven)
     driven_mc = _fmt_driven(rec.exists_in_cloud_router, rec.cloud_schema_driven)

@@ -1,11 +1,12 @@
 """Endpoint classification, cross-check completeness, and multi-repo merge."""
 
 import re
+import sys
 
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 from .analyzer import go_type_lookup_key
-from .config import PROVIDER_BYTES_SENTINEL
+from .config import BODY_METHODS, PROVIDER_BYTES_SENTINEL
 from .models import (
     EndpointRecord,
     categorize,
@@ -78,9 +79,11 @@ def cross_check_completeness(
     has_spec = bool(spec_req or spec_resp)
 
     if not has_spec:
-        return "Not-audited", ["[INFO] No spec schema to compare against"]
+        return "Stub", ["[INFO] No spec schema defined for this endpoint"]
 
-    expects_body = bool(spec_req) or bool(req_type)
+    expects_body = bool(spec_req) or (
+        method.upper() in BODY_METHODS and bool(req_type)
+    )
 
     # --- Request side ---
     req_ratio, req_common, req_only_go, req_only_spec = _field_overlap(
@@ -103,7 +106,17 @@ def cross_check_completeness(
                 if req_only_spec:
                     notes.append(f"[REQ] In spec only: {_format_field_set(req_only_spec, 5)}")
             else:
-                notes.append("[REQ] Struct fields not found for comparison")
+                handler_file = handler_io.get("file", "")
+                file_info = f" ({handler_file})" if handler_file else ""
+                notes.append(
+                    f"[REQ] Struct fields for {req_type_key} not found"
+                    f" — inspect handler{file_info}"
+                )
+                print(
+                    f"[AUDIT WARN] {handler_name}: req struct fields not found"
+                    f" for type {req_type_key}{file_info}",
+                    file=sys.stderr,
+                )
         else:
             notes.append("[REQ] Could not extract request type from handler")
 
@@ -132,7 +145,17 @@ def cross_check_completeness(
             if resp_only_spec:
                 notes.append(f"[RESP] In spec only: {_format_field_set(resp_only_spec, 5)}")
         else:
-            notes.append("[RESP] Struct fields not found for comparison")
+                handler_file = handler_io.get("file", "")
+                file_info = f" ({handler_file})" if handler_file else ""
+                notes.append(
+                    f"[RESP] Struct fields for {resp_type_key} not found"
+                    f" — inspect handler{file_info}"
+                )
+                print(
+                    f"[AUDIT WARN] {handler_name}: resp struct fields not found"
+                    f" for type {resp_type_key}{file_info}",
+                    file=sys.stderr,
+                )
     else:
         if spec_resp:
             notes.append("[RESP] Could not extract response type from handler")
@@ -153,8 +176,8 @@ def cross_check_completeness(
 
         if req_ratio is None and resp_ratio is None:
             if req_type or resp_type:
-                return "Stub", notes
-            return "Not-audited", notes
+                return "Audit Failed", notes
+            return "Stub", notes
 
         if req_good and resp_good:
             return "Full", notes
@@ -163,9 +186,11 @@ def cross_check_completeness(
         return "Stub", notes
     else:
         if resp_ratio is None:
-            if is_resp_passthrough or (resp_type and resp_type != PROVIDER_BYTES_SENTINEL):
+            if is_resp_passthrough:
                 return "Stub", notes
-            return "Not-audited", notes
+            if resp_type:
+                return "Audit Failed", notes
+            return "Stub", notes
 
         if resp_ratio >= GOOD_THRESHOLD:
             return "Full", notes
@@ -218,16 +243,8 @@ def _build_actionable_notes(
     if completeness == "Full":
         return "\n\n".join(sections) if sections else ""
 
-    if completeness == "Not-audited":
-        sections.append(
-            "[Completeness]\n"
-            "Handler could not be audited — no typed request/response "
-            "found (likely uses provider passthrough or raw io.ReadAll)"
-        )
-        return "\n\n".join(sections) if sections else ""
-
     _GAP_KEYWORDS = ("In spec only", "In handler only", "Could not extract",
-                     "No response body", "Struct fields not found",
+                     "No response body", "Struct fields for",
                      "Provider returns raw")
 
     def _is_gap_line(line: str) -> bool:
@@ -299,8 +316,6 @@ def _reduce_completeness(
         c == "Partial" for c in method_comps
     ):
         return "Partial", unique
-    if all(c == "Not-audited" for c in method_comps):
-        return "Not-audited", unique
     return "Stub", unique
 
 
@@ -405,8 +420,10 @@ def classify_endpoints(
         exists_in_meshery = not _is_cloud
         exists_in_cloud = _is_cloud
 
-        meshery_schema_backed = belongs_to_meshery and method_in_spec
-        cloud_schema_backed = belongs_to_cloud and method_in_spec
+        # Schema-backed should reflect actual implementation presence plus
+        # spec presence. Ownership annotations remain separate signals.
+        meshery_schema_backed = exists_in_meshery and method_in_spec
+        cloud_schema_backed = exists_in_cloud and method_in_spec
 
         # --- Schema Completeness ---
         this_backed = meshery_schema_backed if not _is_cloud else cloud_schema_backed
@@ -429,7 +446,7 @@ def classify_endpoints(
                     go_fields_map, sf, method,
                 )
             else:
-                completeness_this = "Not-audited"
+                completeness_this = "Stub"
                 compl_notes_this = []
         elif method_in_spec:
             completeness_this, compl_notes_this = _aggregate_completeness(

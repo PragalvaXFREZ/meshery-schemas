@@ -89,6 +89,33 @@ def go_type_lookup_key(type_name: Optional[str]) -> Optional[str]:
     return key.removesuffix("{}") or None
 
 
+def apply_alias_struct_fields(
+    go_fields_map: Dict[str, Set[str]],
+    alias_targets: Dict[str, str],
+) -> None:
+    """Populate field lookup entries for local aliases of schema model types."""
+    for alias, target in alias_targets.items():
+        alias_key = go_type_lookup_key(alias)
+        target_key = go_type_lookup_key(target)
+        if not alias_key or not target_key or alias_key in go_fields_map:
+            continue
+        target_fields = go_fields_map.get(target_key)
+        if target_fields:
+            go_fields_map[alias_key] = set(target_fields)
+
+
+def _prefer_type_with_fields(
+    types: List[str],
+    go_fields_map: Dict[str, Set[str]],
+) -> Optional[str]:
+    """Prefer an extracted type that can be cross-checked against fields."""
+    for type_name in types:
+        key = go_type_lookup_key(type_name)
+        if key and go_fields_map.get(key):
+            return type_name
+    return types[0] if types else None
+
+
 def upgrade_schema_map(
     schema_map: Dict[str, Tuple[str, str]],
     handler_io_map: Dict[str, Dict[str, Optional[str]]],
@@ -167,6 +194,10 @@ def setup_repo_analysis(
     go_fields_map: Dict[str, Set[str]] = {
         name: set(fields) for name, fields in analysis["struct_fields"].items()
     }
+    apply_alias_struct_fields(
+        go_fields_map,
+        analysis.get("type_alias_targets", {}),
+    )
 
     # Build handler_io_map from the new plural request_types / response_types
     # fields, falling back to the legacy singular request_type / response_type.
@@ -179,12 +210,18 @@ def setup_repo_analysis(
             req_types = [info["request_type"]]
         if not resp_types and info.get("response_type"):
             resp_types = [info["response_type"]]
+        file_abs = info.get("file", "")
+        try:
+            file_rel = str(Path(file_abs).relative_to(repo_root)) if file_abs else ""
+        except ValueError:
+            file_rel = file_abs
         handler_io_map[name] = {
-            "request_type": req_types[0] if req_types else None,
-            "response_type": resp_types[0] if resp_types else None,
+            "request_type": _prefer_type_with_fields(req_types, go_fields_map),
+            "response_type": _prefer_type_with_fields(resp_types, go_fields_map),
             "request_types": req_types,
             "response_types": resp_types,
             "body_read_via_readall": info.get("body_read_via_readall", False),
+            "file": file_rel,
         }
 
     schema_map_direct: Dict[str, Tuple[str, str]] = {
