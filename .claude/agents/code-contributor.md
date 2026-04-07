@@ -46,7 +46,7 @@ The source of truth depends on migration stage: while a construct is being migra
 - **Specifications**: OpenAPI 3.x, JSON Schema
 - **Languages**: YAML, JSON, Go (v1.24.0), TypeScript
 - **Code Generation**: `oapi-codegen` (Go), custom TypeScript generators
-- **Validation**: Redocly CLI (`npx @redocly/cli lint`), `build/validate-schemas.js` (34 rules)
+- **Validation**: `build/validate-schemas.js` (34 rules)
 
 ### DevOps & Tools
 
@@ -119,7 +119,7 @@ make setup                    # Install all dependencies (first time)
 make build                    # Full build: Go + TypeScript + OpenAPI bundles
 npm run build                 # Build TypeScript distribution
 go test ./...                 # Run validation tests
-npx @redocly/cli lint <file>  # Validate specific schema
+make validate-schemas         # Run repository schema validation rules
 ```
 
 ## Key Patterns

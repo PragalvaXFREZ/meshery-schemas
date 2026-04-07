@@ -2909,9 +2909,9 @@ const PatternSchema: Record<string, unknown> = {
                                           "x-go-type": "Relationship_Metadata",
                                           "x-order": 5,
                                           "x-oapi-codegen-extra-tags": {
+                                            "gorm": "type:bytes;serializer:json",
                                             "yaml": "metadata",
-                                            "json": "metadata,omitempty",
-                                            "gorm": "type:bytes;serializer:json"
+                                            "json": "metadata,omitempty"
                                           },
                                           "type": "object",
                                           "description": "Metadata contains additional information associated with the Relationship.",
@@ -3404,9 +3404,9 @@ const PatternSchema: Record<string, unknown> = {
                                           "x-go-type": "SelectorSet",
                                           "x-order": 9,
                                           "x-oapi-codegen-extra-tags": {
+                                            "gorm": "type:bytes;serializer:json",
                                             "yaml": "selectors,omitempty",
-                                            "json": "selectors,omitempty",
-                                            "gorm": "type:bytes;serializer:json"
+                                            "json": "selectors,omitempty"
                                           },
                                           "type": "array",
                                           "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -7722,9 +7722,9 @@ const PatternSchema: Record<string, unknown> = {
                                       "x-go-type": "Relationship_Metadata",
                                       "x-order": 5,
                                       "x-oapi-codegen-extra-tags": {
+                                        "gorm": "type:bytes;serializer:json",
                                         "yaml": "metadata",
-                                        "json": "metadata,omitempty",
-                                        "gorm": "type:bytes;serializer:json"
+                                        "json": "metadata,omitempty"
                                       },
                                       "type": "object",
                                       "description": "Metadata contains additional information associated with the Relationship.",
@@ -8217,9 +8217,9 @@ const PatternSchema: Record<string, unknown> = {
                                       "x-go-type": "SelectorSet",
                                       "x-order": 9,
                                       "x-oapi-codegen-extra-tags": {
+                                        "gorm": "type:bytes;serializer:json",
                                         "yaml": "selectors,omitempty",
-                                        "json": "selectors,omitempty",
-                                        "gorm": "type:bytes;serializer:json"
+                                        "json": "selectors,omitempty"
                                       },
                                       "type": "array",
                                       "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -12502,9 +12502,9 @@ const PatternSchema: Record<string, unknown> = {
                                     "x-go-type": "Relationship_Metadata",
                                     "x-order": 5,
                                     "x-oapi-codegen-extra-tags": {
+                                      "gorm": "type:bytes;serializer:json",
                                       "yaml": "metadata",
-                                      "json": "metadata,omitempty",
-                                      "gorm": "type:bytes;serializer:json"
+                                      "json": "metadata,omitempty"
                                     },
                                     "type": "object",
                                     "description": "Metadata contains additional information associated with the Relationship.",
@@ -12997,9 +12997,9 @@ const PatternSchema: Record<string, unknown> = {
                                     "x-go-type": "SelectorSet",
                                     "x-order": 9,
                                     "x-oapi-codegen-extra-tags": {
+                                      "gorm": "type:bytes;serializer:json",
                                       "yaml": "selectors,omitempty",
-                                      "json": "selectors,omitempty",
-                                      "gorm": "type:bytes;serializer:json"
+                                      "json": "selectors,omitempty"
                                     },
                                     "type": "array",
                                     "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -17653,9 +17653,9 @@ const PatternSchema: Record<string, unknown> = {
                                     "x-go-type": "Relationship_Metadata",
                                     "x-order": 5,
                                     "x-oapi-codegen-extra-tags": {
+                                      "gorm": "type:bytes;serializer:json",
                                       "yaml": "metadata",
-                                      "json": "metadata,omitempty",
-                                      "gorm": "type:bytes;serializer:json"
+                                      "json": "metadata,omitempty"
                                     },
                                     "type": "object",
                                     "description": "Metadata contains additional information associated with the Relationship.",
@@ -18148,9 +18148,9 @@ const PatternSchema: Record<string, unknown> = {
                                     "x-go-type": "SelectorSet",
                                     "x-order": 9,
                                     "x-oapi-codegen-extra-tags": {
+                                      "gorm": "type:bytes;serializer:json",
                                       "yaml": "selectors,omitempty",
-                                      "json": "selectors,omitempty",
-                                      "gorm": "type:bytes;serializer:json"
+                                      "json": "selectors,omitempty"
                                     },
                                     "type": "array",
                                     "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -22541,9 +22541,9 @@ const PatternSchema: Record<string, unknown> = {
                                     "x-go-type": "Relationship_Metadata",
                                     "x-order": 5,
                                     "x-oapi-codegen-extra-tags": {
+                                      "gorm": "type:bytes;serializer:json",
                                       "yaml": "metadata",
-                                      "json": "metadata,omitempty",
-                                      "gorm": "type:bytes;serializer:json"
+                                      "json": "metadata,omitempty"
                                     },
                                     "type": "object",
                                     "description": "Metadata contains additional information associated with the Relationship.",
@@ -23036,9 +23036,9 @@ const PatternSchema: Record<string, unknown> = {
                                     "x-go-type": "SelectorSet",
                                     "x-order": 9,
                                     "x-oapi-codegen-extra-tags": {
+                                      "gorm": "type:bytes;serializer:json",
                                       "yaml": "selectors,omitempty",
-                                      "json": "selectors,omitempty",
-                                      "gorm": "type:bytes;serializer:json"
+                                      "json": "selectors,omitempty"
                                     },
                                     "type": "array",
                                     "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -27749,9 +27749,9 @@ const PatternSchema: Record<string, unknown> = {
                                           "x-go-type": "Relationship_Metadata",
                                           "x-order": 5,
                                           "x-oapi-codegen-extra-tags": {
+                                            "gorm": "type:bytes;serializer:json",
                                             "yaml": "metadata",
-                                            "json": "metadata,omitempty",
-                                            "gorm": "type:bytes;serializer:json"
+                                            "json": "metadata,omitempty"
                                           },
                                           "type": "object",
                                           "description": "Metadata contains additional information associated with the Relationship.",
@@ -28244,9 +28244,9 @@ const PatternSchema: Record<string, unknown> = {
                                           "x-go-type": "SelectorSet",
                                           "x-order": 9,
                                           "x-oapi-codegen-extra-tags": {
+                                            "gorm": "type:bytes;serializer:json",
                                             "yaml": "selectors,omitempty",
-                                            "json": "selectors,omitempty",
-                                            "gorm": "type:bytes;serializer:json"
+                                            "json": "selectors,omitempty"
                                           },
                                           "type": "array",
                                           "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -33703,9 +33703,9 @@ const PatternSchema: Record<string, unknown> = {
                       "x-go-type": "Relationship_Metadata",
                       "x-order": 5,
                       "x-oapi-codegen-extra-tags": {
+                        "gorm": "type:bytes;serializer:json",
                         "yaml": "metadata",
-                        "json": "metadata,omitempty",
-                        "gorm": "type:bytes;serializer:json"
+                        "json": "metadata,omitempty"
                       },
                       "type": "object",
                       "description": "Metadata contains additional information associated with the Relationship.",
@@ -34198,9 +34198,9 @@ const PatternSchema: Record<string, unknown> = {
                       "x-go-type": "SelectorSet",
                       "x-order": 9,
                       "x-oapi-codegen-extra-tags": {
+                        "gorm": "type:bytes;serializer:json",
                         "yaml": "selectors,omitempty",
-                        "json": "selectors,omitempty",
-                        "gorm": "type:bytes;serializer:json"
+                        "json": "selectors,omitempty"
                       },
                       "type": "array",
                       "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -38440,9 +38440,9 @@ const PatternSchema: Record<string, unknown> = {
                           "x-go-type": "Relationship_Metadata",
                           "x-order": 5,
                           "x-oapi-codegen-extra-tags": {
+                            "gorm": "type:bytes;serializer:json",
                             "yaml": "metadata",
-                            "json": "metadata,omitempty",
-                            "gorm": "type:bytes;serializer:json"
+                            "json": "metadata,omitempty"
                           },
                           "type": "object",
                           "description": "Metadata contains additional information associated with the Relationship.",
@@ -38935,9 +38935,9 @@ const PatternSchema: Record<string, unknown> = {
                           "x-go-type": "SelectorSet",
                           "x-order": 9,
                           "x-oapi-codegen-extra-tags": {
+                            "gorm": "type:bytes;serializer:json",
                             "yaml": "selectors,omitempty",
-                            "json": "selectors,omitempty",
-                            "gorm": "type:bytes;serializer:json"
+                            "json": "selectors,omitempty"
                           },
                           "type": "array",
                           "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -43209,9 +43209,9 @@ const PatternSchema: Record<string, unknown> = {
                                 "x-go-type": "Relationship_Metadata",
                                 "x-order": 5,
                                 "x-oapi-codegen-extra-tags": {
+                                  "gorm": "type:bytes;serializer:json",
                                   "yaml": "metadata",
-                                  "json": "metadata,omitempty",
-                                  "gorm": "type:bytes;serializer:json"
+                                  "json": "metadata,omitempty"
                                 },
                                 "type": "object",
                                 "description": "Metadata contains additional information associated with the Relationship.",
@@ -43704,9 +43704,9 @@ const PatternSchema: Record<string, unknown> = {
                                 "x-go-type": "SelectorSet",
                                 "x-order": 9,
                                 "x-oapi-codegen-extra-tags": {
+                                  "gorm": "type:bytes;serializer:json",
                                   "yaml": "selectors,omitempty",
-                                  "json": "selectors,omitempty",
-                                  "gorm": "type:bytes;serializer:json"
+                                  "json": "selectors,omitempty"
                                 },
                                 "type": "array",
                                 "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -48010,9 +48010,9 @@ const PatternSchema: Record<string, unknown> = {
                               "x-go-type": "Relationship_Metadata",
                               "x-order": 5,
                               "x-oapi-codegen-extra-tags": {
+                                "gorm": "type:bytes;serializer:json",
                                 "yaml": "metadata",
-                                "json": "metadata,omitempty",
-                                "gorm": "type:bytes;serializer:json"
+                                "json": "metadata,omitempty"
                               },
                               "type": "object",
                               "description": "Metadata contains additional information associated with the Relationship.",
@@ -48505,9 +48505,9 @@ const PatternSchema: Record<string, unknown> = {
                               "x-go-type": "SelectorSet",
                               "x-order": 9,
                               "x-oapi-codegen-extra-tags": {
+                                "gorm": "type:bytes;serializer:json",
                                 "yaml": "selectors,omitempty",
-                                "json": "selectors,omitempty",
-                                "gorm": "type:bytes;serializer:json"
+                                "json": "selectors,omitempty"
                               },
                               "type": "array",
                               "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -52843,9 +52843,9 @@ const PatternSchema: Record<string, unknown> = {
                                 "x-go-type": "Relationship_Metadata",
                                 "x-order": 5,
                                 "x-oapi-codegen-extra-tags": {
+                                  "gorm": "type:bytes;serializer:json",
                                   "yaml": "metadata",
-                                  "json": "metadata,omitempty",
-                                  "gorm": "type:bytes;serializer:json"
+                                  "json": "metadata,omitempty"
                                 },
                                 "type": "object",
                                 "description": "Metadata contains additional information associated with the Relationship.",
@@ -53338,9 +53338,9 @@ const PatternSchema: Record<string, unknown> = {
                                 "x-go-type": "SelectorSet",
                                 "x-order": 9,
                                 "x-oapi-codegen-extra-tags": {
+                                  "gorm": "type:bytes;serializer:json",
                                   "yaml": "selectors,omitempty",
-                                  "json": "selectors,omitempty",
-                                  "gorm": "type:bytes;serializer:json"
+                                  "json": "selectors,omitempty"
                                 },
                                 "type": "array",
                                 "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",

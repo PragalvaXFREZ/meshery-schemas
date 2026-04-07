@@ -19,7 +19,7 @@ Meshery defines its data model as OpenAPI 3.0 YAML schemas under `schemas/constr
 schemas/constructs/**/*.{yaml,yml}  (you write these)
     │
     ▼
-  bundle-openapi.js           (bundles + dereferences via swagger-cli)
+  bundle-openapi.js           (dereferences + merges in-process)
     │
     ▼
   _openapi_build/**/*.json    (intermediate bundled JSON)
@@ -703,9 +703,6 @@ These are the most common mistakes. If you catch yourself doing any of them, sto
 # Run schema design validator (enforces all naming/casing/design rules)
 node build/validate-schemas.js          # fails on violations
 node build/validate-schemas.js --warn   # reports only
-
-# Lint a specific schema
-npx @redocly/cli lint schemas/constructs/v1beta1/<construct>/api.yml
 
 # Full build (validates + generates everything — validator is step 1)
 make build
