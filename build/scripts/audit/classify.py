@@ -118,7 +118,9 @@ def cross_check_completeness(
                     file=sys.stderr,
                 )
         else:
-            notes.append("[REQ] Could not extract request type from handler")
+            handler_file = handler_io.get("file", "")
+            file_info = f"{handler_file}: " if handler_file else ""
+            notes.append(f"[REQ] {file_info}{handler_name}: could not extract request type")
 
     # --- Response side ---
     resp_ratio, resp_common, resp_only_go, resp_only_spec = _field_overlap(
@@ -158,7 +160,9 @@ def cross_check_completeness(
                 )
     else:
         if spec_resp:
-            notes.append("[RESP] Could not extract response type from handler")
+            handler_file = handler_io.get("file", "")
+            file_info = f"{handler_file}: " if handler_file else ""
+            notes.append(f"[RESP] {file_info}{handler_name}: could not extract response type")
         else:
             notes.append(
                 "[RESP] No response body in spec — "
@@ -175,7 +179,7 @@ def cross_check_completeness(
         resp_any = resp_ratio is not None and resp_ratio > 0
 
         if req_ratio is None and resp_ratio is None:
-            if req_type or resp_type:
+            if req_type or resp_type or spec_req or spec_resp:
                 return "Audit Failed", notes
             return "Stub", notes
 
@@ -188,7 +192,7 @@ def cross_check_completeness(
         if resp_ratio is None:
             if is_resp_passthrough:
                 return "Stub", notes
-            if resp_type:
+            if resp_type or spec_resp:
                 return "Audit Failed", notes
             return "Stub", notes
 
@@ -211,6 +215,8 @@ def _build_actionable_notes(
     compl_notes: List[str],
     completeness: str = "",
     driven: str = "",
+    handler_req_type: Optional[str] = None,
+    handler_resp_type: Optional[str] = None,
     repo_source: str = "",
     path: str = "",
 ) -> str:
@@ -235,10 +241,21 @@ def _build_actionable_notes(
         )
 
     if driven == "FALSE" and coverage == "Overlap":
-        sections.append(
-            "[ACTION] Not schema-driven — "
-            "handler does not import meshery/schemas types"
+        is_passthrough = (
+            handler_resp_type == PROVIDER_BYTES_SENTINEL
+            and not handler_req_type
         )
+        type_parts = [
+            t for t in (handler_req_type, handler_resp_type)
+            if t and t != PROVIDER_BYTES_SENTINEL
+        ]
+        if is_passthrough:
+            suffix = "handler forwards raw provider bytes — response type is opaque"
+        elif type_parts:
+            suffix = "handler uses " + ", ".join(type_parts)
+        else:
+            suffix = "handler does not import meshery/schemas types"
+        sections.append(f"[ACTION] Not schema-driven — {suffix}")
 
     if completeness == "Full":
         return "\n\n".join(sections) if sections else ""
@@ -263,16 +280,42 @@ def _build_actionable_notes(
         r"|array of \S+"
         r"|object with properties \[)"
     )
+    _NO_SCHEMA_PATTERN = re.compile(
+        r"^(requestBody|response \d+): no schema defined$"
+    )
     legacy_lines = [
         n for n in compl_notes
         if not n.startswith(("[REQ]", "[RESP]", "[INFO]"))
         and not _INFORMATIONAL_PATTERN.match(n)
     ]
 
+    # Promote missing-schema notes to [ACTION] — they are the primary fix target.
+    for line in info_lines:
+        stripped = line.replace("[INFO] ", "")
+        if "No spec schema defined" in stripped:
+            sections.append(
+                "[ACTION] Add request/response body schemas to spec"
+            )
+        else:
+            # Informational only — keep for context below.
+            req_lines = [stripped] + req_lines  # prepend so it appears first
+
+    for line in legacy_lines:
+        m = _NO_SCHEMA_PATTERN.match(line)
+        if m:
+            part = m.group(1)  # "requestBody" or "response NNN"
+            if part == "requestBody":
+                sections.append("[ACTION] Add request body schema to spec")
+            else:
+                code = part.split()[-1]
+                sections.append(
+                    f"[ACTION] Add response body schema to spec (response {code})"
+                )
+        else:
+            # Not a missing-schema note — keep in [Completeness] for detail.
+            resp_lines.append(line)
+
     compl_parts: List[str] = []
-    if info_lines:
-        for line in info_lines:
-            compl_parts.append(line.replace("[INFO] ", ""))
     if req_lines:
         compl_parts.append("Request:")
         for line in req_lines:
@@ -281,8 +324,6 @@ def _build_actionable_notes(
         compl_parts.append("Response:")
         for line in resp_lines:
             compl_parts.append("  " + line.replace("[RESP] ", ""))
-    if legacy_lines:
-        compl_parts.extend(legacy_lines)
 
     if compl_parts:
         sections.append("[Completeness]\n" + "\n".join(compl_parts))
@@ -489,10 +530,14 @@ def classify_endpoints(
         # --- Notes ---
         notes_completeness = completeness_this if completeness_this else "No Schema"
         notes_driven = driven_raw if driven_raw else ""
+        io = handler_io_map.get(handler, {}) if handler_io_map else {}
         notes = _build_actionable_notes(
             coverage=coverage, status=status, is_commented=is_commented,
             compl_notes=compl_notes_this, completeness=notes_completeness,
-            driven=notes_driven, repo_source=repo_source, path=path,
+            driven=notes_driven,
+            handler_req_type=io.get("request_type"),
+            handler_resp_type=io.get("response_type"),
+            repo_source=repo_source, path=path,
         )
 
         records.append(EndpointRecord(
