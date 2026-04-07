@@ -13,6 +13,7 @@ export const addTagTypes = [
   "role_roles",
   "schedule_scheduler",
   "User_users",
+  "View_views",
   "Workspace_workspaces",
   "Workspace_designs",
   "Workspace_views",
@@ -520,6 +521,39 @@ const injectedRtkApi = api
       getUser: build.query<GetUserApiResponse, GetUserApiArg>({
         query: () => ({ url: `/api/identity/users/profile` }),
         providesTags: ["User_users"],
+      }),
+      createView: build.mutation<CreateViewApiResponse, CreateViewApiArg>({
+        query: (queryArg) => ({ url: `/api/content/views`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["View_views"],
+      }),
+      getViews: build.query<GetViewsApiResponse, GetViewsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/content/views`,
+          params: {
+            search: queryArg.search,
+            order: queryArg.order,
+            page: queryArg.page,
+            pagesize: queryArg.pagesize,
+            filter: queryArg.filter,
+            shared: queryArg.shared,
+            visibility: queryArg.visibility,
+            orgId: queryArg.orgId,
+            userId: queryArg.userId,
+          },
+        }),
+        providesTags: ["View_views"],
+      }),
+      getViewById: build.query<GetViewByIdApiResponse, GetViewByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/content/views/${queryArg.viewId}` }),
+        providesTags: ["View_views"],
+      }),
+      updateView: build.mutation<UpdateViewApiResponse, UpdateViewApiArg>({
+        query: (queryArg) => ({ url: `/api/content/views/${queryArg.viewId}`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["View_views"],
+      }),
+      deleteView: build.mutation<DeleteViewApiResponse, DeleteViewApiArg>({
+        query: (queryArg) => ({ url: `/api/content/views/${queryArg.viewId}`, method: "DELETE" }),
+        invalidatesTags: ["View_views"],
       }),
       getWorkspaces: build.query<GetWorkspacesApiResponse, GetWorkspacesApiArg>({
         query: (queryArg) => ({
@@ -1030,31 +1064,6 @@ const injectedRtkApi = api
           body: queryArg.body,
         }),
         invalidatesTags: ["Design_designs"],
-      }),
-      getViewById: build.query<GetViewByIdApiResponse, GetViewByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/content/views/${queryArg.viewId}` }),
-        providesTags: ["Design_designs"],
-      }),
-      updateView: build.mutation<UpdateViewApiResponse, UpdateViewApiArg>({
-        query: (queryArg) => ({ url: `/api/content/views/${queryArg.viewId}`, method: "PUT", body: queryArg.body }),
-        invalidatesTags: ["Design_designs"],
-      }),
-      getViews: build.query<GetViewsApiResponse, GetViewsApiArg>({
-        query: (queryArg) => ({
-          url: `/api/content/views`,
-          params: {
-            search: queryArg.search,
-            order: queryArg.order,
-            page: queryArg.page,
-            pagesize: queryArg.pagesize,
-            filter: queryArg.filter,
-            shared: queryArg.shared,
-            visibility: queryArg.visibility,
-            orgId: queryArg.orgId,
-            userId: queryArg.userId,
-          },
-        }),
-        providesTags: ["Design_designs"],
       }),
       handleResourceShare: build.mutation<HandleResourceShareApiResponse, HandleResourceShareApiArg>({
         query: (queryArg) => ({
@@ -3801,6 +3810,156 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
   };
 };
 export type GetUserApiArg = void;
+export type CreateViewApiResponse = /** status 201 Created view */ {
+  /** Unique identifier for the view. */
+  id: string;
+  /** Display name of the view. */
+  name: string;
+  /** Visibility level of the view. */
+  visibility: string;
+  /** Filter configuration that defines which resources this view displays. */
+  filters?: object;
+  /** Additional metadata associated with the view. */
+  metadata?: object;
+  /** ID of the user who created the view. */
+  user_id: string;
+  /** Timestamp when the view was created. */
+  created_at: string;
+  /** Timestamp when the view was last updated. */
+  updated_at: string;
+  /** Timestamp when the view was soft deleted. Null while the view remains active. */
+  deleted_at?: string | null;
+};
+export type CreateViewApiArg = {
+  /** Body for creating or updating a view */
+  body: {
+    /** Display name of the view. */
+    name: string;
+    /** Filter configuration for this view. */
+    filters?: object;
+    /** Visibility level of the view. */
+    visibility?: string;
+    /** Metadata associated with the view. */
+    metadata?: object;
+  };
+};
+export type GetViewsApiResponse = /** status 200 Views page */ {
+  page?: number;
+  page_size?: number;
+  total_count?: number;
+  /** Views in this page, enriched with workspace and organization context. */
+  views?: {
+    id?: string;
+    /** Display name of the view. */
+    name?: string;
+    /** Visibility level of the view. */
+    visibility?: string;
+    /** Filter configuration for this view. */
+    filters?: object;
+    /** Metadata associated with the view. */
+    metadata?: object;
+    /** ID of the user who created the view. */
+    user_id?: string;
+    /** Name of the workspace this view belongs to. */
+    workspace_name?: string;
+    /** ID of the workspace this view belongs to. */
+    workspace_id?: string;
+    /** ID of the organization this view belongs to. */
+    organization_id?: string;
+    /** Name of the organization this view belongs to. */
+    organization_name?: string;
+    /** Timestamp when the resource was created. */
+    created_at?: string;
+    /** Timestamp when the resource was updated. */
+    updated_at?: string;
+    /** Timestamp when the resource was deleted. */
+    deleted_at?: string;
+  }[];
+};
+export type GetViewsApiArg = {
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** JSON-encoded filter string for assignment and soft-delete filters. */
+  filter?: string;
+  /** When true, include views shared with the user. */
+  shared?: boolean;
+  /** Filter by visibility level (public, private). */
+  visibility?: string;
+  /** Organization ID to scope the request. */
+  orgId?: string;
+  /** UUID of the user whose views to retrieve. */
+  userId?: string;
+};
+export type GetViewByIdApiResponse = /** status 200 View */ {
+  /** Unique identifier for the view. */
+  id: string;
+  /** Display name of the view. */
+  name: string;
+  /** Visibility level of the view. */
+  visibility: string;
+  /** Filter configuration that defines which resources this view displays. */
+  filters?: object;
+  /** Additional metadata associated with the view. */
+  metadata?: object;
+  /** ID of the user who created the view. */
+  user_id: string;
+  /** Timestamp when the view was created. */
+  created_at: string;
+  /** Timestamp when the view was last updated. */
+  updated_at: string;
+  /** Timestamp when the view was soft deleted. Null while the view remains active. */
+  deleted_at?: string | null;
+};
+export type GetViewByIdApiArg = {
+  /** View ID */
+  viewId: string;
+};
+export type UpdateViewApiResponse = /** status 200 Updated view */ {
+  /** Unique identifier for the view. */
+  id: string;
+  /** Display name of the view. */
+  name: string;
+  /** Visibility level of the view. */
+  visibility: string;
+  /** Filter configuration that defines which resources this view displays. */
+  filters?: object;
+  /** Additional metadata associated with the view. */
+  metadata?: object;
+  /** ID of the user who created the view. */
+  user_id: string;
+  /** Timestamp when the view was created. */
+  created_at: string;
+  /** Timestamp when the view was last updated. */
+  updated_at: string;
+  /** Timestamp when the view was soft deleted. Null while the view remains active. */
+  deleted_at?: string | null;
+};
+export type UpdateViewApiArg = {
+  /** View ID */
+  viewId: string;
+  /** Body for creating or updating a view */
+  body: {
+    /** Display name of the view. */
+    name: string;
+    /** Filter configuration for this view. */
+    filters?: object;
+    /** Visibility level of the view. */
+    visibility?: string;
+    /** Metadata associated with the view. */
+    metadata?: object;
+  };
+};
+export type DeleteViewApiResponse = unknown;
+export type DeleteViewApiArg = {
+  /** View ID */
+  viewId: string;
+};
 export type GetWorkspacesApiResponse = /** status 200 Workspaces */ {
   page?: number;
   page_size?: number;
@@ -5142,19 +5301,27 @@ export type GetViewsOfWorkspaceApiResponse = /** status 200 Views */ {
   page?: number;
   page_size?: number;
   total_count?: number;
-  /** Views in this page. */
+  /** Views in this page, enriched with workspace and organization context. */
   views?: {
     id?: string;
-    /** Name of the view. */
+    /** Display name of the view. */
     name?: string;
+    /** Visibility level of the view. */
+    visibility?: string;
     /** Filter configuration for this view. */
     filters?: object;
-    /** Visibility of the view. */
-    visibility?: string;
     /** Metadata associated with the view. */
     metadata?: object;
-    /** User ID of the view creator. */
+    /** ID of the user who created the view. */
     user_id?: string;
+    /** Name of the workspace this view belongs to. */
+    workspace_name?: string;
+    /** ID of the workspace this view belongs to. */
+    workspace_id?: string;
+    /** ID of the organization this view belongs to. */
+    organization_id?: string;
+    /** Name of the organization this view belongs to. */
+    organization_name?: string;
     /** Timestamp when the resource was created. */
     created_at?: string;
     /** Timestamp when the resource was updated. */
@@ -13736,48 +13903,6 @@ export type CloneFilterApiArg = {
     [key: string]: any;
   };
 };
-export type GetViewByIdApiResponse = /** status 200 View */ {
-  [key: string]: any;
-};
-export type GetViewByIdApiArg = {
-  viewId: string;
-};
-export type UpdateViewApiResponse = /** status 200 Updated view */ {
-  [key: string]: any;
-};
-export type UpdateViewApiArg = {
-  viewId: string;
-  body: {
-    [key: string]: any;
-  };
-};
-export type GetViewsApiResponse = /** status 200 Views page */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  page_size?: number;
-  /** Total number of items available. */
-  total_count?: number;
-  /** The views of the mesheryviewpage. */
-  views?: {
-    [key: string]: any;
-  }[];
-};
-export type GetViewsApiArg = {
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Get responses by page */
-  page?: string;
-  /** Get responses by pagesize */
-  pagesize?: string;
-  filter?: string;
-  shared?: boolean;
-  visibility?: string;
-  orgId?: string;
-  userId?: string;
-};
 export type HandleResourceShareApiResponse = /** status 200 Resource access mapping */ {
   [key: string]: any;
 };
@@ -14731,6 +14856,11 @@ export const {
   useGetUsersQuery,
   useGetUserProfileByIdQuery,
   useGetUserQuery,
+  useCreateViewMutation,
+  useGetViewsQuery,
+  useGetViewByIdQuery,
+  useUpdateViewMutation,
+  useDeleteViewMutation,
   useGetWorkspacesQuery,
   useCreateWorkspaceMutation,
   useGetWorkspaceByIdQuery,
@@ -14796,9 +14926,6 @@ export const {
   useDenyCatalogRequestMutation,
   useGetFilterQuery,
   useCloneFilterMutation,
-  useGetViewByIdQuery,
-  useUpdateViewMutation,
-  useGetViewsQuery,
   useHandleResourceShareMutation,
   useGetResourceAccessActorsByTypeQuery,
   useGetCatalogRequestQuery,
