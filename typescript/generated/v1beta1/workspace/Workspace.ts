@@ -2020,19 +2020,19 @@ export interface components {
       metadata?: { [key: string]: unknown };
       /**
        * Format: uuid
-       * @description ID of the user who created the view.
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
        */
       user_id?: string;
       /** @description Name of the workspace this view belongs to. */
       workspace_name?: string;
       /**
        * Format: uuid
-       * @description ID of the workspace this view belongs to.
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
        */
       workspace_id: string;
       /**
        * Format: uuid
-       * @description ID of the organization this view belongs to.
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
        */
       organization_id: string;
       /** @description Name of the organization this view belongs to. */
@@ -2072,19 +2072,19 @@ export interface components {
         metadata?: { [key: string]: unknown };
         /**
          * Format: uuid
-         * @description ID of the user who created the view.
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
          */
         user_id?: string;
         /** @description Name of the workspace this view belongs to. */
         workspace_name?: string;
         /**
          * Format: uuid
-         * @description ID of the workspace this view belongs to.
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
          */
         workspace_id: string;
         /**
          * Format: uuid
-         * @description ID of the organization this view belongs to.
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
          */
         organization_id: string;
         /** @description Name of the organization this view belongs to. */
@@ -4770,19 +4770,19 @@ export interface operations {
               metadata?: { [key: string]: unknown };
               /**
                * Format: uuid
-               * @description ID of the user who created the view.
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                */
               user_id?: string;
               /** @description Name of the workspace this view belongs to. */
               workspace_name?: string;
               /**
                * Format: uuid
-               * @description ID of the workspace this view belongs to.
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                */
               workspace_id: string;
               /**
                * Format: uuid
-               * @description ID of the organization this view belongs to.
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                */
               organization_id: string;
               /** @description Name of the organization this view belongs to. */

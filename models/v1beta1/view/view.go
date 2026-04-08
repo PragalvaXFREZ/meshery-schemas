@@ -4,7 +4,6 @@
 package view
 
 import (
-	"github.com/gofrs/uuid"
 	core "github.com/meshery/schemas/models/core"
 )
 
@@ -62,8 +61,8 @@ type MesheryViewWithLocation struct {
 	// Name Display name of the view.
 	Name string `db:"name" json:"name,omitempty" yaml:"name,omitempty"`
 
-	// OrganizationID ID of the organization this view belongs to.
-	OrganizationID uuid.UUID `db:"organization_id" json:"organization_id" yaml:"organization_id"`
+	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OrganizationID core.Uuid `db:"organization_id" json:"organization_id" yaml:"organization_id"`
 
 	// OrganizationName Name of the organization this view belongs to.
 	OrganizationName string `db:"organization_name" json:"organization_name,omitempty" yaml:"organization_name,omitempty"`
@@ -71,14 +70,14 @@ type MesheryViewWithLocation struct {
 	// UpdatedAt Timestamp when the resource was updated.
 	UpdatedAt core.UpdatedAt `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 
-	// UserID ID of the user who created the view.
-	UserID uuid.UUID `db:"user_id" json:"user_id,omitempty" yaml:"user_id,omitempty"`
+	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	UserID *core.Uuid `db:"user_id" json:"user_id,omitempty" yaml:"user_id,omitempty"`
 
 	// Visibility Visibility level of the view.
 	Visibility string `db:"visibility" json:"visibility,omitempty" yaml:"visibility,omitempty"`
 
-	// WorkspaceID ID of the workspace this view belongs to.
-	WorkspaceID uuid.UUID `db:"workspace_id" json:"workspace_id" yaml:"workspace_id"`
+	// WorkspaceId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	WorkspaceID core.Uuid `db:"workspace_id" json:"workspace_id" yaml:"workspace_id"`
 
 	// WorkspaceName Name of the workspace this view belongs to.
 	WorkspaceName string `db:"workspace_name" json:"workspace_name,omitempty" yaml:"workspace_name,omitempty"`

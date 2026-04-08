@@ -391,18 +391,18 @@ const ViewSchema: Record<string, unknown> = {
             }
           },
           "user_id": {
-            "type": "string",
-            "format": "uuid",
             "description": "ID of the user who created the view.",
-            "x-go-type": "uuid.UUID",
-            "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
-            },
             "x-go-name": "UserID",
             "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "user_id",
               "json": "user_id,omitempty"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
             }
           },
           "workspace_name": {
@@ -416,33 +416,33 @@ const ViewSchema: Record<string, unknown> = {
             }
           },
           "workspace_id": {
-            "type": "string",
-            "format": "uuid",
             "description": "ID of the workspace this view belongs to.",
-            "x-go-type": "uuid.UUID",
-            "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
-            },
             "x-go-name": "WorkspaceID",
             "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "workspace_id",
               "json": "workspace_id"
-            }
-          },
-          "organization_id": {
+            },
             "type": "string",
             "format": "uuid",
-            "description": "ID of the organization this view belongs to.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
-            },
+            }
+          },
+          "organization_id": {
+            "description": "ID of the organization this view belongs to.",
             "x-go-name": "OrganizationID",
             "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "organization_id",
               "json": "organization_id"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
             }
           },
           "organization_name": {
@@ -635,18 +635,18 @@ const ViewSchema: Record<string, unknown> = {
                   }
                 },
                 "user_id": {
-                  "type": "string",
-                  "format": "uuid",
                   "description": "ID of the user who created the view.",
-                  "x-go-type": "uuid.UUID",
-                  "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
-                  },
                   "x-go-name": "UserID",
                   "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "user_id",
                     "json": "user_id,omitempty"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
                   }
                 },
                 "workspace_name": {
@@ -660,33 +660,33 @@ const ViewSchema: Record<string, unknown> = {
                   }
                 },
                 "workspace_id": {
-                  "type": "string",
-                  "format": "uuid",
                   "description": "ID of the workspace this view belongs to.",
-                  "x-go-type": "uuid.UUID",
-                  "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
-                  },
                   "x-go-name": "WorkspaceID",
                   "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "workspace_id",
                     "json": "workspace_id"
-                  }
-                },
-                "organization_id": {
+                  },
                   "type": "string",
                   "format": "uuid",
-                  "description": "ID of the organization this view belongs to.",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
-                  },
+                  }
+                },
+                "organization_id": {
+                  "description": "ID of the organization this view belongs to.",
                   "x-go-name": "OrganizationID",
                   "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "organization_id",
                     "json": "organization_id"
+                  },
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
                   }
                 },
                 "organization_name": {
@@ -1253,18 +1253,18 @@ const ViewSchema: Record<string, unknown> = {
                             }
                           },
                           "user_id": {
-                            "type": "string",
-                            "format": "uuid",
                             "description": "ID of the user who created the view.",
-                            "x-go-type": "uuid.UUID",
-                            "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
-                            },
                             "x-go-name": "UserID",
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "user_id",
                               "json": "user_id,omitempty"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "workspace_name": {
@@ -1278,33 +1278,33 @@ const ViewSchema: Record<string, unknown> = {
                             }
                           },
                           "workspace_id": {
-                            "type": "string",
-                            "format": "uuid",
                             "description": "ID of the workspace this view belongs to.",
-                            "x-go-type": "uuid.UUID",
-                            "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
-                            },
                             "x-go-name": "WorkspaceID",
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "workspace_id",
                               "json": "workspace_id"
-                            }
-                          },
-                          "organization_id": {
+                            },
                             "type": "string",
                             "format": "uuid",
-                            "description": "ID of the organization this view belongs to.",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
-                            },
+                            }
+                          },
+                          "organization_id": {
+                            "description": "ID of the organization this view belongs to.",
                             "x-go-name": "OrganizationID",
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "organization_id",
                               "json": "organization_id"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
                             }
                           },
                           "organization_name": {

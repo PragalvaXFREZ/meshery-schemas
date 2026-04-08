@@ -5312,13 +5312,13 @@ export type GetViewsOfWorkspaceApiResponse = /** status 200 Views */ {
     filters?: object;
     /** Metadata associated with the view. */
     metadata?: object;
-    /** ID of the user who created the view. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     user_id?: string;
     /** Name of the workspace this view belongs to. */
     workspace_name?: string;
-    /** ID of the workspace this view belongs to. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     workspace_id: string;
-    /** ID of the organization this view belongs to. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     organization_id: string;
     /** Name of the organization this view belongs to. */
     organization_name?: string;

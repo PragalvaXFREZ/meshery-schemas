@@ -4,7 +4,6 @@
 package workspace
 
 import (
-	"github.com/gofrs/uuid"
 	"github.com/meshery/schemas/models/core"
 	patternv1beta1 "github.com/meshery/schemas/models/v1beta1/pattern"
 	viewv1beta1 "github.com/meshery/schemas/models/v1beta1/view"
@@ -32,8 +31,8 @@ type AvailableWorkspace struct {
 	// OrgName Name of the owning organization.
 	OrgName string `db:"org_name" json:"org_name,omitempty" yaml:"org_name,omitempty"`
 
-	// OrganizationId Organization to which this workspace belongs.
-	OrganizationId uuid.UUID `db:"organization_id" json:"organization_id,omitempty" yaml:"organization_id,omitempty"`
+	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OrganizationId *core.Uuid `db:"organization_id" json:"organization_id,omitempty" yaml:"organization_id,omitempty"`
 
 	// Owner Display name of the workspace owner.
 	Owner *string `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
