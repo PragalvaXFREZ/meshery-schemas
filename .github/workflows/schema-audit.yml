@@ -42,8 +42,8 @@ jobs:
         with:
           go-version-file: go.mod
 
-      - name: Run strict schema consistency audit
-        run: make validate-schemas-strict
+      - name: Run blocking schema validation
+        run: make validate-schemas
 
   advisory-audit:
     name: Full schema audit

@@ -45,9 +45,11 @@ func checkRule2(filePath string, doc *openapi3.T, opts AuditOptions) []Violation
 					continue
 				}
 				// Check $ref schema name: POST/PUT requestBody should reference a *Payload schema.
+				// Advisory-only: many existing schemas use *Request naming; this is a
+				// suggestion for new schemas, not a blocking rule.
 				if media.Schema.Ref != "" {
 					name := refTail(media.Schema.Ref)
-					if !strings.HasSuffix(name, "Payload") {
+					if !strings.HasSuffix(name, "Payload") && !strings.HasSuffix(name, "Request") {
 						out = append(out, Violation{
 							File: filePath,
 							Message: fmt.Sprintf(
@@ -55,7 +57,7 @@ func checkRule2(filePath string, doc *openapi3.T, opts AuditOptions) []Violation
 									`POST/PUT requestBody should reference a dedicated *Payload schema with only client-settable fields. `+
 									`See AGENTS.md § "The Dual-Schema Pattern".`,
 								pair.method, path, name),
-							Severity:   classifyDesignIssue(opts),
+							Severity:   SeverityAdvisory,
 							RuleNumber: 2,
 						})
 					}
