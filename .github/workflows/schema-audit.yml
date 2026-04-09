@@ -4,12 +4,26 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - 'schemas/constructs/**'
+      - '.github/workflows/schema-audit.yml'
+      - 'Makefile'
+      - 'build/**'
+      - 'validation/**'
+      - 'cmd/validate-schemas/**'
+      - 'schemas/**'
+      - 'go.mod'
+      - 'go.sum'
   push:
     branches:
       - master
     paths:
-      - 'schemas/constructs/**'
+      - '.github/workflows/schema-audit.yml'
+      - 'Makefile'
+      - 'build/**'
+      - 'validation/**'
+      - 'cmd/validate-schemas/**'
+      - 'schemas/**'
+      - 'go.mod'
+      - 'go.sum'
 
 jobs:
   strict-consistency-audit:
@@ -21,13 +35,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Go
+        uses: actions/setup-go@v5
         with:
-          node-version: '22'
-
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps
+          go-version-file: go.mod
 
       - name: Run strict schema consistency audit
         run: make validate-schemas-strict
@@ -41,13 +52,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Go
+        uses: actions/setup-go@v5
         with:
-          node-version: '22'
-
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps
+          go-version-file: go.mod
 
       - name: Run full schema audit
         run: make audit-schemas-full
