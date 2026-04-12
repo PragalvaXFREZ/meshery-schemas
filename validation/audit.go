@@ -81,28 +81,26 @@ func Audit(opts AuditOptions) AuditResult {
 			// load, we still run entity/template audits.
 			var apiDoc *openapi3.T
 			apiExists := false
+			isDeprecated := false
 			if _, err := os.Stat(apiYmlPath); err == nil {
 				apiExists = true
 				doc, loadErr := loadAPISpec(apiYmlPath)
 				if loadErr == nil {
-					// Skip deprecated constructs entirely.
-					if isDeprecatedDoc(doc) {
-						continue
-					}
 					apiDoc = doc
+					isDeprecated = isDeprecatedDoc(doc)
 				}
 			}
 
 			// Validate entity schemas (*.yaml, not api.yml).
-			auditEntitySchemas(constructDir, opts, baseline, &result)
+			auditEntitySchemas(constructDir, opts, baseline, &result, isDeprecated)
 
 			// Validate template files (Rule 18, 34).
-			auditTemplateFiles(constructDir, cEntry.Name(), opts, baseline, &result)
+			auditTemplateFiles(constructDir, cEntry.Name(), opts, baseline, &result, isDeprecated)
 
 			// Validate api.yml if it exists.
 			if apiExists {
 				auditAPISpec(apiYmlPath, constructDir, opts, baseline, &result,
-					fingerprints, enumBaselineRef, apiDoc)
+					fingerprints, enumBaselineRef, apiDoc, isDeprecated)
 			}
 		}
 	}
@@ -139,7 +137,7 @@ func isDeprecatedDoc(doc *openapi3.T) bool {
 
 // auditEntitySchemas validates all *.yaml entity files in a construct directory.
 func auditEntitySchemas(constructDir string, opts AuditOptions,
-	baseline map[string]bool, result *AuditResult) {
+	baseline map[string]bool, result *AuditResult, deprecated bool) {
 
 	entries, err := os.ReadDir(constructDir)
 	if err != nil {
@@ -167,50 +165,50 @@ func auditEntitySchemas(constructDir string, opts AuditOptions,
 
 		// Rule 1: additionalProperties: false.
 		for _, v := range checkRule1(relPath, entity, opts) {
-			addViolation(result, v, baseline)
+			addConstructViolation(result, v, baseline, deprecated)
 		}
 
 		// Rule 20: properties and required sections.
 		for _, v := range checkRule20(relPath, entity, opts) {
-			addViolation(result, v, baseline)
+			addConstructViolation(result, v, baseline, deprecated)
 		}
 
 		// Rule 6: entity property casing must match contract/DB-backed rules.
 		for _, v := range checkRule6ForEntity(relPath, entity, opts) {
-			addViolation(result, v, baseline)
+			addConstructViolation(result, v, baseline, deprecated)
 		}
 
 		// Rule 32: DB-backed fields must use the exact snake_case db column name.
 		for _, v := range checkRule32ForEntity(relPath, entity, opts) {
-			addViolation(result, v, baseline)
+			addConstructViolation(result, v, baseline, deprecated)
 		}
 
 		// Rule 35: entity property x-go-type / x-go-type-import consistency.
 		for _, v := range checkRule35ForEntity(relPath, entity, opts) {
-			addViolation(result, v, baseline)
+			addConstructViolation(result, v, baseline, deprecated)
 		}
 
-		// Rules 36–41: property-constraint advisories.
+		// Rules 37–41: property-constraint advisories.
 		for _, v := range checkEntityPropertyConstraints(relPath, entity, opts) {
-			addViolation(result, v, baseline)
+			addConstructViolation(result, v, baseline, deprecated)
 		}
 	}
 }
 
 // auditTemplateFiles validates template files in a construct directory.
 func auditTemplateFiles(constructDir, constructName string, opts AuditOptions,
-	baseline map[string]bool, result *AuditResult) {
+	baseline map[string]bool, result *AuditResult, deprecated bool) {
 
 	relDir := relativeToRoot(constructDir, opts.RootDir)
 
 	// Rule 18: template files must exist.
 	for _, v := range checkRule18(relDir, constructDir, constructName, opts) {
-		addViolation(result, v, baseline)
+		addConstructViolation(result, v, baseline, deprecated)
 	}
 
 	// Rule 34: template value types must match schema.
 	for _, v := range checkRule34(relDir, constructDir, opts) {
-		addViolation(result, v, baseline)
+		addConstructViolation(result, v, baseline, deprecated)
 	}
 }
 
@@ -220,7 +218,7 @@ func auditTemplateFiles(constructDir, constructName string, opts AuditOptions,
 func auditAPISpec(apiYmlPath, constructDir string, opts AuditOptions,
 	baseline map[string]bool, result *AuditResult,
 	fingerprints map[string][]schemaLocation, enumBaselineRef string,
-	doc *openapi3.T) {
+	doc *openapi3.T, deprecated bool) {
 
 	relPath := relativeToRoot(apiYmlPath, opts.RootDir)
 
@@ -247,38 +245,38 @@ func auditAPISpec(apiYmlPath, constructDir string, opts AuditOptions,
 		checkRule17, checkRule19, checkRule21, checkRule23,
 		checkRule24, checkRule25, checkRule26, checkRule27,
 		checkRule28, checkRule30, checkRule31, checkRule35,
-		checkRule37,
+		checkRule36,
 	}
 
 	for _, check := range ruleChecks {
 		for _, v := range check(relPath, doc, opts) {
-			addViolation(result, v, baseline)
+			addConstructViolation(result, v, baseline, deprecated)
 		}
 	}
 
 	// Rules 15-16: cross-construct refs (raw YAML needed for $ref siblings).
 	for _, v := range checkRule15(relPath, rawDoc, doc, opts) {
-		addViolation(result, v, baseline)
+		addConstructViolation(result, v, baseline, deprecated)
 	}
 
 	// Rule 8: enum values.
 	for _, v := range checkRule8(apiYmlPath, relPath, doc, opts, enumBaselineRef) {
-		addViolation(result, v, baseline)
+		addConstructViolation(result, v, baseline, deprecated)
 	}
 
 	// Rule 32: DB-backed property names.
 	for _, v := range checkRule32ForAPI(relPath, doc, opts) {
-		addViolation(result, v, baseline)
+		addConstructViolation(result, v, baseline, deprecated)
 	}
 
 	// Rule 33: pagination envelope fields.
 	for _, v := range checkRule33(relPath, doc, opts) {
-		addViolation(result, v, baseline)
+		addConstructViolation(result, v, baseline, deprecated)
 	}
 
-	// Rules 36-41: property constraints.
+	// Rules 37-41: property constraints.
 	for _, v := range checkPropertyConstraints(relPath, doc, opts) {
-		addViolation(result, v, baseline)
+		addConstructViolation(result, v, baseline, deprecated)
 	}
 
 	// Rule 29: collect fingerprints.
@@ -327,6 +325,15 @@ func auditHelperFiles(modelsDir string, opts AuditOptions,
 			}
 		}
 	}
+}
+
+// addConstructViolation adds a violation to the result, skipping advisory
+// violations if the construct is deprecated.
+func addConstructViolation(result *AuditResult, v Violation, baseline map[string]bool, deprecated bool) {
+	if deprecated && v.Severity == SeverityAdvisory {
+		return
+	}
+	addViolation(result, v, baseline)
 }
 
 // addViolation adds a violation to the result, applying baseline filtering
