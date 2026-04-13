@@ -23,20 +23,20 @@ func TestComputeSummaryCountsPartial(t *testing.T) {
 	match := &matchResult{}
 	got := computeSummary(idx, nil, nil, match, rows, true, true)
 
-	if got.MesheryDrivenPartial != 2 {
-		t.Errorf("MesheryDrivenPartial: got %d, want 2", got.MesheryDrivenPartial)
+	if got.Meshery.DrivenPartial != 2 {
+		t.Errorf("Meshery.DrivenPartial: got %d, want 2", got.Meshery.DrivenPartial)
 	}
-	if got.CloudDrivenPartial != 2 {
-		t.Errorf("CloudDrivenPartial: got %d, want 2", got.CloudDrivenPartial)
+	if got.Cloud.DrivenPartial != 2 {
+		t.Errorf("Cloud.DrivenPartial: got %d, want 2", got.Cloud.DrivenPartial)
 	}
 	if got.SchemaDrivenPartial != 4 {
 		t.Errorf("SchemaDrivenPartial: got %d, want 4", got.SchemaDrivenPartial)
 	}
-	if got.MesheryDrivenTrue != 1 {
-		t.Errorf("MesheryDrivenTrue: got %d, want 1", got.MesheryDrivenTrue)
+	if got.Meshery.DrivenTrue != 1 {
+		t.Errorf("Meshery.DrivenTrue: got %d, want 1", got.Meshery.DrivenTrue)
 	}
-	if got.MesheryDrivenFalse != 1 {
-		t.Errorf("MesheryDrivenFalse: got %d, want 1", got.MesheryDrivenFalse)
+	if got.Meshery.DrivenFalse != 1 {
+		t.Errorf("Meshery.DrivenFalse: got %d, want 1", got.Meshery.DrivenFalse)
 	}
 }
 

@@ -117,13 +117,13 @@ func printSummary(out io.Writer, result *validation.ConsumerAuditResult, meshery
 	fmt.Fprintf(out, "| %-31s | %8d | %8s | %8s |\n", "Schema-only (no handler)", s.SchemaOnly, "--", "--")
 	fmt.Fprintf(out, "| %-31s | %8s | %8d | %8d |\n", "Consumer-only (no schema)", "--", s.ConsumerOnlyMeshery, s.ConsumerOnlyCloud)
 	fmt.Fprintln(out, "+---------------------------------+----------+----------+----------+")
-	fmt.Fprintf(out, "| %-31s | %8s | %8d | %8d |\n", "Schema-Backed = TRUE", "--", s.MesheryBackedTrue, s.CloudBackedTrue)
+	fmt.Fprintf(out, "| %-31s | %8s | %8d | %8d |\n", "Schema-Backed = TRUE", "--", s.Meshery.BackedTrue, s.Cloud.BackedTrue)
 	fmt.Fprintf(out, "| %-31s | %8d | %8s | %8s |\n", "Schema Completeness = TRUE", s.SchemaCompletenessOK, "--", "--")
 	fmt.Fprintf(out, "| %-31s | %8d | %8s | %8s |\n", "Schema Completeness = FALSE", s.SchemaCompletenessNo, "--", "--")
-	fmt.Fprintf(out, "| %-31s | %8s | %8d | %8d |\n", "Schema-Driven = TRUE", "--", s.MesheryDrivenTrue, s.CloudDrivenTrue)
-	fmt.Fprintf(out, "| %-31s | %8s | %8d | %8d |\n", "Schema-Driven = Partial", "--", s.MesheryDrivenPartial, s.CloudDrivenPartial)
-	fmt.Fprintf(out, "| %-31s | %8s | %8d | %8d |\n", "Schema-Driven = FALSE", "--", s.MesheryDrivenFalse, s.CloudDrivenFalse)
-	fmt.Fprintf(out, "| %-31s | %8s | %8d | %8d |\n", "Schema-Driven = Not Audited", "--", s.MesheryDrivenNotAud, s.CloudDrivenNotAud)
+	fmt.Fprintf(out, "| %-31s | %8s | %8d | %8d |\n", "Schema-Driven = TRUE", "--", s.Meshery.DrivenTrue, s.Cloud.DrivenTrue)
+	fmt.Fprintf(out, "| %-31s | %8s | %8d | %8d |\n", "Schema-Driven = Partial", "--", s.Meshery.DrivenPartial, s.Cloud.DrivenPartial)
+	fmt.Fprintf(out, "| %-31s | %8s | %8d | %8d |\n", "Schema-Driven = FALSE", "--", s.Meshery.DrivenFalse, s.Cloud.DrivenFalse)
+	fmt.Fprintf(out, "| %-31s | %8s | %8d | %8d |\n", "Schema-Driven = Not Audited", "--", s.Meshery.DrivenNotAud, s.Cloud.DrivenNotAud)
 	fmt.Fprintln(out, "+---------------------------------+----------+----------+----------+")
 }
 

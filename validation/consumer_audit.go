@@ -152,16 +152,8 @@ type auditSummary struct {
 	SchemaDrivenPartial  int
 	SchemaDrivenFalse    int
 	SchemaDrivenNotAud   int
-	MesheryBackedTrue    int
-	MesheryDrivenTrue    int
-	MesheryDrivenPartial int
-	MesheryDrivenFalse   int
-	MesheryDrivenNotAud  int
-	CloudBackedTrue      int
-	CloudDrivenTrue      int
-	CloudDrivenPartial   int
-	CloudDrivenFalse     int
-	CloudDrivenNotAud    int
+	Meshery              repoTally
+	Cloud                repoTally
 }
 
 // SheetRows returns the audit output as header-plus-rows [][]string suitable
@@ -434,6 +426,37 @@ func sortAuditRows(rows []ConsumerAuditRow) {
 	})
 }
 
+// repoTally holds per-repo driven counts produced by tallyRepo.
+type repoTally struct {
+	BackedTrue    int
+	DrivenTrue    int
+	DrivenPartial int
+	DrivenFalse   int
+	DrivenNotAud  int
+}
+
+// tallyRepo counts schema-backed and schema-driven metrics for a single repo.
+// driven extracts the SchemaDriven field relevant to that repo from each row.
+func tallyRepo(rows []ConsumerAuditRow, driven func(ConsumerAuditRow) string) repoTally {
+	var t repoTally
+	for _, r := range rows {
+		if r.SchemaBacked == "TRUE" && driven(r) != "" {
+			t.BackedTrue++
+		}
+		switch driven(r) {
+		case "TRUE":
+			t.DrivenTrue++
+		case "Partial":
+			t.DrivenPartial++
+		case "FALSE":
+			t.DrivenFalse++
+		case "Not Audited":
+			t.DrivenNotAud++
+		}
+	}
+	return t
+}
+
 func computeSummary(
 	idx *schemaIndex,
 	meshery, cloud []consumerEndpoint,
@@ -448,8 +471,8 @@ func computeSummary(
 		Matched:             len(match.Matched),
 		SchemaOnly:          len(match.SchemaOnly),
 		ConsumerOnly:        len(match.ConsumerOnly),
-		ConsumerOnlyMeshery: countConsumerOnly(match, "meshery"),
-		ConsumerOnlyCloud:   countConsumerOnly(match, "meshery-cloud"),
+		ConsumerOnlyMeshery: len(filterConsumersByRepo(match.ConsumerOnly, "meshery")),
+		ConsumerOnlyCloud:   len(filterConsumersByRepo(match.ConsumerOnly, "meshery-cloud")),
 	}
 	for _, r := range rows {
 		if r.SchemaBacked == "TRUE" {
@@ -461,57 +484,17 @@ func computeSummary(
 		case "FALSE":
 			s.SchemaCompletenessNo++
 		}
-		if mesheryProvided {
-			if r.SchemaBacked == "TRUE" && r.SchemaDrivenMeshery != "" {
-				s.MesheryBackedTrue++
-			}
-			switch r.SchemaDrivenMeshery {
-			case "TRUE":
-				s.MesheryDrivenTrue++
-				s.SchemaDrivenTrue++
-			case "Partial":
-				s.MesheryDrivenPartial++
-				s.SchemaDrivenPartial++
-			case "FALSE":
-				s.MesheryDrivenFalse++
-				s.SchemaDrivenFalse++
-			case "Not Audited":
-				s.MesheryDrivenNotAud++
-				s.SchemaDrivenNotAud++
-			}
-		}
-		if cloudProvided {
-			if r.SchemaBacked == "TRUE" && r.SchemaDrivenCloud != "" {
-				s.CloudBackedTrue++
-			}
-			switch r.SchemaDrivenCloud {
-			case "TRUE":
-				s.CloudDrivenTrue++
-				s.SchemaDrivenTrue++
-			case "Partial":
-				s.CloudDrivenPartial++
-				s.SchemaDrivenPartial++
-			case "FALSE":
-				s.CloudDrivenFalse++
-				s.SchemaDrivenFalse++
-			case "Not Audited":
-				s.CloudDrivenNotAud++
-				s.SchemaDrivenNotAud++
-			}
-		}
 	}
+	if mesheryProvided {
+		s.Meshery = tallyRepo(rows, func(r ConsumerAuditRow) string { return r.SchemaDrivenMeshery })
+	}
+	if cloudProvided {
+		s.Cloud = tallyRepo(rows, func(r ConsumerAuditRow) string { return r.SchemaDrivenCloud })
+	}
+	// Global driven counts are the union of per-repo tallies.
+	s.SchemaDrivenTrue = s.Meshery.DrivenTrue + s.Cloud.DrivenTrue
+	s.SchemaDrivenPartial = s.Meshery.DrivenPartial + s.Cloud.DrivenPartial
+	s.SchemaDrivenFalse = s.Meshery.DrivenFalse + s.Cloud.DrivenFalse
+	s.SchemaDrivenNotAud = s.Meshery.DrivenNotAud + s.Cloud.DrivenNotAud
 	return s
-}
-
-func countConsumerOnly(match *matchResult, repo string) int {
-	if match == nil {
-		return 0
-	}
-	count := 0
-	for _, c := range match.ConsumerOnly {
-		if c.Repo == repo {
-			count++
-		}
-	}
-	return count
 }

@@ -138,12 +138,11 @@ func withChangeLog(r ConsumerAuditRow, log string) ConsumerAuditRow {
 // trackedToSheetRows converts a slice of TrackedEndpoints back into the
 // [][]string shape that downstream sheet writers expect (header + rows).
 func trackedToSheetRows(tracked []TrackedEndpoint) [][]string {
-	rows := make([][]string, 0, len(tracked)+1)
-	rows = append(rows, append([]string(nil), auditHeader...))
-	for _, t := range tracked {
-		rows = append(rows, t.Row.toRow())
+	rows := make([]ConsumerAuditRow, len(tracked))
+	for i, t := range tracked {
+		rows[i] = t.Row
 	}
-	return rows
+	return rowsToSheetRows(rows)
 }
 
 // rowsToSheetRows converts plain audit rows (no reconciliation) into the
