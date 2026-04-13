@@ -2,8 +2,6 @@ package validation
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
 	"sort"
 	"strings"
 
@@ -52,23 +50,10 @@ type schemaIndex struct {
 	Endpoints []schemaEndpoint // sorted by (Path, Method)
 }
 
-type constructSpec struct {
-	Version      string
-	Construct    string
-	ConstructDir string
-	APIYMLPath   string
-	RelativePath string
-	APIExists    bool
-	Doc          *openapi3.T
-	LoadErr      error
-}
-
 // buildEndpointIndex walks the meshery/schemas constructs tree and produces
 // a deterministic index of every API endpoint defined across api.yml files.
-//
-// The walk reuses the same filters as the validator's Audit() pass:
-//   - shouldValidateVersion drops legacy v1alpha* dirs
-//   - isDeprecatedDoc drops constructs marked x-deprecated: true
+// It delegates to walkValidatedConstructSpecs, which is the single canonical
+// walker shared with the schema validator.
 func buildEndpointIndex(rootDir string) (*schemaIndex, error) {
 	index := &schemaIndex{}
 	if err := walkValidatedConstructSpecs(rootDir, func(spec constructSpec) error {
@@ -76,7 +61,7 @@ func buildEndpointIndex(rootDir string) (*schemaIndex, error) {
 			return nil
 		}
 		if spec.LoadErr != nil {
-			return spec.LoadErr
+			return nil // skip specs that fail to load; schema validator reports the violation
 		}
 		doc := spec.Doc
 		if doc == nil || doc.Paths == nil {
@@ -138,77 +123,6 @@ func buildEndpointIndex(rootDir string) (*schemaIndex, error) {
 	})
 
 	return index, nil
-}
-
-func walkValidatedConstructSpecs(rootDir string, fn func(constructSpec) error) error {
-	constructsDir := filepath.Join(rootDir, "schemas", "constructs")
-
-	info, err := os.Stat(constructsDir)
-	if err != nil || !info.IsDir() {
-		return nil
-	}
-
-	versionEntries, err := os.ReadDir(constructsDir)
-	if err != nil {
-		return err
-	}
-	sort.Slice(versionEntries, func(i, j int) bool {
-		return versionEntries[i].Name() < versionEntries[j].Name()
-	})
-
-	for _, vEntry := range versionEntries {
-		if !vEntry.IsDir() {
-			continue
-		}
-		version := vEntry.Name()
-		if !shouldValidateVersion(version) {
-			continue
-		}
-
-		versionDir := filepath.Join(constructsDir, version)
-		constructEntries, err := os.ReadDir(versionDir)
-		if err != nil {
-			return err
-		}
-		sort.Slice(constructEntries, func(i, j int) bool {
-			return constructEntries[i].Name() < constructEntries[j].Name()
-		})
-
-		for _, cEntry := range constructEntries {
-			if !cEntry.IsDir() {
-				continue
-			}
-
-			constructDir := filepath.Join(versionDir, cEntry.Name())
-			apiYmlPath := filepath.Join(constructDir, "api.yml")
-			spec := constructSpec{
-				Version:      version,
-				Construct:    cEntry.Name(),
-				ConstructDir: constructDir,
-				APIYMLPath:   apiYmlPath,
-				RelativePath: relativeToRoot(apiYmlPath, rootDir),
-			}
-
-			if _, err := os.Stat(apiYmlPath); err == nil {
-				spec.APIExists = true
-				doc, loadErr := loadAPISpec(apiYmlPath)
-				if loadErr != nil {
-					spec.LoadErr = loadErr
-				} else {
-					if isDeprecatedDoc(doc) {
-						continue
-					}
-					spec.Doc = doc
-				}
-			}
-
-			if err := fn(spec); err != nil {
-				return err
-			}
-		}
-	}
-
-	return nil
 }
 
 // parseXInternal extracts x-internal target list from operation extensions.
@@ -338,10 +252,6 @@ func buildSchemaShape(ref *openapi3.SchemaRef) *schemaShape {
 		if schema.Title != "" {
 			shape.Name = schema.Title
 		}
-	}
-	if goType := getExtraTag(schema.Extensions, ""); goType != "" {
-		// no-op: getExtraTag is generic; we use Extensions directly below.
-		_ = goType
 	}
 	if raw, ok := schema.Extensions["x-go-type"]; ok {
 		if s, ok := raw.(string); ok {
