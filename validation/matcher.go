@@ -2,6 +2,7 @@ package validation
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 )
 
@@ -69,6 +70,20 @@ func normalizeMatchKey(method, path string) matchKey {
 	return matchKey{Method: method, Path: path}
 }
 
+// paramRE matches an OpenAPI-style path parameter (e.g. `{connectionId}`).
+var paramRE = regexp.MustCompile(`\{[^}]+\}`)
+
+// looseMatchKey is normalizeMatchKey with all path parameter names collapsed
+// to `{}`. It is used as a second-pass lookup so that spec paths written with
+// verbose parameter names (`{certificateId}`) still join against consumer
+// routes that use short names (`:id` → `{id}`), with the drift itself
+// surfaced as a per-row note.
+func looseMatchKey(method, path string) matchKey {
+	k := normalizeMatchKey(method, path)
+	k.Path = paramRE.ReplaceAllString(k.Path, "{}")
+	return k
+}
+
 // matchEndpoints performs the full outer join between schema and consumer
 // endpoints.
 func matchEndpoints(schema *schemaIndex, mesheryConsumers, cloudConsumers []consumerEndpoint) *matchResult {
@@ -78,14 +93,16 @@ func matchEndpoints(schema *schemaIndex, mesheryConsumers, cloudConsumers []cons
 	}
 
 	mesheryByKey := make(map[matchKey][]int, len(mesheryConsumers))
+	mesheryByLoose := make(map[matchKey][]int, len(mesheryConsumers))
 	for i, ep := range mesheryConsumers {
-		k := normalizeMatchKey(ep.Method, ep.Path)
-		mesheryByKey[k] = append(mesheryByKey[k], i)
+		mesheryByKey[normalizeMatchKey(ep.Method, ep.Path)] = append(mesheryByKey[normalizeMatchKey(ep.Method, ep.Path)], i)
+		mesheryByLoose[looseMatchKey(ep.Method, ep.Path)] = append(mesheryByLoose[looseMatchKey(ep.Method, ep.Path)], i)
 	}
 	cloudByKey := make(map[matchKey][]int, len(cloudConsumers))
+	cloudByLoose := make(map[matchKey][]int, len(cloudConsumers))
 	for i, ep := range cloudConsumers {
-		k := normalizeMatchKey(ep.Method, ep.Path)
-		cloudByKey[k] = append(cloudByKey[k], i)
+		cloudByKey[normalizeMatchKey(ep.Method, ep.Path)] = append(cloudByKey[normalizeMatchKey(ep.Method, ep.Path)], i)
+		cloudByLoose[looseMatchKey(ep.Method, ep.Path)] = append(cloudByLoose[looseMatchKey(ep.Method, ep.Path)], i)
 	}
 
 	usedMeshery := make(map[int]bool, len(mesheryConsumers))
@@ -93,15 +110,19 @@ func matchEndpoints(schema *schemaIndex, mesheryConsumers, cloudConsumers []cons
 
 	for _, ep := range schema.Endpoints {
 		key := normalizeMatchKey(ep.Method, ep.Path)
+		looseKey := looseMatchKey(ep.Method, ep.Path)
 		// Apply x-internal filter for join.
 		mesheryAllowed := xInternalAllows(ep.XInternal, "meshery")
 		cloudAllowed := xInternalAllows(ep.XInternal, "cloud")
 
 		var consumers []consumerEndpoint
+		mesheryHit, cloudHit := false, false
+
 		if mesheryAllowed {
 			for _, i := range mesheryByKey[key] {
 				consumers = append(consumers, mesheryConsumers[i])
 				usedMeshery[i] = true
+				mesheryHit = true
 			}
 		}
 		// ANY method matching: a consumer registered with method "ANY"
@@ -111,16 +132,46 @@ func matchEndpoints(schema *schemaIndex, mesheryConsumers, cloudConsumers []cons
 			for _, i := range mesheryByKey[anyKey] {
 				consumers = append(consumers, mesheryConsumers[i])
 				usedMeshery[i] = true
+				mesheryHit = true
 			}
 		}
 		if cloudAllowed {
 			for _, i := range cloudByKey[key] {
 				consumers = append(consumers, cloudConsumers[i])
 				usedCloud[i] = true
+				cloudHit = true
 			}
 			anyKey := matchKey{Method: "ANY", Path: key.Path}
 			for _, i := range cloudByKey[anyKey] {
 				consumers = append(consumers, cloudConsumers[i])
+				usedCloud[i] = true
+				cloudHit = true
+			}
+		}
+
+		// Second-pass loose match: when a repo's exact lookup returned
+		// nothing, retry with parameter names stripped. This recovers
+		// endpoints where the spec and consumer disagree only on param
+		// naming (e.g. spec `{certificateId}` vs. consumer `{id}`). The
+		// drift itself is surfaced on the joined consumer so it still
+		// shows up in the Notes column.
+		if mesheryAllowed && !mesheryHit {
+			for _, i := range mesheryByLoose[looseKey] {
+				if usedMeshery[i] {
+					continue
+				}
+				c := consumerWithParamMismatchNote(mesheryConsumers[i], ep.Path)
+				consumers = append(consumers, c)
+				usedMeshery[i] = true
+			}
+		}
+		if cloudAllowed && !cloudHit {
+			for _, i := range cloudByLoose[looseKey] {
+				if usedCloud[i] {
+					continue
+				}
+				c := consumerWithParamMismatchNote(cloudConsumers[i], ep.Path)
+				consumers = append(consumers, c)
 				usedCloud[i] = true
 			}
 		}
@@ -147,6 +198,18 @@ func matchEndpoints(schema *schemaIndex, mesheryConsumers, cloudConsumers []cons
 	}
 
 	return result
+}
+
+// consumerWithParamMismatchNote returns a copy of c with an appended note
+// documenting the path-parameter-name drift against the spec. The slice is
+// copied so the original consumerEndpoint (held in the parser's slice) is
+// never mutated.
+func consumerWithParamMismatchNote(c consumerEndpoint, specPath string) consumerEndpoint {
+	notes := make([]string, 0, len(c.Notes)+1)
+	notes = append(notes, c.Notes...)
+	notes = append(notes, fmt.Sprintf("path parameter name differs from spec: consumer %q vs spec %q", c.Path, specPath))
+	c.Notes = notes
+	return c
 }
 
 // xInternalAllows returns true if a schema endpoint with the given x-internal

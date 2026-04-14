@@ -40,6 +40,10 @@ type handlerInfo struct {
 	ImportsSchemas bool
 	RequestType    *goTypeInfo
 	ResponseType   *goTypeInfo
+	// DelegatesTo is the name of a same-package method this handler forwards
+	// (res, req, ...) to when its own body contains no req/resp evidence.
+	// Resolved in a post-pass so the delegate's types propagate here.
+	DelegatesTo string
 }
 
 // indexHandlers walks the handler directories under a consumer source tree,
@@ -61,9 +65,16 @@ func indexHandlers(tree sourceTree, endpoints []consumerEndpoint) []consumerEndp
 
 	var ctxs []fileCtx
 
+	// server/models holds many type aliases to schema packages
+	// (`type ConnectionPage = schemasConnection.ConnectionPage`) and domain
+	// structs used by handlers. Without indexing it, responses typed as
+	// `models.ConnectionPage` would be treated as unknown local types.
 	walkDirs := []string{
 		"server/handlers",
 		"server/router",
+		"server/models",
+		"server/services",
+		"server/dao",
 	}
 	for _, dir := range walkDirs {
 		_ = tree.Walk(dir, func(p string) error {
@@ -93,9 +104,28 @@ func indexHandlers(tree sourceTree, endpoints []consumerEndpoint) []consumerEndp
 	// file. Handler-local types live in the same package as the handler,
 	// so a per-dir map is the smallest unit that gives us correct lookups.
 	localPkgTypes := make(map[string]map[string]map[string]string)
+	// Cross-package type index keyed by package name (e.g. "models").
+	// Populated from every walked directory so a handler calling
+	// `models.ConnectionPage` can resolve it even though `models` is a
+	// different package from the handler's own.
+	pkgTypes := make(map[string]map[string]map[string]string)
+	// Cross-package type alias index: pkgName → typeName → import path of
+	// the aliased target. Used to mark `type ConnectionPage = schemas…`
+	// as schema-backed without walking generated models.
+	pkgAliases := make(map[string]map[string]string)
 	for _, c := range ctxs {
 		if localPkgTypes[c.dir] == nil {
 			localPkgTypes[c.dir] = make(map[string]map[string]string)
+		}
+		pkgName := ""
+		if c.file.Name != nil {
+			pkgName = c.file.Name.Name
+		}
+		if pkgName != "" && pkgTypes[pkgName] == nil {
+			pkgTypes[pkgName] = make(map[string]map[string]string)
+		}
+		if pkgName != "" && pkgAliases[pkgName] == nil {
+			pkgAliases[pkgName] = make(map[string]string)
 		}
 		for _, decl := range c.file.Decls {
 			gen, ok := decl.(*ast.GenDecl)
@@ -107,15 +137,77 @@ func indexHandlers(tree sourceTree, endpoints []consumerEndpoint) []consumerEndp
 				if !ok || ts.Name == nil {
 					continue
 				}
-				st, ok := ts.Type.(*ast.StructType)
-				if !ok {
-					continue
+				// `type X = Y.Z` alias — record the aliased import path so
+				// schema-target aliases surface as IsFromSchema downstream.
+				if ts.Assign.IsValid() && pkgName != "" {
+					if sel, ok := ts.Type.(*ast.SelectorExpr); ok {
+						if id, ok := sel.X.(*ast.Ident); ok {
+							if ipath, ok := c.imports[id.Name]; ok {
+								if _, exists := pkgAliases[pkgName][ts.Name.Name]; !exists {
+									pkgAliases[pkgName][ts.Name.Name] = ipath
+								}
+							}
+						}
+					}
 				}
-				fields := extractStructFields(st)
-				if len(fields) > 0 {
-					localPkgTypes[c.dir][ts.Name.Name] = fields
+				if st, ok := ts.Type.(*ast.StructType); ok {
+					fields := extractStructFields(st)
+					if len(fields) > 0 {
+						localPkgTypes[c.dir][ts.Name.Name] = fields
+						if pkgName != "" {
+							if _, exists := pkgTypes[pkgName][ts.Name.Name]; !exists {
+								pkgTypes[pkgName][ts.Name.Name] = fields
+							}
+						}
+					}
 				}
 			}
+		}
+	}
+
+	// Per-package map of function name → first non-error return type, used to
+	// resolve bare identifiers assigned from a call (`x, _ := svc.GetFoo(...)`)
+	// into a comparable shape. Indexing runs on every FuncDecl — including
+	// DAO/service methods that are not HTTP handlers — because those are the
+	// ones returning the domain types the handler then serializes.
+	//
+	// We also build a repo-wide fallback map so handler calls against
+	// cross-package receivers (e.g. `h.dao.ConnectionDAO.GetConnections(...)`)
+	// can be resolved even when the target function lives in server/dao. On
+	// name collisions (two functions in different packages returning different
+	// types) the entry is poisoned — surfacing as "unresolved" is safer than
+	// binding to the wrong shape.
+	funcReturns := make(map[string]map[string]*goTypeInfo, len(ctxs))
+	allFuncReturns := make(map[string]*goTypeInfo)
+	allFuncPoisoned := make(map[string]bool)
+	for _, c := range ctxs {
+		if funcReturns[c.dir] == nil {
+			funcReturns[c.dir] = make(map[string]*goTypeInfo)
+		}
+		for _, decl := range c.file.Decls {
+			fn, ok := decl.(*ast.FuncDecl)
+			if !ok || fn.Name == nil {
+				continue
+			}
+			info := firstNonErrorReturn(fn)
+			if info == nil {
+				continue
+			}
+			name := fn.Name.Name
+			if _, exists := funcReturns[c.dir][name]; !exists {
+				funcReturns[c.dir][name] = info
+			}
+			if allFuncPoisoned[name] {
+				continue
+			}
+			if existing, ok := allFuncReturns[name]; ok {
+				if !sameGoType(existing, info) {
+					allFuncPoisoned[name] = true
+					delete(allFuncReturns, name)
+				}
+				continue
+			}
+			allFuncReturns[name] = info
 		}
 	}
 
@@ -127,16 +219,27 @@ func indexHandlers(tree sourceTree, endpoints []consumerEndpoint) []consumerEndp
 			if !ok || fn.Name == nil {
 				continue
 			}
+			// Only index functions whose signature matches a known HTTP
+			// handler shape. Same-named DAO/service methods (e.g.
+			// (*BadgingService).AddOrUpdateBadge) are intentionally
+			// excluded so the endpoint binds to the real handler instead
+			// of being flagged as ambiguous.
+			if !isHandlerFunc(fn) {
+				continue
+			}
 			name := fn.Name.Name
-			req, resp := scanHandlerBody(fn, c.imports, localPkgTypes[c.dir])
+			req, resp, delegate := scanHandlerBody(fn, c.imports, localPkgTypes[c.dir], funcReturns[c.dir], allFuncReturns, pkgTypes, pkgAliases)
 			handlers[name] = append(handlers[name], handlerInfo{
 				File:           c.path,
 				ImportsSchemas: importsSchemas,
 				RequestType:    req,
 				ResponseType:   resp,
+				DelegatesTo:    delegate,
 			})
 		}
 	}
+
+	resolveDelegations(handlers)
 
 	for i := range endpoints {
 		ep := &endpoints[i]
@@ -386,19 +489,24 @@ func scanHandlerBody(
 	fn *ast.FuncDecl,
 	imports map[string]string,
 	localTypes map[string]map[string]string,
-) (*goTypeInfo, *goTypeInfo) {
+	funcReturns map[string]*goTypeInfo,
+	allFuncReturns map[string]*goTypeInfo,
+	pkgTypes map[string]map[string]map[string]string,
+	pkgAliases map[string]map[string]string,
+) (*goTypeInfo, *goTypeInfo, string) {
 	if fn == nil || fn.Body == nil {
-		return nil, nil
+		return nil, nil, ""
 	}
 
-	locals := collectLocalVars(fn)
+	locals := collectLocalVars(fn, funcReturns, allFuncReturns)
+	delegate := detectDelegation(fn)
 
 	resolve := func(arg ast.Expr) *goTypeInfo {
 		info := identifyArgType(arg)
 		if info == nil {
 			info = lookupLocalVar(arg, locals)
 		}
-		populateFields(info, imports, localTypes)
+		populateFields(info, imports, localTypes, pkgTypes, pkgAliases)
 		return info
 	}
 
@@ -419,6 +527,11 @@ func scanHandlerBody(
 			if req == nil && len(call.Args) == 1 {
 				req = resolve(call.Args[0])
 			}
+		case "Unmarshal":
+			// json.Unmarshal(bd, &v) — the destination is the 2nd arg.
+			if req == nil && len(call.Args) >= 2 {
+				req = resolve(call.Args[1])
+			}
 		case "Bind":
 			// echo: c.Bind(&v)
 			if req == nil && len(call.Args) == 1 {
@@ -438,7 +551,73 @@ func scanHandlerBody(
 		return true
 	})
 
-	return req, resp
+	return req, resp, delegate
+}
+
+// detectDelegation reports the name of a same-package method the handler
+// forwards its (res, req) pair to, when the handler body boils down to a
+// single call shaped like `h.X(res, req, ...)` or `h.X(w, r, ...)`. Returns
+// "" if no clean delegation is found. The caller uses this to inherit
+// request/response types from the delegate in a post-pass.
+func detectDelegation(fn *ast.FuncDecl) string {
+	if fn == nil || fn.Body == nil || fn.Type == nil || fn.Type.Params == nil {
+		return ""
+	}
+	// First two parameter names are the (res, req) pair we want to forward.
+	var paramNames []string
+	for _, field := range fn.Type.Params.List {
+		for _, name := range field.Names {
+			if name != nil {
+				paramNames = append(paramNames, name.Name)
+			}
+		}
+	}
+	if len(paramNames) < 2 {
+		return ""
+	}
+	wantRes, wantReq := paramNames[0], paramNames[1]
+
+	var (
+		found    string
+		bailOut  bool
+		seenCall bool
+	)
+	for _, stmt := range fn.Body.List {
+		if bailOut {
+			break
+		}
+		exprStmt, ok := stmt.(*ast.ExprStmt)
+		if !ok {
+			bailOut = true
+			break
+		}
+		call, ok := exprStmt.X.(*ast.CallExpr)
+		if !ok || len(call.Args) < 2 {
+			bailOut = true
+			break
+		}
+		arg0, ok0 := call.Args[0].(*ast.Ident)
+		arg1, ok1 := call.Args[1].(*ast.Ident)
+		if !ok0 || !ok1 || arg0.Name != wantRes || arg1.Name != wantReq {
+			bailOut = true
+			break
+		}
+		sel, ok := call.Fun.(*ast.SelectorExpr)
+		if !ok || sel.Sel == nil {
+			bailOut = true
+			break
+		}
+		if seenCall {
+			bailOut = true
+			break
+		}
+		seenCall = true
+		found = sel.Sel.Name
+	}
+	if bailOut {
+		return ""
+	}
+	return found
 }
 
 // collectLocalVars walks a function body and records the type of every
@@ -446,7 +625,7 @@ func scanHandlerBody(
 // and `var` declaration whose RHS or type expression is recoverable. It is
 // the missing piece that lets scanHandlerBody resolve `Decode(&v)` calls
 // where `v` is a bare identifier declared a few lines earlier.
-func collectLocalVars(fn *ast.FuncDecl) map[string]*goTypeInfo {
+func collectLocalVars(fn *ast.FuncDecl, funcReturns, allFuncReturns map[string]*goTypeInfo) map[string]*goTypeInfo {
 	out := make(map[string]*goTypeInfo)
 	if fn == nil || fn.Body == nil {
 		return out
@@ -487,10 +666,12 @@ func collectLocalVars(fn *ast.FuncDecl) map[string]*goTypeInfo {
 			if s.Tok != token.DEFINE {
 				return true
 			}
+			// Handle both `x := foo()` (single-value call) and
+			// `x, err := foo()` (destructured return). In the
+			// destructured case len(Rhs) == 1 and len(Lhs) >= 2, so we
+			// resolve every LHS through the single RHS call.
+			singleCall := len(s.Rhs) == 1 && len(s.Lhs) > 1
 			for i, lhs := range s.Lhs {
-				if i >= len(s.Rhs) {
-					break
-				}
 				id, ok := lhs.(*ast.Ident)
 				if !ok || id.Name == "_" {
 					continue
@@ -498,7 +679,31 @@ func collectLocalVars(fn *ast.FuncDecl) map[string]*goTypeInfo {
 				if _, exists := out[id.Name]; exists {
 					continue
 				}
-				if info := identifyArgType(s.Rhs[i]); info != nil {
+				rhsIndex := i
+				if singleCall {
+					rhsIndex = 0
+				}
+				if rhsIndex >= len(s.Rhs) {
+					break
+				}
+				rhs := s.Rhs[rhsIndex]
+				if info := identifyArgType(rhs); info != nil {
+					out[id.Name] = info
+					continue
+				}
+				// Fallback: match the RHS against the per-package map
+				// of function return types. This catches the common
+				// `thing, err := h.Service.GetThing(...)` pattern where
+				// `GetThing` is declared in a sibling file in the same
+				// package.
+				if info := resolveCallReturn(rhs, funcReturns); info != nil && (!singleCall || i == 0) {
+					out[id.Name] = info
+					continue
+				}
+				// Repo-wide fallback for cross-package method calls such
+				// as `connResp, _ := h.dao.ConnectionDAO.GetConnections(...)`
+				// where the return type lives in server/dao or similar.
+				if info := resolveCallReturn(rhs, allFuncReturns); info != nil && (!singleCall || i == 0) {
 					out[id.Name] = info
 				}
 			}
@@ -539,18 +744,37 @@ func populateFields(
 	info *goTypeInfo,
 	imports map[string]string,
 	localTypes map[string]map[string]string,
+	pkgTypes map[string]map[string]map[string]string,
+	pkgAliases map[string]map[string]string,
 ) {
 	if info == nil || len(info.Fields) > 0 {
 		return
 	}
+	typeName := stripArrayPrefix(info.TypeName)
 	if info.Package != "" {
 		importPath := imports[info.Package]
-		if importPath != "" {
-			info.IsFromSchema = strings.HasPrefix(importPath, "github.com/meshery/schemas/models/")
+		if importPath != "" && strings.HasPrefix(importPath, "github.com/meshery/schemas/models/") {
+			info.IsFromSchema = true
 			return
 		}
+		// Cross-package alias: `type X = schemas…X` in a walked local
+		// package counts as schema-backed.
+		if aliases, ok := pkgAliases[info.Package]; ok {
+			if target, ok := aliases[typeName]; ok && strings.HasPrefix(target, "github.com/meshery/schemas/models/") {
+				info.IsFromSchema = true
+				return
+			}
+		}
+		// Cross-package struct defined in a walked local package.
+		if types, ok := pkgTypes[info.Package]; ok {
+			if fields, ok := types[typeName]; ok && len(fields) > 0 {
+				info.Fields = fields
+				return
+			}
+		}
+		return
 	}
-	if fields := localTypes[stripArrayPrefix(info.TypeName)]; len(fields) > 0 {
+	if fields := localTypes[typeName]; len(fields) > 0 {
 		info.Fields = fields
 	}
 }
@@ -678,6 +902,159 @@ func exprToString(expr ast.Expr) string {
 		return "struct{}"
 	}
 	return ""
+}
+
+// isHandlerFunc reports whether a function declaration matches one of the
+// HTTP handler signatures in use across the consumer repos:
+//
+//   - Echo:    func (...) Name(c echo.Context) error
+//   - Gorilla: func (...) Name(w http.ResponseWriter, r *http.Request, ...)
+//
+// Meshery's provider-aware handlers take additional parameters after the
+// standard (w, r) pair (e.g. a `models.Provider`), so the Gorilla check only
+// inspects the first two parameters.
+//
+// The indexer uses this to disambiguate same-named functions when a DAO or
+// service method shares its name with the real handler.
+func isHandlerFunc(fn *ast.FuncDecl) bool {
+	if fn == nil || fn.Type == nil || fn.Type.Params == nil {
+		return false
+	}
+	var paramTypes []string
+	for _, field := range fn.Type.Params.List {
+		t := exprToString(field.Type)
+		n := len(field.Names)
+		if n == 0 {
+			n = 1
+		}
+		for i := 0; i < n; i++ {
+			paramTypes = append(paramTypes, t)
+		}
+	}
+	if len(paramTypes) == 1 && paramTypes[0] == "echo.Context" {
+		return true
+	}
+	if len(paramTypes) >= 2 && paramTypes[0] == "http.ResponseWriter" && paramTypes[1] == "*http.Request" {
+		return true
+	}
+	return false
+}
+
+// firstNonErrorReturn returns the first declared return value whose type is
+// not `error`, as a goTypeInfo. It is used to infer the type assigned to a
+// local variable from a destructured call (`badge, err := svc.GetBadge(...)`).
+func firstNonErrorReturn(fn *ast.FuncDecl) *goTypeInfo {
+	if fn == nil || fn.Type == nil || fn.Type.Results == nil {
+		return nil
+	}
+	for _, field := range fn.Type.Results.List {
+		n := len(field.Names)
+		if n == 0 {
+			n = 1
+		}
+		for i := 0; i < n; i++ {
+			info := typeFromExpr(field.Type)
+			if info == nil || info.TypeName == "" {
+				continue
+			}
+			base := strings.TrimPrefix(info.TypeName, "[]")
+			base = strings.TrimLeft(base, "*")
+			if base == "error" {
+				continue
+			}
+			return info
+		}
+	}
+	return nil
+}
+
+// sameGoType reports whether two goTypeInfo values refer to the same
+// package-qualified type. Used to detect cross-package function-name
+// collisions where both functions happen to return the same type (and so the
+// collision is harmless).
+func sameGoType(a, b *goTypeInfo) bool {
+	if a == nil || b == nil {
+		return a == b
+	}
+	return a.Package == b.Package && a.TypeName == b.TypeName
+}
+
+// resolveCallReturn resolves an RHS expression shaped like a call to a known
+// in-package function and returns that function's first non-error return type.
+// This is a best-effort lookup — cross-package calls and calls whose target
+// is not in the indexed tree return nil.
+func resolveCallReturn(expr ast.Expr, funcReturns map[string]*goTypeInfo) *goTypeInfo {
+	if funcReturns == nil {
+		return nil
+	}
+	call, ok := expr.(*ast.CallExpr)
+	if !ok {
+		return nil
+	}
+	var name string
+	switch fn := call.Fun.(type) {
+	case *ast.SelectorExpr:
+		if fn.Sel != nil {
+			name = fn.Sel.Name
+		}
+	case *ast.Ident:
+		name = fn.Name
+	}
+	if name == "" {
+		return nil
+	}
+	info, ok := funcReturns[name]
+	if !ok || info == nil {
+		return nil
+	}
+	cp := *info
+	return &cp
+}
+
+// resolveDelegations propagates request/response types from delegate handlers
+// to thin wrappers like `func Approve(res, req) { h.change(res, req, true) }`.
+// Mutates the input map in place. The pass is iterative so delegation chains
+// of any depth converge; a visited set guards against cycles.
+func resolveDelegations(handlers map[string][]handlerInfo) {
+	const maxIterations = 8
+	for i := 0; i < maxIterations; i++ {
+		changed := false
+		for name, infos := range handlers {
+			for j := range infos {
+				info := &infos[j]
+				if info.DelegatesTo == "" {
+					continue
+				}
+				if info.RequestType != nil && info.ResponseType != nil {
+					continue
+				}
+				if info.DelegatesTo == name {
+					continue
+				}
+				targets, ok := handlers[info.DelegatesTo]
+				if !ok || len(targets) != 1 {
+					continue
+				}
+				target := targets[0]
+				updated := false
+				if info.RequestType == nil && target.RequestType != nil {
+					info.RequestType = target.RequestType
+					updated = true
+				}
+				if info.ResponseType == nil && target.ResponseType != nil {
+					info.ResponseType = target.ResponseType
+					updated = true
+				}
+				if updated {
+					changed = true
+				}
+			}
+			handlers[name] = infos
+		}
+		if !changed {
+			break
+		}
+	}
 }
 
 // sortConsumerEndpoints orders endpoints deterministically by path then method.

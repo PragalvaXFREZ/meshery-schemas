@@ -315,11 +315,24 @@ func newSchemaRow(ep schemaEndpoint, consumers []consumerEndpoint, mesheryProvid
 	row.SchemaBackedMeshery = schemaBackedFor(mesheryProvided, mesheryAllowed, mesheryConsumers)
 	row.SchemaBackedCloud = schemaBackedFor(cloudProvided, cloudAllowed, cloudConsumers)
 
+	// When the schema itself has neither a comparable request nor response
+	// shape (e.g. no $ref-backed 2xx, no requestBody), Schema-Driven cannot
+	// be evaluated regardless of the consumer. Leave those cells blank so
+	// schema-incomplete rows are not miscounted as consumer-side drift.
+	bothShapesMissing := ep.RequestShape == nil && ep.ResponseShape == nil
 	if mesheryProvided && mesheryAllowed {
-		row.SchemaDrivenMeshery = normalizeDrivenStatus(mesheryAssessment.Status)
+		status := normalizeDrivenStatus(mesheryAssessment.Status)
+		if status == "Not Audited" && bothShapesMissing {
+			status = ""
+		}
+		row.SchemaDrivenMeshery = status
 	}
 	if cloudProvided && cloudAllowed {
-		row.SchemaDrivenCloud = normalizeDrivenStatus(cloudAssessment.Status)
+		status := normalizeDrivenStatus(cloudAssessment.Status)
+		if status == "Not Audited" && bothShapesMissing {
+			status = ""
+		}
+		row.SchemaDrivenCloud = status
 	}
 
 	row.Notes = buildLabeledNotes(schemaNote, mesheryAssessment, cloudAssessment)
