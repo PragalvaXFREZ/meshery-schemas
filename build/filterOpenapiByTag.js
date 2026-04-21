@@ -11,8 +11,13 @@
  *   1. Reads an OpenAPI YAML specification
  *   2. Iterates through all paths and HTTP methods
  *   3. Filters operations based on the x-internal field
- *   4. Includes operations where x-internal is not set, or contains the specified tag
+ *   4. Includes operations whose x-internal array contains the specified tag
  *   5. Writes the filtered specification to a new file
+ *
+ *   x-internal is required on every operation (enforced by validate-schemas
+ *   Rule 14). Operations missing x-internal are excluded from every bundled
+ *   output and the script exits non-zero so the build fails loudly instead of
+ *   silently defaulting them into both consumers.
  *
  * USAGE:
  *   node build/filterOpenapiByTag.js <input.yml> <output.yml> [tag]
@@ -62,6 +67,8 @@ const httpMethods = [
   "trace",
 ];
 
+const missingXInternal = [];
+
 const filteredPaths = Object.entries(doc.paths).reduce(
   (acc, [path, pathItem]) => {
     const filteredMethods = Object.entries(pathItem).reduce(
@@ -69,11 +76,12 @@ const filteredPaths = Object.entries(doc.paths).reduce(
         if (!httpMethods.includes(method)) return methodsAcc; // Skip non-method keys
 
         const xInternal = operation["x-internal"];
-        const shouldInclude =
-          !xInternal ||
-          (Array.isArray(xInternal) && xInternal.includes(tagToInclude));
+        if (!Array.isArray(xInternal) || xInternal.length === 0) {
+          missingXInternal.push(`${method.toUpperCase()} ${path}`);
+          return methodsAcc;
+        }
 
-        if (shouldInclude) {
+        if (xInternal.includes(tagToInclude)) {
           methodsAcc[method] = operation;
         }
 
@@ -90,6 +98,14 @@ const filteredPaths = Object.entries(doc.paths).reduce(
   },
   {},
 );
+
+if (missingXInternal.length > 0) {
+  console.error(
+    `❌ ${missingXInternal.length} operation(s) missing x-internal — required on every operation`,
+  );
+  for (const op of missingXInternal) console.error(`   - ${op}`);
+  process.exit(1);
+}
 
 doc.paths = filteredPaths;
 

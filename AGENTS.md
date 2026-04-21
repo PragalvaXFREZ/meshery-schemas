@@ -298,11 +298,11 @@ Use `x-generate-db-helpers: true` on a schema component to auto-generate `Scan`/
 
 ## x-internal annotation
 
-Control which bundled output includes an API path:
+**Required on every operation.** The bundler and validate-schemas Rule 14 reject operations that omit it. Use the annotation to declare which bundled outputs include the path:
 
 - `x-internal: ["cloud"]` — cloud-only (`_openapi_build/cloud_openapi.yml`)
 - `x-internal: ["meshery"]` — Meshery-only (`_openapi_build/meshery_openapi.yml`)
-- Omit `x-internal` — included in both bundled outputs
+- `x-internal: ["cloud", "meshery"]` — both bundled outputs
 
 See [The Dual-Schema Pattern](#the-dual-schema-pattern-required) above for the canonical entity/payload rules and reference examples used throughout this repo.
 

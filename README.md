@@ -567,7 +567,7 @@ After running `make build`, three bundled schema files are created:
 
 ## ✍️ Annotating OpenAPI Paths
 
-To control which schema paths are included in each bundled output, use the `x-internal` annotation inside the OpenAPI operations (`get`, `post`, etc.).
+To control which schema paths are included in each bundled output, use the `x-internal` annotation inside the OpenAPI operations (`get`, `post`, etc.). The annotation is **required on every operation** — `validate-schemas` (Rule 14) and the bundler both reject operations that omit it.
 
 ### Example:
 
@@ -591,8 +591,9 @@ paths:
                   $ref: "#/components/schemas/Plan"
 ```
 
-* **With `x-internal`**: Included only in the respective client (e.g., `cloud`).
-* **Without `x-internal`**: Included in **all** clients.
+* `x-internal: ["cloud"]` — included in the cloud bundle only.
+* `x-internal: ["meshery"]` — included in the meshery bundle only.
+* `x-internal: ["cloud", "meshery"]` — included in **both** bundles.
 
 ---
 
