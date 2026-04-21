@@ -18,6 +18,7 @@ security:
 paths:
   /api/integrations/connections:
     get:
+      x-internal: ["cloud", "meshery"]
       tags:
         - Connections
       operationId: getConnections
@@ -77,6 +78,7 @@ paths:
           $ref: "#/components/responses/500"
 
     post:
+      x-internal: ["cloud", "meshery"]
       tags:
         - Connections
       operationId: registerConnection
@@ -104,6 +106,7 @@ paths:
 
   /api/integrations/connections/{connectionId}:
     get:
+      x-internal: ["cloud", "meshery"]
       tags:
         - Connections
       operationId: getConnectionById
@@ -126,6 +129,7 @@ paths:
           $ref: "#/components/responses/500"
 
     put:
+      x-internal: ["cloud", "meshery"]
       tags:
         - Connections
       operationId: updateConnection
@@ -156,6 +160,7 @@ paths:
           $ref: "#/components/responses/500"
 
     delete:
+      x-internal: ["cloud", "meshery"]
       tags:
         - Connections
       operationId: deleteConnection
@@ -175,6 +180,7 @@ paths:
 
   /api/integrations/connections/meshery/{mesheryServerId}:
     delete:
+      x-internal: ["cloud", "meshery"]
       tags:
         - Connections
       operationId: deleteMesheryConnection
@@ -200,6 +206,7 @@ paths:
 
   /api/integrations/connections/kubernetes/{connectionId}/context:
     get:
+      x-internal: ["cloud", "meshery"]
       tags:
         - Connections
       operationId: getKubernetesContext
@@ -223,6 +230,7 @@ paths:
 
   /api/environments/{environmentId}/connections/{connectionId}:
     post:
+      x-internal: ["cloud", "meshery"]
       tags:
         - Connections
       operationId: addConnectionToEnvironment
@@ -244,6 +252,7 @@ paths:
           $ref: "#/components/responses/500"
 
     delete:
+      x-internal: ["cloud", "meshery"]
       tags:
         - Connections
       operationId: removeConnectionFromEnvironment

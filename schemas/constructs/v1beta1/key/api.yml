@@ -23,6 +23,7 @@ tags:
 paths:
   /api/identity/orgs/{orgId}/users/keys:
     get:
+      x-internal: ["cloud", "meshery"]
       tags:
         - users
       operationId: getUserKeys

@@ -17,6 +17,7 @@ security:
 paths:
   /api/identity/orgs/{orgId}/users:
     get:
+      x-internal: ["cloud", "meshery"]
       tags:
         - users
       operationId: getUsersForOrg
@@ -48,6 +49,7 @@ paths:
 
   /api/users:
     get:
+      x-internal: ["cloud", "meshery"]
       tags:
         - users
       operationId: getUsers
@@ -76,6 +78,7 @@ paths:
 
   /api/identity/users/profile/{id}:
     get:
+      x-internal: ["cloud", "meshery"]
       tags:
         - users
       operationId: getUserProfileById
@@ -100,6 +103,7 @@ paths:
 
   /api/identity/users/profile:
     get:
+      x-internal: ["cloud", "meshery"]
       tags:
         - users
       operationId: getUser

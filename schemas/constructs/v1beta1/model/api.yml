@@ -21,6 +21,7 @@ tags:
 paths:
   /api/meshmodels/register:
     post:
+      x-internal: ["cloud", "meshery"]
       tags:
         - Models
       summary: Register mesh models

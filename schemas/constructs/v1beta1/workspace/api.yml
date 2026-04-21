@@ -30,6 +30,7 @@ tags:
 paths:
   /api/workspaces:
     get:
+      x-internal: ["cloud", "meshery"]
       tags:
         - workspaces
       operationId: getWorkspaces
@@ -53,6 +54,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     post:
+      x-internal: ["cloud", "meshery"]
       tags:
         - workspaces
       operationId: createWorkspace
@@ -76,6 +78,7 @@ paths:
 
   /api/workspaces/{workspaceId}:
     get:
+      x-internal: ["cloud", "meshery"]
       tags:
         - workspaces
       operationId: getWorkspaceById
@@ -99,6 +102,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     put:
+      x-internal: ["cloud", "meshery"]
       tags:
         - workspaces
       operationId: updateWorkspace
@@ -124,6 +128,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     delete:
+      x-internal: ["cloud", "meshery"]
       tags:
         - workspaces
       operationId: deleteWorkspace
@@ -145,6 +150,7 @@ paths:
 
   /api/workspaces/{workspaceId}/teams:
     get:
+      x-internal: ["cloud", "meshery"]
       tags:
         - workspaces
       operationId: getTeamsOfWorkspace
@@ -175,6 +181,7 @@ paths:
 
   /api/workspaces/{workspaceId}/teams/{teamId}:
     post:
+      x-internal: ["cloud", "meshery"]
       tags:
         - workspaces
       operationId: assignTeamToWorkspace
@@ -199,6 +206,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     delete:
+      x-internal: ["cloud", "meshery"]
       tags:
         - workspaces
       operationId: unassignTeamFromWorkspace
@@ -221,6 +229,7 @@ paths:
 
   /api/workspaces/{workspaceId}/environments:
     get:
+      x-internal: ["cloud", "meshery"]
       tags:
         - workspaces
       operationId: getEnvironmentsOfWorkspace
@@ -251,6 +260,7 @@ paths:
 
   /api/workspaces/{workspaceId}/environments/{environmentId}:
     post:
+      x-internal: ["cloud", "meshery"]
       tags:
         - workspaces
       operationId: assignEnvironmentToWorkspace
@@ -275,6 +285,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     delete:
+      x-internal: ["cloud", "meshery"]
       tags:
         - workspaces
       operationId: unassignEnvironmentFromWorkspace
@@ -297,6 +308,7 @@ paths:
 
   /api/workspaces/{workspaceId}/designs:
     get:
+      x-internal: ["cloud", "meshery"]
       tags:
         - workspaces
         - designs
@@ -328,6 +340,7 @@ paths:
 
   /api/workspaces/{workspaceId}/designs/{designId}:
     post:
+      x-internal: ["cloud", "meshery"]
       tags:
         - workspaces
         - designs
@@ -353,6 +366,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     delete:
+      x-internal: ["cloud", "meshery"]
       tags:
         - workspaces
         - designs
@@ -376,6 +390,7 @@ paths:
 
   /api/workspaces/{workspaceId}/views:
     get:
+      x-internal: ["cloud", "meshery"]
       tags:
         - workspaces
         - views
@@ -407,6 +422,7 @@ paths:
 
   /api/workspaces/{workspaceId}/views/{viewId}:
     post:
+      x-internal: ["cloud", "meshery"]
       tags:
         - workspaces
         - views
@@ -432,6 +448,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     delete:
+      x-internal: ["cloud", "meshery"]
       tags:
         - workspaces
         - views
