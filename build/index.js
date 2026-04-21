@@ -33,6 +33,10 @@ const paths = require("./lib/paths");
  * Available commands and their configurations
  */
 const commands = {
+  validate: {
+    description: "Validate schemas with the Go validator",
+    exec: ["go", "run", "./cmd/validate-schemas"],
+  },
   bundle: {
     description: "Bundle and merge OpenAPI specifications",
     script: "bundle-openapi.js",
@@ -70,19 +74,19 @@ const commands = {
   },
   all: {
     description: "Run full build pipeline",
-    pipeline: ["bundle", "golang", "rtk", "types"],
+    pipeline: ["validate", "bundle", "golang", "rtk", "types"],
   },
 };
 
 /**
- * Run a script and return a promise
- * @param {string} scriptPath - Path to script
+ * Run a process and return a promise
+ * @param {string} command - Executable to run
  * @param {string[]} args - Arguments to pass
  * @returns {Promise<void>}
  */
-function runScript(scriptPath, args = []) {
+function runProcess(command, args = []) {
   return new Promise((resolve, reject) => {
-    const proc = spawn("node", [scriptPath, ...args], {
+    const proc = spawn(command, args, {
       cwd: paths.getProjectRoot(),
       stdio: "inherit",
     });
@@ -91,7 +95,7 @@ function runScript(scriptPath, args = []) {
       if (code === 0) {
         resolve();
       } else {
-        reject(new Error(`Script exited with code ${code}`));
+        reject(new Error(`${command} exited with code ${code}`));
       }
     });
 
@@ -130,11 +134,14 @@ async function runCommand(commandName, completed = new Set()) {
     await runCommand(command.dependsOn, completed);
   }
 
-  // Run the script
-  const scriptPath = path.join(__dirname, command.script);
-  const args = command.args || [];
-
-  await runScript(scriptPath, args);
+  // Run either a raw exec command or a node script
+  if (command.exec) {
+    await runProcess(command.exec[0], command.exec.slice(1));
+  } else {
+    const scriptPath = path.join(__dirname, command.script);
+    const args = command.args || [];
+    await runProcess("node", [scriptPath, ...args]);
+  }
   completed.add(commandName);
 }
 

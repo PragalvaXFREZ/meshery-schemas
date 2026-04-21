@@ -21,9 +21,15 @@ npm run build:all
 
 ## Build Pipeline
 
-The build process is organized into three main stages:
+The full pipeline runs the Go schema validator first, then the code-generation stages:
 
 ```
+┌─────────────────────┐
+│ validate-schemas    │  go run ./cmd/validate-schemas
+│ (Go validator)      │  Enforces dual-schema, casing, contract rules
+└─────────────────────┘
+         │
+         ▼
 ┌─────────────────────┐     ┌─────────────────────┐     ┌─────────────────────┐
 │  bundle-openapi.js  │────▶│  generate-golang.js │     │   generate-rtk.js   │
 │                     │     │                     │     │                     │
@@ -62,6 +68,7 @@ The build process is organized into three main stages:
 
 | Script | Purpose | Depends On |
 |--------|---------|------------|
+| `cmd/validate-schemas` (Go) | Validates schemas against dual-schema, casing, and contract rules | - |
 | `bundle-openapi.js` | Bundles and merges OpenAPI specs | - |
 | `generate-golang.js` | Generates Go structs from OpenAPI | `bundle-openapi.js` |
 | `generate-rtk.js` | Generates RTK Query clients | `bundle-openapi.js` |
@@ -364,7 +371,8 @@ go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
 
 | Target | Description |
 |--------|-------------|
-| `make build` | Run full build pipeline |
+| `make build` | Run full build pipeline (validate → bundle → generate → test) |
+| `make validate-schemas` | Run the Go schema validator |
 | `make bundle-openapi` | Bundle and merge OpenAPI specs |
 | `make generate-golang` | Generate Go code (auto-runs bundle) |
 | `make generate-rtk` | Generate RTK Query clients (auto-runs bundle) |
@@ -375,7 +383,7 @@ go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
 
 | Script | Description |
 |--------|-------------|
-| `npm run build:all` | Run full build pipeline |
+| `npm run build:all` | Run full build pipeline (validate → bundle → golang → rtk → types) |
 | `npm run build:bundle` | Bundle OpenAPI specs |
 | `npm run build:golang` | Generate Go code |
 | `npm run build:rtk` | Generate RTK Query clients |
