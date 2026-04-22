@@ -112,6 +112,11 @@ audit-schemas-style-full:
 audit-schemas-debt-full:
 	go run ./cmd/validate-schemas --warn --no-baseline --style-debt --contract-debt
 
+## Regenerate the Option B Phase 0 field-count baseline artifact
+.PHONY: baseline-field-count
+baseline-field-count:
+	go run ./cmd/phase0-field-count
+
 #-----------------------------------------------------------------------------
 # Consumer audit (schemas vs. consumer repos)
 #-----------------------------------------------------------------------------
