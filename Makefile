@@ -129,11 +129,22 @@ baseline-tag-divergence:
 ## (captures verbose make consumer-audit output against local sibling repos)
 .PHONY: baseline-consumer-audit
 baseline-consumer-audit:
-	@$(MAKE) --no-print-directory consumer-audit \
-		MESHERY_REPO=$(if $(MESHERY_REPO),$(MESHERY_REPO),../meshery) \
-		CLOUD_REPO=$(if $(CLOUD_REPO),$(CLOUD_REPO),../meshery-cloud) \
-		VERBOSE=1 > validation/baseline/consumer-audit.txt
-	@echo "phase0-consumer-audit: captured $$(wc -l < validation/baseline/consumer-audit.txt) lines -> validation/baseline/consumer-audit.txt"
+	@output_dir=validation/baseline; \
+	output_file=$$output_dir/consumer-audit.txt; \
+	mkdir -p "$$output_dir"; \
+	tmp_file=$$(mktemp "$$output_dir/consumer-audit.txt.XXXXXX"); \
+	if $(MAKE) --no-print-directory consumer-audit \
+		MESHERY_REPO="$(if $(MESHERY_REPO),$(MESHERY_REPO),../meshery)" \
+		CLOUD_REPO="$(if $(CLOUD_REPO),$(CLOUD_REPO),../meshery-cloud)" \
+		VERBOSE=1 > "$$tmp_file"; then \
+		mv "$$tmp_file" "$$output_file"; \
+		echo "phase0-consumer-audit: captured $$(wc -l < $$output_file) lines -> $$output_file"; \
+	else \
+		status=$$?; \
+		rm -f "$$tmp_file"; \
+		echo "phase0-consumer-audit: consumer-audit failed (exit $$status); baseline unchanged" >&2; \
+		exit $$status; \
+	fi
 
 #-----------------------------------------------------------------------------
 # Consumer audit (schemas vs. consumer repos)
