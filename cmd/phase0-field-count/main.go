@@ -303,11 +303,10 @@ func processFile(rootDir, absPath string) ([]propertyRecord, error) {
 
 	var records []propertyRecord
 
-	// api.yml: iterate components.schemas.<entity>.properties
+	// OpenAPI container: components.schemas.<entity>.
 	if comps, ok := doc["components"].(map[string]any); ok {
 		if schemas, ok := comps["schemas"].(map[string]any); ok {
-			names := sortedKeys(schemas)
-			for _, schemaName := range names {
+			for _, schemaName := range sortedKeys(schemas) {
 				schema, ok := schemas[schemaName].(map[string]any)
 				if !ok {
 					continue
@@ -317,7 +316,31 @@ func processFile(rootDir, absPath string) ([]propertyRecord, error) {
 		}
 	}
 
-	// Entity YAML files: top-level properties.
+	// JSON Schema containers: `definitions` (draft-07) and `$defs` (2020-12).
+	// Selector entity YAMLs declare all of their properties under
+	// `definitions:` rather than a top-level `properties:` map, so missing
+	// this container undercounts the baseline.
+	for _, container := range []string{"definitions", "$defs"} {
+		defs, ok := doc[container].(map[string]any)
+		if !ok {
+			continue
+		}
+		for _, defName := range sortedKeys(defs) {
+			def, ok := defs[defName].(map[string]any)
+			if !ok {
+				continue
+			}
+			schemaName := deriveSchemaNameFromFile(rel)
+			if schemaName != "" {
+				schemaName = schemaName + "." + defName
+			} else {
+				schemaName = defName
+			}
+			records = append(records, walkSchema(base, schemaName, "", def)...)
+		}
+	}
+
+	// Entity YAML files: top-level properties (plain JSON Schema style).
 	if _, hasProperties := doc["properties"].(map[string]any); hasProperties {
 		schemaName := deriveSchemaNameFromFile(rel)
 		records = append(records, walkSchema(base, schemaName, "", doc)...)
@@ -390,7 +413,14 @@ func walkSchema(base propertyRecord, schemaName, pathPrefix string, schema map[s
 
 // resolveTags returns the effective JSON tag, DB column, and db-backed flag
 // for a property. An `x-oapi-codegen-extra-tags` override, when present, is
-// the authoritative source for json/db wire forms.
+// the authoritative source for json/db/gorm wire forms.
+//
+// DB-backing is inferred from either `db` (used by sqlx / direct drivers) or
+// `gorm` (used by GORM). A value of `"-"` on either tag marks the field as
+// explicitly not persisted. GORM tags carry directives in a
+// semicolon-separated form; `column:NAME` is picked out as the canonical DB
+// column name when present, and any other non-empty directive is still
+// treated as DB-backed.
 func resolveTags(propName string, prop map[string]any) (jsonTag, dbColumn string, dbBacked bool) {
 	jsonTag = propName
 	extra, ok := prop["x-oapi-codegen-extra-tags"].(map[string]any)
@@ -413,7 +443,34 @@ func resolveTags(propName string, prop map[string]any) (jsonTag, dbColumn string
 		dbColumn = db
 		dbBacked = true
 	}
+	if gormTag, ok := extra["gorm"].(string); ok && gormTag != "" && gormTag != "-" {
+		dbBacked = true
+		if dbColumn == "" {
+			if col := gormColumn(gormTag); col != "" {
+				dbColumn = col
+			}
+		}
+	}
 	return
+}
+
+// gormColumn extracts the `column:NAME` directive from a GORM tag value.
+// Returns "" when no explicit column name is declared.
+func gormColumn(tag string) string {
+	// GORM tags split on `;`. Some authors use `,` inside directives
+	// (e.g. `index:idx_foo,column:bar`), so split on both.
+	replacer := strings.NewReplacer(",", ";")
+	for _, part := range strings.Split(replacer.Replace(tag), ";") {
+		part = strings.TrimSpace(part)
+		if !strings.HasPrefix(part, "column:") {
+			continue
+		}
+		col := strings.TrimSpace(strings.TrimPrefix(part, "column:"))
+		if col != "" && col != "-" {
+			return col
+		}
+	}
+	return ""
 }
 
 // classify returns the casing form of a JSON tag.
