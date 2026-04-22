@@ -75,9 +75,11 @@ var resourceAliases = map[string]string{
 }
 
 // inventory22 enumerates the 22 resources named in master plan §9.1. The
-// baseline reports on every resource it finds in the schemas tree, but
-// having this list lets us verify no inventory item was silently skipped
-// (acceptance criterion: "Graph covers all 22 resources").
+// baseline derives resource entries from downstream consumer import paths
+// (not from the schemas tree directly), so having this inventory list lets
+// us verify no §9.1 item was silently skipped — e.g., schemas-only
+// resources with no Go consumers surface explicitly in missing_from_inventory
+// rather than silently disappearing.
 var inventory22 = []string{
 	"workspace", "environment", "organization", "user",
 	"design", "connection", "team", "role",
@@ -193,14 +195,17 @@ func main() {
 				}
 				addConsumer(resource, r.label, file, version)
 			})
-			if err != nil && *verbose {
+			if err != nil {
+				// Walk-level errors silently undercount the baseline; surface
+				// them unconditionally (not gated on --verbose) so a
+				// regenerator sees the failure.
 				fmt.Fprintf(os.Stderr, "warn: %s: %s: %v\n", r.label, dir, err)
 			}
 			repoSummary.GoFilesProcessed += goFiles
 		}
 		for _, dir := range r.tsDirs {
 			tsFiles, bundled, err := scanTSImports(abs, dir)
-			if err != nil && *verbose {
+			if err != nil {
 				fmt.Fprintf(os.Stderr, "warn: %s: %s: %v\n", r.label, dir, err)
 			}
 			repoSummary.TSFilesProcessed += tsFiles
@@ -287,7 +292,10 @@ func main() {
 }
 
 // scanGoImports walks dir under repoAbs and, for every non-test .go file,
-// invokes fn once per import spec. Returns the number of files processed.
+// invokes fn once per import spec. Returns the number of files successfully
+// parsed. Parse failures are reported to stderr so a partial baseline is
+// diagnosable (a silently skipped file would simply under-attribute the
+// graph).
 func scanGoImports(repoAbs, dir string, fn func(file, importPath string)) (int, error) {
 	root := filepath.Join(repoAbs, filepath.FromSlash(dir))
 	if info, err := os.Stat(root); err != nil || !info.IsDir() {
@@ -311,7 +319,8 @@ func scanGoImports(repoAbs, dir string, fn func(file, importPath string)) (int, 
 		fset := token.NewFileSet()
 		f, err := parser.ParseFile(fset, p, nil, parser.ImportsOnly)
 		if err != nil {
-			return nil // skip unparseable files
+			fmt.Fprintf(os.Stderr, "warn: %s: parse error: %v\n", relFrom(repoAbs, p), err)
+			return nil
 		}
 		count++
 		rel := relFrom(repoAbs, p)
@@ -324,10 +333,11 @@ func scanGoImports(repoAbs, dir string, fn func(file, importPath string)) (int, 
 	return count, err
 }
 
-// scanTSImports walks dir under repoAbs looking for .ts/.tsx files that
-// contain `@meshery/schemas` imports. Returns the number of TS files scanned
-// and the list (repo-relative paths) of files that reference the schemas
-// package (any form).
+// scanTSImports walks dir under repoAbs looking for .ts/.tsx/.js/.jsx
+// source files (generated `.d.ts` and `*.test.*`/`*.spec.*` files are
+// skipped) that contain `@meshery/schemas` imports. Returns the number of
+// matching source files scanned and the list (repo-relative paths) of
+// files that reference the schemas package in any form.
 func scanTSImports(repoAbs, dir string) (int, []string, error) {
 	root := filepath.Join(repoAbs, filepath.FromSlash(dir))
 	if info, err := os.Stat(root); err != nil || !info.IsDir() {
