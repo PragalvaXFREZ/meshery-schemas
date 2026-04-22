@@ -1,0 +1,31 @@
+{
+  "generated_at": "2026-04-22T22:58:18Z",
+  "generated_by": "cmd/phase0-tag-divergence",
+  "scope": "Go struct fields with json:/db: tags under each repo's server/models directory",
+  "repos": [
+    "meshery/meshery",
+    "layer5io/meshery-cloud"
+  ],
+  "files_processed": 172,
+  "summary": {
+    "total_structs_scanned": 468,
+    "structs_with_any_tag": 372,
+    "total_fields_with_any_tag": 1706,
+    "json_db_form_mismatch": 33,
+    "json_db_value_mismatch": 5,
+    "screaming_json": 22,
+    "mixed_struct_conventions_structs": 172,
+    "json_dash": 4,
+    "json_tags_by_casing": {
+      "PascalCase": 6,
+      "SCREAMING": 10,
+      "camelCase": 213,
+      "lowercase": 863,
+      "snake_case": 609
+    },
+    "db_tags_by_casing": {
+      "lowercase": 177,
+      "snake_case": 260
+    }
+  }
+}

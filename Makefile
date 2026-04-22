@@ -117,6 +117,14 @@ audit-schemas-debt-full:
 baseline-field-count:
 	go run ./cmd/phase0-field-count
 
+## Regenerate the Option B Phase 0 tag-divergence baseline artifact
+## (scans json/db struct tags in $(MESHERY_REPO) and $(CLOUD_REPO))
+.PHONY: baseline-tag-divergence
+baseline-tag-divergence:
+	@go run ./cmd/phase0-tag-divergence \
+		$(if $(MESHERY_REPO),--meshery-repo=$(MESHERY_REPO)) \
+		$(if $(CLOUD_REPO),--cloud-repo=$(CLOUD_REPO))
+
 #-----------------------------------------------------------------------------
 # Consumer audit (schemas vs. consumer repos)
 #-----------------------------------------------------------------------------
