@@ -41,32 +41,72 @@ func ensureSheetExists(ctx context.Context, srv *sheets.Service, sheetID string)
 	return nil
 }
 
-type auditedColumn struct {
-	name string
-	get  func(ConsumerAuditRow) string
+func sheetPropertiesByTitle(ctx context.Context, srv *sheets.Service, sheetID, title string) (*sheets.SheetProperties, error) {
+	ss, err := srv.Spreadsheets.Get(sheetID).Context(ctx).Do()
+	if err != nil {
+		return nil, fmt.Errorf("get spreadsheet: %w", err)
+	}
+	for _, sh := range ss.Sheets {
+		if sh != nil && sh.Properties != nil && sh.Properties.Title == title {
+			return sh.Properties, nil
+		}
+	}
+	return nil, fmt.Errorf("sheet %q not found", title)
 }
 
-// auditedColumns is the ordered set of cells whose change between two runs
-// causes the row to be marked StateChanged. Notes and Change Log are
-// derived/metadata and never trigger reconciliation.
-var auditedColumns = []auditedColumn{
-	{name: "Endpoint Status", get: func(r ConsumerAuditRow) string { return r.EndpointStatus }},
-	{name: "x-annotated", get: func(r ConsumerAuditRow) string { return r.XAnnotated }},
-	{name: "Schema-Backed (Meshery)", get: func(r ConsumerAuditRow) string { return r.SchemaBackedMeshery }},
-	{name: "Schema-Backed (Cloud)", get: func(r ConsumerAuditRow) string { return r.SchemaBackedCloud }},
-	{name: "Schema-Driven (Meshery)", get: func(r ConsumerAuditRow) string { return r.SchemaDrivenMeshery }},
-	{name: "Schema-Driven (Cloud)", get: func(r ConsumerAuditRow) string { return r.SchemaDrivenCloud }},
-	{name: "Schema Completeness (Meshery)", get: func(r ConsumerAuditRow) string { return r.SchemaCompletenessMeshery }},
-	{name: "Schema Completeness (Cloud)", get: func(r ConsumerAuditRow) string { return r.SchemaCompletenessCloud }},
+func ensureManagedGridSize(ctx context.Context, srv *sheets.Service, sheetID string, minRows, minCols int) error {
+	props, err := sheetPropertiesByTitle(ctx, srv, sheetID, sheetName)
+	if err != nil {
+		return err
+	}
+	if props.GridProperties == nil {
+		props.GridProperties = &sheets.GridProperties{}
+	}
+
+	rowCount := int(props.GridProperties.RowCount)
+	colCount := int(props.GridProperties.ColumnCount)
+	if rowCount >= minRows && colCount >= minCols {
+		return nil
+	}
+
+	newRows := rowCount
+	if newRows < minRows {
+		newRows = minRows
+	}
+	newCols := colCount
+	if newCols < minCols {
+		newCols = minCols
+	}
+
+	_, err = srv.Spreadsheets.BatchUpdate(sheetID, &sheets.BatchUpdateSpreadsheetRequest{
+		Requests: []*sheets.Request{
+			{
+				UpdateSheetProperties: &sheets.UpdateSheetPropertiesRequest{
+					Properties: &sheets.SheetProperties{
+						SheetId: props.SheetId,
+						GridProperties: &sheets.GridProperties{
+							RowCount:    int64(newRows),
+							ColumnCount: int64(newCols),
+						},
+					},
+					Fields: "gridProperties.rowCount,gridProperties.columnCount",
+				},
+			},
+		},
+	}).Context(ctx).Do()
+	if err != nil {
+		return fmt.Errorf("resize sheet grid: %w", err)
+	}
+	return nil
 }
 
-// AuditedColumnValue returns the cell value of a reconciled column by its
+// AuditedColumnValue returns the cell value of any generated column by its
 // sheet-header name (e.g. "x-annotated"). Returns "" for an unknown column.
-// The CLI uses it to render before/after diffs without duplicating the
-// column list maintained here.
+// The CLI uses it to render before/after diffs against the authoritative
+// column list in generatedColumns.
 func AuditedColumnValue(row ConsumerAuditRow, columnName string) string {
-	for _, c := range auditedColumns {
-		if c.name == columnName {
+	for _, c := range generatedColumns {
+		if c.Name == columnName {
 			return c.get(row)
 		}
 	}
@@ -208,13 +248,17 @@ func parseSheetRows(rows [][]string) ([]ConsumerAuditRow, []DeletionRecord) {
 	return out, ledger
 }
 
-// changedColumns compares the audited columns of two rows and returns the
-// names of any that differ.
+// changedColumns compares the reconcile-flagged columns of two rows and
+// returns the names of any that differ. Only columns with Reconcile == true
+// in generatedColumns trigger a StateChanged transition.
 func changedColumns(a, b ConsumerAuditRow) []string {
 	var changed []string
-	for _, col := range auditedColumns {
+	for _, col := range generatedColumns {
+		if !col.Reconcile {
+			continue
+		}
 		if col.get(a) != col.get(b) {
-			changed = append(changed, col.name)
+			changed = append(changed, col.Name)
 		}
 	}
 	return changed
@@ -282,9 +326,17 @@ func subsetValueRange(rows [][]string, start, end int) [][]any {
 	return values
 }
 
+// columnLetter converts a zero-based column index to its A1-notation letter
+// (A=0, B=1, …, Z=25). Assumes index is within 0–25.
+func columnLetter(index int) string {
+	return string(rune('A' + index))
+}
+
 // writeSheet clears the destination sheet and writes the reconciled rows to
 // it. Deletion history is stored in Z1 as a JSON ledger; deleted rows do
-// not appear in the sheet body. User-owned columns O..Y are left untouched.
+// not appear in the sheet body. User-owned columns after the last generated
+// column (up to Y) are left untouched. Column Z is always the metadata
+// column and is managed separately.
 func writeSheet(ctx context.Context, srv *sheets.Service, sheetID string, previous [][]string, tracked []TrackedEndpoint, ledger []DeletionRecord) error {
 	rows := trackedToSheetRows(tracked, ledger)
 	maxRows := max(len(previous), len(rows))
@@ -292,10 +344,17 @@ func writeSheet(ctx context.Context, srv *sheets.Service, sheetID string, previo
 		maxRows = 1
 	}
 
+	if err := ensureManagedGridSize(ctx, srv, sheetID, maxRows, totalColumns); err != nil {
+		return fmt.Errorf("ensure managed sheet grid size: %w", err)
+	}
+
+	lastGenCol := columnLetter(len(generatedColumns) - 1)
+	metaCol := columnLetter(metadataColumnIndex)
+
 	_, err := srv.Spreadsheets.Values.BatchClear(sheetID, &sheets.BatchClearValuesRequest{
 		Ranges: []string{
-			sheetRange(fmt.Sprintf("A1:N%d", maxRows)),
-			sheetRange(fmt.Sprintf("Z1:Z%d", maxRows)),
+			sheetRange(fmt.Sprintf("A1:%s%d", lastGenCol, maxRows)),
+			sheetRange(fmt.Sprintf("%s1:%s%d", metaCol, metaCol, maxRows)),
 		},
 	}).Context(ctx).Do()
 	if err != nil {
@@ -307,10 +366,10 @@ func writeSheet(ctx context.Context, srv *sheets.Service, sheetID string, previo
 		Data: []*sheets.ValueRange{
 			{
 				Range:  sheetRange("A1"),
-				Values: subsetValueRange(rows, 0, generatedColumnCount-1),
+				Values: subsetValueRange(rows, 0, len(generatedColumns)-1),
 			},
 			{
-				Range:  sheetRange("Z1"),
+				Range:  sheetRange(metaCol + "1"),
 				Values: subsetValueRange(rows, metadataColumnIndex, metadataColumnIndex),
 			},
 		},

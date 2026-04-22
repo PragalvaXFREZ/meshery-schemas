@@ -11,22 +11,22 @@ import (
 // schemaEndpoint represents one endpoint defined in a construct's api.yml.
 // One entry per (method, path) — never collapsed across verbs.
 type schemaEndpoint struct {
-	Method        string       // "GET", "POST", etc. — one per entry
-	Path          string       // "/api/integrations/connections/{connectionId}"
-	OperationID   string       // "getConnection"
-	Tags          []string     // operation tags -> derive Category / Sub-Category
-	XInternal     []string     // ["meshery"], ["cloud"], or nil (= both repos)
-	RequestShape  *schemaShape // nil for GET/DELETE without body
-	ResponseShape *schemaShape // from primary 2xx response
-	Deprecated    bool         // operation-level OR construct-level
-	Public        bool         // true if explicitly security: []
-	HasSuccessRef bool         // true if a 2xx response has a $ref schema
-	Has2xx        bool         // true if there is a 2xx response at all
+	Method        string             // "GET", "POST", etc. — one per entry
+	Path          string             // "/api/integrations/connections/{connectionId}"
+	OperationID   string             // "getConnection"
+	Tags          []string           // operation tags -> derive Category / Sub-Category
+	XInternal     []string           // ["meshery"], ["cloud"], or nil (= both repos)
+	RequestShape  *schemaShape       // nil for GET/DELETE without body
+	ResponseShape *schemaShape       // from primary 2xx response
+	Deprecated    bool               // operation-level OR construct-level
+	Public        bool               // true if explicitly security: []
+	HasSuccessRef bool               // true if a 2xx response has a $ref schema
+	Has2xx        bool               // true if there is a 2xx response at all
 	RequestBody   bool               // true if the operation declares a requestBody
 	QueryParams   []schemaQueryParam // query parameters declared on the operation
 	Construct     string             // "connection" — from extractConstructName
-	Version       string       // "v1beta1"
-	SourceFile    string       // "schemas/constructs/v1beta1/connection/api.yml"
+	Version       string             // "v1beta1"
+	SourceFile    string             // "schemas/constructs/v1beta1/connection/api.yml"
 }
 
 // schemaQueryParam describes one query parameter declared in an OpenAPI spec.
@@ -183,6 +183,7 @@ func parseXInternalTargets(raw any) ([]string, error) {
 		return nil, nil
 	case []any:
 		out := make([]string, 0, len(v))
+		seen := make(map[string]bool, len(v))
 		for _, item := range v {
 			s, ok := item.(string)
 			if !ok {
@@ -191,6 +192,10 @@ func parseXInternalTargets(raw any) ([]string, error) {
 			if !validInternalTags[s] {
 				return nil, fmt.Errorf(`x-internal value %q is invalid`, s)
 			}
+			if seen[s] {
+				continue
+			}
+			seen[s] = true
 			out = append(out, s)
 		}
 		if len(out) == 0 {
@@ -199,10 +204,15 @@ func parseXInternalTargets(raw any) ([]string, error) {
 		return out, nil
 	case []string:
 		out := make([]string, 0, len(v))
+		seen := make(map[string]bool, len(v))
 		for _, item := range v {
 			if !validInternalTags[item] {
 				return nil, fmt.Errorf(`x-internal value %q is invalid`, item)
 			}
+			if seen[item] {
+				continue
+			}
+			seen[item] = true
 			out = append(out, item)
 		}
 		if len(out) == 0 {

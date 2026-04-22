@@ -100,8 +100,10 @@ func newTable(out io.Writer, cols ...any) table.Table {
 	return t
 }
 
-// printAuditReport renders the top-level summary (Table 1 in the spec): one
-// row per audit dimension, one column per source.
+// printAuditReport renders the top-level summary: one row per audit dimension.
+// The x-annotation breakdown shows how schema-defined endpoints are distributed
+// across consumers. Schema Completeness is schema-wide (same value for all
+// consumers of a given endpoint), so it appears in the Schema column only.
 func printAuditReport(out io.Writer, result *validation.ConsumerAuditResult) {
 	s := result.Summary
 
@@ -116,11 +118,13 @@ func printAuditReport(out io.Writer, result *validation.ConsumerAuditResult) {
 	fmt.Fprintln(out, "Audit Report")
 	fmt.Fprintln(out)
 
-	t := newTable(out,
-		"Category", "Schema", "Meshery", "Cloud")
+	t := newTable(out, "Category", "Schema", "Meshery", "Cloud")
 	t.AddRow("Total Endpoints", s.SchemaEndpoints, s.MesheryEndpoints, s.CloudEndpoints)
-	t.AddRow("Schema Backed", "-", s.Meshery.BackedTrue, s.Cloud.BackedTrue)
-	t.AddRow("Schema Completeness (TRUE)", "-", s.Meshery.CompletenessTrue, s.Cloud.CompletenessTrue)
+	t.AddRow("x-Annotated (Meshery only)", s.AnnotatedMeshery, "-", "-")
+	t.AddRow("x-Annotated (Cloud only)", s.AnnotatedCloud, "-", "-")
+	t.AddRow("x-Annotated (Both)", s.AnnotatedBoth, "-", "-")
+	t.AddRow("x-Annotated (None)", s.AnnotatedNone, "-", "-")
+	t.AddRow("Schema Completeness (TRUE)", s.SchemaCompletenessTrue, "-", "-")
 	t.AddRow("Schema Only (Not Implemented)",
 		s.SchemaOnly,
 		cell(s.SchemaOnlyMeshery, s.MesheryEndpoints > 0),
@@ -133,7 +137,6 @@ type consumerActionSummary struct {
 	label              string
 	otherConsumerLabel string
 	totalEndpoints     int
-	schemaBacked       int
 	schemaDriven       int
 	schemaIncomplete   int
 	applicableSpecs    int
@@ -178,7 +181,7 @@ func printActionItems(out io.Writer, result *validation.ConsumerAuditResult, mes
 		if summary.annotationMismatch > 0 {
 			fmt.Fprintf(
 				out,
-				"%s has %d active %s that match the schema but %s marked %s-only.\n",
+				"%s has %d active %s matching the schema but %s marked %s-only.\n",
 				summary.label,
 				summary.annotationMismatch,
 				pluralize("endpoint", summary.annotationMismatch),
@@ -188,18 +191,19 @@ func printActionItems(out io.Writer, result *validation.ConsumerAuditResult, mes
 		}
 		fmt.Fprintf(
 			out,
-			"Audited %d %s %s, %d %s schema-backed.\n",
+			"Audited %d %s %s; %d spec-defined %s apply to %s.\n",
 			summary.totalEndpoints,
 			summary.label,
 			pluralize("endpoint", summary.totalEndpoints),
-			summary.schemaBacked,
-			verbFor(summary.schemaBacked),
+			summary.applicableSpecs,
+			pluralize("endpoint", summary.applicableSpecs),
+			summary.label,
 		)
 		fmt.Fprintf(
 			out,
-			"Out of those %d schema-backed %s, %d %s schema-driven.\n",
-			summary.schemaBacked,
-			pluralize("endpoint", summary.schemaBacked),
+			"Out of those %d applicable spec-defined %s, %d %s schema-driven.\n",
+			summary.applicableSpecs,
+			pluralize("endpoint", summary.applicableSpecs),
 			summary.schemaDriven,
 			verbFor(summary.schemaDriven),
 		)
@@ -214,7 +218,7 @@ func printActionItems(out io.Writer, result *validation.ConsumerAuditResult, mes
 		)
 		fmt.Fprintf(
 			out,
-			"\n Note: \n Out of %d spec-defined %s %s, %d %s schema-audit violations. Run `make audit-schemas` for details.\n",
+			"\nNote:\nOut of %d spec-defined %s %s, %d %s blocking schema-audit violations. Run `make audit-schemas` for details.\n",
 			summary.applicableSpecs,
 			summary.label,
 			pluralize("endpoint", summary.applicableSpecs),
@@ -239,12 +243,6 @@ func buildConsumerActionSummary(
 	}
 
 	for _, row := range result.Rows {
-		if schemaBackedValue(row, consumer) == "TRUE" {
-			summary.schemaBacked++
-			if schemaDrivenValue(row, consumer) == "TRUE" {
-				summary.schemaDriven++
-			}
-		}
 		if isAnnotationMismatch(row, consumer) {
 			summary.annotationMismatch++
 		}
@@ -252,6 +250,9 @@ func buildConsumerActionSummary(
 			continue
 		}
 		summary.applicableSpecs++
+		if schemaDrivenValue(row, consumer) == "TRUE" {
+			summary.schemaDriven++
+		}
 		if schemaCompletenessValue(row, consumer) == "FALSE" {
 			summary.schemaIncomplete++
 		}
@@ -266,9 +267,9 @@ func buildConsumerActionSummary(
 func appliesToConsumer(row validation.ConsumerAuditRow, consumer string) bool {
 	switch consumer {
 	case "meshery":
-		return row.XAnnotated == "None" || row.XAnnotated == "Meshery"
+		return row.XAnnotated == validation.XAnnotatedNone || row.XAnnotated == validation.XAnnotatedMesheryOnly || row.XAnnotated == validation.XAnnotatedBoth
 	case "cloud":
-		return row.XAnnotated == "None" || row.XAnnotated == "Cloud only"
+		return row.XAnnotated == validation.XAnnotatedNone || row.XAnnotated == validation.XAnnotatedCloudOnly || row.XAnnotated == validation.XAnnotatedBoth
 	default:
 		return false
 	}
@@ -278,16 +279,16 @@ func isActiveInConsumer(row validation.ConsumerAuditRow, consumer string) bool {
 	switch consumer {
 	case "meshery":
 		switch row.EndpointStatus {
-		case "Active - Both",
-			"Active - Meshery Server",
-			"Active - Meshery Server, Unimplemented Meshery Cloud":
+		case validation.EndpointStatusActiveBoth,
+			validation.EndpointStatusActiveMesheryServer,
+			validation.EndpointStatusActiveMesheryServerMissingCloud:
 			return true
 		}
 	case "cloud":
 		switch row.EndpointStatus {
-		case "Active - Both",
-			"Active - Meshery Cloud",
-			"Active - Meshery Cloud, Unimplemented Meshery Server":
+		case validation.EndpointStatusActiveBoth,
+			validation.EndpointStatusActiveMesheryCloud,
+			validation.EndpointStatusActiveMesheryCloudMissingServer:
 			return true
 		}
 	}
@@ -300,19 +301,13 @@ func isAnnotationMismatch(row validation.ConsumerAuditRow, consumer string) bool
 	}
 	switch consumer {
 	case "meshery":
-		return row.XAnnotated == "Cloud only"
+		// "Both" targets both consumers — not a mismatch for either.
+		return row.XAnnotated == validation.XAnnotatedCloudOnly
 	case "cloud":
-		return row.XAnnotated == "Meshery"
+		return row.XAnnotated == validation.XAnnotatedMesheryOnly
 	default:
 		return false
 	}
-}
-
-func schemaBackedValue(row validation.ConsumerAuditRow, consumer string) string {
-	if consumer == "meshery" {
-		return row.SchemaBackedMeshery
-	}
-	return row.SchemaBackedCloud
 }
 
 func schemaDrivenValue(row validation.ConsumerAuditRow, consumer string) string {
@@ -322,11 +317,8 @@ func schemaDrivenValue(row validation.ConsumerAuditRow, consumer string) string 
 	return row.SchemaDrivenCloud
 }
 
-func schemaCompletenessValue(row validation.ConsumerAuditRow, consumer string) string {
-	if consumer == "meshery" {
-		return row.SchemaCompletenessMeshery
-	}
-	return row.SchemaCompletenessCloud
+func schemaCompletenessValue(row validation.ConsumerAuditRow, _ string) string {
+	return row.SchemaCompleteness
 }
 
 func pluralize(noun string, count int) string {

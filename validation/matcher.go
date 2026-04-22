@@ -536,10 +536,9 @@ func assessConsumer(c *consumerEndpoint, requestShape, responseShape *schemaShap
 		}
 	}
 
-	return consumerAssessment{
-		Status: auditStatusNotAudited,
-		Notes:  append(uniqueStrings(notes), fmt.Sprintf("%s handler %s could not be compared", c.Repo, describeHandler(*c))),
-	}
+	// Unreachable: hadComparable is set whenever a side reaches shapeOK,
+	// so at least one of the branches above must return.
+	panic("assessConsumer: unreachable")
 }
 
 // diffFields compares a schema shape against a Go type's field set. When
