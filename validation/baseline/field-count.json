@@ -1,19 +1,19 @@
 {
-  "generated_at": "2026-04-22T22:41:04Z",
+  "generated_at": "2026-04-22T22:46:48Z",
   "generated_by": "cmd/phase0-field-count",
   "scope": "schemas/constructs/v*/** (api.yml + entity .yaml, excluding templates)",
   "files_processed": 88,
   "totals": {
-    "total_tags": 1727,
-    "camel_case": 352,
-    "snake_case": 462,
+    "total_tags": 1938,
+    "camel_case": 415,
+    "snake_case": 470,
     "pascal_case": 0,
     "screaming": 0,
-    "lowercase": 907,
+    "lowercase": 1047,
     "suppressed": 6,
     "other": 0,
-    "db_backed": 347,
-    "non_db_backed": 1380,
+    "db_backed": 351,
+    "non_db_backed": 1587,
     "pagination_envelope_tags": 173
   },
   "per_resource": [
@@ -59,15 +59,15 @@
     {
       "resource": "core",
       "version": "v1alpha1",
-      "total_tags": 30,
-      "snake_tags_to_migrate": 7,
-      "camel_tags_stable": 20,
+      "total_tags": 96,
+      "snake_tags_to_migrate": 9,
+      "camel_tags_stable": 84,
       "pascal_tags": 0,
       "screaming_tags": 0,
       "suppressed_tags": 0,
       "other_tags": 0,
       "db_backed_tags": 0,
-      "non_db_backed_tags": 30
+      "non_db_backed_tags": 96
     },
     {
       "resource": "model",
@@ -150,15 +150,15 @@
     {
       "resource": "academy",
       "version": "v1beta1",
-      "total_tags": 180,
-      "snake_tags_to_migrate": 49,
-      "camel_tags_stable": 128,
+      "total_tags": 183,
+      "snake_tags_to_migrate": 51,
+      "camel_tags_stable": 129,
       "pascal_tags": 0,
       "screaming_tags": 0,
       "suppressed_tags": 0,
       "other_tags": 0,
-      "db_backed_tags": 44,
-      "non_db_backed_tags": 136,
+      "db_backed_tags": 46,
+      "non_db_backed_tags": 137,
       "deprecated": true
     },
     {
@@ -244,15 +244,15 @@
     {
       "resource": "core",
       "version": "v1beta1",
-      "total_tags": 30,
-      "snake_tags_to_migrate": 7,
-      "camel_tags_stable": 20,
+      "total_tags": 96,
+      "snake_tags_to_migrate": 9,
+      "camel_tags_stable": 84,
       "pascal_tags": 0,
       "screaming_tags": 0,
       "suppressed_tags": 0,
       "other_tags": 0,
       "db_backed_tags": 0,
-      "non_db_backed_tags": 30,
+      "non_db_backed_tags": 96,
       "deprecated": true
     },
     {
@@ -378,15 +378,15 @@
     {
       "resource": "model",
       "version": "v1beta1",
-      "total_tags": 43,
+      "total_tags": 50,
       "snake_tags_to_migrate": 5,
-      "camel_tags_stable": 35,
+      "camel_tags_stable": 42,
       "pascal_tags": 0,
       "screaming_tags": 0,
       "suppressed_tags": 1,
       "other_tags": 0,
       "db_backed_tags": 0,
-      "non_db_backed_tags": 43
+      "non_db_backed_tags": 50
     },
     {
       "resource": "organization",
@@ -537,15 +537,15 @@
     {
       "resource": "academy",
       "version": "v1beta2",
-      "total_tags": 181,
-      "snake_tags_to_migrate": 41,
-      "camel_tags_stable": 137,
+      "total_tags": 184,
+      "snake_tags_to_migrate": 43,
+      "camel_tags_stable": 138,
       "pascal_tags": 0,
       "screaming_tags": 0,
       "suppressed_tags": 0,
       "other_tags": 0,
-      "db_backed_tags": 44,
-      "non_db_backed_tags": 137
+      "db_backed_tags": 46,
+      "non_db_backed_tags": 138
     },
     {
       "resource": "catalog",
@@ -589,15 +589,15 @@
     {
       "resource": "core",
       "version": "v1beta2",
-      "total_tags": 30,
+      "total_tags": 96,
       "snake_tags_to_migrate": 0,
-      "camel_tags_stable": 27,
+      "camel_tags_stable": 93,
       "pascal_tags": 0,
       "screaming_tags": 0,
       "suppressed_tags": 0,
       "other_tags": 0,
       "db_backed_tags": 0,
-      "non_db_backed_tags": 30
+      "non_db_backed_tags": 96
     },
     {
       "resource": "design",

@@ -327,46 +327,64 @@ func processFile(rootDir, absPath string) ([]propertyRecord, error) {
 }
 
 // walkSchema recurses into a schema definition, emitting one record per
-// directly-declared property. It does NOT follow $ref pointers: referenced
-// schemas are walked as their own components during the outer iteration, so
-// following refs here would double-count.
+// directly-declared property. Three structural carriers are walked:
+//  1. `properties` maps — each entry becomes a record; the entry's own
+//     schema is then walked to surface nested composite shapes.
+//  2. `items` schemas — for array types, the item schema is walked.
+//  3. `allOf`/`anyOf`/`oneOf` lists — each branch is walked in place so
+//     composition keywords contribute to the count. Today's schemas use
+//     composition almost exclusively as single-entry `$ref` wrappers whose
+//     targets get walked as separate components, but the handling keeps the
+//     baseline robust against future schemas that compose inline properties.
+//
+// $ref pointers are not followed: referenced schemas are walked as their own
+// components during the outer iteration, so following refs here would
+// double-count.
 func walkSchema(base propertyRecord, schemaName, pathPrefix string, schema map[string]any) []propertyRecord {
 	var records []propertyRecord
 
-	props, ok := schema["properties"].(map[string]any)
-	if !ok {
-		return records
+	if props, ok := schema["properties"].(map[string]any); ok {
+		for _, propName := range sortedKeys(props) {
+			prop, ok := props[propName].(map[string]any)
+			if !ok {
+				continue
+			}
+			fullPath := propName
+			if pathPrefix != "" {
+				fullPath = pathPrefix + "." + propName
+			}
+
+			rec := base
+			rec.SchemaName = schemaName
+			rec.PropertyName = fullPath
+			rec.JSONTag, rec.DBColumn, rec.DBBacked = resolveTags(propName, prop)
+			rec.Casing = classify(rec.JSONTag)
+			records = append(records, rec)
+
+			// Recurse into the property's own schema so nested objects,
+			// array items, and composition keywords are all picked up.
+			records = append(records, walkSchema(base, schemaName, fullPath, prop)...)
+		}
 	}
-	for _, propName := range sortedKeys(props) {
-		prop, ok := props[propName].(map[string]any)
+
+	if items, ok := schema["items"].(map[string]any); ok {
+		records = append(records, walkSchema(base, schemaName, pathPrefix+"[]", items)...)
+	}
+
+	for _, key := range []string{"allOf", "anyOf", "oneOf"} {
+		list, ok := schema[key].([]any)
 		if !ok {
 			continue
 		}
-		fullPath := propName
-		if pathPrefix != "" {
-			fullPath = pathPrefix + "." + propName
-		}
-
-		rec := base
-		rec.SchemaName = schemaName
-		rec.PropertyName = fullPath
-		rec.JSONTag, rec.DBColumn, rec.DBBacked = resolveTags(propName, prop)
-		rec.Casing = classify(rec.JSONTag)
-		records = append(records, rec)
-
-		// Recurse into inline object properties (composite shapes).
-		if t, _ := prop["type"].(string); t == "object" {
-			if _, nested := prop["properties"].(map[string]any); nested {
-				records = append(records, walkSchema(base, schemaName, fullPath, prop)...)
+		for _, sub := range list {
+			subMap, ok := sub.(map[string]any)
+			if !ok {
+				continue
 			}
-		}
-		// Recurse into array item object schemas.
-		if items, ok := prop["items"].(map[string]any); ok {
-			if t, _ := items["type"].(string); t == "object" {
-				records = append(records, walkSchema(base, schemaName, fullPath+"[]", items)...)
-			}
+			records = append(records, walkSchema(base, schemaName, pathPrefix, subMap)...)
 		}
 	}
+
 	return records
 }
 
