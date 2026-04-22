@@ -48,7 +48,7 @@ Persistent execution state lives in GitHub issues on `meshery/schemas`, labeled 
 - Phase 3 — Per-resource versioned migration: https://github.com/meshery/schemas/issues/779
 - Phase 4 — Deprecation sunset + enforcement finalization: https://github.com/meshery/schemas/issues/780
 
-Governance PR carrying this plan: *(URL populated once the PR on `meshery/schemas` is opened — see §10)*
+Governance PR carrying this plan: https://github.com/meshery/schemas/pull/781
 
 Use the issues as the authoritative state:
 - Claim a sub-agent by checking its checklist item with your session ID and start time.
