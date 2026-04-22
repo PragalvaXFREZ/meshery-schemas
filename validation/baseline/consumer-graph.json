@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-22T23:16:19Z",
+  "generated_at": "2026-04-22T23:21:48Z",
   "generated_by": "cmd/phase0-consumer-graph",
   "scope": "Imports of github.com/meshery/schemas/models/... (Go) and @meshery/schemas (TS) across sibling repos",
   "complexity_heuristic": "complexity_score = count of distinct consuming files that import that resource's Go package. TS imports are tallied separately (bundled_ts_consumers) because most TS consumers pull in the full bundled client rather than a single resource.",
