@@ -7,6 +7,7 @@ const ViewSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "View",
+    "x-deprecated": true,
     "description": "OpenAPI schema for managing Meshery views — saved perspectives with filters and metadata.",
     "version": "v1beta1",
     "contact": {

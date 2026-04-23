@@ -8,6 +8,8 @@ const RoleSchema: Record<string, unknown> = {
   "info": {
     "title": "role",
     "description": "Documentation for Meshery Cloud REST APIs for Roles",
+    "x-deprecated": true,
+    "x-superseded-by": "v1beta2",
     "contact": {
       "name": "Meshery Maintainers",
       "email": "maintainers@meshery.io",

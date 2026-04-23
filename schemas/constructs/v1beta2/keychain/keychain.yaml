@@ -1,0 +1,67 @@
+type: object
+additionalProperties: false
+description: Represents a collection of keys.
+required:
+  - id
+  - name
+  - owner
+  - createdAt
+  - updatedAt
+properties:
+  id:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    description: Unique identifier for the keychain.
+    x-go-name: ID
+    x-oapi-codegen-extra-tags:
+      db: id
+      json: id
+    x-order: 1
+  name:
+    type: string
+    description: Name of the keychain.
+    minLength: 1
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: name
+      json: name
+    x-order: 2
+  owner:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    description: Owner of the keychain.
+    x-oapi-codegen-extra-tags:
+      db: owner
+      json: owner
+    x-order: 3
+  createdAt:
+    type: string
+    format: date-time
+    description: Timestamp when the keychain was created.
+    x-go-type: time.Time
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: created_at
+      json: createdAt
+    x-order: 4
+  updatedAt:
+    type: string
+    format: date-time
+    description: Timestamp when the keychain was last updated.
+    x-go-type: time.Time
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+      json: updatedAt
+    x-order: 5
+  deletedAt:
+    type: string
+    format: date-time
+    description: Timestamp when the keychain was soft-deleted.
+    nullable: true
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: deleted_at
+      json: "deletedAt,omitempty"
+    x-order: 6

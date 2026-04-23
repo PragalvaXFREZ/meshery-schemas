@@ -7,51 +7,39 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
-// --- Rule 32: DB-backed property names must match db tags ---
+// --- Rule 32: DB-backed property names must match db tags (retired) ---
 
-func checkRule32ForAPI(filePath string, doc *openapi3.T, _ AuditOptions) []Violation {
-	if doc == nil || doc.Components == nil || doc.Components.Schemas == nil {
-		return nil
-	}
-	var out []Violation
-	for name, ref := range doc.Components.Schemas {
-		if ref == nil || ref.Value == nil || ref.Value.Properties == nil {
-			continue
-		}
-		for propName, propRef := range ref.Value.Properties {
-			if propRef == nil || propRef.Value == nil {
-				continue
-			}
-			dbTag := getExtensionDBTag(propRef)
-			gormCol := getExtensionGormColumn(propRef)
-			col := dbTag
-			if col == "" {
-				col = gormCol
-			}
-			if col == "" || !IsValidDBTag(col) || !HasUnderscore(col) {
-				continue
-			}
-			if propName != col {
-				jsonTag := getExtraTag(propRef.Value.Extensions, "json")
-				if jsonTag != "" && jsonTag != "-" && jsonTag == col {
-					continue // deliberate semantic alias
-				}
-				src := "db"
-				if dbTag == "" {
-					src = "gorm column"
-				}
-				out = append(out, Violation{File: filePath,
-					Message: fmt.Sprintf(`Schema %q — property %q maps to database column %q (via %s tag). DB-backed property names must use the exact snake_case db name.`,
-						name, propName, col, src),
-					Severity: SeverityBlocking, RuleNumber: 32})
-			}
-		}
-	}
-	return out
+// Rule 32 is retired under the canonical identifier-naming contract.
+//
+// The pre-canonical rule required DB-backed property names to match their
+// snake_case `db:` tag exactly. Under the new contract (see
+// docs/identifier-naming-migration.md §1 and AGENTS.md § Casing rules at
+// a glance), the wire property name is camelCase and the snake_case DB
+// column name lives only in `x-oapi-codegen-extra-tags.db` — so a
+// property whose name differs from its `db:` tag is the *expected* shape
+// for DB-backed fields, not a violation.
+//
+// The function is retained as a retired stub so that historical audit-
+// pipeline callers remain linkable; it returns no violations. Retirement
+// is documented in Phase 1.B of the identifier-naming migration plan.
+func checkRule32ForAPI(_ string, _ *openapi3.T, _ AuditOptions) []Violation {
+	return nil
 }
 
-// --- Rule 33: Pagination envelopes use page_size / total_count ---
-
+// --- Rule 33: Pagination envelopes use canonical camelCase ---
+//
+// Under the canonical identifier-naming contract (see
+// docs/identifier-naming-migration.md §1 and AGENTS.md § Casing rules at
+// a glance), pagination envelope properties are camelCase on the wire:
+// page, pageSize, totalCount. The legacy snake_case forms (page_size,
+// total_count) are still accepted inside existing API versions for
+// backward compatibility, but newly authored / canonical-casing API
+// versions must use the camelCase forms.
+//
+// This rule is non-blocking: it surfaces the legacy snake_case usage as
+// advisory output so it can be tracked and resolved per-resource via
+// the Phase 3 version-bump rollout. The camelCase forms are the
+// canonical shape and are never flagged.
 func checkRule33(filePath string, doc *openapi3.T, _ AuditOptions) []Violation {
 	if doc == nil || doc.Components == nil || doc.Components.Schemas == nil {
 		return nil
@@ -73,15 +61,15 @@ func checkRule33(filePath string, doc *openapi3.T, _ AuditOptions) []Violation {
 		if !isPaginated {
 			continue
 		}
-		if hasPageSize {
+		if hasPageSizeSnake {
 			out = append(out, Violation{File: filePath,
-				Message:  fmt.Sprintf(`Schema %q — pagination envelopes must use "page_size", not "pageSize".`, name),
-				Severity: SeverityBlocking, RuleNumber: 33})
+				Message:  fmt.Sprintf(`Schema %q — pagination envelopes should use "pageSize" (canonical camelCase), not "page_size". (migrate at the resource's next API-version bump per docs/identifier-naming-migration.md §9)`, name),
+				Severity: SeverityAdvisory, RuleNumber: 33})
 		}
-		if hasTotalCount {
+		if hasTotalCountSnake {
 			out = append(out, Violation{File: filePath,
-				Message:  fmt.Sprintf(`Schema %q — pagination envelopes must use "total_count", not "totalCount".`, name),
-				Severity: SeverityBlocking, RuleNumber: 33})
+				Message:  fmt.Sprintf(`Schema %q — pagination envelopes should use "totalCount" (canonical camelCase), not "total_count". (migrate at the resource's next API-version bump per docs/identifier-naming-migration.md §9)`, name),
+				Severity: SeverityAdvisory, RuleNumber: 33})
 		}
 	}
 	return out

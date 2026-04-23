@@ -1,0 +1,68 @@
+$id: https://schemas.meshery.io/team.yaml
+$schema: http://json-schema.org/draft-07/schema#
+description: A Team is a group of one or more users. Teams are often used as a grouping mechanism for assigning permissions, whether in the context of an organization, a workspace, or some other domain within Meshery. Learn more at https://docs.meshery.io/concepts/logical/teams
+additionalProperties: false
+type: object
+required:
+  - id
+  - name
+  - createdAt
+  - updatedAt
+properties:
+  id:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    description: Team ID
+    x-order: 1
+    x-go-name: ID
+    x-oapi-codegen-extra-tags:
+      db: id
+  name:
+    x-oapi-codegen-extra-tags:
+      db: name
+    x-order: 2
+    type: string
+    description: Team name
+    minLength: 1
+    maxLength: 255
+  description:
+    x-oapi-codegen-extra-tags:
+      db: description
+    x-order: 3
+    type: string
+    description: Team description
+    maxLength: 5000
+  owner:
+    x-oapi-codegen-extra-tags:
+      db: owner
+    x-order: 4
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    description: User ID of the owner of the team
+  metadata:
+    x-oapi-codegen-extra-tags:
+      db: metadata
+    x-order: 5
+    x-go-type: core.Map
+    x-go-type-skip-optional-pointer: true
+    type: object
+    description: Additional metadata for the team
+  createdAt:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
+    description: Timestamp when the team was created.
+    x-oapi-codegen-extra-tags:
+      db: created_at
+      json: createdAt
+    x-order: 6
+  updatedAt:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
+    description: Timestamp when the team was last updated.
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+      json: updatedAt
+    x-order: 7
+  deletedAt:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/nullTime
+    description: Timestamp when the team was soft-deleted, if applicable.
+    x-oapi-codegen-extra-tags:
+      db: deleted_at
+      json: deletedAt
+    x-order: 8

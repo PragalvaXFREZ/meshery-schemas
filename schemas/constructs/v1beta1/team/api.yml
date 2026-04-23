@@ -2,6 +2,8 @@ openapi: 3.0.0
 info:
   title: Team
   description: OpenAPI schema for team management in Meshery Cloud.
+  x-deprecated: true
+  x-superseded-by: v1beta2
   version: v1beta1
   contact:
     name: Meshery Maintainers
@@ -198,6 +200,7 @@ components:
 paths:
   /api/identity/orgs/{orgId}/teams:
     get:
+      x-internal: ["cloud", "meshery"]
       tags:
         - teams
       operationId: getTeams
@@ -223,6 +226,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     post:
+      x-internal: ["cloud", "meshery"]
       tags:
         - teams
       operationId: createTeam
@@ -250,6 +254,7 @@ paths:
 
   /api/identity/orgs/{orgId}/teams/{teamId}:
     get:
+      x-internal: ["cloud", "meshery"]
       tags:
         - teams
       operationId: getTeamById
@@ -274,6 +279,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     put:
+      x-internal: ["cloud", "meshery"]
       tags:
         - teams
       operationId: updateTeam
@@ -300,6 +306,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     delete:
+      x-internal: ["cloud", "meshery"]
       tags:
         - teams
       operationId: deleteTeam
@@ -322,6 +329,7 @@ paths:
 
   /api/identity/teams/{teamId}/users:
     get:
+      x-internal: ["cloud", "meshery"]
       tags:
         - teams
       operationId: getTeamUsers
@@ -351,6 +359,7 @@ paths:
 
   /api/identity/orgs/{orgId}/teams/{teamId}/users/{userId}:
     post:
+      x-internal: ["cloud", "meshery"]
       tags:
         - teams
       operationId: addUserToTeam
@@ -381,6 +390,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     delete:
+      x-internal: ["cloud", "meshery"]
       tags:
         - teams
       operationId: removeUserFromTeam
@@ -409,6 +419,7 @@ paths:
 
   /api/identity/orgs/{orgId}/teams/{teamId}/users:
     get:
+      x-internal: ["cloud", "meshery"]
       tags:
         - teams
       operationId: listUsersNotInTeam

@@ -7,6 +7,7 @@ const KeychainSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Keychain",
+    "x-deprecated": true,
     "description": "OpenAPI schema for keychain management in Meshery.",
     "version": "v1beta1",
     "contact": {

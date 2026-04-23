@@ -8,6 +8,8 @@ const ScheduleSchema: Record<string, unknown> = {
   "info": {
     "title": "schedule",
     "description": "Documentation for Meshery Cloud REST APIs for Schedules",
+    "x-deprecated": true,
+    "x-superseded-by": "v1beta2",
     "contact": {
       "name": "Meshery Maintainers",
       "email": "maintainers@meshery.io",

@@ -1,0 +1,1104 @@
+openapi: 3.0.0
+info:
+  title: Workspace
+  description: OpenAPI schema for workspace management in Meshery Cloud.
+  version: v1beta3
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: https://cloud.meshery.io
+    description: Meshery Cloud production server URL
+  - url: https://staging-cloud.meshery.io
+    description: Meshery Cloud staging server URL
+  - url: http://localhost:9876
+    description: Meshery Cloud development server URL (controlled via PORT environment variable)
+security:
+  - jwt: []
+tags:
+  - name: workspaces
+    description: APIs for Meshery Cloud workspaces.
+  - name: views
+    description: APIs for Meshery Cloud views associated with workspaces.
+  - name: designs
+    description: APIs for Meshery Cloud designs associated with workspaces.
+
+paths:
+  /api/workspaces:
+    get:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - workspaces
+      operationId: getWorkspaces
+      summary: Get all workspaces
+      description: Gets all workspaces accessible to the current user, optionally scoped to a specific organization.
+      parameters:
+        - $ref: "#/components/parameters/orgIdQuery"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/filter"
+      responses:
+        "200":
+          description: Workspaces
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkspacePage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - workspaces
+      operationId: createWorkspace
+      summary: Create a workspace
+      description: Creates a new workspace.
+      requestBody:
+        $ref: "#/components/requestBodies/workspacePayload"
+      responses:
+        "201":
+          description: Created workspace
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Workspace"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/workspaces/{workspaceId}:
+    get:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - workspaces
+      operationId: getWorkspaceById
+      summary: Get a workspace by ID
+      description: Gets a workspace by its ID.
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+      responses:
+        "200":
+          description: Workspace
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Workspace"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - workspaces
+      operationId: updateWorkspace
+      summary: Update a workspace
+      description: Updates a workspace.
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+      requestBody:
+        $ref: "#/components/requestBodies/workspaceUpdatePayload"
+      responses:
+        "200":
+          description: Workspace
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Workspace"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - workspaces
+      operationId: deleteWorkspace
+      summary: Delete a workspace
+      description: Deletes a workspace by its ID.
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+      responses:
+        "204":
+          description: Workspace deleted
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/workspaces/{workspaceId}/teams:
+    get:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - workspaces
+      operationId: getTeamsOfWorkspace
+      summary: Get teams assigned to a workspace
+      description: Gets teams assigned to or available for a workspace depending on the filter.
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/filter"
+      responses:
+        "200":
+          description: Teams
+          content:
+            application/json:
+              schema:
+                $ref: "../../v1beta1/team/api.yml#/components/schemas/TeamPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/workspaces/{workspaceId}/teams/{teamId}:
+    post:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - workspaces
+      operationId: assignTeamToWorkspace
+      summary: Assign a team to a workspace
+      description: Assigns a team to a workspace.
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+        - $ref: "#/components/parameters/teamId"
+      responses:
+        "200":
+          description: Workspace team mappings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkspacesTeamsMappingPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - workspaces
+      operationId: unassignTeamFromWorkspace
+      summary: Unassign a team from a workspace
+      description: Removes a team from a workspace.
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+        - $ref: "#/components/parameters/teamId"
+      responses:
+        "204":
+          description: Workspace team mapping removed
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/workspaces/{workspaceId}/environments:
+    get:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - workspaces
+      operationId: getEnvironmentsOfWorkspace
+      summary: Get environments assigned to a workspace
+      description: Gets environments assigned to or available for a workspace depending on the filter.
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/filter"
+      responses:
+        "200":
+          description: Environments
+          content:
+            application/json:
+              schema:
+                $ref: "../../v1beta1/environment/api.yml#/components/schemas/EnvironmentPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/workspaces/{workspaceId}/environments/{environmentId}:
+    post:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - workspaces
+      operationId: assignEnvironmentToWorkspace
+      summary: Assign an environment to a workspace
+      description: Assigns an environment to a workspace.
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+        - $ref: "#/components/parameters/environmentId"
+      responses:
+        "200":
+          description: Workspace environment mappings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkspacesEnvironmentsMappingPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - workspaces
+      operationId: unassignEnvironmentFromWorkspace
+      summary: Unassign an environment from a workspace
+      description: Removes an environment from a workspace.
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+        - $ref: "#/components/parameters/environmentId"
+      responses:
+        "204":
+          description: Workspace environment mapping removed
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/workspaces/{workspaceId}/designs:
+    get:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - workspaces
+        - designs
+      operationId: getDesignsOfWorkspace
+      summary: Get designs assigned to a workspace
+      description: Gets designs assigned to or available for a workspace depending on the filter.
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/filter"
+      responses:
+        "200":
+          description: Designs
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MesheryDesignPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/workspaces/{workspaceId}/designs/{designId}:
+    post:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - workspaces
+        - designs
+      operationId: assignDesignToWorkspace
+      summary: Assign a design to a workspace
+      description: Assigns a design to a workspace.
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+        - $ref: "#/components/parameters/designId"
+      responses:
+        "200":
+          description: Workspace design mappings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkspacesDesignsMappingPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - workspaces
+        - designs
+      operationId: unassignDesignFromWorkspace
+      summary: Unassign a design from a workspace
+      description: Removes a design from a workspace.
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+        - $ref: "#/components/parameters/designId"
+      responses:
+        "204":
+          description: Workspace design mapping removed
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/workspaces/{workspaceId}/views:
+    get:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - workspaces
+        - views
+      operationId: getViewsOfWorkspace
+      summary: Get views assigned to a workspace
+      description: Gets views assigned to or available for a workspace depending on the filter.
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/filter"
+      responses:
+        "200":
+          description: Views
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MesheryViewPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/workspaces/{workspaceId}/views/{viewId}:
+    post:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - workspaces
+        - views
+      operationId: assignViewToWorkspace
+      summary: Assign a view to a workspace
+      description: Assigns a view to a workspace.
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+        - $ref: "#/components/parameters/viewId"
+      responses:
+        "200":
+          description: Workspace view mappings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkspacesViewsMappingPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - workspaces
+        - views
+      operationId: unassignViewFromWorkspace
+      summary: Unassign a view from a workspace
+      description: Removes a view from a workspace.
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+        - $ref: "#/components/parameters/viewId"
+      responses:
+        "204":
+          description: Workspace view mapping removed
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  responses:
+    200:
+      $ref: "../../v1beta1/core/api.yml#/components/responses/200"
+    400:
+      $ref: "../../v1beta1/core/api.yml#/components/responses/400"
+    401:
+      $ref: "../../v1beta1/core/api.yml#/components/responses/401"
+    404:
+      $ref: "../../v1beta1/core/api.yml#/components/responses/404"
+    500:
+      $ref: "../../v1beta1/core/api.yml#/components/responses/500"
+
+  parameters:
+    workspaceId:
+      name: workspaceId
+      in: path
+      description: Workspace ID
+      schema:
+        $ref: "../../v1beta1/core/api.yml#/components/schemas/workspace_id"
+      required: true
+    teamId:
+      name: teamId
+      in: path
+      description: Team ID
+      schema:
+        $ref: "../../v1beta1/core/api.yml#/components/schemas/team_id"
+      required: true
+    environmentId:
+      name: environmentId
+      in: path
+      description: Environment ID
+      schema:
+        $ref: "../../v1beta1/core/api.yml#/components/schemas/environment_id"
+      required: true
+    designId:
+      name: designId
+      in: path
+      description: Design ID
+      schema:
+        $ref: "../../v1beta1/core/api.yml#/components/schemas/design_id"
+      required: true
+    viewId:
+      name: viewId
+      in: path
+      description: View ID
+      schema:
+        $ref: "../../v1beta1/core/api.yml#/components/schemas/view_id"
+      required: true
+    orgIdQuery:
+      name: orgId
+      in: query
+      description: Organization ID used to scope the workspace listing.
+      schema:
+        type: string
+        format: uuid
+        maxLength: 36
+      required: false
+    search:
+      $ref: "../../v1beta1/core/api.yml#/components/parameters/search"
+    order:
+      $ref: "../../v1beta1/core/api.yml#/components/parameters/order"
+    page:
+      $ref: "../../v1beta1/core/api.yml#/components/parameters/page"
+    pagesize:
+      $ref: "../../v1beta1/core/api.yml#/components/parameters/pagesize"
+    filter:
+      name: filter
+      in: query
+      description: JSON-encoded filter string used for assignment and soft-delete filters.
+      schema:
+        type: string
+        maxLength: 4096
+
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Workspace:
+      $ref: "./workspace.yaml"
+
+    AvailableWorkspace:
+      type: object
+      description: Workspace with resolved owner details, as returned in list and get responses.
+      additionalProperties: false
+      properties:
+        id:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/general_id"
+        name:
+          type: string
+          description: Name of the workspace.
+          maxLength: 255
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: name
+            json: "name,omitempty"
+        description:
+          type: string
+          description: Description of the workspace.
+          maxLength: 5000
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: description
+            json: "description,omitempty"
+        orgName:
+          type: string
+          description: Name of the owning organization.
+          maxLength: 255
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: org_name
+            json: "orgName,omitempty"
+        owner:
+          type: string
+          description: Display name of the workspace owner.
+          maxLength: 255
+          x-oapi-codegen-extra-tags:
+            db: owner
+            json: "owner,omitempty"
+        ownerId:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/uuid"
+          description: User ID of the workspace owner.
+          x-go-name: OwnerId
+          x-oapi-codegen-extra-tags:
+            db: owner_id
+            json: "ownerId,omitempty"
+        ownerEmail:
+          type: string
+          description: Email address of the workspace owner.
+          format: email
+          maxLength: 320
+          x-oapi-codegen-extra-tags:
+            db: owner_email
+            json: "ownerEmail,omitempty"
+        ownerAvatar:
+          type: string
+          description: Avatar URL of the workspace owner.
+          format: uri
+          maxLength: 2048
+          x-oapi-codegen-extra-tags:
+            db: owner_avatar
+            json: "ownerAvatar,omitempty"
+        metadata:
+          type: object
+          description: Metadata associated with the workspace.
+          x-go-type: core.Map
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: metadata
+            json: "metadata,omitempty"
+        organizationId:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/uuid"
+          description: Organization to which this workspace belongs.
+          x-go-name: OrganizationId
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: organization_id
+            json: "organizationId,omitempty"
+        createdAt:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/created_at"
+          description: Timestamp when the workspace was created.
+          x-oapi-codegen-extra-tags:
+            db: created_at
+            json: "createdAt,omitempty"
+        updatedAt:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/updated_at"
+          description: Timestamp when the workspace was last updated.
+          x-oapi-codegen-extra-tags:
+            db: updated_at
+            json: "updatedAt,omitempty"
+        deletedAt:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/deleted_at"
+          description: Timestamp when the workspace was soft-deleted. Null while the workspace is active.
+          x-oapi-codegen-extra-tags:
+            db: deleted_at
+            json: "deletedAt,omitempty"
+
+    WorkspacePayload:
+      type: object
+      description: Payload for creating a workspace.
+      required:
+        - name
+        - organizationId
+      properties:
+        name:
+          type: string
+          description: Name of the workspace.
+          minLength: 1
+          maxLength: 255
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "name,omitempty"
+        description:
+          type: string
+          description: Description of the workspace.
+          maxLength: 5000
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "description,omitempty"
+        organizationId:
+          type: string
+          description: Organization ID.
+          maxLength: 36
+          format: uuid
+          x-go-type-skip-optional-pointer: true
+          x-go-name: OrganizationID
+          x-oapi-codegen-extra-tags:
+            json: "organizationId,omitempty"
+        metadata:
+          type: object
+          description: Metadata associated with the workspace.
+          x-go-type: core.Map
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "metadata,omitempty"
+
+    WorkspaceUpdatePayload:
+      type: object
+      description: Payload for updating a workspace.
+      required:
+        - organizationId
+      properties:
+        name:
+          type: string
+          description: Name of the workspace.
+          minLength: 1
+          maxLength: 255
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "name,omitempty"
+        description:
+          type: string
+          description: Description of the workspace.
+          maxLength: 5000
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "description,omitempty"
+        organizationId:
+          type: string
+          description: Organization ID.
+          maxLength: 36
+          format: uuid
+          x-go-type-skip-optional-pointer: true
+          x-go-name: OrganizationID
+          x-oapi-codegen-extra-tags:
+            json: "organizationId,omitempty"
+        metadata:
+          type: object
+          description: Metadata associated with the workspace.
+          x-go-type: core.Map
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "metadata,omitempty"
+
+    WorkspacePage:
+      type: object
+      description: Paginated list of workspaces.
+      properties:
+        page:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/number"
+          description: Zero-based page index returned in this response.
+          minimum: 0
+        pageSize:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/number"
+          description: Maximum number of items returned on each page.
+          minimum: 1
+          x-oapi-codegen-extra-tags:
+            json: "pageSize,omitempty"
+        totalCount:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/number"
+          description: Total number of items across all pages.
+          minimum: 0
+          x-oapi-codegen-extra-tags:
+            json: "totalCount,omitempty"
+        workspaces:
+          type: array
+          description: List of workspaces with resolved owner details.
+          x-go-type-skip-optional-pointer: true
+          items:
+            x-go-type: AvailableWorkspace
+            $ref: "#/components/schemas/AvailableWorkspace"
+
+    WorkspacesTeamsMapping:
+      type: object
+      description: Junction record linking a workspace to a team.
+      additionalProperties: false
+      required:
+        - id
+        - workspaceId
+        - teamId
+      properties:
+        id:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/general_id"
+        workspaceId:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/uuid"
+          description: Workspace ID for this mapping.
+          x-go-name: WorkspaceID
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: workspace_id
+            json: workspaceId
+        teamId:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/uuid"
+          description: Team ID for this mapping.
+          x-go-name: TeamID
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: team_id
+            json: teamId
+        createdAt:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/created_at"
+          description: Timestamp when the mapping was created.
+          x-oapi-codegen-extra-tags:
+            db: created_at
+            json: "createdAt,omitempty"
+        updatedAt:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/updated_at"
+          description: Timestamp when the mapping was last updated.
+          x-oapi-codegen-extra-tags:
+            db: updated_at
+            json: "updatedAt,omitempty"
+        deletedAt:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/deleted_at"
+          description: Timestamp when the mapping was soft-deleted.
+          x-oapi-codegen-extra-tags:
+            db: deleted_at
+            json: "deletedAt,omitempty"
+
+    WorkspacesTeamsMappingPage:
+      type: object
+      description: Paginated list of workspace-team mappings.
+      properties:
+        page:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/number"
+          description: Zero-based page index returned in this response.
+          minimum: 0
+        pageSize:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/number"
+          description: Maximum number of items returned on each page.
+          minimum: 1
+          x-oapi-codegen-extra-tags:
+            json: "pageSize,omitempty"
+        totalCount:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/number"
+          description: Total number of items across all pages.
+          minimum: 0
+          x-oapi-codegen-extra-tags:
+            json: "totalCount,omitempty"
+        workspacesTeamsMapping:
+          type: array
+          description: Workspace-team mapping entries.
+          x-go-type-skip-optional-pointer: true
+          items:
+            x-go-type: WorkspacesTeamsMapping
+            $ref: "#/components/schemas/WorkspacesTeamsMapping"
+
+    WorkspacesEnvironmentsMapping:
+      type: object
+      description: Junction record linking a workspace to an environment.
+      additionalProperties: false
+      required:
+        - id
+        - workspaceId
+        - environmentId
+      properties:
+        id:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/general_id"
+        workspaceId:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/uuid"
+          description: Workspace ID for this mapping.
+          x-go-name: WorkspaceID
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: workspace_id
+            json: workspaceId
+        environmentId:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/uuid"
+          description: Environment ID for this mapping.
+          x-go-name: EnvironmentID
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: environment_id
+            json: environmentId
+        createdAt:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/created_at"
+          description: Timestamp when the mapping was created.
+          x-oapi-codegen-extra-tags:
+            db: created_at
+            json: "createdAt,omitempty"
+        updatedAt:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/updated_at"
+          description: Timestamp when the mapping was last updated.
+          x-oapi-codegen-extra-tags:
+            db: updated_at
+            json: "updatedAt,omitempty"
+        deletedAt:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/deleted_at"
+          description: Timestamp when the mapping was soft-deleted.
+          x-oapi-codegen-extra-tags:
+            db: deleted_at
+            json: "deletedAt,omitempty"
+
+    WorkspacesEnvironmentsMappingPage:
+      type: object
+      description: Paginated list of workspace-environment mappings.
+      properties:
+        page:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/number"
+          description: Zero-based page index returned in this response.
+          minimum: 0
+        pageSize:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/number"
+          description: Maximum number of items returned on each page.
+          minimum: 1
+          x-oapi-codegen-extra-tags:
+            json: "pageSize,omitempty"
+        totalCount:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/number"
+          description: Total number of items across all pages.
+          minimum: 0
+          x-oapi-codegen-extra-tags:
+            json: "totalCount,omitempty"
+        workspacesEnvironmentsMapping:
+          type: array
+          description: Workspace-environment mapping entries.
+          x-go-type-skip-optional-pointer: true
+          items:
+            x-go-type: WorkspacesEnvironmentsMapping
+            $ref: "#/components/schemas/WorkspacesEnvironmentsMapping"
+
+    WorkspacesDesignsMapping:
+      type: object
+      description: Junction record linking a workspace to a design.
+      additionalProperties: false
+      required:
+        - id
+        - workspaceId
+        - designId
+      properties:
+        id:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/general_id"
+        workspaceId:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/uuid"
+          description: Workspace ID for this mapping.
+          x-go-name: WorkspaceID
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: workspace_id
+            json: workspaceId
+        designId:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/uuid"
+          description: Design ID for this mapping.
+          x-go-name: DesignID
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: design_id
+            json: designId
+        createdAt:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/created_at"
+          description: Timestamp when the mapping was created.
+          x-oapi-codegen-extra-tags:
+            db: created_at
+            json: "createdAt,omitempty"
+        updatedAt:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/updated_at"
+          description: Timestamp when the mapping was last updated.
+          x-oapi-codegen-extra-tags:
+            db: updated_at
+            json: "updatedAt,omitempty"
+        deletedAt:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/deleted_at"
+          description: Timestamp when the mapping was soft-deleted.
+          x-oapi-codegen-extra-tags:
+            db: deleted_at
+            json: "deletedAt,omitempty"
+
+    WorkspacesDesignsMappingPage:
+      type: object
+      description: Paginated list of workspace-design mappings.
+      properties:
+        page:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/number"
+          description: Zero-based page index returned in this response.
+          minimum: 0
+        pageSize:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/number"
+          description: Maximum number of items returned on each page.
+          minimum: 1
+          x-oapi-codegen-extra-tags:
+            json: "pageSize,omitempty"
+        totalCount:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/number"
+          description: Total number of items across all pages.
+          minimum: 0
+          x-oapi-codegen-extra-tags:
+            json: "totalCount,omitempty"
+        workspacesDesignsMapping:
+          type: array
+          description: Workspace-design mapping entries.
+          x-go-type-skip-optional-pointer: true
+          items:
+            x-go-type: WorkspacesDesignsMapping
+            $ref: "#/components/schemas/WorkspacesDesignsMapping"
+
+    WorkspacesViewsMapping:
+      type: object
+      description: Junction record linking a workspace to a view.
+      additionalProperties: false
+      required:
+        - id
+        - workspaceId
+        - viewId
+      properties:
+        id:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/general_id"
+        workspaceId:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/uuid"
+          description: Workspace ID for this mapping.
+          x-go-name: WorkspaceID
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: workspace_id
+            json: workspaceId
+        viewId:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/uuid"
+          description: View ID for this mapping.
+          x-go-name: ViewID
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: view_id
+            json: viewId
+        createdAt:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/created_at"
+          description: Timestamp when the mapping was created.
+          x-oapi-codegen-extra-tags:
+            db: created_at
+            json: "createdAt,omitempty"
+        updatedAt:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/updated_at"
+          description: Timestamp when the mapping was last updated.
+          x-oapi-codegen-extra-tags:
+            db: updated_at
+            json: "updatedAt,omitempty"
+        deletedAt:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/deleted_at"
+          description: Timestamp when the mapping was soft-deleted.
+          x-oapi-codegen-extra-tags:
+            db: deleted_at
+            json: "deletedAt,omitempty"
+
+    WorkspacesViewsMappingPage:
+      type: object
+      description: Paginated list of workspace-view mappings.
+      properties:
+        page:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/number"
+          description: Zero-based page index returned in this response.
+          minimum: 0
+        pageSize:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/number"
+          description: Maximum number of items returned on each page.
+          minimum: 1
+          x-oapi-codegen-extra-tags:
+            json: "pageSize,omitempty"
+        totalCount:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/number"
+          description: Total number of items across all pages.
+          minimum: 0
+          x-oapi-codegen-extra-tags:
+            json: "totalCount,omitempty"
+        workspacesViewsMapping:
+          type: array
+          description: Workspace-view mapping entries.
+          x-go-type-skip-optional-pointer: true
+          items:
+            x-go-type: WorkspacesViewsMapping
+            $ref: "#/components/schemas/WorkspacesViewsMapping"
+
+    MesheryDesignPage:
+      type: object
+      description: Paginated list of designs.
+      properties:
+        page:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/number"
+          description: Zero-based page index returned in this response.
+          minimum: 0
+        pageSize:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/number"
+          description: Maximum number of items returned on each page.
+          minimum: 1
+          x-oapi-codegen-extra-tags:
+            json: "pageSize,omitempty"
+        totalCount:
+          $ref: "../../v1beta1/core/api.yml#/components/schemas/number"
+          description: Total number of items across all pages.
+          minimum: 0
+          x-oapi-codegen-extra-tags:
+            json: "totalCount,omitempty"
+        designs:
+          type: array
+          description: Designs in this page.
+          x-go-type-skip-optional-pointer: true
+          items:
+            $ref: "../../v1beta1/design/api.yml#/components/schemas/MesheryPattern"
+
+    MesheryView:
+      $ref: "../../v1beta1/view/api.yml#/components/schemas/MesheryViewWithLocation"
+
+    MesheryViewPage:
+      $ref: "../../v1beta1/view/api.yml#/components/schemas/MesheryViewPage"
+
+  requestBodies:
+    workspacePayload:
+      description: Body for creating a workspace
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/WorkspacePayload"
+    workspaceUpdatePayload:
+      description: Body for updating a workspace
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/WorkspaceUpdatePayload"

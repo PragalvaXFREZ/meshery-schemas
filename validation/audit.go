@@ -127,6 +127,9 @@ func Audit(opts AuditOptions) AuditResult {
 	// Cross-construct fingerprints for Rule 29.
 	fingerprints := make(map[string][]schemaLocation)
 
+	// Cross-file sibling-endpoint parameter parity accumulator for Rule 46.
+	parity := &parityAccumulator{}
+
 	// Walk validated construct specs. Errors are intentionally ignored:
 	// Audit returns AuditResult, not error, and individual load failures
 	// are reported as blocking violations inside auditAPISpec.
@@ -142,12 +145,22 @@ func Audit(opts AuditOptions) AuditResult {
 		if spec.APIExists {
 			auditAPISpec(spec.APIYMLPath, spec.ConstructDir, opts, baseline, &result,
 				fingerprints, enumBaselineRef, spec.Doc)
+			// Collect Rule 46 cross-file parity candidates from this
+			// api.yml. The file's version prefix (e.g. "v1beta1") defines
+			// the comparison group.
+			relPath := relativeToRoot(spec.APIYMLPath, opts.RootDir)
+			collectParityEndpoints(relPath, spec.Version, spec.Doc, parity)
 		}
 		return nil
 	})
 
 	// Rule 29: report cross-construct duplicates.
 	for _, v := range reportDuplicateSchemas(fingerprints, opts) {
+		addViolation(&result, v, baseline)
+	}
+
+	// Rule 46: cross-file sibling-endpoint parameter parity.
+	for _, v := range reportParityViolations(parity, opts) {
 		addViolation(&result, v, baseline)
 	}
 
@@ -214,13 +227,9 @@ func auditEntitySchemas(constructDir string, opts AuditOptions,
 			addViolation(result, v, baseline)
 		}
 
-		// Rule 6: entity property casing must match contract/DB-backed rules.
+		// Rule 6: entity property casing (unconditional camelCase; no DB
+		// exception under the canonical identifier-naming contract).
 		for _, v := range checkRule6ForEntity(relPath, entity, opts) {
-			addViolation(result, v, baseline)
-		}
-
-		// Rule 32: DB-backed fields must use the exact snake_case db column name.
-		for _, v := range checkRule32ForEntity(relPath, entity, opts) {
 			addViolation(result, v, baseline)
 		}
 
@@ -288,6 +297,7 @@ func auditAPISpec(apiYmlPath, constructDir string, opts AuditOptions,
 		checkRule28, checkRule30, checkRule31, checkRule35,
 		checkRule36,
 		checkRule42, checkRule43, checkRule44,
+		checkRule45ForAPI,
 	}
 
 	for _, check := range ruleChecks {
@@ -303,11 +313,6 @@ func auditAPISpec(apiYmlPath, constructDir string, opts AuditOptions,
 
 	// Rule 8: enum values.
 	for _, v := range checkRule8(apiYmlPath, relPath, doc, opts, enumBaselineRef) {
-		addViolation(result, v, baseline)
-	}
-
-	// Rule 32: DB-backed property names.
-	for _, v := range checkRule32ForAPI(relPath, doc, opts) {
 		addViolation(result, v, baseline)
 	}
 

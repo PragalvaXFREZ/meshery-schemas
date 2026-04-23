@@ -7,6 +7,7 @@ const SubscriptionSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Subscription",
+    "x-deprecated": true,
     "description": "API for managing subscriptions using various payment processors in a SaaS application.",
     "version": "v1beta2",
     "contact": {

@@ -740,7 +740,7 @@ The validator (`validation/` Go package, using kin-openapi for spec parsing) che
 **Structural and annotation rules (12-22):**
 - `openapi: 3.0.x` required (not 3.1.0 — oapi-codegen requirement)
 - `info.title` and `info.version` required in every `api.yml`
-- `x-internal` must be omitted or `["cloud"]` / `["meshery"]` (lowercase, array form)
+- `x-internal` is required on every operation and must be `["cloud"]`, `["meshery"]`, or `["cloud", "meshery"]` (lowercase, array form)
 - Cross-construct `$ref` must have `x-go-type` + `x-go-type-import` for Go imports
 - Alias prefix in `x-go-type` must match `x-go-type-import.name`
 - `x-go-type: "core.Map"` must pair with `x-go-type-skip-optional-pointer: true`

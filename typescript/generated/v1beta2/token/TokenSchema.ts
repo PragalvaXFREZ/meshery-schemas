@@ -7,6 +7,7 @@ const TokenSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "token",
+    "x-deprecated": true,
     "description": "Documentation for Meshery Cloud REST APIs for user tokens and sessions",
     "contact": {
       "name": "Meshery Maintainers",

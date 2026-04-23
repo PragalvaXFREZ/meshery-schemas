@@ -44,7 +44,7 @@ func checkRule11(filePath string, doc *openapi3.T, _ AuditOptions) []Violation {
 	return out
 }
 
-// --- Rule 14: x-internal must be omitted or ["cloud"]/["meshery"] ---
+// --- Rule 14: x-internal is required on every operation; it must be an array of one or more tag strings, and each entry must be "cloud" or "meshery" ---
 
 var validInternalTags = map[string]bool{"cloud": true, "meshery": true}
 
@@ -59,15 +59,24 @@ func checkRule14(filePath string, doc *openapi3.T, _ AuditOptions) []Violation {
 			if op == nil {
 				continue
 			}
+			label := fmt.Sprintf("%s %s", strings.ToUpper(method), path)
 			raw, ok := op.Extensions["x-internal"]
 			if !ok {
+				out = append(out, Violation{File: filePath,
+					Message: fmt.Sprintf(`%s — x-internal is required on every operation. Use ["cloud"], ["meshery"], or ["cloud", "meshery"].`, label),
+					Severity: SeverityBlocking, RuleNumber: 14})
 				continue
 			}
-			label := fmt.Sprintf("%s %s", strings.ToUpper(method), path)
 			arr, ok := raw.([]any)
 			if !ok {
 				out = append(out, Violation{File: filePath,
 					Message: fmt.Sprintf(`%s — x-internal must be an array (e.g. ["cloud"]).`, label),
+					Severity: SeverityBlocking, RuleNumber: 14})
+				continue
+			}
+			if len(arr) == 0 {
+				out = append(out, Violation{File: filePath,
+					Message: fmt.Sprintf(`%s — x-internal must contain at least one tag. Use ["cloud"], ["meshery"], or ["cloud", "meshery"].`, label),
 					Severity: SeverityBlocking, RuleNumber: 14})
 				continue
 			}

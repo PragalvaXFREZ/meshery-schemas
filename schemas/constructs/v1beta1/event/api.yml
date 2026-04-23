@@ -20,6 +20,7 @@ tags:
 paths:
   /events/{id}:
     delete:
+      x-internal: ["cloud", "meshery"]
       tags:
         - events
       summary: Delete a single event
@@ -45,6 +46,7 @@ paths:
 
   /events:
     post:
+      x-internal: ["cloud", "meshery"]
       tags:
         - events
       summary: Create a new event
@@ -66,6 +68,7 @@ paths:
 
   /events/delete:
     post:
+      x-internal: ["cloud", "meshery"]
       tags:
         - events
       summary: Bulk delete events
@@ -97,6 +100,7 @@ paths:
 
   /events/status:
     put:
+      x-internal: ["cloud", "meshery"]
       tags:
         - events
       summary: Bulk update event status
@@ -128,6 +132,7 @@ paths:
 
   /events/{id}/status:
     put:
+      x-internal: ["cloud", "meshery"]
       tags:
         - events
       summary: Update status of a single event

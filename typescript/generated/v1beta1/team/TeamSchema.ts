@@ -8,6 +8,8 @@ const TeamSchema: Record<string, unknown> = {
   "info": {
     "title": "Team",
     "description": "OpenAPI schema for team management in Meshery Cloud.",
+    "x-deprecated": true,
+    "x-superseded-by": "v1beta2",
     "version": "v1beta1",
     "contact": {
       "name": "Meshery Maintainers",
@@ -734,6 +736,10 @@ const TeamSchema: Record<string, unknown> = {
   "paths": {
     "/api/identity/orgs/{orgId}/teams": {
       "get": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "teams"
         ],
@@ -969,6 +975,10 @@ const TeamSchema: Record<string, unknown> = {
         }
       },
       "post": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "teams"
         ],
@@ -1187,6 +1197,10 @@ const TeamSchema: Record<string, unknown> = {
     },
     "/api/identity/orgs/{orgId}/teams/{teamId}": {
       "get": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "teams"
         ],
@@ -1396,6 +1410,10 @@ const TeamSchema: Record<string, unknown> = {
         }
       },
       "put": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "teams"
         ],
@@ -1629,6 +1647,10 @@ const TeamSchema: Record<string, unknown> = {
         }
       },
       "delete": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "teams"
         ],
@@ -1726,6 +1748,10 @@ const TeamSchema: Record<string, unknown> = {
     },
     "/api/identity/teams/{teamId}/users": {
       "get": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "teams"
         ],
@@ -1944,6 +1970,10 @@ const TeamSchema: Record<string, unknown> = {
     },
     "/api/identity/orgs/{orgId}/teams/{teamId}/users/{userId}": {
       "post": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "teams"
         ],
@@ -2135,6 +2165,10 @@ const TeamSchema: Record<string, unknown> = {
         }
       },
       "delete": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "teams"
         ],
@@ -2243,6 +2277,10 @@ const TeamSchema: Record<string, unknown> = {
     },
     "/api/identity/orgs/{orgId}/teams/{teamId}/users": {
       "get": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "teams"
         ],

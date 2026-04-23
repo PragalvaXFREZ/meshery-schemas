@@ -8,6 +8,8 @@ const WorkspaceSchema: Record<string, unknown> = {
   "info": {
     "title": "Workspace",
     "description": "OpenAPI schema for workspace management in Meshery Cloud.",
+    "x-deprecated": true,
+    "x-superseded-by": "v1beta3",
     "version": "v1beta1",
     "contact": {
       "name": "Meshery Maintainers",
@@ -55,6 +57,10 @@ const WorkspaceSchema: Record<string, unknown> = {
   "paths": {
     "/api/workspaces": {
       "get": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "workspaces"
         ],
@@ -311,6 +317,10 @@ const WorkspaceSchema: Record<string, unknown> = {
         }
       },
       "post": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "workspaces"
         ],
@@ -542,6 +552,10 @@ const WorkspaceSchema: Record<string, unknown> = {
     },
     "/api/workspaces/{workspaceId}": {
       "get": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "workspaces"
         ],
@@ -746,6 +760,10 @@ const WorkspaceSchema: Record<string, unknown> = {
         }
       },
       "put": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "workspaces"
         ],
@@ -1006,6 +1024,10 @@ const WorkspaceSchema: Record<string, unknown> = {
         }
       },
       "delete": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "workspaces"
         ],
@@ -1083,6 +1105,10 @@ const WorkspaceSchema: Record<string, unknown> = {
     },
     "/api/workspaces/{workspaceId}/teams": {
       "get": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "workspaces"
         ],
@@ -1338,6 +1364,10 @@ const WorkspaceSchema: Record<string, unknown> = {
     },
     "/api/workspaces/{workspaceId}/teams/{teamId}": {
       "post": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "workspaces"
         ],
@@ -1546,6 +1576,10 @@ const WorkspaceSchema: Record<string, unknown> = {
         }
       },
       "delete": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "workspaces"
         ],
@@ -1643,6 +1677,10 @@ const WorkspaceSchema: Record<string, unknown> = {
     },
     "/api/workspaces/{workspaceId}/environments": {
       "get": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "workspaces"
         ],
@@ -1956,6 +1994,10 @@ const WorkspaceSchema: Record<string, unknown> = {
     },
     "/api/workspaces/{workspaceId}/environments/{environmentId}": {
       "post": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "workspaces"
         ],
@@ -2164,6 +2206,10 @@ const WorkspaceSchema: Record<string, unknown> = {
         }
       },
       "delete": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "workspaces"
         ],
@@ -2261,6 +2307,10 @@ const WorkspaceSchema: Record<string, unknown> = {
     },
     "/api/workspaces/{workspaceId}/designs": {
       "get": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "workspaces",
           "designs"
@@ -7163,6 +7213,10 @@ const WorkspaceSchema: Record<string, unknown> = {
     },
     "/api/workspaces/{workspaceId}/designs/{designId}": {
       "post": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "workspaces",
           "designs"
@@ -7372,6 +7426,10 @@ const WorkspaceSchema: Record<string, unknown> = {
         }
       },
       "delete": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "workspaces",
           "designs"
@@ -7470,6 +7528,10 @@ const WorkspaceSchema: Record<string, unknown> = {
     },
     "/api/workspaces/{workspaceId}/views": {
       "get": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "workspaces",
           "views"
@@ -7788,6 +7850,10 @@ const WorkspaceSchema: Record<string, unknown> = {
     },
     "/api/workspaces/{workspaceId}/views/{viewId}": {
       "post": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "workspaces",
           "views"
@@ -7997,6 +8063,10 @@ const WorkspaceSchema: Record<string, unknown> = {
         }
       },
       "delete": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "workspaces",
           "views"

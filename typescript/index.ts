@@ -36,6 +36,7 @@ import { components as V1Beta2ConnectionComponents } from "./generated/v1beta2/c
 import { components as V1Beta2DesignComponents } from "./generated/v1beta2/design/Design";
 import { components as V1Beta2EventComponents } from "./generated/v1beta2/event/Event";
 import { components as V1Beta2InvitationComponents } from "./generated/v1beta2/invitation/Invitation";
+import { components as V1Beta2OrganizationComponents } from "./generated/v1beta2/organization/Organization";
 import { components as V1Beta2PlanComponents } from "./generated/v1beta2/plan/Plan";
 import { components as V1Beta2RelationshipComponents } from "./generated/v1beta2/relationship/Relationship";
 import { components as V1Beta2SubscriptionComponents } from "./generated/v1beta2/subscription/Subscription";
@@ -163,6 +164,8 @@ export namespace v1beta2 {
     V1Beta2EventComponents["schemas"]["EventResult"];
   export type Invitation =
     V1Beta2InvitationComponents["schemas"]["Invitation"];
+  export type Organization =
+    V1Beta2OrganizationComponents["schemas"]["Organization"];
   export type Plan = V1Beta2PlanComponents["schemas"]["Plan"];
   export type Relationship =
     V1Beta2RelationshipComponents["schemas"]["RelationshipDefinition"];

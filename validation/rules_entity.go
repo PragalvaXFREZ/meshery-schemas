@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -233,20 +234,26 @@ func entityRawPropGormColumn(entity *entitySchema, propName string) string {
 }
 
 // --- Rule 6 for entity schemas: property name casing ---
-
+//
+// See checkRule6ForAPI for the Rule 6 docstring. Behaviour is identical for
+// entity-schema YAML files: unconditional camelCase, no DB-mirroring
+// exception.
 func checkRule6ForEntity(filePath string, entity *entitySchema, opts AuditOptions) []Violation {
 	sev := classifyStyleIssue(opts)
 	if sev == nil || entity == nil || entity.Properties == nil {
 		return nil
 	}
 	var out []Violation
-	for propName := range entity.Properties {
+	propNames := make([]string, 0, len(entity.Properties))
+	for name := range entity.Properties {
+		propNames = append(propNames, name)
+	}
+	sort.Strings(propNames)
+	for _, propName := range propNames {
 		if strings.HasPrefix(propName, "$") {
 			continue
 		}
-		dbTag := entityRawPropTag(entity, propName, "db")
-		gormCol := entityRawPropGormColumn(entity, propName)
-		issues := GetCamelCaseIssues(propName, true, dbTag, gormCol)
+		issues := GetCamelCaseIssues(propName)
 		if len(issues) > 0 {
 			descs := make([]string, len(issues))
 			for i, iss := range issues {
@@ -257,6 +264,7 @@ func checkRule6ForEntity(filePath string, entity *entitySchema, opts AuditOption
 			if suggestion != "" {
 				msg += fmt.Sprintf(` Use: %q.`, suggestion)
 			}
+			msg += schemaPropertyDBContext(propName)
 			msg += ` See AGENTS.md § "Casing rules at a glance".`
 			out = append(out, Violation{File: filePath, Message: msg, Severity: *sev, RuleNumber: 6})
 		}
@@ -264,39 +272,17 @@ func checkRule6ForEntity(filePath string, entity *entitySchema, opts AuditOption
 	return out
 }
 
-// --- Rule 32 for entity schemas: DB-backed property names must match db tags ---
-
-func checkRule32ForEntity(filePath string, entity *entitySchema, _ AuditOptions) []Violation {
-	if entity == nil || entity.Properties == nil {
-		return nil
-	}
-	var out []Violation
-	for propName := range entity.Properties {
-		dbTag := entityRawPropTag(entity, propName, "db")
-		gormCol := entityRawPropGormColumn(entity, propName)
-		col := dbTag
-		if col == "" {
-			col = gormCol
-		}
-		if col == "" || !IsValidDBTag(col) || !HasUnderscore(col) {
-			continue
-		}
-		if propName != col {
-			jsonTag := entityRawPropTag(entity, propName, "json")
-			if jsonTag != "" && jsonTag != "-" && jsonTag == col {
-				continue // deliberate semantic alias
-			}
-			src := "db"
-			if dbTag == "" {
-				src = "gorm column"
-			}
-			out = append(out, Violation{File: filePath,
-				Message: fmt.Sprintf(`Entity property %q maps to database column %q (via %s tag). DB-backed property names must use the exact snake_case db name.`,
-					propName, col, src),
-				Severity: SeverityBlocking, RuleNumber: 32})
-		}
-	}
-	return out
+// Rule 32 (entity) is retired under the canonical identifier-naming
+// contract. The pre-canonical rule required DB-backed property names to
+// match their snake_case `db:` tag exactly; under the new contract the
+// wire property name is camelCase and the snake_case DB column name lives
+// only in `x-oapi-codegen-extra-tags.db`, so propName != col is the
+// expected shape for DB-backed fields. See Phase 1.B in
+// docs/identifier-naming-migration.md. The function is retained as a
+// retired stub so historical audit-pipeline callers can be resolved at
+// compile time; it returns no violations.
+func checkRule32ForEntity(_ string, _ *entitySchema, _ AuditOptions) []Violation {
+	return nil
 }
 
 // --- Rule 35 for entity schemas: x-go-type / x-go-type-import consistency ---

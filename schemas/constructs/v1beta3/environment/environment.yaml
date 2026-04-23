@@ -1,0 +1,105 @@
+$id: https://schemas.meshery.io/environment.yaml
+$schema: http://json-schema.org/draft-07/schema#
+title: Environment
+description: Environments allow you to logically group related Connections and their associated Credentials. Learn more at https://docs.meshery.io/concepts/logical/environments
+additionalProperties: false
+type: object
+example:
+  id: 00000000-0000-0000-0000-000000000000
+  schemaVersion: environments.meshery.io/v1beta3
+  name: Production Environment
+  description: Connections and credentials for the production cluster.
+  organizationId: 00000000-0000-0000-0000-000000000000
+  owner: 00000000-0000-0000-0000-000000000000
+  createdAt: "0001-01-01T00:00:00Z"
+  metadata: {}
+  updatedAt: "0001-01-01T00:00:00Z"
+  deletedAt: null
+required:
+  - id
+  - schemaVersion
+  - name
+  - description
+  - organizationId
+properties:
+  id:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    description: ID
+    x-order: 1
+    x-go-name: ID
+    x-oapi-codegen-extra-tags:
+      db: id
+      json: id
+  schemaVersion:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/versionString
+    description: Specifies the version of the schema to which the environment conforms.
+    x-order: 2
+    x-oapi-codegen-extra-tags:
+      json: schemaVersion
+      db: "-"
+      gorm: "-"
+    default: environments.meshery.io/v1beta3
+  name:
+    x-oapi-codegen-extra-tags:
+      db: name
+      json: name
+    x-order: 3
+    type: string
+    maxLength: 100
+    description: Environment name
+  description:
+    x-oapi-codegen-extra-tags:
+      db: description
+      json: description
+    x-order: 4
+    type: string
+    maxLength: 1000
+    description: Environment description
+  organizationId:
+    x-go-name: OrganizationID
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+      json: organizationId
+    x-order: 5
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    description: Environment organization ID
+  owner:
+    x-oapi-codegen-extra-tags:
+      db: owner
+      json: owner
+    x-order: 6
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    description: Environment owner
+  createdAt:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/created_at
+    description: Timestamp when the environment was created.
+    x-oapi-codegen-extra-tags:
+      db: created_at
+      json: createdAt
+    x-order: 7
+  metadata:
+    description: Additional metadata associated with the environment.
+    x-oapi-codegen-extra-tags:
+      db: metadata
+      json: metadata
+    x-order: 8
+    x-go-type: core.Map
+    x-go-type-skip-optional-pointer: true
+    type: object
+  updatedAt:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/updated_at
+    description: Timestamp when the environment was last updated.
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+      json: updatedAt
+    x-order: 9
+  deletedAt:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/nullTime
+    description: Timestamp when the environment was soft deleted. Null while the environment remains active.
+    nullable: true
+    x-oapi-codegen-extra-tags:
+      db: deleted_at
+      json: deletedAt
+    x-go-type: core.NullTime
+    x-go-import: database/sql
+    x-order: 10

@@ -8,6 +8,8 @@ const ModelSchema: Record<string, unknown> = {
   "info": {
     "title": "Model",
     "description": "OpenAPI schema for Meshery model registration and management.",
+    "x-deprecated": true,
+    "x-superseded-by": "v1beta2",
     "version": "v1beta1",
     "contact": {
       "name": "Meshery Maintainers",
@@ -33,6 +35,10 @@ const ModelSchema: Record<string, unknown> = {
   "paths": {
     "/api/meshmodels/register": {
       "post": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "Models"
         ],
