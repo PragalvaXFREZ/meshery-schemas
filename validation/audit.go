@@ -127,6 +127,9 @@ func Audit(opts AuditOptions) AuditResult {
 	// Cross-construct fingerprints for Rule 29.
 	fingerprints := make(map[string][]schemaLocation)
 
+	// Cross-file sibling-endpoint parameter parity accumulator for Rule 46.
+	parity := &parityAccumulator{}
+
 	// Walk validated construct specs. Errors are intentionally ignored:
 	// Audit returns AuditResult, not error, and individual load failures
 	// are reported as blocking violations inside auditAPISpec.
@@ -142,12 +145,22 @@ func Audit(opts AuditOptions) AuditResult {
 		if spec.APIExists {
 			auditAPISpec(spec.APIYMLPath, spec.ConstructDir, opts, baseline, &result,
 				fingerprints, enumBaselineRef, spec.Doc)
+			// Collect Rule 46 cross-file parity candidates from this
+			// api.yml. The file's version prefix (e.g. "v1beta1") defines
+			// the comparison group.
+			relPath := relativeToRoot(spec.APIYMLPath, opts.RootDir)
+			collectParityEndpoints(relPath, spec.Version, spec.Doc, parity)
 		}
 		return nil
 	})
 
 	// Rule 29: report cross-construct duplicates.
 	for _, v := range reportDuplicateSchemas(fingerprints, opts) {
+		addViolation(&result, v, baseline)
+	}
+
+	// Rule 46: cross-file sibling-endpoint parameter parity.
+	for _, v := range reportParityViolations(parity, opts) {
 		addViolation(&result, v, baseline)
 	}
 
