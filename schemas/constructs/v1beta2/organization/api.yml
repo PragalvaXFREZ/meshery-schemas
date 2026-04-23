@@ -2,9 +2,7 @@ openapi: 3.0.0
 info:
   title: Organization
   description: OpenAPI schema for organization management in Meshery Cloud.
-  x-deprecated: true
-  x-superseded-by: v1beta2
-  version: v1beta1
+  version: v1beta2
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -30,7 +28,7 @@ paths:
       operationId: getOrgs
       parameters:
         - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/all"
@@ -83,11 +81,13 @@ paths:
         - name: domain
           in: query
           required: true
+          description: Domain name of the organization to look up.
           schema:
             type: string
+            maxLength: 500
       responses:
         "200":
-          description: Successful response
+          description: Organization response
           content:
             application/json:
               schema:
@@ -153,7 +153,7 @@ paths:
         - jwt: []
       summary: Update an organization
       description: Updates the organization.
-      operationId: handleUpdateOrg
+      operationId: updateOrg
       parameters:
         - $ref: "#/components/parameters/orgId"
       requestBody:
@@ -207,7 +207,7 @@ paths:
       security:
         - jwt: []
       summary: Add team to organization or soft delete team
-      description: Adds a team to an organization. If request body contains action=delete, tombstones a team by setting its deleted_at timestamp. The team's organization mapping remains intact.
+      description: Adds a team to an organization. If request body contains action=delete, tombstones a team by setting its deletedAt timestamp. The team's organization mapping remains intact.
       operationId: addTeamToOrg
       parameters:
         - $ref: "#/components/parameters/orgId"
@@ -276,11 +276,7 @@ paths:
       operationId: addUserToOrg
       parameters:
         - $ref: "#/components/parameters/orgId"
-        - name: userId
-          in: path
-          required: true
-          schema:
-            $ref: "../core/api.yml#/components/schemas/user_id"
+        - $ref: "#/components/parameters/userId"
       responses:
         "201":
           description: User added to organization
@@ -307,11 +303,7 @@ paths:
       operationId: deleteUserFromOrg
       parameters:
         - $ref: "#/components/parameters/orgId"
-        - name: userId
-          in: path
-          required: true
-          schema:
-            $ref: "../core/api.yml#/components/schemas/user_id"
+        - $ref: "#/components/parameters/userId"
       responses:
         "204":
           description: User removed from organization
@@ -331,43 +323,64 @@ components:
 
   responses:
     400:
-      $ref: "../core/api.yml#/components/responses/400"
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
     401:
-      $ref: "../core/api.yml#/components/responses/401"
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
     404:
-      $ref: "../core/api.yml#/components/responses/404"
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/404"
     500:
-      $ref: "../core/api.yml#/components/responses/500"
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
 
   parameters:
     orgId:
       name: orgId
       in: path
       required: true
+      description: Organization ID.
       schema:
-        $ref: "../core/api.yml#/components/schemas/organization_id"
+        $ref: "../../v1alpha1/core/api.yml#/components/schemas/organization_id"
 
-    page:
-      $ref: "../core/api.yml#/components/parameters/page"
-
-    pagesize:
-      $ref: "../core/api.yml#/components/parameters/pagesize"
-
-    search:
-      $ref: "../core/api.yml#/components/parameters/search"
-
-    order:
-      $ref: "../core/api.yml#/components/parameters/order"
-
-    all:
-      $ref: "../core/api.yml#/components/parameters/all"
+    userId:
+      name: userId
+      in: path
+      required: true
+      description: User ID.
+      schema:
+        $ref: "../../v1alpha1/core/api.yml#/components/schemas/user_uuid"
 
     teamId:
       name: teamId
       in: path
       required: true
+      description: Team ID.
       schema:
-        $ref: "../core/api.yml#/components/schemas/team_id"
+        $ref: "../../v1alpha1/core/api.yml#/components/schemas/team_id"
+
+    page:
+      name: page
+      in: query
+      description: Zero-based index of the result page to return.
+      schema:
+        type: integer
+        minimum: 0
+
+    pageSize:
+      name: pageSize
+      in: query
+      description: Maximum number of items returned on each page.
+      schema:
+        type: integer
+        minimum: 1
+
+    search:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/search"
+
+    order:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/order"
+
+    all:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/all"
+
   requestBodies:
     organizationPayload:
       description: Body for creating or updating an organization
@@ -379,19 +392,19 @@ components:
 
   schemas:
     UUID:
-      $ref: "../core/api.yml#/components/schemas/uuid"
+      $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
 
     NullableTime:
-      $ref: "../core/api.yml#/components/schemas/SqlNullTime"
+      $ref: "../../v1alpha1/core/api.yml#/components/schemas/SqlNullTime"
 
     Time:
-      $ref: "../core/api.yml#/components/schemas/Time"
+      $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
 
     Text:
-      $ref: "../core/api.yml#/components/schemas/Text"
+      $ref: "../../v1alpha1/core/api.yml#/components/schemas/Text"
 
     MapObject:
-      $ref: "../core/api.yml#/components/schemas/MapObject"
+      $ref: "../../v1alpha1/core/api.yml#/components/schemas/MapObject"
 
     OrgTeamActionPayload:
       type: object
@@ -405,21 +418,23 @@ components:
 
     Location:
       type: object
+      description: Image asset anchored to a named location within an organization theme.
       required:
         - svg
         - location
       properties:
         svg:
           type: string
-          description: The svg of the location.
+          description: SVG markup for the asset.
           maxLength: 500
         location:
           type: string
-          description: The location of the location.
+          description: Named location of the asset (e.g. header, footer).
           maxLength: 500
 
     Logo:
       type: object
+      description: Themed logo assets used across light and dark, desktop and mobile presentations.
       required:
         - desktopView
         - mobileView
@@ -441,30 +456,32 @@ components:
 
     Theme:
       type: object
+      description: UI theme configured for an organization.
       required:
         - id
         - logo
       properties:
         id:
           type: string
-          description: Theme ID.
-          maxLength: 500
+          description: Theme identifier.
           format: uuid
+          maxLength: 36
         logo:
           x-go-type: "Logo"
           $ref: "#/components/schemas/Logo"
         vars:
           type: object
           additionalProperties: true
-          description: The vars of the theme.
+          description: Arbitrary theme variables keyed by name.
 
     DashboardPrefs:
       type: object
-      description: Preferences specific to dashboard behavior
+      description: Preferences specific to dashboard behavior.
       additionalProperties: true
 
     Preferences:
       type: object
+      description: Organization-level user experience preferences.
       required:
         - theme
         - dashboard
@@ -478,6 +495,7 @@ components:
 
     OrgMetadata:
       type: object
+      description: Free-form metadata associated with an organization, including preferences.
       required:
         - preferences
       properties:
@@ -486,122 +504,76 @@ components:
           $ref: "#/components/schemas/Preferences"
 
     Organization:
-      type: object
-      required:
-        - id
-        - name
-        - country
-        - region
-        - description
-        - owner
-        - metadata
-        - created_at
-        - updated_at
-      properties:
-        id:
-          $ref: "#/components/schemas/UUID"
-          x-oapi-codegen-extra-tags:
-            db: "id"
-        name:
-          type: string
-          x-oapi-codegen-extra-tags:
-            db: "name"
-          description: Name of the organization.
-          minLength: 1
-          maxLength: 255
-        country:
-          type: string
-          x-oapi-codegen-extra-tags:
-            db: "country"
-          description: The country of the organization.
-          maxLength: 500
-        region:
-          type: string
-          x-oapi-codegen-extra-tags:
-            db: "region"
-          description: The region of the organization.
-          maxLength: 500
-        description:
-          type: string
-          x-oapi-codegen-extra-tags:
-            db: "description"
-          description: Description of the organization.
-          maxLength: 5000
-        owner:
-          $ref: "#/components/schemas/UUID"
-          x-oapi-codegen-extra-tags:
-            db: "owner"
-        metadata:
-          x-go-type: "OrgMetadata"
-          $ref: "#/components/schemas/OrgMetadata"
-          x-oapi-codegen-extra-tags:
-            db: "metadata"
-        created_at:
-          $ref: "#/components/schemas/Time"
-          x-oapi-codegen-extra-tags:
-            db: "created_at"
-        updated_at:
-          $ref: "#/components/schemas/Time"
-          x-oapi-codegen-extra-tags:
-            db: "updated_at"
-        deleted_at:
-          $ref: "#/components/schemas/NullableTime"
-          x-oapi-codegen-extra-tags:
-            db: "deleted_at"
-        domain:
-          type: string
-          nullable: true
-          x-oapi-codegen-extra-tags:
-            db: "domain"
-          description: The domain of the organization.
-          maxLength: 500
+      $ref: "./organization.yaml"
 
     AvailableOrganization:
       type: object
+      description: Organization listing record used in list and get responses.
+      additionalProperties: false
       properties:
         id:
           $ref: "#/components/schemas/UUID"
+          description: Organization ID.
           x-go-name: ID
         name:
           $ref: "#/components/schemas/Text"
+          description: Name of the organization.
         description:
           $ref: "#/components/schemas/Text"
+          description: Description of the organization.
         country:
           $ref: "#/components/schemas/Text"
+          description: Country of the organization.
         region:
           $ref: "#/components/schemas/Text"
+          description: Region of the organization.
         owner:
           $ref: "#/components/schemas/Text"
+          description: Display name of the organization owner.
         metadata:
           x-go-type: "OrgMetadata"
           $ref: "#/components/schemas/OrgMetadata"
-        created_at:
+        createdAt:
           $ref: "#/components/schemas/Time"
-        updated_at:
+          description: Timestamp when the organization was created.
+          x-oapi-codegen-extra-tags:
+            json: "createdAt,omitempty"
+        updatedAt:
           $ref: "#/components/schemas/Time"
-        deleted_at:
+          description: Timestamp when the organization was last updated.
+          x-oapi-codegen-extra-tags:
+            json: "updatedAt,omitempty"
+        deletedAt:
           $ref: "#/components/schemas/NullableTime"
+          description: Timestamp when the organization was soft-deleted.
+          x-oapi-codegen-extra-tags:
+            json: "deletedAt,omitempty"
 
     OrganizationsPage:
       type: object
+      description: Paginated list of organizations.
       properties:
         page:
           type: integer
-          description: Current page number of the result set.
+          description: Zero-based page index returned in this response.
           minimum: 0
-        page_size:
+        pageSize:
           type: integer
-          description: Number of items per page.
+          description: Maximum number of items returned on each page.
           minimum: 1
-        total_count:
+          x-oapi-codegen-extra-tags:
+            json: "pageSize,omitempty"
+        totalCount:
           type: integer
-          description: Total number of items available.
+          description: Total number of items across all pages.
           minimum: 0
+          x-oapi-codegen-extra-tags:
+            json: "totalCount,omitempty"
         organizations:
           type: array
+          description: Organizations in this page.
           items:
             $ref: "#/components/schemas/AvailableOrganization"
-          description: The organizations of the organizationspage.
 
     OrganizationPage:
       type: object
@@ -609,114 +581,173 @@ components:
       properties:
         page:
           type: integer
-          description: Current page number of the result set.
+          description: Zero-based page index returned in this response.
           minimum: 0
-        page_size:
+        pageSize:
           type: integer
-          description: Number of items per page.
+          description: Maximum number of items returned on each page.
           minimum: 1
-        total_count:
+          x-oapi-codegen-extra-tags:
+            json: "pageSize,omitempty"
+        totalCount:
           type: integer
-          description: Total number of items available.
+          description: Total number of items across all pages.
           minimum: 0
+          x-oapi-codegen-extra-tags:
+            json: "totalCount,omitempty"
         organizations:
           type: array
+          description: Organizations returned in this single-item page wrapper.
           maxItems: 1
           items:
             $ref: "#/components/schemas/AvailableOrganization"
-          description: The organizations of the organizationpage.
 
     OrganizationPayload:
       type: object
+      description: Payload for creating or updating an organization. Contains only client-settable fields.
       properties:
         name:
           $ref: "#/components/schemas/Text"
+          description: Name of the organization.
         country:
           $ref: "#/components/schemas/Text"
+          description: Country of the organization.
         region:
           $ref: "#/components/schemas/Text"
+          description: Region of the organization.
         description:
           $ref: "#/components/schemas/Text"
+          description: Description of the organization.
         notifyOrgUpdate:
           type: boolean
-          description: The notify org update of the organization.
+          description: Indicates whether organization members should be notified of this update.
         preferences:
           $ref: "#/components/schemas/Preferences"
+          description: Organization-level user experience preferences.
 
     AvailableTeam:
       type: object
+      description: Team listing record used in team listings associated with an organization.
       properties:
         id:
-          $ref: "../core/api.yml#/components/schemas/general_id"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/general_id"
+          description: Team ID.
         name:
           $ref: "#/components/schemas/Text"
+          description: Name of the team.
         description:
           $ref: "#/components/schemas/Text"
+          description: Description of the team.
         owner:
           $ref: "#/components/schemas/Text"
+          description: Display name of the team owner.
         metadata:
           $ref: "#/components/schemas/MapObject"
-        created_at:
+          description: Free-form team metadata.
+        createdAt:
           $ref: "#/components/schemas/Time"
-        updated_at:
+          description: Timestamp when the team was created.
+          x-oapi-codegen-extra-tags:
+            json: "createdAt,omitempty"
+        updatedAt:
           $ref: "#/components/schemas/Time"
-        deleted_at:
+          description: Timestamp when the team was last updated.
+          x-oapi-codegen-extra-tags:
+            json: "updatedAt,omitempty"
+        deletedAt:
           $ref: "#/components/schemas/NullableTime"
+          description: Timestamp when the team was soft-deleted.
+          x-oapi-codegen-extra-tags:
+            json: "deletedAt,omitempty"
 
     TeamsPage:
       type: object
+      description: Paginated list of teams.
       properties:
         page:
           type: integer
-          description: Current page number of the result set.
+          description: Zero-based page index returned in this response.
           minimum: 0
-        page_size:
+        pageSize:
           type: integer
-          description: Number of items per page.
+          description: Maximum number of items returned on each page.
           minimum: 1
-        total_count:
+          x-oapi-codegen-extra-tags:
+            json: "pageSize,omitempty"
+        totalCount:
           type: integer
-          description: Total number of items available.
+          description: Total number of items across all pages.
           minimum: 0
+          x-oapi-codegen-extra-tags:
+            json: "totalCount,omitempty"
         teams:
           type: array
+          description: Teams in this page.
           items:
             $ref: "#/components/schemas/AvailableTeam"
-          description: The teams of the teamspage.
 
     TeamsOrganizationsMapping:
       type: object
+      description: Junction record linking a team to an organization.
       properties:
         id:
-          $ref: "../core/api.yml#/components/schemas/general_id"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/general_id"
+          description: Mapping record ID.
         orgId:
-          $ref: "../core/api.yml#/components/schemas/organization_id"
-        team_id:
-          $ref: "../core/api.yml#/components/schemas/team_id"
-        created_at:
+          $ref: "#/components/schemas/UUID"
+          description: Organization ID for this mapping.
+          x-go-name: OrgID
+          x-oapi-codegen-extra-tags:
+            db: org_id
+            json: orgId
+        teamId:
+          $ref: "#/components/schemas/UUID"
+          description: Team ID for this mapping.
+          x-go-name: TeamID
+          x-oapi-codegen-extra-tags:
+            db: team_id
+            json: teamId
+        createdAt:
           $ref: "#/components/schemas/Time"
-        updated_at:
+          description: Timestamp when the mapping was created.
+          x-oapi-codegen-extra-tags:
+            db: created_at
+            json: "createdAt,omitempty"
+        updatedAt:
           $ref: "#/components/schemas/Time"
-        deleted_at:
+          description: Timestamp when the mapping was last updated.
+          x-oapi-codegen-extra-tags:
+            db: updated_at
+            json: "updatedAt,omitempty"
+        deletedAt:
           $ref: "#/components/schemas/NullableTime"
+          description: Timestamp when the mapping was soft-deleted.
+          x-oapi-codegen-extra-tags:
+            db: deleted_at
+            json: "deletedAt,omitempty"
 
     TeamsOrganizationsMappingPage:
       type: object
+      description: Paginated list of team-organization mappings.
       properties:
         page:
           type: integer
-          description: Current page number of the result set.
+          description: Zero-based page index returned in this response.
           minimum: 0
-        page_size:
+        pageSize:
           type: integer
-          description: Number of items per page.
+          description: Maximum number of items returned on each page.
           minimum: 1
-        total_count:
+          x-oapi-codegen-extra-tags:
+            json: "pageSize,omitempty"
+        totalCount:
           type: integer
-          description: Total number of items available.
+          description: Total number of items across all pages.
           minimum: 0
+          x-oapi-codegen-extra-tags:
+            json: "totalCount,omitempty"
         teamsOrganizationsMapping:
           type: array
+          description: Team-organization mapping entries.
           items:
             $ref: "#/components/schemas/TeamsOrganizationsMapping"
-          description: The teams organizations mapping of the teamsorganizationsmappingpage.

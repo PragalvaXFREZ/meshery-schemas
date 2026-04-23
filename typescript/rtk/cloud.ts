@@ -7,11 +7,10 @@ export const addTagTypes = [
   "Key_Key",
   "Keychain_Keychain",
   "Model_Models",
-  "Organization_Organizations",
-  "Team_teams",
   "role_roles",
   "schedule_scheduler",
-  "User_users",
+  "Team_teams",
+  "Organization_Organizations",
   "View_views",
   "Academy_API_Academy",
   "Connection_API_Connections",
@@ -22,6 +21,7 @@ export const addTagTypes = [
   "Subscription_Subscriptions",
   "Subscription_Payment Processors",
   "token_tokens",
+  "User_users",
   "Design_designs",
   "Workspace_workspaces",
   "Workspace_designs",
@@ -219,93 +219,6 @@ const injectedRtkApi = api
         }),
         providesTags: ["Model_Models"],
       }),
-      getOrgs: build.query<GetOrgsApiResponse, GetOrgsApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/orgs`,
-          params: {
-            page: queryArg.page,
-            pagesize: queryArg.pagesize,
-            search: queryArg.search,
-            order: queryArg.order,
-            all: queryArg.all,
-          },
-        }),
-        providesTags: ["Organization_Organizations"],
-      }),
-      createOrg: build.mutation<CreateOrgApiResponse, CreateOrgApiArg>({
-        query: (queryArg) => ({ url: `/api/identity/orgs`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["Organization_Organizations"],
-      }),
-      getOrgByDomain: build.query<GetOrgByDomainApiResponse, GetOrgByDomainApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/orgs/by-domain`,
-          params: {
-            domain: queryArg.domain,
-          },
-        }),
-        providesTags: ["Organization_Organizations"],
-      }),
-      getOrg: build.query<GetOrgApiResponse, GetOrgApiArg>({
-        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}` }),
-        providesTags: ["Organization_Organizations"],
-      }),
-      deleteOrg: build.mutation<DeleteOrgApiResponse, DeleteOrgApiArg>({
-        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}`, method: "DELETE" }),
-        invalidatesTags: ["Organization_Organizations"],
-      }),
-      handleUpdateOrg: build.mutation<HandleUpdateOrgApiResponse, HandleUpdateOrgApiArg>({
-        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}`, method: "PUT", body: queryArg.body }),
-        invalidatesTags: ["Organization_Organizations"],
-      }),
-      getOrgPreferences: build.query<GetOrgPreferencesApiResponse, GetOrgPreferencesApiArg>({
-        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/preferences` }),
-        providesTags: ["Organization_Organizations"],
-      }),
-      addTeamToOrg: build.mutation<AddTeamToOrgApiResponse, AddTeamToOrgApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}`,
-          method: "POST",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["Organization_Organizations"],
-      }),
-      getTeamById: build.query<GetTeamByIdApiResponse, GetTeamByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}` }),
-        providesTags: ["Team_teams"],
-      }),
-      updateTeam: build.mutation<UpdateTeamApiResponse, UpdateTeamApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}`,
-          method: "PUT",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["Team_teams"],
-      }),
-      deleteTeam: build.mutation<DeleteTeamApiResponse, DeleteTeamApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}`,
-          method: "DELETE",
-        }),
-        invalidatesTags: ["Team_teams"],
-      }),
-      removeTeamFromOrg: build.mutation<RemoveTeamFromOrgApiResponse, RemoveTeamFromOrgApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}/remove`,
-          method: "POST",
-        }),
-        invalidatesTags: ["Organization_Organizations"],
-      }),
-      addUserToOrg: build.mutation<AddUserToOrgApiResponse, AddUserToOrgApiArg>({
-        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/users/${queryArg.userId}`, method: "POST" }),
-        invalidatesTags: ["Organization_Organizations"],
-      }),
-      deleteUserFromOrg: build.mutation<DeleteUserFromOrgApiResponse, DeleteUserFromOrgApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/users/${queryArg.userId}`,
-          method: "DELETE",
-        }),
-        invalidatesTags: ["Organization_Organizations"],
-      }),
       addRoleHolder: build.mutation<AddRoleHolderApiResponse, AddRoleHolderApiArg>({
         query: (queryArg) => ({ url: `/api/identity/roles`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["role_roles"],
@@ -415,6 +328,33 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Team_teams"],
       }),
+      getTeamById: build.query<GetTeamByIdApiResponse, GetTeamByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}` }),
+        providesTags: ["Team_teams"],
+      }),
+      updateTeam: build.mutation<UpdateTeamApiResponse, UpdateTeamApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Team_teams"],
+      }),
+      deleteTeam: build.mutation<DeleteTeamApiResponse, DeleteTeamApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Team_teams"],
+      }),
+      addTeamToOrg: build.mutation<AddTeamToOrgApiResponse, AddTeamToOrgApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Organization_Organizations"],
+      }),
       getTeamUsers: build.query<GetTeamUsersApiResponse, GetTeamUsersApiArg>({
         query: (queryArg) => ({
           url: `/api/identity/teams/${queryArg.teamId}/users`,
@@ -452,41 +392,6 @@ const injectedRtkApi = api
           },
         }),
         providesTags: ["Team_teams"],
-      }),
-      getUsersForOrg: build.query<GetUsersForOrgApiResponse, GetUsersForOrgApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/users`,
-          params: {
-            page: queryArg.page,
-            pagesize: queryArg.pagesize,
-            search: queryArg.search,
-            order: queryArg.order,
-            filter: queryArg.filter,
-            teamId: queryArg.teamId,
-          },
-        }),
-        providesTags: ["User_users"],
-      }),
-      getUsers: build.query<GetUsersApiResponse, GetUsersApiArg>({
-        query: (queryArg) => ({
-          url: `/api/users`,
-          params: {
-            page: queryArg.page,
-            pagesize: queryArg.pagesize,
-            search: queryArg.search,
-            order: queryArg.order,
-            filter: queryArg.filter,
-          },
-        }),
-        providesTags: ["User_users"],
-      }),
-      getUserProfileById: build.query<GetUserProfileByIdApiResponse, GetUserProfileByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/identity/users/profile/${queryArg.id}` }),
-        providesTags: ["User_users"],
-      }),
-      getUser: build.query<GetUserApiResponse, GetUserApiArg>({
-        query: () => ({ url: `/api/identity/users/profile` }),
-        providesTags: ["User_users"],
       }),
       createView: build.mutation<CreateViewApiResponse, CreateViewApiArg>({
         query: (queryArg) => ({ url: `/api/content/views`, method: "POST", body: queryArg.body }),
@@ -926,6 +831,66 @@ const injectedRtkApi = api
         query: () => ({ url: `/api/identity/users/request/notification` }),
         providesTags: ["Invitation_Invitation"],
       }),
+      getOrgs: build.query<GetOrgsApiResponse, GetOrgsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs`,
+          params: {
+            page: queryArg.page,
+            pageSize: queryArg.pageSize,
+            search: queryArg.search,
+            order: queryArg.order,
+            all: queryArg.all,
+          },
+        }),
+        providesTags: ["Organization_Organizations"],
+      }),
+      createOrg: build.mutation<CreateOrgApiResponse, CreateOrgApiArg>({
+        query: (queryArg) => ({ url: `/api/identity/orgs`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Organization_Organizations"],
+      }),
+      getOrgByDomain: build.query<GetOrgByDomainApiResponse, GetOrgByDomainApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/by-domain`,
+          params: {
+            domain: queryArg.domain,
+          },
+        }),
+        providesTags: ["Organization_Organizations"],
+      }),
+      getOrg: build.query<GetOrgApiResponse, GetOrgApiArg>({
+        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}` }),
+        providesTags: ["Organization_Organizations"],
+      }),
+      deleteOrg: build.mutation<DeleteOrgApiResponse, DeleteOrgApiArg>({
+        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}`, method: "DELETE" }),
+        invalidatesTags: ["Organization_Organizations"],
+      }),
+      updateOrg: build.mutation<UpdateOrgApiResponse, UpdateOrgApiArg>({
+        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["Organization_Organizations"],
+      }),
+      getOrgPreferences: build.query<GetOrgPreferencesApiResponse, GetOrgPreferencesApiArg>({
+        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/preferences` }),
+        providesTags: ["Organization_Organizations"],
+      }),
+      removeTeamFromOrg: build.mutation<RemoveTeamFromOrgApiResponse, RemoveTeamFromOrgApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}/remove`,
+          method: "POST",
+        }),
+        invalidatesTags: ["Organization_Organizations"],
+      }),
+      addUserToOrg: build.mutation<AddUserToOrgApiResponse, AddUserToOrgApiArg>({
+        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/users/${queryArg.userId}`, method: "POST" }),
+        invalidatesTags: ["Organization_Organizations"],
+      }),
+      deleteUserFromOrg: build.mutation<DeleteUserFromOrgApiResponse, DeleteUserFromOrgApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/users/${queryArg.userId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Organization_Organizations"],
+      }),
       getPlans: build.query<GetPlansApiResponse, GetPlansApiArg>({
         query: (queryArg) => ({
           url: `/api/entitlement/plans`,
@@ -1032,6 +997,41 @@ const injectedRtkApi = api
           },
         }),
         providesTags: ["token_tokens"],
+      }),
+      getUsersForOrg: build.query<GetUsersForOrgApiResponse, GetUsersForOrgApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/users`,
+          params: {
+            page: queryArg.page,
+            pageSize: queryArg.pageSize,
+            search: queryArg.search,
+            order: queryArg.order,
+            filter: queryArg.filter,
+            teamId: queryArg.teamId,
+          },
+        }),
+        providesTags: ["User_users"],
+      }),
+      getUsers: build.query<GetUsersApiResponse, GetUsersApiArg>({
+        query: (queryArg) => ({
+          url: `/api/users`,
+          params: {
+            page: queryArg.page,
+            pageSize: queryArg.pageSize,
+            search: queryArg.search,
+            order: queryArg.order,
+            filter: queryArg.filter,
+          },
+        }),
+        providesTags: ["User_users"],
+      }),
+      getUserProfileById: build.query<GetUserProfileByIdApiResponse, GetUserProfileByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/identity/users/profile/${queryArg.id}` }),
+        providesTags: ["User_users"],
+      }),
+      getUser: build.query<GetUserApiResponse, GetUserApiArg>({
+        query: () => ({ url: `/api/identity/users/profile` }),
+        providesTags: ["User_users"],
       }),
       getPatterns: build.query<GetPatternsApiResponse, GetPatternsApiArg>({
         query: (queryArg) => ({
@@ -2048,628 +2048,6 @@ export type GetMeshModelModelsApiArg = {
   search?: string;
   order?: string;
 };
-export type GetOrgsApiResponse = /** status 200 Organizations response */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  page_size?: number;
-  /** Total number of items available. */
-  total_count?: number;
-  /** The organizations of the organizationspage. */
-  organizations?: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    id?: string;
-    name?: string;
-    description?: string;
-    country?: string;
-    region?: string;
-    owner?: string;
-    metadata?: {
-      preferences: {
-        theme: {
-          /** Theme ID. */
-          id: string;
-          logo: {
-            desktopView: {
-              /** The svg of the location. */
-              svg: string;
-              /** The location of the location. */
-              location: string;
-            };
-            mobileView: {
-              /** The svg of the location. */
-              svg: string;
-              /** The location of the location. */
-              location: string;
-            };
-            darkDesktopView: {
-              /** The svg of the location. */
-              svg: string;
-              /** The location of the location. */
-              location: string;
-            };
-            darkMobileView: {
-              /** The svg of the location. */
-              svg: string;
-              /** The location of the location. */
-              location: string;
-            };
-          };
-          /** The vars of the theme. */
-          vars?: {
-            [key: string]: any;
-          };
-        };
-        /** Preferences specific to dashboard behavior */
-        dashboard: {
-          [key: string]: any;
-        };
-      };
-    };
-    created_at?: string;
-    updated_at?: string;
-    deleted_at?: string;
-  }[];
-};
-export type GetOrgsApiArg = {
-  /** Get responses by page */
-  page?: string;
-  /** Get responses by pagesize */
-  pagesize?: string;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Get all possible entries */
-  all?: boolean;
-};
-export type CreateOrgApiResponse = /** status 201 Single-organization page response */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  page_size?: number;
-  /** Total number of items available. */
-  total_count?: number;
-  /** The organizations of the organizationpage. */
-  organizations?: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    id?: string;
-    name?: string;
-    description?: string;
-    country?: string;
-    region?: string;
-    owner?: string;
-    metadata?: {
-      preferences: {
-        theme: {
-          /** Theme ID. */
-          id: string;
-          logo: {
-            desktopView: {
-              /** The svg of the location. */
-              svg: string;
-              /** The location of the location. */
-              location: string;
-            };
-            mobileView: {
-              /** The svg of the location. */
-              svg: string;
-              /** The location of the location. */
-              location: string;
-            };
-            darkDesktopView: {
-              /** The svg of the location. */
-              svg: string;
-              /** The location of the location. */
-              location: string;
-            };
-            darkMobileView: {
-              /** The svg of the location. */
-              svg: string;
-              /** The location of the location. */
-              location: string;
-            };
-          };
-          /** The vars of the theme. */
-          vars?: {
-            [key: string]: any;
-          };
-        };
-        /** Preferences specific to dashboard behavior */
-        dashboard: {
-          [key: string]: any;
-        };
-      };
-    };
-    created_at?: string;
-    updated_at?: string;
-    deleted_at?: string;
-  }[];
-};
-export type CreateOrgApiArg = {
-  /** Body for creating or updating an organization */
-  body: {
-    name?: string;
-    country?: string;
-    region?: string;
-    description?: string;
-    /** The notify org update of the organization. */
-    notifyOrgUpdate?: boolean;
-    preferences?: {
-      theme: {
-        /** Theme ID. */
-        id: string;
-        logo: {
-          desktopView: {
-            /** The svg of the location. */
-            svg: string;
-            /** The location of the location. */
-            location: string;
-          };
-          mobileView: {
-            /** The svg of the location. */
-            svg: string;
-            /** The location of the location. */
-            location: string;
-          };
-          darkDesktopView: {
-            /** The svg of the location. */
-            svg: string;
-            /** The location of the location. */
-            location: string;
-          };
-          darkMobileView: {
-            /** The svg of the location. */
-            svg: string;
-            /** The location of the location. */
-            location: string;
-          };
-        };
-        /** The vars of the theme. */
-        vars?: {
-          [key: string]: any;
-        };
-      };
-      /** Preferences specific to dashboard behavior */
-      dashboard: {
-        [key: string]: any;
-      };
-    };
-  };
-};
-export type GetOrgByDomainApiResponse = /** status 200 Successful response */ {
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  id: string;
-  /** Name of the organization. */
-  name: string;
-  /** The country of the organization. */
-  country: string;
-  /** The region of the organization. */
-  region: string;
-  /** Description of the organization. */
-  description: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  owner: string;
-  metadata: {
-    preferences: {
-      theme: {
-        /** Theme ID. */
-        id: string;
-        logo: {
-          desktopView: {
-            /** The svg of the location. */
-            svg: string;
-            /** The location of the location. */
-            location: string;
-          };
-          mobileView: {
-            /** The svg of the location. */
-            svg: string;
-            /** The location of the location. */
-            location: string;
-          };
-          darkDesktopView: {
-            /** The svg of the location. */
-            svg: string;
-            /** The location of the location. */
-            location: string;
-          };
-          darkMobileView: {
-            /** The svg of the location. */
-            svg: string;
-            /** The location of the location. */
-            location: string;
-          };
-        };
-        /** The vars of the theme. */
-        vars?: {
-          [key: string]: any;
-        };
-      };
-      /** Preferences specific to dashboard behavior */
-      dashboard: {
-        [key: string]: any;
-      };
-    };
-  };
-  created_at: string;
-  updated_at: string;
-  deleted_at?: string;
-  /** The domain of the organization. */
-  domain?: string | null;
-};
-export type GetOrgByDomainApiArg = {
-  domain: string;
-};
-export type GetOrgApiResponse = /** status 200 Single-organization page response */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  page_size?: number;
-  /** Total number of items available. */
-  total_count?: number;
-  /** The organizations of the organizationpage. */
-  organizations?: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    id?: string;
-    name?: string;
-    description?: string;
-    country?: string;
-    region?: string;
-    owner?: string;
-    metadata?: {
-      preferences: {
-        theme: {
-          /** Theme ID. */
-          id: string;
-          logo: {
-            desktopView: {
-              /** The svg of the location. */
-              svg: string;
-              /** The location of the location. */
-              location: string;
-            };
-            mobileView: {
-              /** The svg of the location. */
-              svg: string;
-              /** The location of the location. */
-              location: string;
-            };
-            darkDesktopView: {
-              /** The svg of the location. */
-              svg: string;
-              /** The location of the location. */
-              location: string;
-            };
-            darkMobileView: {
-              /** The svg of the location. */
-              svg: string;
-              /** The location of the location. */
-              location: string;
-            };
-          };
-          /** The vars of the theme. */
-          vars?: {
-            [key: string]: any;
-          };
-        };
-        /** Preferences specific to dashboard behavior */
-        dashboard: {
-          [key: string]: any;
-        };
-      };
-    };
-    created_at?: string;
-    updated_at?: string;
-    deleted_at?: string;
-  }[];
-};
-export type GetOrgApiArg = {
-  orgId: string;
-};
-export type DeleteOrgApiResponse = unknown;
-export type DeleteOrgApiArg = {
-  orgId: string;
-};
-export type HandleUpdateOrgApiResponse =
-  /** status 200 Single-organization page response for the updated organization */ {
-    /** Current page number of the result set. */
-    page?: number;
-    /** Number of items per page. */
-    page_size?: number;
-    /** Total number of items available. */
-    total_count?: number;
-    /** The organizations of the organizationpage. */
-    organizations?: {
-      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-      id?: string;
-      name?: string;
-      description?: string;
-      country?: string;
-      region?: string;
-      owner?: string;
-      metadata?: {
-        preferences: {
-          theme: {
-            /** Theme ID. */
-            id: string;
-            logo: {
-              desktopView: {
-                /** The svg of the location. */
-                svg: string;
-                /** The location of the location. */
-                location: string;
-              };
-              mobileView: {
-                /** The svg of the location. */
-                svg: string;
-                /** The location of the location. */
-                location: string;
-              };
-              darkDesktopView: {
-                /** The svg of the location. */
-                svg: string;
-                /** The location of the location. */
-                location: string;
-              };
-              darkMobileView: {
-                /** The svg of the location. */
-                svg: string;
-                /** The location of the location. */
-                location: string;
-              };
-            };
-            /** The vars of the theme. */
-            vars?: {
-              [key: string]: any;
-            };
-          };
-          /** Preferences specific to dashboard behavior */
-          dashboard: {
-            [key: string]: any;
-          };
-        };
-      };
-      created_at?: string;
-      updated_at?: string;
-      deleted_at?: string;
-    }[];
-  };
-export type HandleUpdateOrgApiArg = {
-  orgId: string;
-  /** Body for creating or updating an organization */
-  body: {
-    name?: string;
-    country?: string;
-    region?: string;
-    description?: string;
-    /** The notify org update of the organization. */
-    notifyOrgUpdate?: boolean;
-    preferences?: {
-      theme: {
-        /** Theme ID. */
-        id: string;
-        logo: {
-          desktopView: {
-            /** The svg of the location. */
-            svg: string;
-            /** The location of the location. */
-            location: string;
-          };
-          mobileView: {
-            /** The svg of the location. */
-            svg: string;
-            /** The location of the location. */
-            location: string;
-          };
-          darkDesktopView: {
-            /** The svg of the location. */
-            svg: string;
-            /** The location of the location. */
-            location: string;
-          };
-          darkMobileView: {
-            /** The svg of the location. */
-            svg: string;
-            /** The location of the location. */
-            location: string;
-          };
-        };
-        /** The vars of the theme. */
-        vars?: {
-          [key: string]: any;
-        };
-      };
-      /** Preferences specific to dashboard behavior */
-      dashboard: {
-        [key: string]: any;
-      };
-    };
-  };
-};
-export type GetOrgPreferencesApiResponse = /** status 200 Organization metadata, including preferences */ {
-  preferences: {
-    theme: {
-      /** Theme ID. */
-      id: string;
-      logo: {
-        desktopView: {
-          /** The svg of the location. */
-          svg: string;
-          /** The location of the location. */
-          location: string;
-        };
-        mobileView: {
-          /** The svg of the location. */
-          svg: string;
-          /** The location of the location. */
-          location: string;
-        };
-        darkDesktopView: {
-          /** The svg of the location. */
-          svg: string;
-          /** The location of the location. */
-          location: string;
-        };
-        darkMobileView: {
-          /** The svg of the location. */
-          svg: string;
-          /** The location of the location. */
-          location: string;
-        };
-      };
-      /** The vars of the theme. */
-      vars?: {
-        [key: string]: any;
-      };
-    };
-    /** Preferences specific to dashboard behavior */
-    dashboard: {
-      [key: string]: any;
-    };
-  };
-};
-export type GetOrgPreferencesApiArg = {
-  orgId: string;
-};
-export type AddTeamToOrgApiResponse = /** status 201 Team added to organization or team tombstoned */
-  | {
-      /** Current page number of the result set. */
-      page?: number;
-      /** Number of items per page. */
-      page_size?: number;
-      /** Total number of items available. */
-      total_count?: number;
-      /** The teams organizations mapping of the teamsorganizationsmappingpage. */
-      teamsOrganizationsMapping?: {
-        id?: string;
-        orgId?: string;
-        team_id?: string;
-        created_at?: string;
-        updated_at?: string;
-        deleted_at?: string;
-      }[];
-    }
-  | {
-      /** Current page number of the result set. */
-      page?: number;
-      /** Number of items per page. */
-      page_size?: number;
-      /** Total number of items available. */
-      total_count?: number;
-      /** The teams of the teamspage. */
-      teams?: {
-        id?: string;
-        name?: string;
-        description?: string;
-        owner?: string;
-        metadata?: {
-          [key: string]: string;
-        };
-        created_at?: string;
-        updated_at?: string;
-        deleted_at?: string;
-      }[];
-    };
-export type AddTeamToOrgApiArg = {
-  orgId: string;
-  teamId: string;
-  body: {
-    /** Internal action to perform on the team resource. */
-    action?: "delete";
-  };
-};
-export type GetTeamByIdApiResponse = /** status 200 Team */ {
-  /** Team ID */
-  id: string;
-  /** Team name */
-  name: string;
-  /** Team description */
-  description?: string;
-  /** User ID of the owner of the team */
-  owner?: string;
-  /** Additional metadata for the team */
-  metadata?: object;
-  created_at?: string;
-  updated_at?: string;
-  /** SQL null Timestamp to handle null values of time. */
-  deleted_at?: string;
-};
-export type GetTeamByIdApiArg = {
-  /** Organization ID */
-  orgId: string;
-  /** Team ID */
-  teamId: string;
-};
-export type UpdateTeamApiResponse = /** status 200 Updated team */ {
-  /** Team ID */
-  id: string;
-  /** Team name */
-  name: string;
-  /** Team description */
-  description?: string;
-  /** User ID of the owner of the team */
-  owner?: string;
-  /** Additional metadata for the team */
-  metadata?: object;
-  created_at?: string;
-  updated_at?: string;
-  /** SQL null Timestamp to handle null values of time. */
-  deleted_at?: string;
-};
-export type UpdateTeamApiArg = {
-  /** Organization ID */
-  orgId: string;
-  /** Team ID */
-  teamId: string;
-  /** Body for updating a team */
-  body: {
-    /** Updated team name */
-    name?: string;
-    /** Updated team description */
-    description?: string;
-  };
-};
-export type DeleteTeamApiResponse = unknown;
-export type DeleteTeamApiArg = {
-  /** Organization ID */
-  orgId: string;
-  /** Team ID */
-  teamId: string;
-};
-export type RemoveTeamFromOrgApiResponse = /** status 200 Team removed from organization */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  page_size?: number;
-  /** Total number of items available. */
-  total_count?: number;
-  /** The teams organizations mapping of the teamsorganizationsmappingpage. */
-  teamsOrganizationsMapping?: {
-    id?: string;
-    orgId?: string;
-    team_id?: string;
-    created_at?: string;
-    updated_at?: string;
-    deleted_at?: string;
-  }[];
-};
-export type RemoveTeamFromOrgApiArg = {
-  orgId: string;
-  teamId: string;
-};
-export type AddUserToOrgApiResponse = /** status 201 User added to organization */ {
-  [key: string]: any;
-};
-export type AddUserToOrgApiArg = {
-  orgId: string;
-  userId: string;
-};
-export type DeleteUserFromOrgApiResponse = unknown;
-export type DeleteUserFromOrgApiArg = {
-  orgId: string;
-  userId: string;
-};
 export type AddRoleHolderApiResponse = unknown;
 export type AddRoleHolderApiArg = {
   body: {
@@ -2987,6 +2365,127 @@ export type CreateTeamApiArg = {
     description?: string;
   };
 };
+export type GetTeamByIdApiResponse = /** status 200 Team */ {
+  /** Team ID */
+  id: string;
+  /** Team name */
+  name: string;
+  /** Team description */
+  description?: string;
+  /** User ID of the owner of the team */
+  owner?: string;
+  /** Additional metadata for the team */
+  metadata?: object;
+  created_at?: string;
+  updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deleted_at?: string;
+};
+export type GetTeamByIdApiArg = {
+  /** Organization ID */
+  orgId: string;
+  /** Team ID */
+  teamId: string;
+};
+export type UpdateTeamApiResponse = /** status 200 Updated team */ {
+  /** Team ID */
+  id: string;
+  /** Team name */
+  name: string;
+  /** Team description */
+  description?: string;
+  /** User ID of the owner of the team */
+  owner?: string;
+  /** Additional metadata for the team */
+  metadata?: object;
+  created_at?: string;
+  updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deleted_at?: string;
+};
+export type UpdateTeamApiArg = {
+  /** Organization ID */
+  orgId: string;
+  /** Team ID */
+  teamId: string;
+  /** Body for updating a team */
+  body: {
+    /** Updated team name */
+    name?: string;
+    /** Updated team description */
+    description?: string;
+  };
+};
+export type DeleteTeamApiResponse = unknown;
+export type DeleteTeamApiArg = {
+  /** Organization ID */
+  orgId: string;
+  /** Team ID */
+  teamId: string;
+};
+export type AddTeamToOrgApiResponse = /** status 201 Team added to organization or team tombstoned */
+  | {
+      /** Zero-based page index returned in this response. */
+      page?: number;
+      /** Maximum number of items returned on each page. */
+      pageSize?: number;
+      /** Total number of items across all pages. */
+      totalCount?: number;
+      /** Team-organization mapping entries. */
+      teamsOrganizationsMapping?: {
+        /** Mapping record ID. */
+        id?: string;
+        /** Organization ID for this mapping. */
+        orgId?: string;
+        /** Team ID for this mapping. */
+        teamId?: string;
+        /** Timestamp when the mapping was created. */
+        createdAt?: string;
+        /** Timestamp when the mapping was last updated. */
+        updatedAt?: string;
+        /** Timestamp when the mapping was soft-deleted. */
+        deletedAt?: string;
+      }[];
+    }
+  | {
+      /** Zero-based page index returned in this response. */
+      page?: number;
+      /** Maximum number of items returned on each page. */
+      pageSize?: number;
+      /** Total number of items across all pages. */
+      totalCount?: number;
+      /** Teams in this page. */
+      teams?: {
+        /** Team ID. */
+        id?: string;
+        /** Name of the team. */
+        name?: string;
+        /** Description of the team. */
+        description?: string;
+        /** Display name of the team owner. */
+        owner?: string;
+        /** Free-form team metadata. */
+        metadata?: {
+          [key: string]: string;
+        };
+        /** Timestamp when the team was created. */
+        createdAt?: string;
+        /** Timestamp when the team was last updated. */
+        updatedAt?: string;
+        /** Timestamp when the team was soft-deleted. */
+        deletedAt?: string;
+      }[];
+    };
+export type AddTeamToOrgApiArg = {
+  /** Organization ID. */
+  orgId: string;
+  /** Team ID. */
+  teamId: string;
+  body: {
+    /** Internal action to perform on the team resource. */
+    action?: "delete";
+  };
+};
 export type GetTeamUsersApiResponse = /** status 200 Team users mapping */ {
   page?: number;
   page_size?: number;
@@ -3072,613 +2571,6 @@ export type ListUsersNotInTeamApiArg = {
   /** Get responses by pagesize */
   pagesize?: string;
 };
-export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organization users */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  page_size?: number;
-  /** Total number of items available. */
-  total_count?: number;
-  /** The data of the userspageforadmin. */
-  data?: {
-    /** Unique identifier for the user */
-    id: string;
-    /** User identifier (username or external ID) */
-    user_id: string;
-    /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
-    provider: string;
-    /** User's email address */
-    email: string;
-    /** User's first name */
-    first_name: string;
-    /** User's last name */
-    last_name: string;
-    /** URL to user's avatar image */
-    avatar_url?: string;
-    /** User account status */
-    status: "active" | "inactive" | "pending" | "anonymous";
-    /** User's biography or description */
-    bio?: string;
-    /** User's country information stored as JSONB */
-    country?: {
-      [key: string]: any;
-    };
-    /** User's region information stored as JSONB */
-    region?: {
-      [key: string]: any;
-    };
-    /** User preferences stored as JSONB */
-    preferences?: {
-      /** The mesh adapters of the preference. */
-      meshAdapters?: object[];
-      grafana?: {
-        /** Grafana URL for the user configuration. */
-        grafanaURL?: string;
-        /** Grafana API key for the user configuration. */
-        grafanaAPIKey?: string;
-        /** Selected Grafana board configurations for the user. */
-        selectedBoardsConfigs?: {
-          /** Placeholder for GrafanaBoard definition (define fields as needed) */
-          board?: object;
-          /** Panels selected for the Grafana board configuration. */
-          panels?: object[];
-          /** Template variables applied to the selected Grafana board configuration. */
-          templateVars?: string[];
-        }[];
-      };
-      prometheus?: {
-        /** The prometheus u r l of the prometheus. */
-        prometheusURL?: string;
-        /** The selected prometheus boards configs of the prometheus. */
-        selectedPrometheusBoardsConfigs?: {
-          /** Placeholder for GrafanaBoard definition (define fields as needed) */
-          board?: object;
-          /** Panels selected for the Grafana board configuration. */
-          panels?: object[];
-          /** Template variables applied to the selected Grafana board configuration. */
-          templateVars?: string[];
-        }[];
-      };
-      loadTestPrefs?: {
-        /** Concurrent requests */
-        c?: number;
-        /** Queries per second */
-        qps?: number;
-        /** Duration */
-        t?: string;
-        /** Load generator */
-        gen?: string;
-      };
-      /** The anonymous usage stats of the preference. */
-      anonymousUsageStats: boolean;
-      /** The anonymous perf results of the preference. */
-      anonymousPerfResults: boolean;
-      /** Timestamp of when the resource was last updated. */
-      updated_at: string;
-      /** The dashboard preferences of the preference. */
-      dashboardPreferences: {
-        [key: string]: any;
-      };
-      /** ID of the associated selectedOrganization. */
-      selectedOrganizationId: string;
-      /** The selected workspace for organizations of the preference. */
-      selectedWorkspaceForOrganizations: {
-        [key: string]: string;
-      };
-      /** The users extension preferences of the preference. */
-      usersExtensionPreferences: {
-        [key: string]: any;
-      };
-      /** The remote provider preferences of the preference. */
-      remoteProviderPreferences: {
-        [key: string]: any;
-      };
-    };
-    /** Timestamp when user accepted terms and conditions */
-    accepted_terms_at?: string;
-    /** Timestamp of user's first login */
-    first_login_time?: string;
-    /** Timestamp of user's most recent login */
-    last_login_time: string;
-    /** Timestamp when the user record was created */
-    created_at: string;
-    /** Timestamp when the user record was last updated */
-    updated_at: string;
-    /** Various online profiles associated with the user account */
-    socials?: {
-      /** The site of the social. */
-      site: string;
-      /** The link of the social. */
-      link: string;
-    }[];
-    /** Timestamp when the user record was soft-deleted (null if not deleted) */
-    deleted_at: string | null;
-    /** List of global roles assigned to the user */
-    role_names?: (
-      | "admin"
-      | "meshmap"
-      | "curator"
-      | "team admin"
-      | "workspace admin"
-      | "workspace manager"
-      | "organization admin"
-      | "user"
-    )[];
-    /** Teams the user belongs to with role information */
-    teams?: {
-      /** Team memberships for the user with their assigned roles. */
-      teams_with_roles?: object[];
-      /** Total number of team memberships returned for the user. */
-      total_count?: number;
-    };
-    /** Organizations the user belongs to with role information */
-    organizations?: {
-      /** Organization memberships for the user with their assigned roles. */
-      organizations_with_roles?: object[];
-      /** Total number of organization memberships returned for the user. */
-      total_count?: number;
-    };
-  }[];
-};
-export type GetUsersForOrgApiArg = {
-  /** Organization ID */
-  orgId: string;
-  /** Get responses by page */
-  page?: string;
-  /** Get responses by pagesize */
-  pagesize?: string;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Get filtered reponses */
-  filter?: string;
-  /** Optional team filter when listing organization users */
-  teamId?: string;
-};
-export type GetUsersApiResponse = /** status 200 Paginated list of public users */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  page_size?: number;
-  /** Total number of items available. */
-  total_count?: number;
-  /** The data of the userspagefornonadmin. */
-  data?: {
-    /** Unique identifier for the user */
-    id: string;
-    /** User identifier (username or external ID) */
-    user_id: string;
-    /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
-    provider: string;
-    /** User's email address */
-    email: string;
-    /** User's first name */
-    first_name: string;
-    /** User's last name */
-    last_name: string;
-    /** URL to user's avatar image */
-    avatar_url?: string;
-    /** User account status */
-    status: "active" | "inactive" | "pending" | "anonymous";
-    /** User's biography or description */
-    bio?: string;
-    /** User's country information stored as JSONB */
-    country?: {
-      [key: string]: any;
-    };
-    /** User's region information stored as JSONB */
-    region?: {
-      [key: string]: any;
-    };
-    /** User preferences stored as JSONB */
-    preferences?: {
-      /** The mesh adapters of the preference. */
-      meshAdapters?: object[];
-      grafana?: {
-        /** Grafana URL for the user configuration. */
-        grafanaURL?: string;
-        /** Grafana API key for the user configuration. */
-        grafanaAPIKey?: string;
-        /** Selected Grafana board configurations for the user. */
-        selectedBoardsConfigs?: {
-          /** Placeholder for GrafanaBoard definition (define fields as needed) */
-          board?: object;
-          /** Panels selected for the Grafana board configuration. */
-          panels?: object[];
-          /** Template variables applied to the selected Grafana board configuration. */
-          templateVars?: string[];
-        }[];
-      };
-      prometheus?: {
-        /** The prometheus u r l of the prometheus. */
-        prometheusURL?: string;
-        /** The selected prometheus boards configs of the prometheus. */
-        selectedPrometheusBoardsConfigs?: {
-          /** Placeholder for GrafanaBoard definition (define fields as needed) */
-          board?: object;
-          /** Panels selected for the Grafana board configuration. */
-          panels?: object[];
-          /** Template variables applied to the selected Grafana board configuration. */
-          templateVars?: string[];
-        }[];
-      };
-      loadTestPrefs?: {
-        /** Concurrent requests */
-        c?: number;
-        /** Queries per second */
-        qps?: number;
-        /** Duration */
-        t?: string;
-        /** Load generator */
-        gen?: string;
-      };
-      /** The anonymous usage stats of the preference. */
-      anonymousUsageStats: boolean;
-      /** The anonymous perf results of the preference. */
-      anonymousPerfResults: boolean;
-      /** Timestamp of when the resource was last updated. */
-      updated_at: string;
-      /** The dashboard preferences of the preference. */
-      dashboardPreferences: {
-        [key: string]: any;
-      };
-      /** ID of the associated selectedOrganization. */
-      selectedOrganizationId: string;
-      /** The selected workspace for organizations of the preference. */
-      selectedWorkspaceForOrganizations: {
-        [key: string]: string;
-      };
-      /** The users extension preferences of the preference. */
-      usersExtensionPreferences: {
-        [key: string]: any;
-      };
-      /** The remote provider preferences of the preference. */
-      remoteProviderPreferences: {
-        [key: string]: any;
-      };
-    };
-    /** Timestamp when user accepted terms and conditions */
-    accepted_terms_at?: string;
-    /** Timestamp of user's first login */
-    first_login_time?: string;
-    /** Timestamp of user's most recent login */
-    last_login_time: string;
-    /** Timestamp when the user record was created */
-    created_at: string;
-    /** Timestamp when the user record was last updated */
-    updated_at: string;
-    /** Various online profiles associated with the user account */
-    socials?: {
-      /** The site of the social. */
-      site: string;
-      /** The link of the social. */
-      link: string;
-    }[];
-    /** Timestamp when the user record was soft-deleted (null if not deleted) */
-    deleted_at: string | null;
-    /** List of global roles assigned to the user */
-    role_names?: (
-      | "admin"
-      | "meshmap"
-      | "curator"
-      | "team admin"
-      | "workspace admin"
-      | "workspace manager"
-      | "organization admin"
-      | "user"
-    )[];
-    /** Teams the user belongs to with role information */
-    teams?: {
-      /** Team memberships for the user with their assigned roles. */
-      teams_with_roles?: object[];
-      /** Total number of team memberships returned for the user. */
-      total_count?: number;
-    };
-    /** Organizations the user belongs to with role information */
-    organizations?: {
-      /** Organization memberships for the user with their assigned roles. */
-      organizations_with_roles?: object[];
-      /** Total number of organization memberships returned for the user. */
-      total_count?: number;
-    };
-  }[];
-};
-export type GetUsersApiArg = {
-  /** Get responses by page */
-  page?: string;
-  /** Get responses by pagesize */
-  pagesize?: string;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Get filtered reponses */
-  filter?: string;
-};
-export type GetUserProfileByIdApiResponse = /** status 200 User profile for the requested ID */ {
-  /** Unique identifier for the user */
-  id: string;
-  /** User identifier (username or external ID) */
-  user_id: string;
-  /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
-  provider: string;
-  /** User's email address */
-  email: string;
-  /** User's first name */
-  first_name: string;
-  /** User's last name */
-  last_name: string;
-  /** URL to user's avatar image */
-  avatar_url?: string;
-  /** User account status */
-  status: "active" | "inactive" | "pending" | "anonymous";
-  /** User's biography or description */
-  bio?: string;
-  /** User's country information stored as JSONB */
-  country?: {
-    [key: string]: any;
-  };
-  /** User's region information stored as JSONB */
-  region?: {
-    [key: string]: any;
-  };
-  /** User preferences stored as JSONB */
-  preferences?: {
-    /** The mesh adapters of the preference. */
-    meshAdapters?: object[];
-    grafana?: {
-      /** Grafana URL for the user configuration. */
-      grafanaURL?: string;
-      /** Grafana API key for the user configuration. */
-      grafanaAPIKey?: string;
-      /** Selected Grafana board configurations for the user. */
-      selectedBoardsConfigs?: {
-        /** Placeholder for GrafanaBoard definition (define fields as needed) */
-        board?: object;
-        /** Panels selected for the Grafana board configuration. */
-        panels?: object[];
-        /** Template variables applied to the selected Grafana board configuration. */
-        templateVars?: string[];
-      }[];
-    };
-    prometheus?: {
-      /** The prometheus u r l of the prometheus. */
-      prometheusURL?: string;
-      /** The selected prometheus boards configs of the prometheus. */
-      selectedPrometheusBoardsConfigs?: {
-        /** Placeholder for GrafanaBoard definition (define fields as needed) */
-        board?: object;
-        /** Panels selected for the Grafana board configuration. */
-        panels?: object[];
-        /** Template variables applied to the selected Grafana board configuration. */
-        templateVars?: string[];
-      }[];
-    };
-    loadTestPrefs?: {
-      /** Concurrent requests */
-      c?: number;
-      /** Queries per second */
-      qps?: number;
-      /** Duration */
-      t?: string;
-      /** Load generator */
-      gen?: string;
-    };
-    /** The anonymous usage stats of the preference. */
-    anonymousUsageStats: boolean;
-    /** The anonymous perf results of the preference. */
-    anonymousPerfResults: boolean;
-    /** Timestamp of when the resource was last updated. */
-    updated_at: string;
-    /** The dashboard preferences of the preference. */
-    dashboardPreferences: {
-      [key: string]: any;
-    };
-    /** ID of the associated selectedOrganization. */
-    selectedOrganizationId: string;
-    /** The selected workspace for organizations of the preference. */
-    selectedWorkspaceForOrganizations: {
-      [key: string]: string;
-    };
-    /** The users extension preferences of the preference. */
-    usersExtensionPreferences: {
-      [key: string]: any;
-    };
-    /** The remote provider preferences of the preference. */
-    remoteProviderPreferences: {
-      [key: string]: any;
-    };
-  };
-  /** Timestamp when user accepted terms and conditions */
-  accepted_terms_at?: string;
-  /** Timestamp of user's first login */
-  first_login_time?: string;
-  /** Timestamp of user's most recent login */
-  last_login_time: string;
-  /** Timestamp when the user record was created */
-  created_at: string;
-  /** Timestamp when the user record was last updated */
-  updated_at: string;
-  /** Various online profiles associated with the user account */
-  socials?: {
-    /** The site of the social. */
-    site: string;
-    /** The link of the social. */
-    link: string;
-  }[];
-  /** Timestamp when the user record was soft-deleted (null if not deleted) */
-  deleted_at: string | null;
-  /** List of global roles assigned to the user */
-  role_names?: (
-    | "admin"
-    | "meshmap"
-    | "curator"
-    | "team admin"
-    | "workspace admin"
-    | "workspace manager"
-    | "organization admin"
-    | "user"
-  )[];
-  /** Teams the user belongs to with role information */
-  teams?: {
-    /** Team memberships for the user with their assigned roles. */
-    teams_with_roles?: object[];
-    /** Total number of team memberships returned for the user. */
-    total_count?: number;
-  };
-  /** Organizations the user belongs to with role information */
-  organizations?: {
-    /** Organization memberships for the user with their assigned roles. */
-    organizations_with_roles?: object[];
-    /** Total number of organization memberships returned for the user. */
-    total_count?: number;
-  };
-};
-export type GetUserProfileByIdApiArg = {
-  /** User ID */
-  id: string;
-};
-export type GetUserApiResponse = /** status 200 Current user profile and role context */ {
-  /** Unique identifier for the user */
-  id: string;
-  /** User identifier (username or external ID) */
-  user_id: string;
-  /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
-  provider: string;
-  /** User's email address */
-  email: string;
-  /** User's first name */
-  first_name: string;
-  /** User's last name */
-  last_name: string;
-  /** URL to user's avatar image */
-  avatar_url?: string;
-  /** User account status */
-  status: "active" | "inactive" | "pending" | "anonymous";
-  /** User's biography or description */
-  bio?: string;
-  /** User's country information stored as JSONB */
-  country?: {
-    [key: string]: any;
-  };
-  /** User's region information stored as JSONB */
-  region?: {
-    [key: string]: any;
-  };
-  /** User preferences stored as JSONB */
-  preferences?: {
-    /** The mesh adapters of the preference. */
-    meshAdapters?: object[];
-    grafana?: {
-      /** Grafana URL for the user configuration. */
-      grafanaURL?: string;
-      /** Grafana API key for the user configuration. */
-      grafanaAPIKey?: string;
-      /** Selected Grafana board configurations for the user. */
-      selectedBoardsConfigs?: {
-        /** Placeholder for GrafanaBoard definition (define fields as needed) */
-        board?: object;
-        /** Panels selected for the Grafana board configuration. */
-        panels?: object[];
-        /** Template variables applied to the selected Grafana board configuration. */
-        templateVars?: string[];
-      }[];
-    };
-    prometheus?: {
-      /** The prometheus u r l of the prometheus. */
-      prometheusURL?: string;
-      /** The selected prometheus boards configs of the prometheus. */
-      selectedPrometheusBoardsConfigs?: {
-        /** Placeholder for GrafanaBoard definition (define fields as needed) */
-        board?: object;
-        /** Panels selected for the Grafana board configuration. */
-        panels?: object[];
-        /** Template variables applied to the selected Grafana board configuration. */
-        templateVars?: string[];
-      }[];
-    };
-    loadTestPrefs?: {
-      /** Concurrent requests */
-      c?: number;
-      /** Queries per second */
-      qps?: number;
-      /** Duration */
-      t?: string;
-      /** Load generator */
-      gen?: string;
-    };
-    /** The anonymous usage stats of the preference. */
-    anonymousUsageStats: boolean;
-    /** The anonymous perf results of the preference. */
-    anonymousPerfResults: boolean;
-    /** Timestamp of when the resource was last updated. */
-    updated_at: string;
-    /** The dashboard preferences of the preference. */
-    dashboardPreferences: {
-      [key: string]: any;
-    };
-    /** ID of the associated selectedOrganization. */
-    selectedOrganizationId: string;
-    /** The selected workspace for organizations of the preference. */
-    selectedWorkspaceForOrganizations: {
-      [key: string]: string;
-    };
-    /** The users extension preferences of the preference. */
-    usersExtensionPreferences: {
-      [key: string]: any;
-    };
-    /** The remote provider preferences of the preference. */
-    remoteProviderPreferences: {
-      [key: string]: any;
-    };
-  };
-  /** Timestamp when user accepted terms and conditions */
-  accepted_terms_at?: string;
-  /** Timestamp of user's first login */
-  first_login_time?: string;
-  /** Timestamp of user's most recent login */
-  last_login_time: string;
-  /** Timestamp when the user record was created */
-  created_at: string;
-  /** Timestamp when the user record was last updated */
-  updated_at: string;
-  /** Various online profiles associated with the user account */
-  socials?: {
-    /** The site of the social. */
-    site: string;
-    /** The link of the social. */
-    link: string;
-  }[];
-  /** Timestamp when the user record was soft-deleted (null if not deleted) */
-  deleted_at: string | null;
-  /** List of global roles assigned to the user */
-  role_names?: (
-    | "admin"
-    | "meshmap"
-    | "curator"
-    | "team admin"
-    | "workspace admin"
-    | "workspace manager"
-    | "organization admin"
-    | "user"
-  )[];
-  /** Teams the user belongs to with role information */
-  teams?: {
-    /** Team memberships for the user with their assigned roles. */
-    teams_with_roles?: object[];
-    /** Total number of team memberships returned for the user. */
-    total_count?: number;
-  };
-  /** Organizations the user belongs to with role information */
-  organizations?: {
-    /** Organization memberships for the user with their assigned roles. */
-    organizations_with_roles?: object[];
-    /** Total number of organization memberships returned for the user. */
-    total_count?: number;
-  };
-};
-export type GetUserApiArg = void;
 export type CreateViewApiResponse = /** status 201 Created view */ {
   /** Unique identifier for the view. */
   id: string;
@@ -6541,6 +5433,595 @@ export type GetSignupRequestNotificationApiResponse = /** status 200 Signup requ
   [key: string]: any;
 };
 export type GetSignupRequestNotificationApiArg = void;
+export type GetOrgsApiResponse = /** status 200 Organizations response */ {
+  /** Zero-based page index returned in this response. */
+  page?: number;
+  /** Maximum number of items returned on each page. */
+  pageSize?: number;
+  /** Total number of items across all pages. */
+  totalCount?: number;
+  /** Organizations in this page. */
+  organizations?: {
+    /** Organization ID. */
+    id?: string;
+    /** Name of the organization. */
+    name?: string;
+    /** Description of the organization. */
+    description?: string;
+    /** Country of the organization. */
+    country?: string;
+    /** Region of the organization. */
+    region?: string;
+    /** Display name of the organization owner. */
+    owner?: string;
+    /** Free-form metadata associated with an organization, including preferences. */
+    metadata?: {
+      /** Organization-level user experience preferences. */
+      preferences: {
+        /** UI theme configured for an organization. */
+        theme: {
+          /** Theme identifier. */
+          id: string;
+          /** Themed logo assets used across light and dark, desktop and mobile presentations. */
+          logo: {
+            /** Image asset anchored to a named location within an organization theme. */
+            desktopView: {
+              /** SVG markup for the asset. */
+              svg: string;
+              /** Named location of the asset (e.g. header, footer). */
+              location: string;
+            };
+            /** Image asset anchored to a named location within an organization theme. */
+            mobileView: {
+              /** SVG markup for the asset. */
+              svg: string;
+              /** Named location of the asset (e.g. header, footer). */
+              location: string;
+            };
+            /** Image asset anchored to a named location within an organization theme. */
+            darkDesktopView: {
+              /** SVG markup for the asset. */
+              svg: string;
+              /** Named location of the asset (e.g. header, footer). */
+              location: string;
+            };
+            /** Image asset anchored to a named location within an organization theme. */
+            darkMobileView: {
+              /** SVG markup for the asset. */
+              svg: string;
+              /** Named location of the asset (e.g. header, footer). */
+              location: string;
+            };
+          };
+          /** Arbitrary theme variables keyed by name. */
+          vars?: {
+            [key: string]: any;
+          };
+        };
+        /** Preferences specific to dashboard behavior. */
+        dashboard: {
+          [key: string]: any;
+        };
+      };
+    };
+    /** Timestamp when the organization was created. */
+    createdAt?: string;
+    /** Timestamp when the organization was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the organization was soft-deleted. */
+    deletedAt?: string;
+  }[];
+};
+export type GetOrgsApiArg = {
+  /** Zero-based index of the result page to return. */
+  page?: number;
+  /** Maximum number of items returned on each page. */
+  pageSize?: number;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get all possible entries */
+  all?: boolean;
+};
+export type CreateOrgApiResponse = /** status 201 Single-organization page response */ {
+  /** Zero-based page index returned in this response. */
+  page?: number;
+  /** Maximum number of items returned on each page. */
+  pageSize?: number;
+  /** Total number of items across all pages. */
+  totalCount?: number;
+  /** Organizations returned in this single-item page wrapper. */
+  organizations?: {
+    /** Organization ID. */
+    id?: string;
+    /** Name of the organization. */
+    name?: string;
+    /** Description of the organization. */
+    description?: string;
+    /** Country of the organization. */
+    country?: string;
+    /** Region of the organization. */
+    region?: string;
+    /** Display name of the organization owner. */
+    owner?: string;
+    /** Free-form metadata associated with an organization, including preferences. */
+    metadata?: {
+      /** Organization-level user experience preferences. */
+      preferences: {
+        /** UI theme configured for an organization. */
+        theme: {
+          /** Theme identifier. */
+          id: string;
+          /** Themed logo assets used across light and dark, desktop and mobile presentations. */
+          logo: {
+            /** Image asset anchored to a named location within an organization theme. */
+            desktopView: {
+              /** SVG markup for the asset. */
+              svg: string;
+              /** Named location of the asset (e.g. header, footer). */
+              location: string;
+            };
+            /** Image asset anchored to a named location within an organization theme. */
+            mobileView: {
+              /** SVG markup for the asset. */
+              svg: string;
+              /** Named location of the asset (e.g. header, footer). */
+              location: string;
+            };
+            /** Image asset anchored to a named location within an organization theme. */
+            darkDesktopView: {
+              /** SVG markup for the asset. */
+              svg: string;
+              /** Named location of the asset (e.g. header, footer). */
+              location: string;
+            };
+            /** Image asset anchored to a named location within an organization theme. */
+            darkMobileView: {
+              /** SVG markup for the asset. */
+              svg: string;
+              /** Named location of the asset (e.g. header, footer). */
+              location: string;
+            };
+          };
+          /** Arbitrary theme variables keyed by name. */
+          vars?: {
+            [key: string]: any;
+          };
+        };
+        /** Preferences specific to dashboard behavior. */
+        dashboard: {
+          [key: string]: any;
+        };
+      };
+    };
+    /** Timestamp when the organization was created. */
+    createdAt?: string;
+    /** Timestamp when the organization was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the organization was soft-deleted. */
+    deletedAt?: string;
+  }[];
+};
+export type CreateOrgApiArg = {
+  /** Body for creating or updating an organization */
+  body: {
+    /** Name of the organization. */
+    name?: string;
+    /** Country of the organization. */
+    country?: string;
+    /** Region of the organization. */
+    region?: string;
+    /** Description of the organization. */
+    description?: string;
+    /** Indicates whether organization members should be notified of this update. */
+    notifyOrgUpdate?: boolean;
+    /** Organization-level user experience preferences. */
+    preferences?: {
+      /** UI theme configured for an organization. */
+      theme: {
+        /** Theme identifier. */
+        id: string;
+        /** Themed logo assets used across light and dark, desktop and mobile presentations. */
+        logo: {
+          /** Image asset anchored to a named location within an organization theme. */
+          desktopView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+          /** Image asset anchored to a named location within an organization theme. */
+          mobileView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+          /** Image asset anchored to a named location within an organization theme. */
+          darkDesktopView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+          /** Image asset anchored to a named location within an organization theme. */
+          darkMobileView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+        };
+        /** Arbitrary theme variables keyed by name. */
+        vars?: {
+          [key: string]: any;
+        };
+      };
+      /** Preferences specific to dashboard behavior. */
+      dashboard: {
+        [key: string]: any;
+      };
+    };
+  };
+};
+export type GetOrgByDomainApiResponse = /** status 200 Organization response */ {
+  /** Organization ID. */
+  id: string;
+  /** Name of the organization. */
+  name: string;
+  /** Country of the organization. */
+  country: string;
+  /** Region of the organization. */
+  region: string;
+  /** Description of the organization. */
+  description: string;
+  /** Owner user ID of the organization. */
+  owner: string;
+  /** Free-form metadata associated with the organization, including preferences. */
+  metadata: object;
+  /** Domain of the organization. */
+  domain?: string | null;
+  /** Timestamp when the organization was created. */
+  createdAt: string;
+  /** Timestamp when the organization was last updated. */
+  updatedAt: string;
+  /** Timestamp when the organization was soft-deleted. Null while the organization is active. */
+  deletedAt?: string;
+};
+export type GetOrgByDomainApiArg = {
+  /** Domain name of the organization to look up. */
+  domain: string;
+};
+export type GetOrgApiResponse = /** status 200 Single-organization page response */ {
+  /** Zero-based page index returned in this response. */
+  page?: number;
+  /** Maximum number of items returned on each page. */
+  pageSize?: number;
+  /** Total number of items across all pages. */
+  totalCount?: number;
+  /** Organizations returned in this single-item page wrapper. */
+  organizations?: {
+    /** Organization ID. */
+    id?: string;
+    /** Name of the organization. */
+    name?: string;
+    /** Description of the organization. */
+    description?: string;
+    /** Country of the organization. */
+    country?: string;
+    /** Region of the organization. */
+    region?: string;
+    /** Display name of the organization owner. */
+    owner?: string;
+    /** Free-form metadata associated with an organization, including preferences. */
+    metadata?: {
+      /** Organization-level user experience preferences. */
+      preferences: {
+        /** UI theme configured for an organization. */
+        theme: {
+          /** Theme identifier. */
+          id: string;
+          /** Themed logo assets used across light and dark, desktop and mobile presentations. */
+          logo: {
+            /** Image asset anchored to a named location within an organization theme. */
+            desktopView: {
+              /** SVG markup for the asset. */
+              svg: string;
+              /** Named location of the asset (e.g. header, footer). */
+              location: string;
+            };
+            /** Image asset anchored to a named location within an organization theme. */
+            mobileView: {
+              /** SVG markup for the asset. */
+              svg: string;
+              /** Named location of the asset (e.g. header, footer). */
+              location: string;
+            };
+            /** Image asset anchored to a named location within an organization theme. */
+            darkDesktopView: {
+              /** SVG markup for the asset. */
+              svg: string;
+              /** Named location of the asset (e.g. header, footer). */
+              location: string;
+            };
+            /** Image asset anchored to a named location within an organization theme. */
+            darkMobileView: {
+              /** SVG markup for the asset. */
+              svg: string;
+              /** Named location of the asset (e.g. header, footer). */
+              location: string;
+            };
+          };
+          /** Arbitrary theme variables keyed by name. */
+          vars?: {
+            [key: string]: any;
+          };
+        };
+        /** Preferences specific to dashboard behavior. */
+        dashboard: {
+          [key: string]: any;
+        };
+      };
+    };
+    /** Timestamp when the organization was created. */
+    createdAt?: string;
+    /** Timestamp when the organization was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the organization was soft-deleted. */
+    deletedAt?: string;
+  }[];
+};
+export type GetOrgApiArg = {
+  /** Organization ID. */
+  orgId: string;
+};
+export type DeleteOrgApiResponse = unknown;
+export type DeleteOrgApiArg = {
+  /** Organization ID. */
+  orgId: string;
+};
+export type UpdateOrgApiResponse = /** status 200 Single-organization page response for the updated organization */ {
+  /** Zero-based page index returned in this response. */
+  page?: number;
+  /** Maximum number of items returned on each page. */
+  pageSize?: number;
+  /** Total number of items across all pages. */
+  totalCount?: number;
+  /** Organizations returned in this single-item page wrapper. */
+  organizations?: {
+    /** Organization ID. */
+    id?: string;
+    /** Name of the organization. */
+    name?: string;
+    /** Description of the organization. */
+    description?: string;
+    /** Country of the organization. */
+    country?: string;
+    /** Region of the organization. */
+    region?: string;
+    /** Display name of the organization owner. */
+    owner?: string;
+    /** Free-form metadata associated with an organization, including preferences. */
+    metadata?: {
+      /** Organization-level user experience preferences. */
+      preferences: {
+        /** UI theme configured for an organization. */
+        theme: {
+          /** Theme identifier. */
+          id: string;
+          /** Themed logo assets used across light and dark, desktop and mobile presentations. */
+          logo: {
+            /** Image asset anchored to a named location within an organization theme. */
+            desktopView: {
+              /** SVG markup for the asset. */
+              svg: string;
+              /** Named location of the asset (e.g. header, footer). */
+              location: string;
+            };
+            /** Image asset anchored to a named location within an organization theme. */
+            mobileView: {
+              /** SVG markup for the asset. */
+              svg: string;
+              /** Named location of the asset (e.g. header, footer). */
+              location: string;
+            };
+            /** Image asset anchored to a named location within an organization theme. */
+            darkDesktopView: {
+              /** SVG markup for the asset. */
+              svg: string;
+              /** Named location of the asset (e.g. header, footer). */
+              location: string;
+            };
+            /** Image asset anchored to a named location within an organization theme. */
+            darkMobileView: {
+              /** SVG markup for the asset. */
+              svg: string;
+              /** Named location of the asset (e.g. header, footer). */
+              location: string;
+            };
+          };
+          /** Arbitrary theme variables keyed by name. */
+          vars?: {
+            [key: string]: any;
+          };
+        };
+        /** Preferences specific to dashboard behavior. */
+        dashboard: {
+          [key: string]: any;
+        };
+      };
+    };
+    /** Timestamp when the organization was created. */
+    createdAt?: string;
+    /** Timestamp when the organization was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the organization was soft-deleted. */
+    deletedAt?: string;
+  }[];
+};
+export type UpdateOrgApiArg = {
+  /** Organization ID. */
+  orgId: string;
+  /** Body for creating or updating an organization */
+  body: {
+    /** Name of the organization. */
+    name?: string;
+    /** Country of the organization. */
+    country?: string;
+    /** Region of the organization. */
+    region?: string;
+    /** Description of the organization. */
+    description?: string;
+    /** Indicates whether organization members should be notified of this update. */
+    notifyOrgUpdate?: boolean;
+    /** Organization-level user experience preferences. */
+    preferences?: {
+      /** UI theme configured for an organization. */
+      theme: {
+        /** Theme identifier. */
+        id: string;
+        /** Themed logo assets used across light and dark, desktop and mobile presentations. */
+        logo: {
+          /** Image asset anchored to a named location within an organization theme. */
+          desktopView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+          /** Image asset anchored to a named location within an organization theme. */
+          mobileView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+          /** Image asset anchored to a named location within an organization theme. */
+          darkDesktopView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+          /** Image asset anchored to a named location within an organization theme. */
+          darkMobileView: {
+            /** SVG markup for the asset. */
+            svg: string;
+            /** Named location of the asset (e.g. header, footer). */
+            location: string;
+          };
+        };
+        /** Arbitrary theme variables keyed by name. */
+        vars?: {
+          [key: string]: any;
+        };
+      };
+      /** Preferences specific to dashboard behavior. */
+      dashboard: {
+        [key: string]: any;
+      };
+    };
+  };
+};
+export type GetOrgPreferencesApiResponse = /** status 200 Organization metadata, including preferences */ {
+  /** Organization-level user experience preferences. */
+  preferences: {
+    /** UI theme configured for an organization. */
+    theme: {
+      /** Theme identifier. */
+      id: string;
+      /** Themed logo assets used across light and dark, desktop and mobile presentations. */
+      logo: {
+        /** Image asset anchored to a named location within an organization theme. */
+        desktopView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+        /** Image asset anchored to a named location within an organization theme. */
+        mobileView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+        /** Image asset anchored to a named location within an organization theme. */
+        darkDesktopView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+        /** Image asset anchored to a named location within an organization theme. */
+        darkMobileView: {
+          /** SVG markup for the asset. */
+          svg: string;
+          /** Named location of the asset (e.g. header, footer). */
+          location: string;
+        };
+      };
+      /** Arbitrary theme variables keyed by name. */
+      vars?: {
+        [key: string]: any;
+      };
+    };
+    /** Preferences specific to dashboard behavior. */
+    dashboard: {
+      [key: string]: any;
+    };
+  };
+};
+export type GetOrgPreferencesApiArg = {
+  /** Organization ID. */
+  orgId: string;
+};
+export type RemoveTeamFromOrgApiResponse = /** status 200 Team removed from organization */ {
+  /** Zero-based page index returned in this response. */
+  page?: number;
+  /** Maximum number of items returned on each page. */
+  pageSize?: number;
+  /** Total number of items across all pages. */
+  totalCount?: number;
+  /** Team-organization mapping entries. */
+  teamsOrganizationsMapping?: {
+    /** Mapping record ID. */
+    id?: string;
+    /** Organization ID for this mapping. */
+    orgId?: string;
+    /** Team ID for this mapping. */
+    teamId?: string;
+    /** Timestamp when the mapping was created. */
+    createdAt?: string;
+    /** Timestamp when the mapping was last updated. */
+    updatedAt?: string;
+    /** Timestamp when the mapping was soft-deleted. */
+    deletedAt?: string;
+  }[];
+};
+export type RemoveTeamFromOrgApiArg = {
+  /** Organization ID. */
+  orgId: string;
+  /** Team ID. */
+  teamId: string;
+};
+export type AddUserToOrgApiResponse = /** status 201 User added to organization */ {
+  [key: string]: any;
+};
+export type AddUserToOrgApiArg = {
+  /** Organization ID. */
+  orgId: string;
+  /** User ID. */
+  userId: string;
+};
+export type DeleteUserFromOrgApiResponse = unknown;
+export type DeleteUserFromOrgApiArg = {
+  /** Organization ID. */
+  orgId: string;
+  /** User ID. */
+  userId: string;
+};
 export type GetPlansApiResponse = /** status 200 Plans response */ {
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   id: string;
@@ -6917,6 +6398,613 @@ export type IssueIndefiniteLifetimeTokenApiArg = {
   /** Remote provider. */
   provider: string;
 };
+export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organization users */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** The data of the userspageforadmin. */
+  data?: {
+    /** Unique identifier for the user */
+    id: string;
+    /** User identifier (username or external ID) */
+    userId: string;
+    /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
+    provider: string;
+    /** User's email address */
+    email: string;
+    /** User's first name */
+    firstName: string;
+    /** User's last name */
+    lastName: string;
+    /** URL to user's avatar image */
+    avatarUrl?: string;
+    /** User account status */
+    status: "active" | "inactive" | "pending" | "anonymous";
+    /** User's biography or description */
+    bio?: string;
+    /** User's country information stored as JSONB */
+    country?: {
+      [key: string]: any;
+    };
+    /** User's region information stored as JSONB */
+    region?: {
+      [key: string]: any;
+    };
+    /** User preferences stored as JSONB */
+    preferences?: {
+      /** The mesh adapters of the preference. */
+      meshAdapters?: object[];
+      grafana?: {
+        /** Grafana URL for the user configuration. */
+        grafanaUrl?: string;
+        /** Grafana API key for the user configuration. */
+        grafanaApiKey?: string;
+        /** Selected Grafana board configurations for the user. */
+        selectedBoardsConfigs?: {
+          /** Placeholder for GrafanaBoard definition (define fields as needed) */
+          board?: object;
+          /** Panels selected for the Grafana board configuration. */
+          panels?: object[];
+          /** Template variables applied to the selected Grafana board configuration. */
+          templateVars?: string[];
+        }[];
+      };
+      prometheus?: {
+        /** The prometheus URL of the prometheus. */
+        prometheusUrl?: string;
+        /** The selected prometheus boards configs of the prometheus. */
+        selectedPrometheusBoardsConfigs?: {
+          /** Placeholder for GrafanaBoard definition (define fields as needed) */
+          board?: object;
+          /** Panels selected for the Grafana board configuration. */
+          panels?: object[];
+          /** Template variables applied to the selected Grafana board configuration. */
+          templateVars?: string[];
+        }[];
+      };
+      loadTestPrefs?: {
+        /** Concurrent requests */
+        c?: number;
+        /** Queries per second */
+        qps?: number;
+        /** Duration */
+        t?: string;
+        /** Load generator */
+        gen?: string;
+      };
+      /** The anonymous usage stats of the preference. */
+      anonymousUsageStats: boolean;
+      /** The anonymous perf results of the preference. */
+      anonymousPerfResults: boolean;
+      /** Timestamp of when the resource was last updated. */
+      updatedAt: string;
+      /** The dashboard preferences of the preference. */
+      dashboardPreferences: {
+        [key: string]: any;
+      };
+      /** ID of the associated selectedOrganization. */
+      selectedOrganizationId: string;
+      /** The selected workspace for organizations of the preference. */
+      selectedWorkspaceForOrganizations: {
+        [key: string]: string;
+      };
+      /** The users extension preferences of the preference. */
+      usersExtensionPreferences: {
+        [key: string]: any;
+      };
+      /** The remote provider preferences of the preference. */
+      remoteProviderPreferences: {
+        [key: string]: any;
+      };
+    };
+    /** Timestamp when user accepted terms and conditions */
+    acceptedTermsAt?: string;
+    /** Timestamp of user's first login */
+    firstLoginTime?: string;
+    /** Timestamp of user's most recent login */
+    lastLoginTime: string;
+    /** Timestamp when the user record was created */
+    createdAt: string;
+    /** Timestamp when the user record was last updated */
+    updatedAt: string;
+    /** Various online profiles associated with the user account */
+    socials?: {
+      /** The site of the social. */
+      site: string;
+      /** The link of the social. */
+      link: string;
+    }[];
+    /** Timestamp when the user record was soft-deleted (null if not deleted) */
+    deletedAt: string | null;
+    /** List of global roles assigned to the user */
+    roleNames?: (
+      | "admin"
+      | "meshmap"
+      | "curator"
+      | "team admin"
+      | "workspace admin"
+      | "workspace manager"
+      | "organization admin"
+      | "user"
+    )[];
+    /** Teams the user belongs to with role information */
+    teams?: {
+      /** Team memberships for the user with their assigned roles. */
+      teamsWithRoles?: object[];
+      /** Total number of team memberships returned for the user. */
+      totalCount?: number;
+    };
+    /** Organizations the user belongs to with role information */
+    organizations?: {
+      /** Organization memberships for the user with their assigned roles. */
+      organizationsWithRoles?: object[];
+      /** Total number of organization memberships returned for the user. */
+      totalCount?: number;
+    };
+  }[];
+};
+export type GetUsersForOrgApiArg = {
+  /** Organization ID */
+  orgId: string;
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by page size */
+  pageSize?: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get filtered reponses */
+  filter?: string;
+  /** Optional team filter when listing organization users */
+  teamId?: string;
+};
+export type GetUsersApiResponse = /** status 200 Paginated list of public users */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** The data of the userspagefornonadmin. */
+  data?: {
+    /** Unique identifier for the user */
+    id: string;
+    /** User identifier (username or external ID) */
+    userId: string;
+    /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
+    provider: string;
+    /** User's email address */
+    email: string;
+    /** User's first name */
+    firstName: string;
+    /** User's last name */
+    lastName: string;
+    /** URL to user's avatar image */
+    avatarUrl?: string;
+    /** User account status */
+    status: "active" | "inactive" | "pending" | "anonymous";
+    /** User's biography or description */
+    bio?: string;
+    /** User's country information stored as JSONB */
+    country?: {
+      [key: string]: any;
+    };
+    /** User's region information stored as JSONB */
+    region?: {
+      [key: string]: any;
+    };
+    /** User preferences stored as JSONB */
+    preferences?: {
+      /** The mesh adapters of the preference. */
+      meshAdapters?: object[];
+      grafana?: {
+        /** Grafana URL for the user configuration. */
+        grafanaUrl?: string;
+        /** Grafana API key for the user configuration. */
+        grafanaApiKey?: string;
+        /** Selected Grafana board configurations for the user. */
+        selectedBoardsConfigs?: {
+          /** Placeholder for GrafanaBoard definition (define fields as needed) */
+          board?: object;
+          /** Panels selected for the Grafana board configuration. */
+          panels?: object[];
+          /** Template variables applied to the selected Grafana board configuration. */
+          templateVars?: string[];
+        }[];
+      };
+      prometheus?: {
+        /** The prometheus URL of the prometheus. */
+        prometheusUrl?: string;
+        /** The selected prometheus boards configs of the prometheus. */
+        selectedPrometheusBoardsConfigs?: {
+          /** Placeholder for GrafanaBoard definition (define fields as needed) */
+          board?: object;
+          /** Panels selected for the Grafana board configuration. */
+          panels?: object[];
+          /** Template variables applied to the selected Grafana board configuration. */
+          templateVars?: string[];
+        }[];
+      };
+      loadTestPrefs?: {
+        /** Concurrent requests */
+        c?: number;
+        /** Queries per second */
+        qps?: number;
+        /** Duration */
+        t?: string;
+        /** Load generator */
+        gen?: string;
+      };
+      /** The anonymous usage stats of the preference. */
+      anonymousUsageStats: boolean;
+      /** The anonymous perf results of the preference. */
+      anonymousPerfResults: boolean;
+      /** Timestamp of when the resource was last updated. */
+      updatedAt: string;
+      /** The dashboard preferences of the preference. */
+      dashboardPreferences: {
+        [key: string]: any;
+      };
+      /** ID of the associated selectedOrganization. */
+      selectedOrganizationId: string;
+      /** The selected workspace for organizations of the preference. */
+      selectedWorkspaceForOrganizations: {
+        [key: string]: string;
+      };
+      /** The users extension preferences of the preference. */
+      usersExtensionPreferences: {
+        [key: string]: any;
+      };
+      /** The remote provider preferences of the preference. */
+      remoteProviderPreferences: {
+        [key: string]: any;
+      };
+    };
+    /** Timestamp when user accepted terms and conditions */
+    acceptedTermsAt?: string;
+    /** Timestamp of user's first login */
+    firstLoginTime?: string;
+    /** Timestamp of user's most recent login */
+    lastLoginTime: string;
+    /** Timestamp when the user record was created */
+    createdAt: string;
+    /** Timestamp when the user record was last updated */
+    updatedAt: string;
+    /** Various online profiles associated with the user account */
+    socials?: {
+      /** The site of the social. */
+      site: string;
+      /** The link of the social. */
+      link: string;
+    }[];
+    /** Timestamp when the user record was soft-deleted (null if not deleted) */
+    deletedAt: string | null;
+    /** List of global roles assigned to the user */
+    roleNames?: (
+      | "admin"
+      | "meshmap"
+      | "curator"
+      | "team admin"
+      | "workspace admin"
+      | "workspace manager"
+      | "organization admin"
+      | "user"
+    )[];
+    /** Teams the user belongs to with role information */
+    teams?: {
+      /** Team memberships for the user with their assigned roles. */
+      teamsWithRoles?: object[];
+      /** Total number of team memberships returned for the user. */
+      totalCount?: number;
+    };
+    /** Organizations the user belongs to with role information */
+    organizations?: {
+      /** Organization memberships for the user with their assigned roles. */
+      organizationsWithRoles?: object[];
+      /** Total number of organization memberships returned for the user. */
+      totalCount?: number;
+    };
+  }[];
+};
+export type GetUsersApiArg = {
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by page size */
+  pageSize?: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get filtered reponses */
+  filter?: string;
+};
+export type GetUserProfileByIdApiResponse = /** status 200 User profile for the requested ID */ {
+  /** Unique identifier for the user */
+  id: string;
+  /** User identifier (username or external ID) */
+  userId: string;
+  /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
+  provider: string;
+  /** User's email address */
+  email: string;
+  /** User's first name */
+  firstName: string;
+  /** User's last name */
+  lastName: string;
+  /** URL to user's avatar image */
+  avatarUrl?: string;
+  /** User account status */
+  status: "active" | "inactive" | "pending" | "anonymous";
+  /** User's biography or description */
+  bio?: string;
+  /** User's country information stored as JSONB */
+  country?: {
+    [key: string]: any;
+  };
+  /** User's region information stored as JSONB */
+  region?: {
+    [key: string]: any;
+  };
+  /** User preferences stored as JSONB */
+  preferences?: {
+    /** The mesh adapters of the preference. */
+    meshAdapters?: object[];
+    grafana?: {
+      /** Grafana URL for the user configuration. */
+      grafanaUrl?: string;
+      /** Grafana API key for the user configuration. */
+      grafanaApiKey?: string;
+      /** Selected Grafana board configurations for the user. */
+      selectedBoardsConfigs?: {
+        /** Placeholder for GrafanaBoard definition (define fields as needed) */
+        board?: object;
+        /** Panels selected for the Grafana board configuration. */
+        panels?: object[];
+        /** Template variables applied to the selected Grafana board configuration. */
+        templateVars?: string[];
+      }[];
+    };
+    prometheus?: {
+      /** The prometheus URL of the prometheus. */
+      prometheusUrl?: string;
+      /** The selected prometheus boards configs of the prometheus. */
+      selectedPrometheusBoardsConfigs?: {
+        /** Placeholder for GrafanaBoard definition (define fields as needed) */
+        board?: object;
+        /** Panels selected for the Grafana board configuration. */
+        panels?: object[];
+        /** Template variables applied to the selected Grafana board configuration. */
+        templateVars?: string[];
+      }[];
+    };
+    loadTestPrefs?: {
+      /** Concurrent requests */
+      c?: number;
+      /** Queries per second */
+      qps?: number;
+      /** Duration */
+      t?: string;
+      /** Load generator */
+      gen?: string;
+    };
+    /** The anonymous usage stats of the preference. */
+    anonymousUsageStats: boolean;
+    /** The anonymous perf results of the preference. */
+    anonymousPerfResults: boolean;
+    /** Timestamp of when the resource was last updated. */
+    updatedAt: string;
+    /** The dashboard preferences of the preference. */
+    dashboardPreferences: {
+      [key: string]: any;
+    };
+    /** ID of the associated selectedOrganization. */
+    selectedOrganizationId: string;
+    /** The selected workspace for organizations of the preference. */
+    selectedWorkspaceForOrganizations: {
+      [key: string]: string;
+    };
+    /** The users extension preferences of the preference. */
+    usersExtensionPreferences: {
+      [key: string]: any;
+    };
+    /** The remote provider preferences of the preference. */
+    remoteProviderPreferences: {
+      [key: string]: any;
+    };
+  };
+  /** Timestamp when user accepted terms and conditions */
+  acceptedTermsAt?: string;
+  /** Timestamp of user's first login */
+  firstLoginTime?: string;
+  /** Timestamp of user's most recent login */
+  lastLoginTime: string;
+  /** Timestamp when the user record was created */
+  createdAt: string;
+  /** Timestamp when the user record was last updated */
+  updatedAt: string;
+  /** Various online profiles associated with the user account */
+  socials?: {
+    /** The site of the social. */
+    site: string;
+    /** The link of the social. */
+    link: string;
+  }[];
+  /** Timestamp when the user record was soft-deleted (null if not deleted) */
+  deletedAt: string | null;
+  /** List of global roles assigned to the user */
+  roleNames?: (
+    | "admin"
+    | "meshmap"
+    | "curator"
+    | "team admin"
+    | "workspace admin"
+    | "workspace manager"
+    | "organization admin"
+    | "user"
+  )[];
+  /** Teams the user belongs to with role information */
+  teams?: {
+    /** Team memberships for the user with their assigned roles. */
+    teamsWithRoles?: object[];
+    /** Total number of team memberships returned for the user. */
+    totalCount?: number;
+  };
+  /** Organizations the user belongs to with role information */
+  organizations?: {
+    /** Organization memberships for the user with their assigned roles. */
+    organizationsWithRoles?: object[];
+    /** Total number of organization memberships returned for the user. */
+    totalCount?: number;
+  };
+};
+export type GetUserProfileByIdApiArg = {
+  /** User ID */
+  id: string;
+};
+export type GetUserApiResponse = /** status 200 Current user profile and role context */ {
+  /** Unique identifier for the user */
+  id: string;
+  /** User identifier (username or external ID) */
+  userId: string;
+  /** Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github) */
+  provider: string;
+  /** User's email address */
+  email: string;
+  /** User's first name */
+  firstName: string;
+  /** User's last name */
+  lastName: string;
+  /** URL to user's avatar image */
+  avatarUrl?: string;
+  /** User account status */
+  status: "active" | "inactive" | "pending" | "anonymous";
+  /** User's biography or description */
+  bio?: string;
+  /** User's country information stored as JSONB */
+  country?: {
+    [key: string]: any;
+  };
+  /** User's region information stored as JSONB */
+  region?: {
+    [key: string]: any;
+  };
+  /** User preferences stored as JSONB */
+  preferences?: {
+    /** The mesh adapters of the preference. */
+    meshAdapters?: object[];
+    grafana?: {
+      /** Grafana URL for the user configuration. */
+      grafanaUrl?: string;
+      /** Grafana API key for the user configuration. */
+      grafanaApiKey?: string;
+      /** Selected Grafana board configurations for the user. */
+      selectedBoardsConfigs?: {
+        /** Placeholder for GrafanaBoard definition (define fields as needed) */
+        board?: object;
+        /** Panels selected for the Grafana board configuration. */
+        panels?: object[];
+        /** Template variables applied to the selected Grafana board configuration. */
+        templateVars?: string[];
+      }[];
+    };
+    prometheus?: {
+      /** The prometheus URL of the prometheus. */
+      prometheusUrl?: string;
+      /** The selected prometheus boards configs of the prometheus. */
+      selectedPrometheusBoardsConfigs?: {
+        /** Placeholder for GrafanaBoard definition (define fields as needed) */
+        board?: object;
+        /** Panels selected for the Grafana board configuration. */
+        panels?: object[];
+        /** Template variables applied to the selected Grafana board configuration. */
+        templateVars?: string[];
+      }[];
+    };
+    loadTestPrefs?: {
+      /** Concurrent requests */
+      c?: number;
+      /** Queries per second */
+      qps?: number;
+      /** Duration */
+      t?: string;
+      /** Load generator */
+      gen?: string;
+    };
+    /** The anonymous usage stats of the preference. */
+    anonymousUsageStats: boolean;
+    /** The anonymous perf results of the preference. */
+    anonymousPerfResults: boolean;
+    /** Timestamp of when the resource was last updated. */
+    updatedAt: string;
+    /** The dashboard preferences of the preference. */
+    dashboardPreferences: {
+      [key: string]: any;
+    };
+    /** ID of the associated selectedOrganization. */
+    selectedOrganizationId: string;
+    /** The selected workspace for organizations of the preference. */
+    selectedWorkspaceForOrganizations: {
+      [key: string]: string;
+    };
+    /** The users extension preferences of the preference. */
+    usersExtensionPreferences: {
+      [key: string]: any;
+    };
+    /** The remote provider preferences of the preference. */
+    remoteProviderPreferences: {
+      [key: string]: any;
+    };
+  };
+  /** Timestamp when user accepted terms and conditions */
+  acceptedTermsAt?: string;
+  /** Timestamp of user's first login */
+  firstLoginTime?: string;
+  /** Timestamp of user's most recent login */
+  lastLoginTime: string;
+  /** Timestamp when the user record was created */
+  createdAt: string;
+  /** Timestamp when the user record was last updated */
+  updatedAt: string;
+  /** Various online profiles associated with the user account */
+  socials?: {
+    /** The site of the social. */
+    site: string;
+    /** The link of the social. */
+    link: string;
+  }[];
+  /** Timestamp when the user record was soft-deleted (null if not deleted) */
+  deletedAt: string | null;
+  /** List of global roles assigned to the user */
+  roleNames?: (
+    | "admin"
+    | "meshmap"
+    | "curator"
+    | "team admin"
+    | "workspace admin"
+    | "workspace manager"
+    | "organization admin"
+    | "user"
+  )[];
+  /** Teams the user belongs to with role information */
+  teams?: {
+    /** Team memberships for the user with their assigned roles. */
+    teamsWithRoles?: object[];
+    /** Total number of team memberships returned for the user. */
+    totalCount?: number;
+  };
+  /** Organizations the user belongs to with role information */
+  organizations?: {
+    /** Organization memberships for the user with their assigned roles. */
+    organizationsWithRoles?: object[];
+    /** Total number of organization memberships returned for the user. */
+    totalCount?: number;
+  };
+};
+export type GetUserApiArg = void;
 export type GetPatternsApiResponse = /** status 200 Designs response */ {
   /** Current page number of the result set. */
   page?: number;
@@ -14929,20 +15017,6 @@ export const {
   useGetKeysOfKeychainQuery,
   useRegisterMeshmodelsMutation,
   useGetMeshModelModelsQuery,
-  useGetOrgsQuery,
-  useCreateOrgMutation,
-  useGetOrgByDomainQuery,
-  useGetOrgQuery,
-  useDeleteOrgMutation,
-  useHandleUpdateOrgMutation,
-  useGetOrgPreferencesQuery,
-  useAddTeamToOrgMutation,
-  useGetTeamByIdQuery,
-  useUpdateTeamMutation,
-  useDeleteTeamMutation,
-  useRemoveTeamFromOrgMutation,
-  useAddUserToOrgMutation,
-  useDeleteUserFromOrgMutation,
   useAddRoleHolderMutation,
   useDeleteRoleMutation,
   useGetAllRolesQuery,
@@ -14957,14 +15031,14 @@ export const {
   useDeleteScheduleMutation,
   useGetTeamsQuery,
   useCreateTeamMutation,
+  useGetTeamByIdQuery,
+  useUpdateTeamMutation,
+  useDeleteTeamMutation,
+  useAddTeamToOrgMutation,
   useGetTeamUsersQuery,
   useAddUserToTeamMutation,
   useRemoveUserFromTeamMutation,
   useListUsersNotInTeamQuery,
-  useGetUsersForOrgQuery,
-  useGetUsersQuery,
-  useGetUserProfileByIdQuery,
-  useGetUserQuery,
   useCreateViewMutation,
   useGetViewsQuery,
   useShareViewMutation,
@@ -15025,6 +15099,16 @@ export const {
   useApproveSignupRequestMutation,
   useDenySignupRequestMutation,
   useGetSignupRequestNotificationQuery,
+  useGetOrgsQuery,
+  useCreateOrgMutation,
+  useGetOrgByDomainQuery,
+  useGetOrgQuery,
+  useDeleteOrgMutation,
+  useUpdateOrgMutation,
+  useGetOrgPreferencesQuery,
+  useRemoveTeamFromOrgMutation,
+  useAddUserToOrgMutation,
+  useDeleteUserFromOrgMutation,
   useGetPlansQuery,
   useGetSubscriptionsQuery,
   useCancelSubscriptionMutation,
@@ -15037,6 +15121,10 @@ export const {
   useDeleteUserTokenMutation,
   useGetUserTokensByIdQuery,
   useIssueIndefiniteLifetimeTokenQuery,
+  useGetUsersForOrgQuery,
+  useGetUsersQuery,
+  useGetUserProfileByIdQuery,
+  useGetUserQuery,
   useGetPatternsQuery,
   useUpsertPatternMutation,
   useDeletePatternsMutation,
