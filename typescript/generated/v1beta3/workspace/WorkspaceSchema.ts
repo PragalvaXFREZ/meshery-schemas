@@ -8,9 +8,7 @@ const WorkspaceSchema: Record<string, unknown> = {
   "info": {
     "title": "Workspace",
     "description": "OpenAPI schema for workspace management in Meshery Cloud.",
-    "x-deprecated": true,
-    "x-superseded-by": "v1beta3",
-    "version": "v1beta1",
+    "version": "v1beta3",
     "contact": {
       "name": "Meshery Maintainers",
       "email": "maintainers@meshery.io",
@@ -66,8 +64,19 @@ const WorkspaceSchema: Record<string, unknown> = {
         ],
         "operationId": "getWorkspaces",
         "summary": "Get all workspaces",
-        "description": "Gets all workspaces accessible to the current user.",
+        "description": "Gets all workspaces accessible to the current user, optionally scoped to a specific organization.",
         "parameters": [
+          {
+            "name": "orgId",
+            "in": "query",
+            "description": "Organization ID used to scope the workspace listing.",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "maxLength": 36
+            },
+            "required": false
+          },
           {
             "name": "search",
             "in": "query",
@@ -105,7 +114,8 @@ const WorkspaceSchema: Record<string, unknown> = {
             "in": "query",
             "description": "JSON-encoded filter string used for assignment and soft-delete filters.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 4096
             }
           }
         ],
@@ -119,19 +129,32 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "description": "Paginated list of workspaces.",
                   "properties": {
                     "page": {
+                      "description": "Zero-based page index returned in this response.",
+                      "minimum": 0,
                       "type": "integer",
                       "x-go-type-skip-optional-pointer": true
                     },
-                    "page_size": {
+                    "pageSize": {
+                      "description": "Maximum number of items returned on each page.",
+                      "minimum": 1,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "pageSize,omitempty"
+                      },
                       "type": "integer",
                       "x-go-type-skip-optional-pointer": true
                     },
-                    "total_count": {
+                    "totalCount": {
+                      "description": "Total number of items across all pages.",
+                      "minimum": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "totalCount,omitempty"
+                      },
                       "type": "integer",
                       "x-go-type-skip-optional-pointer": true
                     },
                     "workspaces": {
                       "type": "array",
+                      "description": "List of workspaces with resolved owner details.",
                       "x-go-type-skip-optional-pointer": true,
                       "items": {
                         "x-go-type": "AvailableWorkspace",
@@ -173,14 +196,14 @@ const WorkspaceSchema: Record<string, unknown> = {
                               "json": "description,omitempty"
                             }
                           },
-                          "org_name": {
+                          "orgName": {
                             "type": "string",
                             "description": "Name of the owning organization.",
                             "maxLength": 255,
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "org_name",
-                              "json": "org_name,omitempty"
+                              "json": "orgName,omitempty"
                             }
                           },
                           "owner": {
@@ -192,12 +215,12 @@ const WorkspaceSchema: Record<string, unknown> = {
                               "json": "owner,omitempty"
                             }
                           },
-                          "owner_id": {
+                          "ownerId": {
                             "description": "User ID of the workspace owner.",
                             "x-go-name": "OwnerId",
                             "x-oapi-codegen-extra-tags": {
                               "db": "owner_id",
-                              "json": "owner_id,omitempty"
+                              "json": "ownerId,omitempty"
                             },
                             "type": "string",
                             "format": "uuid",
@@ -206,22 +229,24 @@ const WorkspaceSchema: Record<string, unknown> = {
                               "path": "github.com/gofrs/uuid"
                             }
                           },
-                          "owner_email": {
+                          "ownerEmail": {
                             "type": "string",
                             "description": "Email address of the workspace owner.",
+                            "format": "email",
                             "maxLength": 320,
                             "x-oapi-codegen-extra-tags": {
                               "db": "owner_email",
-                              "json": "owner_email,omitempty"
+                              "json": "ownerEmail,omitempty"
                             }
                           },
-                          "owner_avatar": {
+                          "ownerAvatar": {
                             "type": "string",
                             "description": "Avatar URL of the workspace owner.",
+                            "format": "uri",
                             "maxLength": 2048,
                             "x-oapi-codegen-extra-tags": {
                               "db": "owner_avatar",
-                              "json": "owner_avatar,omitempty"
+                              "json": "ownerAvatar,omitempty"
                             }
                           },
                           "metadata": {
@@ -234,13 +259,13 @@ const WorkspaceSchema: Record<string, unknown> = {
                               "json": "metadata,omitempty"
                             }
                           },
-                          "organization_id": {
+                          "organizationId": {
                             "description": "Organization to which this workspace belongs.",
                             "x-go-name": "OrganizationId",
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "organization_id",
-                              "json": "organization_id,omitempty"
+                              "json": "organizationId,omitempty"
                             },
                             "type": "string",
                             "format": "uuid",
@@ -249,47 +274,59 @@ const WorkspaceSchema: Record<string, unknown> = {
                               "path": "github.com/gofrs/uuid"
                             }
                           },
-                          "created_at": {
-                            "description": "Timestamp when the resource was created.",
+                          "createdAt": {
+                            "description": "Timestamp when the workspace was created.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "yaml": "created_at",
+                              "json": "createdAt,omitempty"
+                            },
                             "x-go-type": "time.Time",
                             "type": "string",
                             "format": "date-time",
                             "x-go-name": "CreatedAt",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "created_at",
-                              "yaml": "created_at"
-                            },
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "updated_at": {
-                            "description": "Timestamp when the resource was updated.",
+                          "updatedAt": {
+                            "description": "Timestamp when the workspace was last updated.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "yaml": "updated_at",
+                              "json": "updatedAt,omitempty"
+                            },
                             "x-go-type": "time.Time",
                             "type": "string",
                             "format": "date-time",
                             "x-go-name": "UpdatedAt",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "updated_at",
-                              "yaml": "updated_at"
-                            },
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "deleted_at": {
-                            "description": "Timestamp when the resource was deleted.",
+                          "deletedAt": {
+                            "description": "Timestamp when the workspace was soft-deleted. Null while the workspace is active.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deleted_at",
+                              "yaml": "deleted_at",
+                              "json": "deletedAt,omitempty"
+                            },
                             "x-go-type": "NullTime",
                             "type": "string",
                             "format": "date-time",
                             "x-go-name": "DeletedAt",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "deleted_at",
-                              "yaml": "deleted_at"
-                            },
                             "x-go-type-skip-optional-pointer": true
                           }
                         }
-                      },
-                      "description": "List of workspaces with resolved owner details."
+                      }
                     }
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -337,7 +374,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                 "description": "Payload for creating a workspace.",
                 "required": [
                   "name",
-                  "organization_id"
+                  "organizationId"
                 ],
                 "properties": {
                   "name": {
@@ -359,7 +396,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                       "json": "description,omitempty"
                     }
                   },
-                  "organization_id": {
+                  "organizationId": {
                     "type": "string",
                     "description": "Organization ID.",
                     "maxLength": 36,
@@ -367,7 +404,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                     "x-go-type-skip-optional-pointer": true,
                     "x-go-name": "OrganizationID",
                     "x-oapi-codegen-extra-tags": {
-                      "json": "organization_id,omitempty"
+                      "json": "organizationId,omitempty"
                     }
                   },
                   "metadata": {
@@ -398,9 +435,9 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "required": [
                     "id",
                     "name",
-                    "organization_id",
-                    "created_at",
-                    "updated_at"
+                    "organizationId",
+                    "createdAt",
+                    "updatedAt"
                   ],
                   "properties": {
                     "id": {
@@ -438,13 +475,13 @@ const WorkspaceSchema: Record<string, unknown> = {
                         "json": "description,omitempty"
                       }
                     },
-                    "organization_id": {
+                    "organizationId": {
                       "description": "Organization to which this workspace belongs.",
                       "x-go-name": "OrganizationID",
                       "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "organization_id",
-                        "json": "organization_id,omitempty"
+                        "json": "organizationId,omitempty"
                       },
                       "type": "string",
                       "format": "uuid",
@@ -476,40 +513,43 @@ const WorkspaceSchema: Record<string, unknown> = {
                         "json": "metadata"
                       }
                     },
-                    "created_at": {
-                      "description": "Timestamp when the resource was created.",
+                    "createdAt": {
+                      "description": "Timestamp when the workspace was created.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "yaml": "created_at",
+                        "json": "createdAt"
+                      },
                       "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
                       "x-go-name": "CreatedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "created_at",
-                        "yaml": "created_at"
-                      },
                       "x-go-type-skip-optional-pointer": true
                     },
-                    "updated_at": {
-                      "description": "Timestamp when the resource was updated.",
+                    "updatedAt": {
+                      "description": "Timestamp when the workspace was last updated.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "yaml": "updated_at",
+                        "json": "updatedAt"
+                      },
                       "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
                       "x-go-name": "UpdatedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "updated_at",
-                        "yaml": "updated_at"
-                      },
                       "x-go-type-skip-optional-pointer": true
                     },
-                    "deleted_at": {
-                      "description": "Timestamp when the resource was deleted.",
+                    "deletedAt": {
+                      "description": "Timestamp when the workspace was soft-deleted. Null while the workspace is active.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deleted_at",
+                        "yaml": "deleted_at",
+                        "json": "deletedAt,omitempty"
+                      },
                       "x-go-type": "NullTime",
                       "type": "string",
                       "format": "date-time",
                       "x-go-name": "DeletedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "deleted_at",
-                        "yaml": "deleted_at"
-                      },
                       "x-go-type-skip-optional-pointer": true
                     }
                   }
@@ -598,9 +638,9 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "required": [
                     "id",
                     "name",
-                    "organization_id",
-                    "created_at",
-                    "updated_at"
+                    "organizationId",
+                    "createdAt",
+                    "updatedAt"
                   ],
                   "properties": {
                     "id": {
@@ -638,13 +678,13 @@ const WorkspaceSchema: Record<string, unknown> = {
                         "json": "description,omitempty"
                       }
                     },
-                    "organization_id": {
+                    "organizationId": {
                       "description": "Organization to which this workspace belongs.",
                       "x-go-name": "OrganizationID",
                       "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "organization_id",
-                        "json": "organization_id,omitempty"
+                        "json": "organizationId,omitempty"
                       },
                       "type": "string",
                       "format": "uuid",
@@ -676,40 +716,43 @@ const WorkspaceSchema: Record<string, unknown> = {
                         "json": "metadata"
                       }
                     },
-                    "created_at": {
-                      "description": "Timestamp when the resource was created.",
+                    "createdAt": {
+                      "description": "Timestamp when the workspace was created.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "yaml": "created_at",
+                        "json": "createdAt"
+                      },
                       "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
                       "x-go-name": "CreatedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "created_at",
-                        "yaml": "created_at"
-                      },
                       "x-go-type-skip-optional-pointer": true
                     },
-                    "updated_at": {
-                      "description": "Timestamp when the resource was updated.",
+                    "updatedAt": {
+                      "description": "Timestamp when the workspace was last updated.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "yaml": "updated_at",
+                        "json": "updatedAt"
+                      },
                       "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
                       "x-go-name": "UpdatedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "updated_at",
-                        "yaml": "updated_at"
-                      },
                       "x-go-type-skip-optional-pointer": true
                     },
-                    "deleted_at": {
-                      "description": "Timestamp when the resource was deleted.",
+                    "deletedAt": {
+                      "description": "Timestamp when the workspace was soft-deleted. Null while the workspace is active.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deleted_at",
+                        "yaml": "deleted_at",
+                        "json": "deletedAt,omitempty"
+                      },
                       "x-go-type": "NullTime",
                       "type": "string",
                       "format": "date-time",
                       "x-go-name": "DeletedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "deleted_at",
-                        "yaml": "deleted_at"
-                      },
                       "x-go-type-skip-optional-pointer": true
                     }
                   }
@@ -801,7 +844,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                 "type": "object",
                 "description": "Payload for updating a workspace.",
                 "required": [
-                  "organization_id"
+                  "organizationId"
                 ],
                 "properties": {
                   "name": {
@@ -823,7 +866,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                       "json": "description,omitempty"
                     }
                   },
-                  "organization_id": {
+                  "organizationId": {
                     "type": "string",
                     "description": "Organization ID.",
                     "maxLength": 36,
@@ -831,7 +874,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                     "x-go-type-skip-optional-pointer": true,
                     "x-go-name": "OrganizationID",
                     "x-oapi-codegen-extra-tags": {
-                      "json": "organization_id,omitempty"
+                      "json": "organizationId,omitempty"
                     }
                   },
                   "metadata": {
@@ -862,9 +905,9 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "required": [
                     "id",
                     "name",
-                    "organization_id",
-                    "created_at",
-                    "updated_at"
+                    "organizationId",
+                    "createdAt",
+                    "updatedAt"
                   ],
                   "properties": {
                     "id": {
@@ -902,13 +945,13 @@ const WorkspaceSchema: Record<string, unknown> = {
                         "json": "description,omitempty"
                       }
                     },
-                    "organization_id": {
+                    "organizationId": {
                       "description": "Organization to which this workspace belongs.",
                       "x-go-name": "OrganizationID",
                       "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "organization_id",
-                        "json": "organization_id,omitempty"
+                        "json": "organizationId,omitempty"
                       },
                       "type": "string",
                       "format": "uuid",
@@ -940,40 +983,43 @@ const WorkspaceSchema: Record<string, unknown> = {
                         "json": "metadata"
                       }
                     },
-                    "created_at": {
-                      "description": "Timestamp when the resource was created.",
+                    "createdAt": {
+                      "description": "Timestamp when the workspace was created.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "yaml": "created_at",
+                        "json": "createdAt"
+                      },
                       "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
                       "x-go-name": "CreatedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "created_at",
-                        "yaml": "created_at"
-                      },
                       "x-go-type-skip-optional-pointer": true
                     },
-                    "updated_at": {
-                      "description": "Timestamp when the resource was updated.",
+                    "updatedAt": {
+                      "description": "Timestamp when the workspace was last updated.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "yaml": "updated_at",
+                        "json": "updatedAt"
+                      },
                       "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
                       "x-go-name": "UpdatedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "updated_at",
-                        "yaml": "updated_at"
-                      },
                       "x-go-type-skip-optional-pointer": true
                     },
-                    "deleted_at": {
-                      "description": "Timestamp when the resource was deleted.",
+                    "deletedAt": {
+                      "description": "Timestamp when the workspace was soft-deleted. Null while the workspace is active.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deleted_at",
+                        "yaml": "deleted_at",
+                        "json": "deletedAt,omitempty"
+                      },
                       "x-go-type": "NullTime",
                       "type": "string",
                       "format": "date-time",
                       "x-go-name": "DeletedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "deleted_at",
-                        "yaml": "deleted_at"
-                      },
                       "x-go-type-skip-optional-pointer": true
                     }
                   }
@@ -1173,7 +1219,8 @@ const WorkspaceSchema: Record<string, unknown> = {
             "in": "query",
             "description": "JSON-encoded filter string used for assignment and soft-delete filters.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 4096
             }
           }
         ],
@@ -1427,24 +1474,42 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "properties": {
                     "page": {
                       "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      "x-go-type-skip-optional-pointer": true,
+                      "description": "Zero-based page index returned in this response.",
+                      "minimum": 0
                     },
-                    "page_size": {
+                    "pageSize": {
                       "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      "x-go-type-skip-optional-pointer": true,
+                      "description": "Maximum number of items returned on each page.",
+                      "minimum": 1,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "pageSize,omitempty"
+                      }
                     },
-                    "total_count": {
+                    "totalCount": {
                       "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      "x-go-type-skip-optional-pointer": true,
+                      "description": "Total number of items across all pages.",
+                      "minimum": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "totalCount,omitempty"
+                      }
                     },
                     "workspacesTeamsMapping": {
                       "type": "array",
+                      "description": "Workspace-team mapping entries.",
                       "x-go-type-skip-optional-pointer": true,
                       "items": {
                         "x-go-type": "WorkspacesTeamsMapping",
                         "type": "object",
                         "description": "Junction record linking a workspace to a team.",
                         "additionalProperties": false,
+                        "required": [
+                          "id",
+                          "workspaceId",
+                          "teamId"
+                        ],
                         "properties": {
                           "id": {
                             "type": "string",
@@ -1460,73 +1525,77 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "x-go-type-name": "GeneralId",
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "workspace_id": {
-                            "type": "string",
-                            "format": "uuid",
-                            "x-go-type": "uuid.UUID",
-                            "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
-                            },
+                          "workspaceId": {
+                            "description": "Workspace ID for this mapping.",
+                            "x-go-name": "WorkspaceID",
+                            "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "workspace_id",
-                              "json": "workspace_id"
+                              "json": "workspaceId"
                             },
-                            "x-go-type-name": "WorkspaceId",
-                            "x-go-type-skip-optional-pointer": true
-                          },
-                          "team_id": {
                             "type": "string",
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
-                            },
+                            }
+                          },
+                          "teamId": {
+                            "description": "Team ID for this mapping.",
+                            "x-go-name": "TeamID",
+                            "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "team_id",
-                              "json": "team_id"
+                              "json": "teamId"
                             },
-                            "x-go-type-name": "TeamId",
-                            "x-go-type-skip-optional-pointer": true
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
                           },
-                          "created_at": {
-                            "description": "Timestamp when the resource was created.",
+                          "createdAt": {
+                            "description": "Timestamp when the mapping was created.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "yaml": "created_at",
+                              "json": "createdAt,omitempty"
+                            },
                             "x-go-type": "time.Time",
                             "type": "string",
                             "format": "date-time",
                             "x-go-name": "CreatedAt",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "created_at",
-                              "yaml": "created_at"
-                            },
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "updated_at": {
-                            "description": "Timestamp when the resource was updated.",
+                          "updatedAt": {
+                            "description": "Timestamp when the mapping was last updated.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "yaml": "updated_at",
+                              "json": "updatedAt,omitempty"
+                            },
                             "x-go-type": "time.Time",
                             "type": "string",
                             "format": "date-time",
                             "x-go-name": "UpdatedAt",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "updated_at",
-                              "yaml": "updated_at"
-                            },
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "deleted_at": {
-                            "description": "Timestamp when the resource was deleted.",
+                          "deletedAt": {
+                            "description": "Timestamp when the mapping was soft-deleted.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deleted_at",
+                              "yaml": "deleted_at",
+                              "json": "deletedAt,omitempty"
+                            },
                             "x-go-type": "NullTime",
                             "type": "string",
                             "format": "date-time",
                             "x-go-name": "DeletedAt",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "deleted_at",
-                              "yaml": "deleted_at"
-                            },
                             "x-go-type-skip-optional-pointer": true
                           }
                         }
-                      },
-                      "description": "Workspace-team mapping entries."
+                      }
                     }
                   }
                 }
@@ -1745,7 +1814,8 @@ const WorkspaceSchema: Record<string, unknown> = {
             "in": "query",
             "description": "JSON-encoded filter string used for assignment and soft-delete filters.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 4096
             }
           }
         ],
@@ -1886,6 +1956,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             }
                           },
                           "created_at": {
+                            "x-order": 7,
                             "description": "Timestamp when the resource was created.",
                             "x-go-type": "time.Time",
                             "type": "string",
@@ -1895,8 +1966,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                               "db": "created_at",
                               "yaml": "created_at"
                             },
-                            "x-go-type-skip-optional-pointer": true,
-                            "x-order": 7
+                            "x-go-type-skip-optional-pointer": true
                           },
                           "metadata": {
                             "description": "Additional metadata associated with the environment.",
@@ -1910,6 +1980,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "type": "object"
                           },
                           "updated_at": {
+                            "x-order": 9,
                             "description": "Timestamp when the resource was updated.",
                             "x-go-type": "time.Time",
                             "type": "string",
@@ -1919,8 +1990,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                               "db": "updated_at",
                               "yaml": "updated_at"
                             },
-                            "x-go-type-skip-optional-pointer": true,
-                            "x-order": 9
+                            "x-go-type-skip-optional-pointer": true
                           },
                           "deleted_at": {
                             "description": "Timestamp when the environment was soft deleted. Null while the environment remains active.",
@@ -2057,24 +2127,42 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "properties": {
                     "page": {
                       "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      "x-go-type-skip-optional-pointer": true,
+                      "description": "Zero-based page index returned in this response.",
+                      "minimum": 0
                     },
-                    "page_size": {
+                    "pageSize": {
                       "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      "x-go-type-skip-optional-pointer": true,
+                      "description": "Maximum number of items returned on each page.",
+                      "minimum": 1,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "pageSize,omitempty"
+                      }
                     },
-                    "total_count": {
+                    "totalCount": {
                       "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      "x-go-type-skip-optional-pointer": true,
+                      "description": "Total number of items across all pages.",
+                      "minimum": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "totalCount,omitempty"
+                      }
                     },
                     "workspacesEnvironmentsMapping": {
                       "type": "array",
+                      "description": "Workspace-environment mapping entries.",
                       "x-go-type-skip-optional-pointer": true,
                       "items": {
                         "x-go-type": "WorkspacesEnvironmentsMapping",
                         "type": "object",
                         "description": "Junction record linking a workspace to an environment.",
                         "additionalProperties": false,
+                        "required": [
+                          "id",
+                          "workspaceId",
+                          "environmentId"
+                        ],
                         "properties": {
                           "id": {
                             "type": "string",
@@ -2090,73 +2178,77 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "x-go-type-name": "GeneralId",
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "workspace_id": {
-                            "type": "string",
-                            "format": "uuid",
-                            "x-go-type": "uuid.UUID",
-                            "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
-                            },
+                          "workspaceId": {
+                            "description": "Workspace ID for this mapping.",
+                            "x-go-name": "WorkspaceID",
+                            "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "workspace_id",
-                              "json": "workspace_id"
+                              "json": "workspaceId"
                             },
-                            "x-go-type-name": "WorkspaceId",
-                            "x-go-type-skip-optional-pointer": true
-                          },
-                          "environment_id": {
                             "type": "string",
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
-                            },
+                            }
+                          },
+                          "environmentId": {
+                            "description": "Environment ID for this mapping.",
+                            "x-go-name": "EnvironmentID",
+                            "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "environment_id",
-                              "json": "environment_id"
+                              "json": "environmentId"
                             },
-                            "x-go-type-name": "EnvironmentId",
-                            "x-go-type-skip-optional-pointer": true
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
                           },
-                          "created_at": {
-                            "description": "Timestamp when the resource was created.",
+                          "createdAt": {
+                            "description": "Timestamp when the mapping was created.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "yaml": "created_at",
+                              "json": "createdAt,omitempty"
+                            },
                             "x-go-type": "time.Time",
                             "type": "string",
                             "format": "date-time",
                             "x-go-name": "CreatedAt",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "created_at",
-                              "yaml": "created_at"
-                            },
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "updated_at": {
-                            "description": "Timestamp when the resource was updated.",
+                          "updatedAt": {
+                            "description": "Timestamp when the mapping was last updated.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "yaml": "updated_at",
+                              "json": "updatedAt,omitempty"
+                            },
                             "x-go-type": "time.Time",
                             "type": "string",
                             "format": "date-time",
                             "x-go-name": "UpdatedAt",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "updated_at",
-                              "yaml": "updated_at"
-                            },
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "deleted_at": {
-                            "description": "Timestamp when the resource was deleted.",
+                          "deletedAt": {
+                            "description": "Timestamp when the mapping was soft-deleted.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deleted_at",
+                              "yaml": "deleted_at",
+                              "json": "deletedAt,omitempty"
+                            },
                             "x-go-type": "NullTime",
                             "type": "string",
                             "format": "date-time",
                             "x-go-name": "DeletedAt",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "deleted_at",
-                              "yaml": "deleted_at"
-                            },
                             "x-go-type-skip-optional-pointer": true
                           }
                         }
-                      },
-                      "description": "Workspace-environment mapping entries."
+                      }
                     }
                   }
                 }
@@ -2376,7 +2468,8 @@ const WorkspaceSchema: Record<string, unknown> = {
             "in": "query",
             "description": "JSON-encoded filter string used for assignment and soft-delete filters.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 4096
             }
           }
         ],
@@ -2391,18 +2484,31 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "properties": {
                     "page": {
                       "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      "x-go-type-skip-optional-pointer": true,
+                      "description": "Zero-based page index returned in this response.",
+                      "minimum": 0
                     },
-                    "page_size": {
+                    "pageSize": {
                       "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      "x-go-type-skip-optional-pointer": true,
+                      "description": "Maximum number of items returned on each page.",
+                      "minimum": 1,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "pageSize,omitempty"
+                      }
                     },
-                    "total_count": {
+                    "totalCount": {
                       "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      "x-go-type-skip-optional-pointer": true,
+                      "description": "Total number of items across all pages.",
+                      "minimum": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "totalCount,omitempty"
+                      }
                     },
                     "designs": {
                       "type": "array",
+                      "description": "Designs in this page.",
                       "x-go-type-skip-optional-pointer": true,
                       "items": {
                         "type": "object",
@@ -3180,6 +3286,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                         }
                                                       },
                                                       "created_at": {
+                                                        "x-order": 7,
                                                         "description": "Timestamp when the resource was created.",
                                                         "x-go-type": "time.Time",
                                                         "type": "string",
@@ -3189,8 +3296,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                           "db": "created_at",
                                                           "yaml": "created_at"
                                                         },
-                                                        "x-go-type-skip-optional-pointer": true,
-                                                        "x-order": 7
+                                                        "x-go-type-skip-optional-pointer": true
                                                       },
                                                       "metadata": {
                                                         "description": "Additional metadata associated with the environment.",
@@ -3204,6 +3310,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                         "type": "object"
                                                       },
                                                       "updated_at": {
+                                                        "x-order": 9,
                                                         "description": "Timestamp when the resource was updated.",
                                                         "x-go-type": "time.Time",
                                                         "type": "string",
@@ -3213,8 +3320,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                           "db": "updated_at",
                                                           "yaml": "updated_at"
                                                         },
-                                                        "x-go-type-skip-optional-pointer": true,
-                                                        "x-order": 9
+                                                        "x-go-type-skip-optional-pointer": true
                                                       },
                                                       "deleted_at": {
                                                         "description": "Timestamp when the environment was soft deleted. Null while the environment remains active.",
@@ -3815,6 +3921,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                               "minimum": 0
                                             },
                                             "created_at": {
+                                              "x-order": 14,
                                               "description": "Timestamp when the resource was created.",
                                               "x-go-type": "time.Time",
                                               "type": "string",
@@ -3824,10 +3931,10 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                 "db": "created_at",
                                                 "yaml": "created_at"
                                               },
-                                              "x-go-type-skip-optional-pointer": true,
-                                              "x-order": 14
+                                              "x-go-type-skip-optional-pointer": true
                                             },
                                             "updated_at": {
+                                              "x-order": 15,
                                               "description": "Timestamp when the resource was updated.",
                                               "x-go-type": "time.Time",
                                               "type": "string",
@@ -3837,8 +3944,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                 "db": "updated_at",
                                                 "yaml": "updated_at"
                                               },
-                                              "x-go-type-skip-optional-pointer": true,
-                                              "x-order": 15
+                                              "x-go-type-skip-optional-pointer": true
                                             }
                                           },
                                           "required": [
@@ -4780,6 +4886,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                           ]
                                         },
                                         "created_at": {
+                                          "x-order": 14,
                                           "description": "Timestamp when the resource was created.",
                                           "x-go-type": "time.Time",
                                           "type": "string",
@@ -4789,10 +4896,10 @@ const WorkspaceSchema: Record<string, unknown> = {
                                             "db": "created_at",
                                             "yaml": "created_at"
                                           },
-                                          "x-go-type-skip-optional-pointer": true,
-                                          "x-order": 14
+                                          "x-go-type-skip-optional-pointer": true
                                         },
                                         "updated_at": {
+                                          "x-order": 15,
                                           "description": "Timestamp when the resource was updated.",
                                           "x-go-type": "time.Time",
                                           "type": "string",
@@ -4802,8 +4909,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                             "db": "updated_at",
                                             "yaml": "updated_at"
                                           },
-                                          "x-go-type-skip-optional-pointer": true,
-                                          "x-order": 15
+                                          "x-go-type-skip-optional-pointer": true
                                         }
                                       },
                                       "required": [
@@ -7160,8 +7266,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "x-go-type-skip-optional-pointer": true
                           }
                         }
-                      },
-                      "description": "Designs in this page."
+                      }
                     }
                   }
                 }
@@ -7277,24 +7382,42 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "properties": {
                     "page": {
                       "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      "x-go-type-skip-optional-pointer": true,
+                      "description": "Zero-based page index returned in this response.",
+                      "minimum": 0
                     },
-                    "page_size": {
+                    "pageSize": {
                       "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      "x-go-type-skip-optional-pointer": true,
+                      "description": "Maximum number of items returned on each page.",
+                      "minimum": 1,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "pageSize,omitempty"
+                      }
                     },
-                    "total_count": {
+                    "totalCount": {
                       "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      "x-go-type-skip-optional-pointer": true,
+                      "description": "Total number of items across all pages.",
+                      "minimum": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "totalCount,omitempty"
+                      }
                     },
                     "workspacesDesignsMapping": {
                       "type": "array",
+                      "description": "Workspace-design mapping entries.",
                       "x-go-type-skip-optional-pointer": true,
                       "items": {
                         "x-go-type": "WorkspacesDesignsMapping",
                         "type": "object",
                         "description": "Junction record linking a workspace to a design.",
                         "additionalProperties": false,
+                        "required": [
+                          "id",
+                          "workspaceId",
+                          "designId"
+                        ],
                         "properties": {
                           "id": {
                             "type": "string",
@@ -7310,73 +7433,77 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "x-go-type-name": "GeneralId",
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "workspace_id": {
+                          "workspaceId": {
                             "type": "string",
                             "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
                             },
+                            "x-go-name": "WorkspaceID",
+                            "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "workspace_id",
-                              "json": "workspace_id"
-                            },
-                            "x-go-type-name": "WorkspaceId",
-                            "x-go-type-skip-optional-pointer": true
+                              "json": "workspaceId"
+                            }
                           },
-                          "design_id": {
+                          "designId": {
                             "type": "string",
                             "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
                             },
+                            "x-go-name": "DesignID",
+                            "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "design_id",
-                              "json": "design_id"
-                            },
-                            "x-go-type-name": "DesignId",
-                            "x-go-type-skip-optional-pointer": true
+                              "json": "designId"
+                            }
                           },
-                          "created_at": {
-                            "description": "Timestamp when the resource was created.",
+                          "createdAt": {
+                            "description": "Timestamp when the mapping was created.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "yaml": "created_at",
+                              "json": "createdAt,omitempty"
+                            },
                             "x-go-type": "time.Time",
                             "type": "string",
                             "format": "date-time",
                             "x-go-name": "CreatedAt",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "created_at",
-                              "yaml": "created_at"
-                            },
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "updated_at": {
-                            "description": "Timestamp when the resource was updated.",
+                          "updatedAt": {
+                            "description": "Timestamp when the mapping was last updated.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "yaml": "updated_at",
+                              "json": "updatedAt,omitempty"
+                            },
                             "x-go-type": "time.Time",
                             "type": "string",
                             "format": "date-time",
                             "x-go-name": "UpdatedAt",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "updated_at",
-                              "yaml": "updated_at"
-                            },
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "deleted_at": {
-                            "description": "Timestamp when the resource was deleted.",
+                          "deletedAt": {
+                            "description": "Timestamp when the mapping was soft-deleted.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deleted_at",
+                              "yaml": "deleted_at",
+                              "json": "deletedAt,omitempty"
+                            },
                             "x-go-type": "NullTime",
                             "type": "string",
                             "format": "date-time",
                             "x-go-name": "DeletedAt",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "deleted_at",
-                              "yaml": "deleted_at"
-                            },
                             "x-go-type-skip-optional-pointer": true
                           }
                         }
-                      },
-                      "description": "Workspace-design mapping entries."
+                      }
                     }
                   }
                 }
@@ -7597,7 +7724,8 @@ const WorkspaceSchema: Record<string, unknown> = {
             "in": "query",
             "description": "JSON-encoded filter string used for assignment and soft-delete filters.",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 4096
             }
           }
         ],
@@ -7914,24 +8042,42 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "properties": {
                     "page": {
                       "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      "x-go-type-skip-optional-pointer": true,
+                      "description": "Zero-based page index returned in this response.",
+                      "minimum": 0
                     },
-                    "page_size": {
+                    "pageSize": {
                       "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      "x-go-type-skip-optional-pointer": true,
+                      "description": "Maximum number of items returned on each page.",
+                      "minimum": 1,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "pageSize,omitempty"
+                      }
                     },
-                    "total_count": {
+                    "totalCount": {
                       "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      "x-go-type-skip-optional-pointer": true,
+                      "description": "Total number of items across all pages.",
+                      "minimum": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "totalCount,omitempty"
+                      }
                     },
                     "workspacesViewsMapping": {
                       "type": "array",
+                      "description": "Workspace-view mapping entries.",
                       "x-go-type-skip-optional-pointer": true,
                       "items": {
                         "x-go-type": "WorkspacesViewsMapping",
                         "type": "object",
                         "description": "Junction record linking a workspace to a view.",
                         "additionalProperties": false,
+                        "required": [
+                          "id",
+                          "workspaceId",
+                          "viewId"
+                        ],
                         "properties": {
                           "id": {
                             "type": "string",
@@ -7947,35 +8093,37 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "x-go-type-name": "GeneralId",
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "workspace_id": {
+                          "workspaceId": {
                             "type": "string",
                             "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
                             },
+                            "x-go-name": "WorkspaceID",
+                            "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "workspace_id",
-                              "json": "workspace_id"
-                            },
-                            "x-go-type-name": "WorkspaceId",
-                            "x-go-type-skip-optional-pointer": true
+                              "json": "workspaceId"
+                            }
                           },
-                          "view_id": {
+                          "viewId": {
                             "type": "string",
                             "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
                             },
+                            "x-go-name": "ViewID",
+                            "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "view_id",
-                              "json": "view_id"
-                            },
-                            "x-go-type-name": "ViewId",
-                            "x-go-type-skip-optional-pointer": true
+                              "json": "viewId"
+                            }
                           },
-                          "created_at": {
+                          "createdAt": {
                             "description": "Timestamp when the resource was created.",
                             "x-go-type": "time.Time",
                             "type": "string",
@@ -7987,7 +8135,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                             },
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "updated_at": {
+                          "updatedAt": {
                             "description": "Timestamp when the resource was updated.",
                             "x-go-type": "time.Time",
                             "type": "string",
@@ -7999,21 +8147,21 @@ const WorkspaceSchema: Record<string, unknown> = {
                             },
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "deleted_at": {
-                            "description": "Timestamp when the resource was deleted.",
+                          "deletedAt": {
+                            "description": "Timestamp when the mapping was soft-deleted.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deleted_at",
+                              "yaml": "deleted_at",
+                              "json": "deletedAt,omitempty"
+                            },
                             "x-go-type": "NullTime",
                             "type": "string",
                             "format": "date-time",
                             "x-go-name": "DeletedAt",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "deleted_at",
-                              "yaml": "deleted_at"
-                            },
                             "x-go-type-skip-optional-pointer": true
                           }
                         }
-                      },
-                      "description": "Workspace-view mapping entries."
+                      }
                     }
                   }
                 }
@@ -8318,6 +8466,17 @@ const WorkspaceSchema: Record<string, unknown> = {
         },
         "required": true
       },
+      "orgIdQuery": {
+        "name": "orgId",
+        "in": "query",
+        "description": "Organization ID used to scope the workspace listing.",
+        "schema": {
+          "type": "string",
+          "format": "uuid",
+          "maxLength": 36
+        },
+        "required": false
+      },
       "search": {
         "name": "search",
         "in": "query",
@@ -8355,7 +8514,8 @@ const WorkspaceSchema: Record<string, unknown> = {
         "in": "query",
         "description": "JSON-encoded filter string used for assignment and soft-delete filters.",
         "schema": {
-          "type": "string"
+          "type": "string",
+          "maxLength": 4096
         }
       }
     },
@@ -8376,9 +8536,9 @@ const WorkspaceSchema: Record<string, unknown> = {
         "required": [
           "id",
           "name",
-          "organization_id",
-          "created_at",
-          "updated_at"
+          "organizationId",
+          "createdAt",
+          "updatedAt"
         ],
         "properties": {
           "id": {
@@ -8416,13 +8576,13 @@ const WorkspaceSchema: Record<string, unknown> = {
               "json": "description,omitempty"
             }
           },
-          "organization_id": {
+          "organizationId": {
             "description": "Organization to which this workspace belongs.",
             "x-go-name": "OrganizationID",
             "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "organization_id",
-              "json": "organization_id,omitempty"
+              "json": "organizationId,omitempty"
             },
             "type": "string",
             "format": "uuid",
@@ -8454,40 +8614,43 @@ const WorkspaceSchema: Record<string, unknown> = {
               "json": "metadata"
             }
           },
-          "created_at": {
-            "description": "Timestamp when the resource was created.",
+          "createdAt": {
+            "description": "Timestamp when the workspace was created.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at",
+              "yaml": "created_at",
+              "json": "createdAt"
+            },
             "x-go-type": "time.Time",
             "type": "string",
             "format": "date-time",
             "x-go-name": "CreatedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "created_at",
-              "yaml": "created_at"
-            },
             "x-go-type-skip-optional-pointer": true
           },
-          "updated_at": {
-            "description": "Timestamp when the resource was updated.",
+          "updatedAt": {
+            "description": "Timestamp when the workspace was last updated.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at",
+              "yaml": "updated_at",
+              "json": "updatedAt"
+            },
             "x-go-type": "time.Time",
             "type": "string",
             "format": "date-time",
             "x-go-name": "UpdatedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "updated_at",
-              "yaml": "updated_at"
-            },
             "x-go-type-skip-optional-pointer": true
           },
-          "deleted_at": {
-            "description": "Timestamp when the resource was deleted.",
+          "deletedAt": {
+            "description": "Timestamp when the workspace was soft-deleted. Null while the workspace is active.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "deleted_at",
+              "yaml": "deleted_at",
+              "json": "deletedAt,omitempty"
+            },
             "x-go-type": "NullTime",
             "type": "string",
             "format": "date-time",
             "x-go-name": "DeletedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "deleted_at",
-              "yaml": "deleted_at"
-            },
             "x-go-type-skip-optional-pointer": true
           }
         }
@@ -8531,14 +8694,14 @@ const WorkspaceSchema: Record<string, unknown> = {
               "json": "description,omitempty"
             }
           },
-          "org_name": {
+          "orgName": {
             "type": "string",
             "description": "Name of the owning organization.",
             "maxLength": 255,
             "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "org_name",
-              "json": "org_name,omitempty"
+              "json": "orgName,omitempty"
             }
           },
           "owner": {
@@ -8550,12 +8713,12 @@ const WorkspaceSchema: Record<string, unknown> = {
               "json": "owner,omitempty"
             }
           },
-          "owner_id": {
+          "ownerId": {
             "description": "User ID of the workspace owner.",
             "x-go-name": "OwnerId",
             "x-oapi-codegen-extra-tags": {
               "db": "owner_id",
-              "json": "owner_id,omitempty"
+              "json": "ownerId,omitempty"
             },
             "type": "string",
             "format": "uuid",
@@ -8564,22 +8727,24 @@ const WorkspaceSchema: Record<string, unknown> = {
               "path": "github.com/gofrs/uuid"
             }
           },
-          "owner_email": {
+          "ownerEmail": {
             "type": "string",
             "description": "Email address of the workspace owner.",
+            "format": "email",
             "maxLength": 320,
             "x-oapi-codegen-extra-tags": {
               "db": "owner_email",
-              "json": "owner_email,omitempty"
+              "json": "ownerEmail,omitempty"
             }
           },
-          "owner_avatar": {
+          "ownerAvatar": {
             "type": "string",
             "description": "Avatar URL of the workspace owner.",
+            "format": "uri",
             "maxLength": 2048,
             "x-oapi-codegen-extra-tags": {
               "db": "owner_avatar",
-              "json": "owner_avatar,omitempty"
+              "json": "ownerAvatar,omitempty"
             }
           },
           "metadata": {
@@ -8592,13 +8757,13 @@ const WorkspaceSchema: Record<string, unknown> = {
               "json": "metadata,omitempty"
             }
           },
-          "organization_id": {
+          "organizationId": {
             "description": "Organization to which this workspace belongs.",
             "x-go-name": "OrganizationId",
             "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "organization_id",
-              "json": "organization_id,omitempty"
+              "json": "organizationId,omitempty"
             },
             "type": "string",
             "format": "uuid",
@@ -8607,40 +8772,43 @@ const WorkspaceSchema: Record<string, unknown> = {
               "path": "github.com/gofrs/uuid"
             }
           },
-          "created_at": {
-            "description": "Timestamp when the resource was created.",
+          "createdAt": {
+            "description": "Timestamp when the workspace was created.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at",
+              "yaml": "created_at",
+              "json": "createdAt,omitempty"
+            },
             "x-go-type": "time.Time",
             "type": "string",
             "format": "date-time",
             "x-go-name": "CreatedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "created_at",
-              "yaml": "created_at"
-            },
             "x-go-type-skip-optional-pointer": true
           },
-          "updated_at": {
-            "description": "Timestamp when the resource was updated.",
+          "updatedAt": {
+            "description": "Timestamp when the workspace was last updated.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at",
+              "yaml": "updated_at",
+              "json": "updatedAt,omitempty"
+            },
             "x-go-type": "time.Time",
             "type": "string",
             "format": "date-time",
             "x-go-name": "UpdatedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "updated_at",
-              "yaml": "updated_at"
-            },
             "x-go-type-skip-optional-pointer": true
           },
-          "deleted_at": {
-            "description": "Timestamp when the resource was deleted.",
+          "deletedAt": {
+            "description": "Timestamp when the workspace was soft-deleted. Null while the workspace is active.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "deleted_at",
+              "yaml": "deleted_at",
+              "json": "deletedAt,omitempty"
+            },
             "x-go-type": "NullTime",
             "type": "string",
             "format": "date-time",
             "x-go-name": "DeletedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "deleted_at",
-              "yaml": "deleted_at"
-            },
             "x-go-type-skip-optional-pointer": true
           }
         }
@@ -8650,7 +8818,7 @@ const WorkspaceSchema: Record<string, unknown> = {
         "description": "Payload for creating a workspace.",
         "required": [
           "name",
-          "organization_id"
+          "organizationId"
         ],
         "properties": {
           "name": {
@@ -8672,7 +8840,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "json": "description,omitempty"
             }
           },
-          "organization_id": {
+          "organizationId": {
             "type": "string",
             "description": "Organization ID.",
             "maxLength": 36,
@@ -8680,7 +8848,7 @@ const WorkspaceSchema: Record<string, unknown> = {
             "x-go-type-skip-optional-pointer": true,
             "x-go-name": "OrganizationID",
             "x-oapi-codegen-extra-tags": {
-              "json": "organization_id,omitempty"
+              "json": "organizationId,omitempty"
             }
           },
           "metadata": {
@@ -8698,7 +8866,7 @@ const WorkspaceSchema: Record<string, unknown> = {
         "type": "object",
         "description": "Payload for updating a workspace.",
         "required": [
-          "organization_id"
+          "organizationId"
         ],
         "properties": {
           "name": {
@@ -8720,7 +8888,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "json": "description,omitempty"
             }
           },
-          "organization_id": {
+          "organizationId": {
             "type": "string",
             "description": "Organization ID.",
             "maxLength": 36,
@@ -8728,7 +8896,7 @@ const WorkspaceSchema: Record<string, unknown> = {
             "x-go-type-skip-optional-pointer": true,
             "x-go-name": "OrganizationID",
             "x-oapi-codegen-extra-tags": {
-              "json": "organization_id,omitempty"
+              "json": "organizationId,omitempty"
             }
           },
           "metadata": {
@@ -8747,19 +8915,32 @@ const WorkspaceSchema: Record<string, unknown> = {
         "description": "Paginated list of workspaces.",
         "properties": {
           "page": {
+            "description": "Zero-based page index returned in this response.",
+            "minimum": 0,
             "type": "integer",
             "x-go-type-skip-optional-pointer": true
           },
-          "page_size": {
+          "pageSize": {
+            "description": "Maximum number of items returned on each page.",
+            "minimum": 1,
+            "x-oapi-codegen-extra-tags": {
+              "json": "pageSize,omitempty"
+            },
             "type": "integer",
             "x-go-type-skip-optional-pointer": true
           },
-          "total_count": {
+          "totalCount": {
+            "description": "Total number of items across all pages.",
+            "minimum": 0,
+            "x-oapi-codegen-extra-tags": {
+              "json": "totalCount,omitempty"
+            },
             "type": "integer",
             "x-go-type-skip-optional-pointer": true
           },
           "workspaces": {
             "type": "array",
+            "description": "List of workspaces with resolved owner details.",
             "x-go-type-skip-optional-pointer": true,
             "items": {
               "x-go-type": "AvailableWorkspace",
@@ -8801,14 +8982,14 @@ const WorkspaceSchema: Record<string, unknown> = {
                     "json": "description,omitempty"
                   }
                 },
-                "org_name": {
+                "orgName": {
                   "type": "string",
                   "description": "Name of the owning organization.",
                   "maxLength": 255,
                   "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "org_name",
-                    "json": "org_name,omitempty"
+                    "json": "orgName,omitempty"
                   }
                 },
                 "owner": {
@@ -8820,12 +9001,12 @@ const WorkspaceSchema: Record<string, unknown> = {
                     "json": "owner,omitempty"
                   }
                 },
-                "owner_id": {
+                "ownerId": {
                   "description": "User ID of the workspace owner.",
                   "x-go-name": "OwnerId",
                   "x-oapi-codegen-extra-tags": {
                     "db": "owner_id",
-                    "json": "owner_id,omitempty"
+                    "json": "ownerId,omitempty"
                   },
                   "type": "string",
                   "format": "uuid",
@@ -8834,22 +9015,24 @@ const WorkspaceSchema: Record<string, unknown> = {
                     "path": "github.com/gofrs/uuid"
                   }
                 },
-                "owner_email": {
+                "ownerEmail": {
                   "type": "string",
                   "description": "Email address of the workspace owner.",
+                  "format": "email",
                   "maxLength": 320,
                   "x-oapi-codegen-extra-tags": {
                     "db": "owner_email",
-                    "json": "owner_email,omitempty"
+                    "json": "ownerEmail,omitempty"
                   }
                 },
-                "owner_avatar": {
+                "ownerAvatar": {
                   "type": "string",
                   "description": "Avatar URL of the workspace owner.",
+                  "format": "uri",
                   "maxLength": 2048,
                   "x-oapi-codegen-extra-tags": {
                     "db": "owner_avatar",
-                    "json": "owner_avatar,omitempty"
+                    "json": "ownerAvatar,omitempty"
                   }
                 },
                 "metadata": {
@@ -8862,13 +9045,13 @@ const WorkspaceSchema: Record<string, unknown> = {
                     "json": "metadata,omitempty"
                   }
                 },
-                "organization_id": {
+                "organizationId": {
                   "description": "Organization to which this workspace belongs.",
                   "x-go-name": "OrganizationId",
                   "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "organization_id",
-                    "json": "organization_id,omitempty"
+                    "json": "organizationId,omitempty"
                   },
                   "type": "string",
                   "format": "uuid",
@@ -8877,45 +9060,47 @@ const WorkspaceSchema: Record<string, unknown> = {
                     "path": "github.com/gofrs/uuid"
                   }
                 },
-                "created_at": {
-                  "description": "Timestamp when the resource was created.",
+                "createdAt": {
+                  "description": "Timestamp when the workspace was created.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "created_at",
+                    "yaml": "created_at",
+                    "json": "createdAt,omitempty"
+                  },
                   "x-go-type": "time.Time",
                   "type": "string",
                   "format": "date-time",
                   "x-go-name": "CreatedAt",
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "created_at",
-                    "yaml": "created_at"
-                  },
                   "x-go-type-skip-optional-pointer": true
                 },
-                "updated_at": {
-                  "description": "Timestamp when the resource was updated.",
+                "updatedAt": {
+                  "description": "Timestamp when the workspace was last updated.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "updated_at",
+                    "yaml": "updated_at",
+                    "json": "updatedAt,omitempty"
+                  },
                   "x-go-type": "time.Time",
                   "type": "string",
                   "format": "date-time",
                   "x-go-name": "UpdatedAt",
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "updated_at",
-                    "yaml": "updated_at"
-                  },
                   "x-go-type-skip-optional-pointer": true
                 },
-                "deleted_at": {
-                  "description": "Timestamp when the resource was deleted.",
+                "deletedAt": {
+                  "description": "Timestamp when the workspace was soft-deleted. Null while the workspace is active.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "deleted_at",
+                    "yaml": "deleted_at",
+                    "json": "deletedAt,omitempty"
+                  },
                   "x-go-type": "NullTime",
                   "type": "string",
                   "format": "date-time",
                   "x-go-name": "DeletedAt",
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "deleted_at",
-                    "yaml": "deleted_at"
-                  },
                   "x-go-type-skip-optional-pointer": true
                 }
               }
-            },
-            "description": "List of workspaces with resolved owner details."
+            }
           }
         }
       },
@@ -8923,6 +9108,11 @@ const WorkspaceSchema: Record<string, unknown> = {
         "type": "object",
         "description": "Junction record linking a workspace to a team.",
         "additionalProperties": false,
+        "required": [
+          "id",
+          "workspaceId",
+          "teamId"
+        ],
         "properties": {
           "id": {
             "type": "string",
@@ -8938,68 +9128,73 @@ const WorkspaceSchema: Record<string, unknown> = {
             "x-go-type-name": "GeneralId",
             "x-go-type-skip-optional-pointer": true
           },
-          "workspace_id": {
-            "type": "string",
-            "format": "uuid",
-            "x-go-type": "uuid.UUID",
-            "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
-            },
+          "workspaceId": {
+            "description": "Workspace ID for this mapping.",
+            "x-go-name": "WorkspaceID",
+            "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "workspace_id",
-              "json": "workspace_id"
+              "json": "workspaceId"
             },
-            "x-go-type-name": "WorkspaceId",
-            "x-go-type-skip-optional-pointer": true
-          },
-          "team_id": {
             "type": "string",
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
-            },
+            }
+          },
+          "teamId": {
+            "description": "Team ID for this mapping.",
+            "x-go-name": "TeamID",
+            "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "team_id",
-              "json": "team_id"
+              "json": "teamId"
             },
-            "x-go-type-name": "TeamId",
-            "x-go-type-skip-optional-pointer": true
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
           },
-          "created_at": {
-            "description": "Timestamp when the resource was created.",
+          "createdAt": {
+            "description": "Timestamp when the mapping was created.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at",
+              "yaml": "created_at",
+              "json": "createdAt,omitempty"
+            },
             "x-go-type": "time.Time",
             "type": "string",
             "format": "date-time",
             "x-go-name": "CreatedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "created_at",
-              "yaml": "created_at"
-            },
             "x-go-type-skip-optional-pointer": true
           },
-          "updated_at": {
-            "description": "Timestamp when the resource was updated.",
+          "updatedAt": {
+            "description": "Timestamp when the mapping was last updated.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at",
+              "yaml": "updated_at",
+              "json": "updatedAt,omitempty"
+            },
             "x-go-type": "time.Time",
             "type": "string",
             "format": "date-time",
             "x-go-name": "UpdatedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "updated_at",
-              "yaml": "updated_at"
-            },
             "x-go-type-skip-optional-pointer": true
           },
-          "deleted_at": {
-            "description": "Timestamp when the resource was deleted.",
+          "deletedAt": {
+            "description": "Timestamp when the mapping was soft-deleted.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "deleted_at",
+              "yaml": "deleted_at",
+              "json": "deletedAt,omitempty"
+            },
             "x-go-type": "NullTime",
             "type": "string",
             "format": "date-time",
             "x-go-name": "DeletedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "deleted_at",
-              "yaml": "deleted_at"
-            },
             "x-go-type-skip-optional-pointer": true
           }
         }
@@ -9010,24 +9205,42 @@ const WorkspaceSchema: Record<string, unknown> = {
         "properties": {
           "page": {
             "type": "integer",
-            "x-go-type-skip-optional-pointer": true
+            "x-go-type-skip-optional-pointer": true,
+            "description": "Zero-based page index returned in this response.",
+            "minimum": 0
           },
-          "page_size": {
+          "pageSize": {
             "type": "integer",
-            "x-go-type-skip-optional-pointer": true
+            "x-go-type-skip-optional-pointer": true,
+            "description": "Maximum number of items returned on each page.",
+            "minimum": 1,
+            "x-oapi-codegen-extra-tags": {
+              "json": "pageSize,omitempty"
+            }
           },
-          "total_count": {
+          "totalCount": {
             "type": "integer",
-            "x-go-type-skip-optional-pointer": true
+            "x-go-type-skip-optional-pointer": true,
+            "description": "Total number of items across all pages.",
+            "minimum": 0,
+            "x-oapi-codegen-extra-tags": {
+              "json": "totalCount,omitempty"
+            }
           },
           "workspacesTeamsMapping": {
             "type": "array",
+            "description": "Workspace-team mapping entries.",
             "x-go-type-skip-optional-pointer": true,
             "items": {
               "x-go-type": "WorkspacesTeamsMapping",
               "type": "object",
               "description": "Junction record linking a workspace to a team.",
               "additionalProperties": false,
+              "required": [
+                "id",
+                "workspaceId",
+                "teamId"
+              ],
               "properties": {
                 "id": {
                   "type": "string",
@@ -9043,73 +9256,77 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "x-go-type-name": "GeneralId",
                   "x-go-type-skip-optional-pointer": true
                 },
-                "workspace_id": {
-                  "type": "string",
-                  "format": "uuid",
-                  "x-go-type": "uuid.UUID",
-                  "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
-                  },
+                "workspaceId": {
+                  "description": "Workspace ID for this mapping.",
+                  "x-go-name": "WorkspaceID",
+                  "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "workspace_id",
-                    "json": "workspace_id"
+                    "json": "workspaceId"
                   },
-                  "x-go-type-name": "WorkspaceId",
-                  "x-go-type-skip-optional-pointer": true
-                },
-                "team_id": {
                   "type": "string",
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
-                  },
+                  }
+                },
+                "teamId": {
+                  "description": "Team ID for this mapping.",
+                  "x-go-name": "TeamID",
+                  "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "team_id",
-                    "json": "team_id"
+                    "json": "teamId"
                   },
-                  "x-go-type-name": "TeamId",
-                  "x-go-type-skip-optional-pointer": true
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
                 },
-                "created_at": {
-                  "description": "Timestamp when the resource was created.",
+                "createdAt": {
+                  "description": "Timestamp when the mapping was created.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "created_at",
+                    "yaml": "created_at",
+                    "json": "createdAt,omitempty"
+                  },
                   "x-go-type": "time.Time",
                   "type": "string",
                   "format": "date-time",
                   "x-go-name": "CreatedAt",
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "created_at",
-                    "yaml": "created_at"
-                  },
                   "x-go-type-skip-optional-pointer": true
                 },
-                "updated_at": {
-                  "description": "Timestamp when the resource was updated.",
+                "updatedAt": {
+                  "description": "Timestamp when the mapping was last updated.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "updated_at",
+                    "yaml": "updated_at",
+                    "json": "updatedAt,omitempty"
+                  },
                   "x-go-type": "time.Time",
                   "type": "string",
                   "format": "date-time",
                   "x-go-name": "UpdatedAt",
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "updated_at",
-                    "yaml": "updated_at"
-                  },
                   "x-go-type-skip-optional-pointer": true
                 },
-                "deleted_at": {
-                  "description": "Timestamp when the resource was deleted.",
+                "deletedAt": {
+                  "description": "Timestamp when the mapping was soft-deleted.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "deleted_at",
+                    "yaml": "deleted_at",
+                    "json": "deletedAt,omitempty"
+                  },
                   "x-go-type": "NullTime",
                   "type": "string",
                   "format": "date-time",
                   "x-go-name": "DeletedAt",
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "deleted_at",
-                    "yaml": "deleted_at"
-                  },
                   "x-go-type-skip-optional-pointer": true
                 }
               }
-            },
-            "description": "Workspace-team mapping entries."
+            }
           }
         }
       },
@@ -9117,6 +9334,11 @@ const WorkspaceSchema: Record<string, unknown> = {
         "type": "object",
         "description": "Junction record linking a workspace to an environment.",
         "additionalProperties": false,
+        "required": [
+          "id",
+          "workspaceId",
+          "environmentId"
+        ],
         "properties": {
           "id": {
             "type": "string",
@@ -9132,68 +9354,73 @@ const WorkspaceSchema: Record<string, unknown> = {
             "x-go-type-name": "GeneralId",
             "x-go-type-skip-optional-pointer": true
           },
-          "workspace_id": {
-            "type": "string",
-            "format": "uuid",
-            "x-go-type": "uuid.UUID",
-            "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
-            },
+          "workspaceId": {
+            "description": "Workspace ID for this mapping.",
+            "x-go-name": "WorkspaceID",
+            "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "workspace_id",
-              "json": "workspace_id"
+              "json": "workspaceId"
             },
-            "x-go-type-name": "WorkspaceId",
-            "x-go-type-skip-optional-pointer": true
-          },
-          "environment_id": {
             "type": "string",
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
-            },
+            }
+          },
+          "environmentId": {
+            "description": "Environment ID for this mapping.",
+            "x-go-name": "EnvironmentID",
+            "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "environment_id",
-              "json": "environment_id"
+              "json": "environmentId"
             },
-            "x-go-type-name": "EnvironmentId",
-            "x-go-type-skip-optional-pointer": true
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
           },
-          "created_at": {
-            "description": "Timestamp when the resource was created.",
+          "createdAt": {
+            "description": "Timestamp when the mapping was created.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at",
+              "yaml": "created_at",
+              "json": "createdAt,omitempty"
+            },
             "x-go-type": "time.Time",
             "type": "string",
             "format": "date-time",
             "x-go-name": "CreatedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "created_at",
-              "yaml": "created_at"
-            },
             "x-go-type-skip-optional-pointer": true
           },
-          "updated_at": {
-            "description": "Timestamp when the resource was updated.",
+          "updatedAt": {
+            "description": "Timestamp when the mapping was last updated.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at",
+              "yaml": "updated_at",
+              "json": "updatedAt,omitempty"
+            },
             "x-go-type": "time.Time",
             "type": "string",
             "format": "date-time",
             "x-go-name": "UpdatedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "updated_at",
-              "yaml": "updated_at"
-            },
             "x-go-type-skip-optional-pointer": true
           },
-          "deleted_at": {
-            "description": "Timestamp when the resource was deleted.",
+          "deletedAt": {
+            "description": "Timestamp when the mapping was soft-deleted.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "deleted_at",
+              "yaml": "deleted_at",
+              "json": "deletedAt,omitempty"
+            },
             "x-go-type": "NullTime",
             "type": "string",
             "format": "date-time",
             "x-go-name": "DeletedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "deleted_at",
-              "yaml": "deleted_at"
-            },
             "x-go-type-skip-optional-pointer": true
           }
         }
@@ -9204,24 +9431,42 @@ const WorkspaceSchema: Record<string, unknown> = {
         "properties": {
           "page": {
             "type": "integer",
-            "x-go-type-skip-optional-pointer": true
+            "x-go-type-skip-optional-pointer": true,
+            "description": "Zero-based page index returned in this response.",
+            "minimum": 0
           },
-          "page_size": {
+          "pageSize": {
             "type": "integer",
-            "x-go-type-skip-optional-pointer": true
+            "x-go-type-skip-optional-pointer": true,
+            "description": "Maximum number of items returned on each page.",
+            "minimum": 1,
+            "x-oapi-codegen-extra-tags": {
+              "json": "pageSize,omitempty"
+            }
           },
-          "total_count": {
+          "totalCount": {
             "type": "integer",
-            "x-go-type-skip-optional-pointer": true
+            "x-go-type-skip-optional-pointer": true,
+            "description": "Total number of items across all pages.",
+            "minimum": 0,
+            "x-oapi-codegen-extra-tags": {
+              "json": "totalCount,omitempty"
+            }
           },
           "workspacesEnvironmentsMapping": {
             "type": "array",
+            "description": "Workspace-environment mapping entries.",
             "x-go-type-skip-optional-pointer": true,
             "items": {
               "x-go-type": "WorkspacesEnvironmentsMapping",
               "type": "object",
               "description": "Junction record linking a workspace to an environment.",
               "additionalProperties": false,
+              "required": [
+                "id",
+                "workspaceId",
+                "environmentId"
+              ],
               "properties": {
                 "id": {
                   "type": "string",
@@ -9237,73 +9482,77 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "x-go-type-name": "GeneralId",
                   "x-go-type-skip-optional-pointer": true
                 },
-                "workspace_id": {
-                  "type": "string",
-                  "format": "uuid",
-                  "x-go-type": "uuid.UUID",
-                  "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
-                  },
+                "workspaceId": {
+                  "description": "Workspace ID for this mapping.",
+                  "x-go-name": "WorkspaceID",
+                  "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "workspace_id",
-                    "json": "workspace_id"
+                    "json": "workspaceId"
                   },
-                  "x-go-type-name": "WorkspaceId",
-                  "x-go-type-skip-optional-pointer": true
-                },
-                "environment_id": {
                   "type": "string",
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
-                  },
+                  }
+                },
+                "environmentId": {
+                  "description": "Environment ID for this mapping.",
+                  "x-go-name": "EnvironmentID",
+                  "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "environment_id",
-                    "json": "environment_id"
+                    "json": "environmentId"
                   },
-                  "x-go-type-name": "EnvironmentId",
-                  "x-go-type-skip-optional-pointer": true
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
                 },
-                "created_at": {
-                  "description": "Timestamp when the resource was created.",
+                "createdAt": {
+                  "description": "Timestamp when the mapping was created.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "created_at",
+                    "yaml": "created_at",
+                    "json": "createdAt,omitempty"
+                  },
                   "x-go-type": "time.Time",
                   "type": "string",
                   "format": "date-time",
                   "x-go-name": "CreatedAt",
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "created_at",
-                    "yaml": "created_at"
-                  },
                   "x-go-type-skip-optional-pointer": true
                 },
-                "updated_at": {
-                  "description": "Timestamp when the resource was updated.",
+                "updatedAt": {
+                  "description": "Timestamp when the mapping was last updated.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "updated_at",
+                    "yaml": "updated_at",
+                    "json": "updatedAt,omitempty"
+                  },
                   "x-go-type": "time.Time",
                   "type": "string",
                   "format": "date-time",
                   "x-go-name": "UpdatedAt",
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "updated_at",
-                    "yaml": "updated_at"
-                  },
                   "x-go-type-skip-optional-pointer": true
                 },
-                "deleted_at": {
-                  "description": "Timestamp when the resource was deleted.",
+                "deletedAt": {
+                  "description": "Timestamp when the mapping was soft-deleted.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "deleted_at",
+                    "yaml": "deleted_at",
+                    "json": "deletedAt,omitempty"
+                  },
                   "x-go-type": "NullTime",
                   "type": "string",
                   "format": "date-time",
                   "x-go-name": "DeletedAt",
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "deleted_at",
-                    "yaml": "deleted_at"
-                  },
                   "x-go-type-skip-optional-pointer": true
                 }
               }
-            },
-            "description": "Workspace-environment mapping entries."
+            }
           }
         }
       },
@@ -9311,6 +9560,11 @@ const WorkspaceSchema: Record<string, unknown> = {
         "type": "object",
         "description": "Junction record linking a workspace to a design.",
         "additionalProperties": false,
+        "required": [
+          "id",
+          "workspaceId",
+          "designId"
+        ],
         "properties": {
           "id": {
             "type": "string",
@@ -9326,68 +9580,73 @@ const WorkspaceSchema: Record<string, unknown> = {
             "x-go-type-name": "GeneralId",
             "x-go-type-skip-optional-pointer": true
           },
-          "workspace_id": {
+          "workspaceId": {
             "type": "string",
             "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
             },
+            "x-go-name": "WorkspaceID",
+            "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "workspace_id",
-              "json": "workspace_id"
-            },
-            "x-go-type-name": "WorkspaceId",
-            "x-go-type-skip-optional-pointer": true
+              "json": "workspaceId"
+            }
           },
-          "design_id": {
+          "designId": {
             "type": "string",
             "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
             },
+            "x-go-name": "DesignID",
+            "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "design_id",
-              "json": "design_id"
-            },
-            "x-go-type-name": "DesignId",
-            "x-go-type-skip-optional-pointer": true
+              "json": "designId"
+            }
           },
-          "created_at": {
-            "description": "Timestamp when the resource was created.",
+          "createdAt": {
+            "description": "Timestamp when the mapping was created.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at",
+              "yaml": "created_at",
+              "json": "createdAt,omitempty"
+            },
             "x-go-type": "time.Time",
             "type": "string",
             "format": "date-time",
             "x-go-name": "CreatedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "created_at",
-              "yaml": "created_at"
-            },
             "x-go-type-skip-optional-pointer": true
           },
-          "updated_at": {
-            "description": "Timestamp when the resource was updated.",
+          "updatedAt": {
+            "description": "Timestamp when the mapping was last updated.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at",
+              "yaml": "updated_at",
+              "json": "updatedAt,omitempty"
+            },
             "x-go-type": "time.Time",
             "type": "string",
             "format": "date-time",
             "x-go-name": "UpdatedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "updated_at",
-              "yaml": "updated_at"
-            },
             "x-go-type-skip-optional-pointer": true
           },
-          "deleted_at": {
-            "description": "Timestamp when the resource was deleted.",
+          "deletedAt": {
+            "description": "Timestamp when the mapping was soft-deleted.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "deleted_at",
+              "yaml": "deleted_at",
+              "json": "deletedAt,omitempty"
+            },
             "x-go-type": "NullTime",
             "type": "string",
             "format": "date-time",
             "x-go-name": "DeletedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "deleted_at",
-              "yaml": "deleted_at"
-            },
             "x-go-type-skip-optional-pointer": true
           }
         }
@@ -9398,24 +9657,42 @@ const WorkspaceSchema: Record<string, unknown> = {
         "properties": {
           "page": {
             "type": "integer",
-            "x-go-type-skip-optional-pointer": true
+            "x-go-type-skip-optional-pointer": true,
+            "description": "Zero-based page index returned in this response.",
+            "minimum": 0
           },
-          "page_size": {
+          "pageSize": {
             "type": "integer",
-            "x-go-type-skip-optional-pointer": true
+            "x-go-type-skip-optional-pointer": true,
+            "description": "Maximum number of items returned on each page.",
+            "minimum": 1,
+            "x-oapi-codegen-extra-tags": {
+              "json": "pageSize,omitempty"
+            }
           },
-          "total_count": {
+          "totalCount": {
             "type": "integer",
-            "x-go-type-skip-optional-pointer": true
+            "x-go-type-skip-optional-pointer": true,
+            "description": "Total number of items across all pages.",
+            "minimum": 0,
+            "x-oapi-codegen-extra-tags": {
+              "json": "totalCount,omitempty"
+            }
           },
           "workspacesDesignsMapping": {
             "type": "array",
+            "description": "Workspace-design mapping entries.",
             "x-go-type-skip-optional-pointer": true,
             "items": {
               "x-go-type": "WorkspacesDesignsMapping",
               "type": "object",
               "description": "Junction record linking a workspace to a design.",
               "additionalProperties": false,
+              "required": [
+                "id",
+                "workspaceId",
+                "designId"
+              ],
               "properties": {
                 "id": {
                   "type": "string",
@@ -9431,73 +9708,77 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "x-go-type-name": "GeneralId",
                   "x-go-type-skip-optional-pointer": true
                 },
-                "workspace_id": {
+                "workspaceId": {
                   "type": "string",
                   "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
                   },
+                  "x-go-name": "WorkspaceID",
+                  "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "workspace_id",
-                    "json": "workspace_id"
-                  },
-                  "x-go-type-name": "WorkspaceId",
-                  "x-go-type-skip-optional-pointer": true
+                    "json": "workspaceId"
+                  }
                 },
-                "design_id": {
+                "designId": {
                   "type": "string",
                   "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
                   },
+                  "x-go-name": "DesignID",
+                  "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "design_id",
-                    "json": "design_id"
-                  },
-                  "x-go-type-name": "DesignId",
-                  "x-go-type-skip-optional-pointer": true
+                    "json": "designId"
+                  }
                 },
-                "created_at": {
-                  "description": "Timestamp when the resource was created.",
+                "createdAt": {
+                  "description": "Timestamp when the mapping was created.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "created_at",
+                    "yaml": "created_at",
+                    "json": "createdAt,omitempty"
+                  },
                   "x-go-type": "time.Time",
                   "type": "string",
                   "format": "date-time",
                   "x-go-name": "CreatedAt",
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "created_at",
-                    "yaml": "created_at"
-                  },
                   "x-go-type-skip-optional-pointer": true
                 },
-                "updated_at": {
-                  "description": "Timestamp when the resource was updated.",
+                "updatedAt": {
+                  "description": "Timestamp when the mapping was last updated.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "updated_at",
+                    "yaml": "updated_at",
+                    "json": "updatedAt,omitempty"
+                  },
                   "x-go-type": "time.Time",
                   "type": "string",
                   "format": "date-time",
                   "x-go-name": "UpdatedAt",
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "updated_at",
-                    "yaml": "updated_at"
-                  },
                   "x-go-type-skip-optional-pointer": true
                 },
-                "deleted_at": {
-                  "description": "Timestamp when the resource was deleted.",
+                "deletedAt": {
+                  "description": "Timestamp when the mapping was soft-deleted.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "deleted_at",
+                    "yaml": "deleted_at",
+                    "json": "deletedAt,omitempty"
+                  },
                   "x-go-type": "NullTime",
                   "type": "string",
                   "format": "date-time",
                   "x-go-name": "DeletedAt",
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "deleted_at",
-                    "yaml": "deleted_at"
-                  },
                   "x-go-type-skip-optional-pointer": true
                 }
               }
-            },
-            "description": "Workspace-design mapping entries."
+            }
           }
         }
       },
@@ -9505,6 +9786,11 @@ const WorkspaceSchema: Record<string, unknown> = {
         "type": "object",
         "description": "Junction record linking a workspace to a view.",
         "additionalProperties": false,
+        "required": [
+          "id",
+          "workspaceId",
+          "viewId"
+        ],
         "properties": {
           "id": {
             "type": "string",
@@ -9520,35 +9806,37 @@ const WorkspaceSchema: Record<string, unknown> = {
             "x-go-type-name": "GeneralId",
             "x-go-type-skip-optional-pointer": true
           },
-          "workspace_id": {
+          "workspaceId": {
             "type": "string",
             "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
             },
+            "x-go-name": "WorkspaceID",
+            "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "workspace_id",
-              "json": "workspace_id"
-            },
-            "x-go-type-name": "WorkspaceId",
-            "x-go-type-skip-optional-pointer": true
+              "json": "workspaceId"
+            }
           },
-          "view_id": {
+          "viewId": {
             "type": "string",
             "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
             },
+            "x-go-name": "ViewID",
+            "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "view_id",
-              "json": "view_id"
-            },
-            "x-go-type-name": "ViewId",
-            "x-go-type-skip-optional-pointer": true
+              "json": "viewId"
+            }
           },
-          "created_at": {
+          "createdAt": {
             "description": "Timestamp when the resource was created.",
             "x-go-type": "time.Time",
             "type": "string",
@@ -9560,7 +9848,7 @@ const WorkspaceSchema: Record<string, unknown> = {
             },
             "x-go-type-skip-optional-pointer": true
           },
-          "updated_at": {
+          "updatedAt": {
             "description": "Timestamp when the resource was updated.",
             "x-go-type": "time.Time",
             "type": "string",
@@ -9572,16 +9860,17 @@ const WorkspaceSchema: Record<string, unknown> = {
             },
             "x-go-type-skip-optional-pointer": true
           },
-          "deleted_at": {
-            "description": "Timestamp when the resource was deleted.",
+          "deletedAt": {
+            "description": "Timestamp when the mapping was soft-deleted.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "deleted_at",
+              "yaml": "deleted_at",
+              "json": "deletedAt,omitempty"
+            },
             "x-go-type": "NullTime",
             "type": "string",
             "format": "date-time",
             "x-go-name": "DeletedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "deleted_at",
-              "yaml": "deleted_at"
-            },
             "x-go-type-skip-optional-pointer": true
           }
         }
@@ -9592,24 +9881,42 @@ const WorkspaceSchema: Record<string, unknown> = {
         "properties": {
           "page": {
             "type": "integer",
-            "x-go-type-skip-optional-pointer": true
+            "x-go-type-skip-optional-pointer": true,
+            "description": "Zero-based page index returned in this response.",
+            "minimum": 0
           },
-          "page_size": {
+          "pageSize": {
             "type": "integer",
-            "x-go-type-skip-optional-pointer": true
+            "x-go-type-skip-optional-pointer": true,
+            "description": "Maximum number of items returned on each page.",
+            "minimum": 1,
+            "x-oapi-codegen-extra-tags": {
+              "json": "pageSize,omitempty"
+            }
           },
-          "total_count": {
+          "totalCount": {
             "type": "integer",
-            "x-go-type-skip-optional-pointer": true
+            "x-go-type-skip-optional-pointer": true,
+            "description": "Total number of items across all pages.",
+            "minimum": 0,
+            "x-oapi-codegen-extra-tags": {
+              "json": "totalCount,omitempty"
+            }
           },
           "workspacesViewsMapping": {
             "type": "array",
+            "description": "Workspace-view mapping entries.",
             "x-go-type-skip-optional-pointer": true,
             "items": {
               "x-go-type": "WorkspacesViewsMapping",
               "type": "object",
               "description": "Junction record linking a workspace to a view.",
               "additionalProperties": false,
+              "required": [
+                "id",
+                "workspaceId",
+                "viewId"
+              ],
               "properties": {
                 "id": {
                   "type": "string",
@@ -9625,35 +9932,37 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "x-go-type-name": "GeneralId",
                   "x-go-type-skip-optional-pointer": true
                 },
-                "workspace_id": {
+                "workspaceId": {
                   "type": "string",
                   "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
                   },
+                  "x-go-name": "WorkspaceID",
+                  "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "workspace_id",
-                    "json": "workspace_id"
-                  },
-                  "x-go-type-name": "WorkspaceId",
-                  "x-go-type-skip-optional-pointer": true
+                    "json": "workspaceId"
+                  }
                 },
-                "view_id": {
+                "viewId": {
                   "type": "string",
                   "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
                   },
+                  "x-go-name": "ViewID",
+                  "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "view_id",
-                    "json": "view_id"
-                  },
-                  "x-go-type-name": "ViewId",
-                  "x-go-type-skip-optional-pointer": true
+                    "json": "viewId"
+                  }
                 },
-                "created_at": {
+                "createdAt": {
                   "description": "Timestamp when the resource was created.",
                   "x-go-type": "time.Time",
                   "type": "string",
@@ -9665,7 +9974,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                   },
                   "x-go-type-skip-optional-pointer": true
                 },
-                "updated_at": {
+                "updatedAt": {
                   "description": "Timestamp when the resource was updated.",
                   "x-go-type": "time.Time",
                   "type": "string",
@@ -9677,21 +9986,21 @@ const WorkspaceSchema: Record<string, unknown> = {
                   },
                   "x-go-type-skip-optional-pointer": true
                 },
-                "deleted_at": {
-                  "description": "Timestamp when the resource was deleted.",
+                "deletedAt": {
+                  "description": "Timestamp when the mapping was soft-deleted.",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "deleted_at",
+                    "yaml": "deleted_at",
+                    "json": "deletedAt,omitempty"
+                  },
                   "x-go-type": "NullTime",
                   "type": "string",
                   "format": "date-time",
                   "x-go-name": "DeletedAt",
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "deleted_at",
-                    "yaml": "deleted_at"
-                  },
                   "x-go-type-skip-optional-pointer": true
                 }
               }
-            },
-            "description": "Workspace-view mapping entries."
+            }
           }
         }
       },
@@ -9701,18 +10010,31 @@ const WorkspaceSchema: Record<string, unknown> = {
         "properties": {
           "page": {
             "type": "integer",
-            "x-go-type-skip-optional-pointer": true
+            "x-go-type-skip-optional-pointer": true,
+            "description": "Zero-based page index returned in this response.",
+            "minimum": 0
           },
-          "page_size": {
+          "pageSize": {
             "type": "integer",
-            "x-go-type-skip-optional-pointer": true
+            "x-go-type-skip-optional-pointer": true,
+            "description": "Maximum number of items returned on each page.",
+            "minimum": 1,
+            "x-oapi-codegen-extra-tags": {
+              "json": "pageSize,omitempty"
+            }
           },
-          "total_count": {
+          "totalCount": {
             "type": "integer",
-            "x-go-type-skip-optional-pointer": true
+            "x-go-type-skip-optional-pointer": true,
+            "description": "Total number of items across all pages.",
+            "minimum": 0,
+            "x-oapi-codegen-extra-tags": {
+              "json": "totalCount,omitempty"
+            }
           },
           "designs": {
             "type": "array",
+            "description": "Designs in this page.",
             "x-go-type-skip-optional-pointer": true,
             "items": {
               "type": "object",
@@ -10490,6 +10812,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                               }
                                             },
                                             "created_at": {
+                                              "x-order": 7,
                                               "description": "Timestamp when the resource was created.",
                                               "x-go-type": "time.Time",
                                               "type": "string",
@@ -10499,8 +10822,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                 "db": "created_at",
                                                 "yaml": "created_at"
                                               },
-                                              "x-go-type-skip-optional-pointer": true,
-                                              "x-order": 7
+                                              "x-go-type-skip-optional-pointer": true
                                             },
                                             "metadata": {
                                               "description": "Additional metadata associated with the environment.",
@@ -10514,6 +10836,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                               "type": "object"
                                             },
                                             "updated_at": {
+                                              "x-order": 9,
                                               "description": "Timestamp when the resource was updated.",
                                               "x-go-type": "time.Time",
                                               "type": "string",
@@ -10523,8 +10846,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                 "db": "updated_at",
                                                 "yaml": "updated_at"
                                               },
-                                              "x-go-type-skip-optional-pointer": true,
-                                              "x-order": 9
+                                              "x-go-type-skip-optional-pointer": true
                                             },
                                             "deleted_at": {
                                               "description": "Timestamp when the environment was soft deleted. Null while the environment remains active.",
@@ -11125,6 +11447,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                     "minimum": 0
                                   },
                                   "created_at": {
+                                    "x-order": 14,
                                     "description": "Timestamp when the resource was created.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
@@ -11134,10 +11457,10 @@ const WorkspaceSchema: Record<string, unknown> = {
                                       "db": "created_at",
                                       "yaml": "created_at"
                                     },
-                                    "x-go-type-skip-optional-pointer": true,
-                                    "x-order": 14
+                                    "x-go-type-skip-optional-pointer": true
                                   },
                                   "updated_at": {
+                                    "x-order": 15,
                                     "description": "Timestamp when the resource was updated.",
                                     "x-go-type": "time.Time",
                                     "type": "string",
@@ -11147,8 +11470,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                       "db": "updated_at",
                                       "yaml": "updated_at"
                                     },
-                                    "x-go-type-skip-optional-pointer": true,
-                                    "x-order": 15
+                                    "x-go-type-skip-optional-pointer": true
                                   }
                                 },
                                 "required": [
@@ -12090,6 +12412,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                 ]
                               },
                               "created_at": {
+                                "x-order": 14,
                                 "description": "Timestamp when the resource was created.",
                                 "x-go-type": "time.Time",
                                 "type": "string",
@@ -12099,10 +12422,10 @@ const WorkspaceSchema: Record<string, unknown> = {
                                   "db": "created_at",
                                   "yaml": "created_at"
                                 },
-                                "x-go-type-skip-optional-pointer": true,
-                                "x-order": 14
+                                "x-go-type-skip-optional-pointer": true
                               },
                               "updated_at": {
+                                "x-order": 15,
                                 "description": "Timestamp when the resource was updated.",
                                 "x-go-type": "time.Time",
                                 "type": "string",
@@ -12112,8 +12435,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                   "db": "updated_at",
                                   "yaml": "updated_at"
                                 },
-                                "x-go-type-skip-optional-pointer": true,
-                                "x-order": 15
+                                "x-go-type-skip-optional-pointer": true
                               }
                             },
                             "required": [
@@ -14470,8 +14792,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "x-go-type-skip-optional-pointer": true
                 }
               }
-            },
-            "description": "Designs in this page."
+            }
           }
         }
       },
@@ -14855,7 +15176,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "description": "Payload for creating a workspace.",
               "required": [
                 "name",
-                "organization_id"
+                "organizationId"
               ],
               "properties": {
                 "name": {
@@ -14877,7 +15198,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                     "json": "description,omitempty"
                   }
                 },
-                "organization_id": {
+                "organizationId": {
                   "type": "string",
                   "description": "Organization ID.",
                   "maxLength": 36,
@@ -14885,7 +15206,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "x-go-type-skip-optional-pointer": true,
                   "x-go-name": "OrganizationID",
                   "x-oapi-codegen-extra-tags": {
-                    "json": "organization_id,omitempty"
+                    "json": "organizationId,omitempty"
                   }
                 },
                 "metadata": {
@@ -14911,7 +15232,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "type": "object",
               "description": "Payload for updating a workspace.",
               "required": [
-                "organization_id"
+                "organizationId"
               ],
               "properties": {
                 "name": {
@@ -14933,7 +15254,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                     "json": "description,omitempty"
                   }
                 },
-                "organization_id": {
+                "organizationId": {
                   "type": "string",
                   "description": "Organization ID.",
                   "maxLength": 36,
@@ -14941,7 +15262,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "x-go-type-skip-optional-pointer": true,
                   "x-go-name": "OrganizationID",
                   "x-oapi-codegen-extra-tags": {
-                    "json": "organization_id,omitempty"
+                    "json": "organizationId,omitempty"
                   }
                 },
                 "metadata": {
