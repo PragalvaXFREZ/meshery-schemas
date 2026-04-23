@@ -1,9 +1,8 @@
 openapi: 3.0.0
 info:
   title: Subscription
-  x-deprecated: true
   description: API for managing subscriptions using various payment processors in a SaaS application.
-  version: v1beta2
+  version: v1beta3
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -49,11 +48,11 @@ paths:
         explode: true
       responses:
         '200':
+          description: Subscriptions response
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubscriptionPage'
-          description: Get subscription response
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -67,14 +66,15 @@ paths:
       tags:
       - Subscriptions
       operationId: cancelSubscription
-      summary: Cancel an existing subscription. The subscription will remain active until the end of the billing period and
-        then it will be canceled.
+      summary: Cancel an existing subscription. The subscription will remain active
+        until the end of the billing period and then it will be canceled.
       security:
       - jwt: []
       parameters:
       - $ref: '#/components/parameters/subscriptionId'
       responses:
         '200':
+          description: Subscription cancellation scheduled
           content:
             application/json:
               schema:
@@ -123,7 +123,8 @@ paths:
       tags:
       - Subscriptions
       operationId: upgradeSubscription
-      summary: Upgrade or downgrade an existing subscription by changing one of the plans in the subscription
+      summary: Upgrade or downgrade an existing subscription by changing one of the
+        plans in the subscription
       security:
       - jwt: []
       parameters:
@@ -136,6 +137,7 @@ paths:
               $ref: '#/components/schemas/UpgradeSubscriptionRequest'
       responses:
         '200':
+          description: Subscription upgraded
           content:
             application/json:
               schema:
@@ -155,8 +157,8 @@ paths:
       tags:
       - Subscriptions
       operationId: previewSubscriptionUpgrade
-      summary: Preview the invoice for upgrading or downgrading an existing subscription by changing one of the plans in the
-        subscription
+      summary: Preview the invoice for upgrading or downgrading an existing subscription
+        by changing one of the plans in the subscription
       security:
       - jwt: []
       parameters:
@@ -209,13 +211,13 @@ paths:
 components:
   responses:
     400:
-      $ref: ../core/api.yml#/components/responses/400
+      $ref: ../../v1beta2/core/api.yml#/components/responses/400
     401:
-      $ref: ../core/api.yml#/components/responses/401
+      $ref: ../../v1beta2/core/api.yml#/components/responses/401
     404:
-      $ref: ../core/api.yml#/components/responses/404
+      $ref: ../../v1beta2/core/api.yml#/components/responses/404
     500:
-      $ref: ../core/api.yml#/components/responses/500
+      $ref: ../../v1beta2/core/api.yml#/components/responses/500
   securitySchemes:
     jwt:
       type: http
@@ -229,117 +231,138 @@ components:
       description: Subscription ID
       schema:
         type: string
+        format: uuid
     page:
-      $ref: ../core/api.yml#/components/parameters/page
+      $ref: ../../v1beta2/core/api.yml#/components/parameters/page
     pagesize:
-      $ref: ../core/api.yml#/components/parameters/pagesize
+      $ref: ../../v1beta2/core/api.yml#/components/parameters/pagesize
     pagesizeWithAll:
-      $ref: ../core/api.yml#/components/parameters/pagesizeWithAll
+      $ref: ../../v1beta2/core/api.yml#/components/parameters/pagesizeWithAll
     order:
-      $ref: ../core/api.yml#/components/parameters/order
+      $ref: ../../v1beta2/core/api.yml#/components/parameters/order
   schemas:
     PaymentProcessor:
       type: string
+      description: Payment processor used to charge the subscription.
       enum:
       - stripe
       - paypal
       - braintree
-      description: Supported payment processors
     CreateSubscriptionRequest:
       type: object
+      description: Payload for creating a new subscription through a payment processor.
       properties:
         orgId:
-          $ref: ../core/api.yml#/components/schemas/Uuid
-          description: Organization ID
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: ID of the organization subscribing.
         planId:
           type: string
-          description: Price ID from the payment processor
+          description: Price ID from the payment processor.
           x-id-format: external
           maxLength: 500
           pattern: '^[A-Za-z0-9_\-]+$'
         couponId:
           type: string
-          description: Coupon ID to apply
+          description: Coupon ID to apply.
           x-id-format: external
           maxLength: 500
           pattern: '^[A-Za-z0-9_\-]+$'
         userCount:
           type: integer
-          description: Number of users in the organization
+          description: Number of users in the organization.
           minimum: 0
         email:
           type: string
           format: email
-          description: Email of the customer
+          description: Email of the customer.
+          maxLength: 500
         paymentProcessor:
           $ref: '#/components/schemas/PaymentProcessor'
+          description: Payment processor used to complete the subscription checkout.
     UpgradeSubscriptionRequest:
       type: object
+      description: Payload for upgrading or downgrading a subscription by changing
+        one of its plans.
       properties:
         oldPlanId:
-          $ref: ../core/api.yml#/components/schemas/Uuid
-          description: Old Plan id that is being changed
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: Plan ID that is being replaced.
         newPlanId:
-          $ref: ../core/api.yml#/components/schemas/Uuid
-          description: New Plan id that is being changed to
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: Plan ID that replaces the old plan.
     CreateSubscriptionResponse:
       type: object
+      description: Response body returned after a subscription is created.
       properties:
         subscriptionId:
           type: string
-          description: ID of the associated subscription.
+          description: ID of the associated subscription in the payment processor.
           x-id-format: external
           maxLength: 500
           pattern: '^[A-Za-z0-9_\-]+$'
         clientSecret:
           type: string
-          description: Client secret returned by the payment processor for the subscription checkout flow.
+          description: Client secret returned by the payment processor for the subscription
+            checkout flow.
           maxLength: 500
     UpdateUsersRequest:
       type: object
+      description: Payload for synchronizing the current user count with the payment
+        processor.
       properties:
         paymentProcessor:
           $ref: '#/components/schemas/PaymentProcessor'
+          description: Payment processor currently billing the subscription.
     CancelSubscriptionRequest:
       type: object
+      description: Payload for cancelling a subscription in an external processor.
       properties:
         subscriptionId:
           type: string
-          description: Subscription ID from the payment processor
+          description: Subscription ID from the payment processor.
           x-id-format: external
           maxLength: 500
           pattern: '^[A-Za-z0-9_\-]+$'
         paymentProcessor:
           $ref: '#/components/schemas/PaymentProcessor'
+          description: Payment processor currently billing the subscription.
     WebhookEvent:
       type: object
-      description: Payload for webhook events from payment processors
+      description: Payload for webhook events from payment processors.
     SubscriptionPage:
       type: object
+      description: Paginated list of subscriptions.
       required:
       - page
-      - page_size
-      - total_count
+      - pageSize
+      - totalCount
       - subscriptions
       properties:
         page:
           type: integer
           description: Current page number of the result set.
           minimum: 0
-        page_size:
+          x-go-type-skip-optional-pointer: true
+        pageSize:
           type: integer
           description: Number of items per page.
           minimum: 1
-        total_count:
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: pageSize
+        totalCount:
           type: integer
           description: Total number of items available.
           minimum: 0
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: totalCount
         subscriptions:
           type: array
           items:
             $ref: '#/components/schemas/Subscription'
             x-go-type: Subscription
-          description: Subscriptions returned in the current page of results.
+          description: Subscriptions returned on the current page.
     Subscription:
       $ref: ./subscription.yaml
     SubscriptionStatus:
@@ -354,11 +377,15 @@ components:
       - canceled
       - unpaid
       x-enumDescriptions:
-        incomplete: The subscription has been created, but the initial payment is pending. It may transition to 'active' or
-          'incomplete_expired'.
-        incomplete_expired: The subscription was created but never activated due to failed initial payment. It is now expired.
-        trialing: The subscription is currently in a trial period before the first payment is due.
+        incomplete: The subscription has been created, but the initial payment is
+          pending. It may transition to 'active' or 'incomplete_expired'.
+        incomplete_expired: The subscription was created but never activated due to
+          failed initial payment. It is now expired.
+        trialing: The subscription is currently in a trial period before the first
+          payment is due.
         active: The subscription is active, and billing is functioning normally.
-        past_due: The latest payment attempt failed, but the subscription remains active. Stripe may retry the charge.
+        past_due: The latest payment attempt failed, but the subscription remains
+          active. Stripe may retry the charge.
         canceled: The subscription has been canceled and will no longer generate invoices.
-        unpaid: The subscription is still technically active but has unpaid invoices and is no longer generating new invoices.
+        unpaid: The subscription is still technically active but has unpaid invoices
+          and is no longer generating new invoices.

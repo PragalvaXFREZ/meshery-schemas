@@ -1,0 +1,109 @@
+type: object
+additionalProperties: false
+description: Subscription entity schema.
+required:
+- id
+- orgId
+- planId
+- billingId
+- status
+- quantity
+properties:
+  id:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Unique identifier for the subscription.
+    x-oapi-codegen-extra-tags:
+      db: id
+      json: id
+  orgId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: ID of the organization that owns this subscription.
+    x-go-name: OrgID
+    x-oapi-codegen-extra-tags:
+      db: org_id
+      json: orgId
+  planId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: ID of the plan this subscription is for.
+    x-go-name: PlanID
+    x-oapi-codegen-extra-tags:
+      db: plan_id
+      json: planId
+  plan:
+    $ref: ../../v1beta3/plan/api.yml#/components/schemas/Plan
+    description: Eager-loaded plan associated with this subscription.
+    x-go-type: planv1beta3.Plan
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/v1beta3/plan
+      name: planv1beta3
+    x-oapi-codegen-extra-tags:
+      belongs_to: plans
+      fk_id: PlanID
+      json: "plan,omitempty"
+  quantity:
+    type: integer
+    description: Number of units subscribed (eg number of users).
+    x-oapi-codegen-extra-tags:
+      db: quantity
+      json: quantity
+    minimum: 0
+  startDate:
+    type: string
+    format: date-time
+    description: Timestamp when the subscription period started.
+    x-go-type: time.Time
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: start_date
+      json: startDate
+  endDate:
+    type: string
+    format: date-time
+    description: Timestamp when the current subscription period ends.
+    x-go-type: time.Time
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: end_date
+      json: endDate
+  status:
+    $ref: './api.yml#/components/schemas/SubscriptionStatus'
+    description: Current status of the subscription (e.g. active, past_due, canceled).
+    x-go-type: SubscriptionStatus
+    x-oapi-codegen-extra-tags:
+      db: status
+      json: status
+  createdAt:
+    type: string
+    format: date-time
+    description: Timestamp when the subscription was created.
+    x-go-type: time.Time
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: created_at
+      json: createdAt
+  updatedAt:
+    type: string
+    format: date-time
+    description: Timestamp when the subscription was last updated.
+    x-go-type: time.Time
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+      json: updatedAt
+  deletedAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/SqlNullTime
+    description: Timestamp when the subscription was soft-deleted, if applicable.
+    x-oapi-codegen-extra-tags:
+      db: deleted_at
+      json: "deletedAt,omitempty"
+  billingId:
+    type: string
+    description: Billing ID of the subscription. The ID of the subscription in the
+      external billing system (for example, Stripe).
+    x-id-format: external
+    x-go-name: BillingID
+    x-oapi-codegen-extra-tags:
+      db: billing_id
+      json: billingId
+    maxLength: 500
+    pattern: '^[A-Za-z0-9_\-]+$'
