@@ -24,12 +24,12 @@ jobs:
 
       - name: Validate required secrets
         env:
-          CI_CONSUMER_PAT: ${{ secrets.CI_CONSUMER_PAT }}
+          MESHERY_CI: ${{ secrets.MESHERY_CI }}
           CONSUMER_AUDIT_SHEET_ID: ${{ secrets.CONSUMER_AUDIT_SHEET_ID }}
           CONSUMER_AUDIT_GOOGLE_SHEET_B64: ${{ secrets.CONSUMER_AUDIT_GOOGLE_SHEET_B64 }}
         run: |
           missing=()
-          [ -n "$CI_CONSUMER_PAT" ] || missing+=("CI_CONSUMER_PAT")
+          [ -n "$MESHERY_CI" ] || missing+=("MESHERY_CI")
           [ -n "$CONSUMER_AUDIT_SHEET_ID" ] || missing+=("CONSUMER_AUDIT_SHEET_ID")
           [ -n "$CONSUMER_AUDIT_GOOGLE_SHEET_B64" ] || missing+=("CONSUMER_AUDIT_GOOGLE_SHEET_B64")
 
@@ -48,21 +48,21 @@ jobs:
         with:
           repository: meshery/meshery
           path: _consumer/meshery
-          token: ${{ secrets.CI_CONSUMER_PAT }}
+          token: ${{ secrets.MESHERY_CI }}
 
       - name: Checkout layer5io/meshery-cloud
         uses: actions/checkout@v4
         with:
           repository: layer5io/meshery-cloud
           path: _consumer/meshery-cloud
-          token: ${{ secrets.CI_CONSUMER_PAT }}
+          token: ${{ secrets.MESHERY_CI }}
 
       - name: Checkout layer5labs/meshery-extensions
         uses: actions/checkout@v4
         with:
           repository: layer5labs/meshery-extensions
           path: _consumer/meshery-extensions
-          token: ${{ secrets.CI_CONSUMER_PAT }}
+          token: ${{ secrets.MESHERY_CI }}
 
       - name: Decode Google Sheets credentials
         env:

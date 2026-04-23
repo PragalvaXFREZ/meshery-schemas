@@ -71,11 +71,11 @@ jobs:
   # The PR-comment step is pinned to `if: always()` so reviewers still get the
   # divergence summary when the audit command fails.
   #
-  # Downstream repo checkouts use a PAT (CI_CONSUMER_PAT) for private-repo
+  # Downstream repo checkouts use the Meshery CI PAT (MESHERY_CI) for private-repo
   # access (meshery-cloud and meshery-extensions are private). If the secret
   # is unset or lacks access to a given consumer repo, that checkout fails
   # gracefully via continue-on-error and the consumer-audit Go tool silently
-  # skips the missing tree. Provision CI_CONSUMER_PAT as a repository secret
+  # skips the missing tree. Provision MESHERY_CI as a repository secret
   # with at minimum `repo:read` scope against layer5io/meshery-cloud and
   # layer5labs/meshery-extensions.
   consumer-audit:
@@ -101,7 +101,7 @@ jobs:
         with:
           repository: meshery/meshery
           path: _consumer/meshery
-          token: ${{ secrets.CI_CONSUMER_PAT }}
+          token: ${{ secrets.MESHERY_CI }}
 
       - name: Checkout layer5io/meshery-cloud
         id: checkout-cloud
@@ -110,7 +110,7 @@ jobs:
         with:
           repository: layer5io/meshery-cloud
           path: _consumer/meshery-cloud
-          token: ${{ secrets.CI_CONSUMER_PAT }}
+          token: ${{ secrets.MESHERY_CI }}
 
       - name: Checkout layer5labs/meshery-extensions
         id: checkout-extensions
@@ -119,7 +119,7 @@ jobs:
         with:
           repository: layer5labs/meshery-extensions
           path: _consumer/meshery-extensions
-          token: ${{ secrets.CI_CONSUMER_PAT }}
+          token: ${{ secrets.MESHERY_CI }}
 
       # The Go tool treats missing consumer checkout paths as empty/skipped, so
       # passing paths unconditionally is safe even when a sibling checkout
@@ -174,6 +174,7 @@ jobs:
             // cmd/consumer-audit/main.go → printAuditReport. Rows look like:
             //   Category                       Schema  Meshery  Cloud
             //   Total Endpoints                179     217      282
+            //   Schema Backed                  -       70       178
             //   Schema Completeness (TRUE)     179     -        -
             //   Schema Only                    16      -        -
             //   Unimplemented With Schema      -       29       17
@@ -187,6 +188,7 @@ jobs:
             };
 
             const totals = parseRow('Total Endpoints');
+            const schemaBacked = parseRow('Schema Backed');
             const schemaCompleteness = parseRow('Schema Completeness (TRUE)');
             const schemaOnly = parseRow('Schema Only');
             const unimplemented = parseRow('Unimplemented With Schema');
@@ -230,6 +232,7 @@ jobs:
             lines.push('| Category       | schemas | meshery | cloud |');
             lines.push('|---|---|---|---|');
             lines.push(`| Total Endpoints| ${totals[0]}     | ${totals[1]}     | ${totals[2]}   |`);
+            lines.push(`| Schema Backed | ${schemaBacked[0]} | ${schemaBacked[1]} | ${schemaBacked[2]} |`);
             lines.push(`| Schema Completeness (TRUE) | ${schemaCompleteness[0]} | ${schemaCompleteness[1]} | ${schemaCompleteness[2]} |`);
             lines.push(`| Schema Only | ${schemaOnly[0]} | ${schemaOnly[1]} | ${schemaOnly[2]} |`);
             lines.push(`| Unimplemented With Schema | ${unimplemented[0]} | ${unimplemented[1]} | ${unimplemented[2]} |`);
@@ -254,7 +257,7 @@ jobs:
             if (skipped.length > 0) {
               lines.push(
                 `_Skipped consumer checkouts_: ${skipped.join(', ')}. ` +
-                'Configure the `CI_CONSUMER_PAT` repository secret with read access to ' +
+                'Configure the `MESHERY_CI` repository secret with read access to ' +
                 '`layer5io/meshery-cloud` and `layer5labs/meshery-extensions` to include those columns.'
               );
               lines.push('');

@@ -133,6 +133,7 @@ func printAuditReport(out io.Writer, result *validation.ConsumerAuditResult) {
 
 	t := newTable(out, "Category", "Schema", "Meshery", "Cloud")
 	t.AddRow("Total Endpoints", s.SchemaEndpoints, s.MesheryEndpoints, s.CloudEndpoints)
+	t.AddRow("Schema Backed", "-", s.AnnotatedMeshery+s.AnnotatedBoth, s.AnnotatedCloud+s.AnnotatedBoth)
 	t.AddRow("x-Annotated (Meshery only)", s.AnnotatedMeshery, "-", "-")
 	t.AddRow("x-Annotated (Cloud only)", s.AnnotatedCloud, "-", "-")
 	t.AddRow("x-Annotated (Both)", s.AnnotatedBoth, "-", "-")
