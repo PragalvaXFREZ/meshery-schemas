@@ -3,6 +3,7 @@ package validation
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -104,6 +105,15 @@ type ConsumerAuditOptions struct {
 	MesheryRepo string
 	CloudRepo   string
 
+	// TypeScript consumer repos. Each of these points at a checkout whose
+	// ui/rtk-query (or equivalent) directories are parsed by the TS
+	// consumer auditor. MesheryRepoUI defaults to MesheryRepo when unset
+	// because meshery/meshery keeps Go and TS consumers in the same
+	// checkout; CloudRepoUI likewise defaults to CloudRepo.
+	MesheryRepoUI   string
+	CloudRepoUI     string
+	ExtensionsRepo  string
+
 	// Google Sheets update. Empty = no sheet interaction (dry run).
 	SheetID           string
 	SheetsCredentials []byte
@@ -132,6 +142,12 @@ type ConsumerAuditResult struct {
 
 	// Summary counts for terminal display.
 	Summary auditSummary
+
+	// TSFindings is the flat list of TypeScript consumer drift findings
+	// (case-flips, snake_case wrappers, snake_case params) produced by
+	// the TS consumer auditor. Sorted by (file, line, key) for
+	// deterministic output. Empty when no TS consumer trees are provided.
+	TSFindings []TSFinding
 }
 
 // ConsumerAuditRow is one row of the audit output.
@@ -404,11 +420,62 @@ func runConsumerAudit(opts ConsumerAuditOptions, mesheryTree, cloudTree sourceTr
 		Summary: summary,
 	}
 
+	// TypeScript consumer pass. Each tree is optional; callers that only
+	// care about the Go routers will not provide any. Findings are
+	// accumulated onto the result so the CLI can surface them as a
+	// post-script to the main endpoint table.
+	result.TSFindings = runTSConsumers(opts, mesheryTree, cloudTree)
+
 	if err := reconcileFromOpts(opts, result); err != nil {
 		return result, err
 	}
 
 	return result, nil
+}
+
+// runTSConsumers invokes parseTSConsumer against every configured TS
+// consumer tree and returns the aggregated findings. Each entry in
+// tsConsumerRegistry couples a repo identity with a lazy tree constructor so
+// new consumers can be added by appending to the registry.
+func runTSConsumers(opts ConsumerAuditOptions, mesheryGoTree, cloudGoTree sourceTree) []TSFinding {
+	registry := []struct {
+		repo TSConsumerRepo
+		tree sourceTree
+	}{
+		{TSConsumerMeshery, resolveTSTree(opts.MesheryRepoUI, opts.MesheryRepo, mesheryGoTree)},
+		{TSConsumerCloud, resolveTSTree(opts.CloudRepoUI, opts.CloudRepo, cloudGoTree)},
+		{TSConsumerExtensions, resolveTSTree(opts.ExtensionsRepo, "", nil)},
+	}
+	var findings []TSFinding
+	for _, entry := range registry {
+		if entry.tree == nil {
+			continue
+		}
+		_, fs, err := parseTSConsumer(entry.tree, entry.repo)
+		if err != nil {
+			// Don't abort the whole audit on a single TS-repo parse error;
+			// the log message is sufficient for the regenerator, and the
+			// Go-side audit should still surface.
+			log.Printf("consumer-audit: ts: %s: %v", entry.repo, err)
+			continue
+		}
+		findings = append(findings, fs...)
+	}
+	sortTSFindings(findings)
+	return findings
+}
+
+// resolveTSTree picks the best source tree for a TS consumer given the
+// explicit override path, the Go-side repo path (fallback for repos that
+// co-locate Go and TS), and a pre-built Go tree (reused for tests).
+func resolveTSTree(override, fallback string, reuse sourceTree) sourceTree {
+	if override != "" {
+		return localTree{root: override}
+	}
+	if fallback != "" {
+		return localTree{root: fallback}
+	}
+	return reuse
 }
 
 // buildAuditRows materializes one AuditRow per endpoint, joining schema and

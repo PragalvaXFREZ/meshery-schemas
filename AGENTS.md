@@ -447,6 +447,31 @@ make baseline-consumer-audit  MESHERY_REPO=../meshery CLOUD_REPO=../meshery-clou
 make baseline-consumer-graph  MESHERY_REPO=../meshery CLOUD_REPO=../meshery-cloud EXTENSIONS_REPO=../meshery-extensions
 ```
 
+## Consumer audit
+
+The consumer audit joins the schemas endpoint index against the routers and RTK Query clients of the downstream repos, producing a per-endpoint coverage and drift report. Three parsers are registered:
+
+- **Gorilla (Go)** — `meshery/meshery`'s `server/router/server.go`.
+- **Echo (Go)** — `meshery-cloud`'s `server/router/router.go` and related handler files.
+- **TypeScript (RTK Query)** — `meshery/meshery/ui/rtk-query`, `meshery-cloud/ui/api` + `meshery-cloud/ui/rtk-query`, and `meshery-extensions/meshmap/src/rtk-query`.
+
+The TS consumer is intentionally regex-based per the Phase 1.F charter; full TypeScript semantic analysis would require the TS compiler. It extracts `builder.query({url, params})` and `builder.mutation({url, params, body})` sites and flags three finding kinds:
+
+- `case-flip` — a wire key that re-introduces SCREAMING or mixed-case identifiers the camelCase schema contract forbids (e.g. `orgID: queryArg.orgId`).
+- `snake-case-wrapper` — a body wrapper keyed in snake_case (`pattern_data`, `k8s_manifest`) instead of the camelCase schema contract.
+- `snake-case-param` — a params key in snake_case outside the reserved pagination envelope (`page_size`, `total_count` are exempt).
+
+Run it against any or all downstream repos:
+
+```bash
+make consumer-audit MESHERY_REPO=../meshery CLOUD_REPO=../meshery-cloud \
+                    EXTENSIONS_REPO=../meshery-extensions
+```
+
+Each `*_REPO` variable is optional; consumers whose path is not provided are silently skipped. Override the TS scan path independently when the UI lives outside the Go checkout via `MESHERY_REPO_UI=` / `CLOUD_REPO_UI=`. Add `VERBOSE=1` to print the full schema-only / consumer-only lists after the summary.
+
+The TS findings section appears below the main audit report and is grouped by repo so reviewers can focus on one downstream at a time.
+
 ## Questions?
 
 If you're unsure about any schema modification:
