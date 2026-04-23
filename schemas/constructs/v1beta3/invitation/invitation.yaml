@@ -1,0 +1,145 @@
+type: object
+additionalProperties: false
+description: Invitation entity schema.
+required:
+- id
+- ownerId
+- name
+- description
+- orgId
+- acceptedBy
+- emails
+- roles
+- teams
+- status
+- createdAt
+- updatedAt
+- deletedAt
+properties:
+  id:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Unique identifier for the invitation, also used as the invitation code.
+    x-go-name: ID
+    x-oapi-codegen-extra-tags:
+      db: id
+      json: id
+  ownerId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: ID of the user who created the invitation. Tracks who created the
+      invitation for auditing purposes.
+    x-go-name: OwnerID
+    x-oapi-codegen-extra-tags:
+      db: owner_id
+      json: ownerId
+  isDefault:
+    type: boolean
+    description: Indicates whether the invitation is a default invitation (open invite),
+      which can be used to assign users when signing up from fqdn or custom domain.
+      An organization can only have one default invitation.
+    x-oapi-codegen-extra-tags:
+      db: is_default
+      json: isDefault
+  name:
+    type: string
+    description: Name of the invitation, which can be used to identify it. Required;
+      cannot be an empty string.
+    minLength: 1
+    maxLength: 255
+  description:
+    type: string
+    description: Description of the invitation, which can be used to provide additional
+      context. Null or empty string means the invitation does not have a description.
+    maxLength: 5000
+  emails:
+    type: array
+    description: Email addresses or patterns for which the invitation is valid. Null
+      means the invitation is valid for any email address.
+    x-go-type: pq.StringArray
+    x-go-type-import:
+      path: github.com/lib/pq
+    items:
+      type: string
+      pattern: ^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}|@[a-zA-Z0-9.-]+\.[a-z]{2,})$
+      description: Exact email address or the email address pattern for which the
+        invitation is valid.
+      x-go-type: string
+  orgId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: ID of the organization to which the user is invited.
+    x-go-name: OrgID
+    x-oapi-codegen-extra-tags:
+      db: org_id
+      json: orgId
+  expiresAt:
+    type: string
+    format: date-time
+    description: Timestamp when the invitation expires, if applicable. Null or empty
+      means the invitation does not expire.
+    x-oapi-codegen-extra-tags:
+      db: expires_at
+      json: expiresAt
+  quota:
+    type: integer
+    description: Quota for the invitation; limits the number of users that can accept
+      it. Null or empty means the invitation is unlimited.
+    minimum: 0
+  acceptedBy:
+    type: array
+    description: List of user ids that have already accepted the invitation. Empty
+      means the invitation has not been used yet.
+    x-go-type: pq.StringArray
+    x-go-type-import:
+      path: github.com/lib/pq
+    items:
+      type: string
+    x-oapi-codegen-extra-tags:
+      db: accepted_by
+      json: acceptedBy
+  roles:
+    type: array
+    description: Roles that the user will have when accepting the invitation. Empty
+      means the invitation does not specify any roles.
+    x-go-type: pq.StringArray
+    x-go-type-import:
+      path: github.com/lib/pq
+    items:
+      type: string
+      description: Role identifier granted by this invitation on acceptance.
+  teams:
+    type: array
+    description: Teams that the user will be added to when accepting the invitation.
+      Empty means the invitation does not specify any teams.
+    x-go-type: pq.StringArray
+    x-go-type-import:
+      path: github.com/lib/pq
+    items:
+      type: string
+      description: Team identifier the invited user is added to on acceptance.
+  status:
+    $ref: './api.yml#/components/schemas/InvitationStatus'
+    description: Activation status of the invitation.
+    x-go-type: InvitationStatus
+  createdAt:
+    type: string
+    format: date-time
+    description: Timestamp when the invitation was created.
+    x-oapi-codegen-extra-tags:
+      db: created_at
+      json: createdAt
+  updatedAt:
+    type: string
+    format: date-time
+    description: Timestamp when the invitation was last updated.
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+      json: updatedAt
+  deletedAt:
+    type: string
+    format: date-time
+    description: Timestamp when the invitation was deleted, if applicable.
+    x-go-type: core.NullTime
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+    x-oapi-codegen-extra-tags:
+      db: deleted_at
+      json: deletedAt
