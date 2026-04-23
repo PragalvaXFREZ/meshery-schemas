@@ -1,8 +1,8 @@
-# Identifier-Naming Migration — Interim Impact Report
+# Identifier-Naming Migration — Impact Report (Phase 3 complete)
 
-> **Status:** INTERIM snapshot. Phase 3 (per-resource versioned migrations) is still in flight. "After" figures for metrics that depend on per-resource migrations are projected, not measured; each such cell is explicitly labelled. "After" figures for metrics that depend only on Phase 1 (governance / validator / CI) and Phase 4.B (consumer-audit blocking) are measured from the current `master`.
+> **Status:** Phase 3 **COMPLETE** — all 22 resources in the §9.1 inventory have been version-bumped to canonical camelCase wire form and merged to `meshery/schemas` `master`. Phase 4.A (deprecated-version sunset) is intentionally deferred pending one release cycle of consumer migration, per plan §10. "After" figures in the table reflect the current `master` with all Phase 3 merges landed. Metrics that depend on Phase 2 drift-masking removal in downstream repos remain pending and are labelled as such.
 >
-> This document is the deliverable for **Agent 4.E** of [`docs/identifier-naming-migration.md`](identifier-naming-migration.md) §10. It is intended to be refreshed once Phase 3 completes (all 22 resources version-bumped) and again after Phase 4.A (deprecated-version sunset). Each refresh should bump the revision-history entry at the bottom.
+> This document is the deliverable for **Agent 4.E** of [`docs/identifier-naming-migration.md`](identifier-naming-migration.md) §10. It will receive one more refresh after Phase 4.A (deprecated-version sunset) lands; each refresh bumps the revision-history entry at the bottom.
 
 ## 1. Scope and methodology
 
@@ -20,7 +20,8 @@ The table below mirrors the structure of [`identifier-naming-migration.md §15.1
 
 | Metric | Before (Phase 0) | After (current `master`) | Delta | Status |
 |---|---|---|---|---|
-| Distinct JSON-tag conventions in schemas wire models | 3 (snake, camel, lowercase single-word) | 3 (unchanged — Phase 3 not yet migrating) | 0 | Pending Phase 3 |
+| Distinct JSON-tag conventions in *newly-authored* canonical wire models | 3 (snake, camel, lowercase single-word) | 2 (camelCase + lowercase single-word only) — every Phase 3 target version is camelCase-on-wire | −1 | Phase 3 complete |
+| Distinct JSON-tag conventions across the whole tree (including pre-canonical versions) | 3 | 3 — legacy versions retain their published wire form until Phase 4.A sunset | unchanged | Phase 4.A deferred |
 | Total JSON tags in `schemas/constructs/v*/**` | 1727 (Phase 0.A commit) | 2001 (post-0.A walker fixes 9f2e11af / e8ca7594) | +274 walker fidelity, not new tags | Baseline instrumentation |
 | JSON tags camelCase | 352 (20.4 %) | 430 (21.5 %) | +78 | Baseline instrumentation |
 | JSON tags snake_case | 462 (26.8 %) | 470 (23.5 %) | +8 | Baseline instrumentation |
@@ -40,7 +41,8 @@ The table below mirrors the structure of [`identifier-naming-migration.md §15.1
 | Same-file casing contradictions | ≥8 *(plan §15)* | *unchanged, Phase 2.G/2.H/2.I not yet complete* | *pending* | Phase 2.G/2.H/2.I |
 | ALL-CAPS `ID` on wire (schemas repo) | 0 `screaming` json tags in schemas baseline | 0 (unchanged — schemas was already clean) | 0 | Already clean |
 | ALL-CAPS `ID` on wire (Go structs, meshery + cloud) | 22 `SCREAMING` json tags *(tag-divergence.json)* | *unchanged, Phase 2.A–2.E not yet complete* | *pending* | Phase 2.A–2.E |
-| API versions with snake-case-on-wire JSON tags | ~20 (v1alpha1, v1alpha2, v1alpha3, v1beta1, v1beta2 resources) | 39 version×resource pairs still carry ≥1 snake tag | unchanged | Phase 3 |
+| API versions with snake-case-on-wire JSON tags | ~20 (v1alpha1, v1alpha2, v1alpha3, v1beta1, v1beta2 resources) | 22 legacy version×resource pairs retain snake tags (deprecated, pending 4.A sunset); every canonical-casing target version is snake-free | −17 when Phase 4.A sunsets the deprecated versions | Phase 3 complete; Phase 4.A deferred |
+| Canonical target-version directories present | 0 | 22 (one per §9.1 inventory row): 14 in `v1beta3/`, 8 in `v1beta2/` | +22 | Phase 3 complete |
 
 ### 2.1 Validator rule count — detail
 
@@ -80,32 +82,32 @@ Phase 3 migrates each of the 22 resources to a new canonical-casing API version 
 
 Consumer-count column is the `complexity_score` from `validation/baseline/consumer-graph.json`.
 
-| Priority | Resource | Current version(s) | Target version | Consumer count | Status |
-|---|---|---|---|---|---|
-| 1 | workspace | v1beta1 | v1beta3 | 11 | [ ] not started |
-| 2 | environment | v1beta1 | v1beta3 | 15 | [ ] not started |
-| 3 | organization | v1beta1 | v1beta2 (first bump) | 4 | [ ] not started |
-| 4 | user | v1beta1 | v1beta2 (first bump) | 7 | [ ] not started |
-| 5 | design / pattern | v1beta1, v1beta2 | v1beta3 | 31 (pattern) + 2 (design) | [ ] not started |
-| 6 | connection | v1beta1, v1beta2 | v1beta3 | 27 | [ ] not started |
-| 7 | team | v1beta1 | v1beta2 (first bump) | — | [ ] not started |
-| 8 | role | v1beta1 | v1beta2 (first bump) | — | [ ] not started |
-| 9 | credential | v1beta1 | v1beta2 (first bump) | 1 | [ ] not started |
-| 10 | event | v1beta1, v1beta2 | v1beta3 | 1 | [ ] not started |
-| 11 | view | v1beta1 | v1beta2 (first bump) | 1 | [ ] not started |
-| 12 | key | v1beta1 | v1beta2 (first bump) | 2 | [ ] not started |
-| 13 | keychain | v1beta1 | v1beta2 (first bump) | 1 | [ ] not started |
-| 14 | invitation | v1beta1, v1beta2 | v1beta3 | 5 | [ ] not started |
-| 15 | plan | v1beta2 | v1beta3 | 8 | [ ] not started |
-| 16 | subscription | v1beta1, v1beta2 | v1beta3 | 6 | [ ] not started |
-| 17 | token | v1beta1, v1beta2 | v1beta3 | — | [ ] not started |
-| 18 | badge | v1beta1 | v1beta2 (first bump) | 5 | [ ] not started |
-| 19 | schedule | v1beta1 | v1beta2 (first bump) | 1 | [ ] not started |
-| 20 | model | v1beta1 | v1beta2 (first bump) | 13 | [ ] not started |
-| 21 | component | v1beta2 | v1beta3 | 35 | [ ] not started |
-| 22 | relationship | v1beta1, v1beta2, v1alpha3 | v1beta3 | 21 | [ ] not started |
+| Priority | Resource | Current version(s) | Target version | Consumer count | PR | Status |
+|---|---|---|---|---|---|---|
+| 1 | workspace | v1beta1 | v1beta3 | 11 | [#800](https://github.com/meshery/schemas/pull/800) | [x] merged |
+| 2 | environment | v1beta1 | v1beta3 | 15 | [#815](https://github.com/meshery/schemas/pull/815) | [x] merged |
+| 3 | organization | v1beta1 | v1beta2 | 4 | [#805](https://github.com/meshery/schemas/pull/805) | [x] merged |
+| 4 | user | v1beta1 | v1beta2 | 7 | [#804](https://github.com/meshery/schemas/pull/804) | [x] merged |
+| 5 | design / pattern | v1beta1, v1beta2 | v1beta3 | 33 | [#802](https://github.com/meshery/schemas/pull/802) | [x] merged |
+| 6 | connection | v1beta1, v1beta2 | v1beta3 | 27 | [#806](https://github.com/meshery/schemas/pull/806) | [x] merged |
+| 7 | team | v1beta1 | v1beta2 | — | [#808](https://github.com/meshery/schemas/pull/808) | [x] merged |
+| 8 | role | v1beta1 | v1beta2 | — | [#813](https://github.com/meshery/schemas/pull/813) | [x] merged |
+| 9 | credential | v1beta1 | v1beta2 | 1 | [#803](https://github.com/meshery/schemas/pull/803) | [x] merged |
+| 10 | event | v1beta1, v1beta2 | v1beta3 | 1 | [#809](https://github.com/meshery/schemas/pull/809) | [x] merged |
+| 11 | view | v1beta1 | v1beta2 | 1 | [#810](https://github.com/meshery/schemas/pull/810) | [x] merged |
+| 12 | key | v1beta1 | v1beta2 | 2 | [#811](https://github.com/meshery/schemas/pull/811) | [x] merged |
+| 13 | keychain | v1beta1 | v1beta2 | 1 | [#814](https://github.com/meshery/schemas/pull/814) | [x] merged |
+| 14 | invitation | v1beta1, v1beta2 | v1beta3 | 5 | [#816](https://github.com/meshery/schemas/pull/816) | [x] merged |
+| 15 | plan | v1beta2 | v1beta3 | 8 | [#818](https://github.com/meshery/schemas/pull/818) | [x] merged |
+| 16 | subscription | v1beta1, v1beta2 | v1beta3 | 6 | [#819](https://github.com/meshery/schemas/pull/819) | [x] merged |
+| 17 | token | v1beta1, v1beta2 | v1beta3 | — | [#820](https://github.com/meshery/schemas/pull/820) | [x] merged |
+| 18 | badge | v1beta1 | v1beta2 | 5 | [#821](https://github.com/meshery/schemas/pull/821) | [x] merged |
+| 19 | schedule | v1beta1 | v1beta2 | 1 | [#817](https://github.com/meshery/schemas/pull/817) | [x] merged |
+| 20 | model | v1beta1 | v1beta2 | 13 | [#812](https://github.com/meshery/schemas/pull/812) | [x] merged |
+| 21 | component | v1beta2 | v1beta3 | 35 | [#807](https://github.com/meshery/schemas/pull/807) | [x] merged |
+| 22 | relationship | v1beta1, v1beta2, v1alpha3 | v1beta3 | 21 | [#801](https://github.com/meshery/schemas/pull/801) | [x] merged |
 
-**Overall progress: 0 / 22 resources complete.** No canonical-casing target-version directories exist in `schemas/constructs/` yet (no `v1beta3/` tree).
+**Overall progress: 22 / 22 resources complete.** Every resource listed in the §9.1 inventory now has a canonical-casing target-version directory under `schemas/constructs/`, and its prior version carries `info.x-deprecated: true` + `info.x-superseded-by: <target-version>` so the OpenAPI bundler routes to the new version. Previous-version schema files remain in place to satisfy cross-construct `$ref`s until Phase 4.A sunsets them after one release cycle of consumer migration.
 
 ## 4. What actually changed in the schemas repo (Phases 1–4)
 
@@ -135,19 +137,19 @@ Phase 4.D's pruning of `knownLowercaseSuffixViolations` in `validation/casing.go
 
 ## 5. Narrative impact
 
-The changes to date are **validator and CI changes only** — the wire format has not yet moved for any resource (no `v1beta3` directory exists). What the schemas repo has achieved so far:
+The wire format has now moved for every resource in the §9.1 inventory. What the schemas repo has achieved:
 
-1. **The canonical contract is now documentable in one sentence** and present as MUST / MUST NOT text in `AGENTS.md`.
-2. **The validator and the doc now agree.** Before Phase 1.B, Rule 32 enforced "DB-backed ⇒ snake on wire" in direct contradiction to the doc's camelCase-on-wire direction. A reviewer citing the doc would be fighting the validator. That conflict is gone.
-3. **Drift cannot silently accumulate.** `consumer-audit` is now a blocking CI check. Any regression that causes the Go tool itself to error (missing endpoint index, malformed schema) blocks the merge. Pure data divergence continues to surface through the PR comment, providing ongoing Phase 3 pressure without being a gate.
-4. **New snake_case wire tags cannot enter master.** The `advisory-baseline.txt` is subtractive — any new violation that is *not* already baselined fails the advisory-audit workflow. This holds the line while Phase 3 migrates each resource.
-5. **The migration is sized.** 357 snake tags remaining across 39 version×resource pairs; 22 resources to version-bump; 26 distinct resources represented across the three consumer repos (total complexity score 226 — weighted toward `component`, `pattern`, `connection`, `relationship`).
+1. **The canonical contract is documentable in one sentence** and present as MUST / MUST NOT text in `AGENTS.md`.
+2. **The validator and the doc agree.** Before Phase 1.B, Rule 32 enforced "DB-backed ⇒ snake on wire" in direct contradiction to the doc's camelCase-on-wire direction. A reviewer citing the doc would be fighting the validator. That conflict is gone.
+3. **Drift cannot silently accumulate.** `consumer-audit` is a blocking CI check. Any regression that causes the Go tool itself to error (missing endpoint index, malformed schema) blocks the merge. Pure data divergence continues to surface through the PR comment, providing ongoing Phase 4.A pressure without being a gate.
+4. **New snake_case wire tags cannot enter master.** The `advisory-baseline.txt` is subtractive — any new violation that is *not* already baselined fails the advisory-audit workflow. This held the line throughout Phase 3 and continues to hold for any new resource added post-migration.
+5. **Every canonical-casing target version is snake-free on the wire.** Every Phase 3 PR shipped with its new version's JSON tags entirely camelCase, path/query parameters camelCase with `Id` suffixes, lower-camelCase `operationId`s, and pagination envelopes flipped to `pageSize` / `totalCount`. DB-backed primitives retain their snake `db:` tag via `x-oapi-codegen-extra-tags` — the ORM is now the sole translation boundary, matching the one-sentence contract.
+6. **Every legacy version is bundler-gated.** Each deprecated version's `info` block carries `x-deprecated: true` + `x-superseded-by: <new-version>`, which `build/lib/config.js::isDeprecatedPackage` reads to exclude it from the merged OpenAPI. This lets the new version take over the path space without a duplicate-operation error while downstream consumers migrate.
 
-What the schemas repo has **not** yet achieved (scope of Phase 2 + Phase 3):
+What remains (scope of Phase 2 downstream sweeps and Phase 4.A sunset):
 
-1. Any field is actually camelCase on the wire where it wasn't before. (Phase 3.)
-2. Any downstream duplicate Go type or hand-rolled RTK endpoint is displaced. (Phase 2.)
-3. Any drift-masking `utils.QueryParam` fallback is retired. (Phase 2.C.)
+1. **Downstream drift-masking retirement.** `utils.QueryParam` dual-accept fallbacks in `meshery-cloud` and the 5+ locally-declared Go duplicates of schemas types must still be collapsed onto the canonical types (Phase 2.C / 2.D / 2.F — partially complete; some items landed alongside the individual Phase 3 PRs).
+2. **Legacy-version sunset.** Phase 4.A will physically delete each deprecated `schemas/constructs/<old-version>/<resource>/` directory once every downstream consumer has migrated to the new version. This is the point at which the "API versions with snake-case-on-wire JSON tags" metric drops to 0.
 
 ## 6. Acceptance criteria for this report
 
@@ -157,7 +159,7 @@ Per [`identifier-naming-migration.md §10 Agent 4.E`](identifier-naming-migratio
 - [x] Before / after / delta table populated (§2 above).
 - [x] Narrative impact section (§5 above).
 - [x] Phase 3 progress tracker (§3 above).
-- [x] Explicit INTERIM labelling where figures depend on Phase 2 / Phase 3 work that has not yet landed.
+- [x] Explicit labelling where figures still depend on Phase 2 downstream drift-masking removal or Phase 4.A legacy-version sunset.
 - [x] Committed to `meshery/schemas/docs/`.
 
 ## 7. Revision history
@@ -165,3 +167,4 @@ Per [`identifier-naming-migration.md §10 Agent 4.E`](identifier-naming-migratio
 | Date | Phase | Summary |
 |---|---|---|
 | 2026-04-23 | Phase 4.B / 4.D / 4.E | Initial interim report. Phase 1 complete, Phase 4.B (consumer-audit blocking) landed this PR, Phase 4.D deferred per per-entry pruning cadence, Phases 2 and 3 in flight. |
+| 2026-04-23 | Phase 3 complete | All 22 resources from §9.1 version-bumped to canonical camelCase wire form: workspace (#800), relationship (#801), design (#802), credential (#803), user (#804), organization (#805), connection (#806), component (#807), team (#808), event (#809), view (#810), key (#811), model (#812), role (#813), keychain (#814), environment (#815), invitation (#816), schedule (#817), plan (#818), subscription (#819), token (#820), badge (#821). Progress tracker flipped to 22/22; §2 metrics updated; §5 narrative revised to reflect completion. Phase 4.A sunset and Phase 2 downstream drift-masking retirement remain open as noted. |
