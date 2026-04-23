@@ -37,7 +37,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Go
         uses: actions/setup-go@v5
@@ -54,7 +54,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Go
         uses: actions/setup-go@v5
@@ -64,29 +64,31 @@ jobs:
       - name: Run full schema audit
         run: make audit-schemas-full
 
-  # Per Phase 4.B of docs/identifier-naming-migration.md, this job is
-  # BLOCKING: a non-zero exit from `make consumer-audit` fails the build.
-  # The previous Phase 1.H wrapper (`set +e` / unconditional `exit 0`) has
-  # been removed; the underlying Go tool's exit status now propagates
-  # directly. The PR-comment step is pinned to `if: always()` so reviewers
-  # still get the divergence summary when the audit fails.
+  # Read-only consumer audit: a non-zero exit from `make consumer-audit` fails
+  # the build, while reported drift is surfaced in the PR comment/artifact for
+  # review. This job does not pass Sheet credentials or call
+  # `make consumer-audit-update`, so it never updates the canonical sheet.
+  # The PR-comment step is pinned to `if: always()` so reviewers still get the
+  # divergence summary when the audit command fails.
   #
-  # Downstream repo checkouts use a PAT (CI_CONSUMER_PAT) for private-repo
-  # access (meshery-cloud and meshery-extensions are private). If the secret
-  # is unset or lacks access to a given consumer repo, that checkout fails
-  # gracefully via continue-on-error and the consumer-audit Go tool silently
-  # skips the missing tree. Provision CI_CONSUMER_PAT as a repository secret
-  # with at minimum `repo:read` scope against layer5io/meshery-cloud and
+  # Downstream repo checkouts prefer the Meshery CI PAT (MESHERY_CI) for
+  # private-repo access (meshery-cloud and meshery-extensions are private) and
+  # fall back to the run token when the secret is unavailable. If the token
+  # lacks access to a given consumer repo, that checkout fails gracefully via
+  # continue-on-error and the consumer-audit Go tool silently skips the missing
+  # tree. Provision MESHERY_CI as a repository secret with at minimum
+  # `repo:read` scope against layer5io/meshery-cloud and
   # layer5labs/meshery-extensions.
   consumer-audit:
-    name: Consumer audit (blocking)
+    name: Consumer audit report
     runs-on: ubuntu-24.04
     permissions:
       contents: read
+      issues: write
       pull-requests: write
     steps:
       - name: Checkout schemas
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Go
         uses: actions/setup-go@v5
@@ -96,36 +98,34 @@ jobs:
       - name: Checkout meshery/meshery
         id: checkout-meshery
         continue-on-error: true
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: meshery/meshery
           path: _consumer/meshery
-          token: ${{ secrets.CI_CONSUMER_PAT }}
+          token: ${{ secrets.MESHERY_CI || github.token }}
 
       - name: Checkout layer5io/meshery-cloud
         id: checkout-cloud
         continue-on-error: true
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: layer5io/meshery-cloud
           path: _consumer/meshery-cloud
-          token: ${{ secrets.CI_CONSUMER_PAT }}
+          token: ${{ secrets.MESHERY_CI || github.token }}
 
       - name: Checkout layer5labs/meshery-extensions
         id: checkout-extensions
         continue-on-error: true
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: layer5labs/meshery-extensions
           path: _consumer/meshery-extensions
-          token: ${{ secrets.CI_CONSUMER_PAT }}
+          token: ${{ secrets.MESHERY_CI || github.token }}
 
-      # The Go tool silently skips any *_REPO that doesn't exist on disk, so
-      # passing the paths unconditionally is safe even when a sibling
-      # checkout failed. Per Phase 4.B, the make target's exit status
-      # propagates and fails the job on any consumer-audit error — skipped
-      # sibling checkouts do not themselves cause a failure because the Go
-      # tool treats missing trees as "not provided", not as errors.
+      # The Go tool treats missing consumer checkout paths as empty/skipped, so
+      # passing paths unconditionally is safe even when a sibling checkout
+      # failed. The make target's exit status still propagates and fails the
+      # job on actual consumer-audit execution errors.
       - name: Run consumer audit
         run: |
           mkdir -p _consumer
@@ -148,8 +148,12 @@ jobs:
 
       - name: Post PR comment with divergence summary
         # Run even when the audit step failed so reviewers still see the
-        # divergence summary that explains why CI went red.
-        if: always() && github.event_name == 'pull_request'
+        # divergence summary that explains why CI went red. Fork PRs receive
+        # read-only tokens and no repository secrets, so writing an issue
+        # comment would fail with "Resource not accessible by integration";
+        # those runs still publish the full artifact above.
+        if: always() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        continue-on-error: true
         uses: actions/github-script@v7
         env:
           AUDIT_OUTPUT_PATH: /tmp/consumer-audit.txt
@@ -171,17 +175,24 @@ jobs:
             // cmd/consumer-audit/main.go → printAuditReport. Rows look like:
             //   Category                       Schema  Meshery  Cloud
             //   Total Endpoints                179     217      282
-            //   Schema Backed                  -       61       166
+            //   Schema Backed                  -       70       178
+            //   Schema Completeness (TRUE)     179     -        -
+            //   Schema Only                    16      -        -
+            //   Unimplemented With Schema      -       29       17
             //   Consumer Only                  -       172      120
             // Columns are separated by two-or-more spaces.
             const parseRow = (label) => {
-              const re = new RegExp(`^${label}\\s{2,}(\\S+)\\s+(\\S+)\\s+(\\S+)\\s*$`, 'm');
+              const escapedLabel = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+              const re = new RegExp(`^${escapedLabel}\\s{2,}(\\S+)\\s+(\\S+)\\s+(\\S+)\\s*$`, 'm');
               const m = text.match(re);
               return m ? [m[1], m[2], m[3]] : ['?', '?', '?'];
             };
 
-            const totals      = parseRow('Total Endpoints');
+            const totals = parseRow('Total Endpoints');
             const schemaBacked = parseRow('Schema Backed');
+            const schemaCompleteness = parseRow('Schema Completeness (TRUE)');
+            const schemaOnly = parseRow('Schema Only');
+            const unimplemented = parseRow('Unimplemented With Schema');
             const consumerOnly = parseRow('Consumer Only');
 
             // Count TS findings by kind across all repos. The output section
@@ -217,12 +228,15 @@ jobs:
               `/actions/runs/${context.runId}`;
 
             const lines = [];
-            lines.push('## Consumer audit (blocking)');
+            lines.push('## Consumer audit report');
             lines.push('');
             lines.push('| Category       | schemas | meshery | cloud |');
             lines.push('|---|---|---|---|');
             lines.push(`| Total Endpoints| ${totals[0]}     | ${totals[1]}     | ${totals[2]}   |`);
-            lines.push(`| Schema Backed  | ${schemaBacked[0]}       | ${schemaBacked[1]}      | ${schemaBacked[2]}   |`);
+            lines.push(`| Schema Backed | ${schemaBacked[0]} | ${schemaBacked[1]} | ${schemaBacked[2]} |`);
+            lines.push(`| Schema Completeness (TRUE) | ${schemaCompleteness[0]} | ${schemaCompleteness[1]} | ${schemaCompleteness[2]} |`);
+            lines.push(`| Schema Only | ${schemaOnly[0]} | ${schemaOnly[1]} | ${schemaOnly[2]} |`);
+            lines.push(`| Unimplemented With Schema | ${unimplemented[0]} | ${unimplemented[1]} | ${unimplemented[2]} |`);
             lines.push(`| Consumer Only  | ${consumerOnly[0]}       | ${consumerOnly[1]}     | ${consumerOnly[2]}   |`);
             lines.push('');
 
@@ -244,7 +258,7 @@ jobs:
             if (skipped.length > 0) {
               lines.push(
                 `_Skipped consumer checkouts_: ${skipped.join(', ')}. ` +
-                'Configure the `CI_CONSUMER_PAT` repository secret with read access to ' +
+                'Configure the `MESHERY_CI` repository secret with read access to ' +
                 '`layer5io/meshery-cloud` and `layer5labs/meshery-extensions` to include those columns.'
               );
               lines.push('');
@@ -255,7 +269,7 @@ jobs:
               `[the workflow run](${runUrl}).`
             );
             lines.push('');
-            lines.push('<sub>Generated by `.github/workflows/schema-audit.yml` → `consumer-audit` job. This job is blocking per Phase 4.B of `docs/identifier-naming-migration.md`: a non-zero exit from `make consumer-audit` fails the build.</sub>');
+            lines.push('<sub>Generated by `.github/workflows/schema-audit.yml` → `consumer-audit` job. This read-only job fails the build only when `make consumer-audit` exits non-zero; reported drift is summarized here and in the artifact.</sub>');
 
             const body = lines.join('\n');
             const marker = '<!-- consumer-audit-comment -->';
