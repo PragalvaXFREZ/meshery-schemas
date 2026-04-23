@@ -501,13 +501,13 @@ On each run the job:
 
 ### Provisioning `CI_CONSUMER_PAT`
 
-The secret must be a fine-grained or classic PAT with read access to:
+The secret is **provisioned** on `meshery/schemas` and authorises all three sibling checkouts. It must be a fine-grained or classic PAT with read access to:
 
 - `meshery/meshery` (public — read access is implicit, but including the repo in the PAT's scope list keeps all three checkouts on a single credential path)
 - `layer5io/meshery-cloud` (private — PAT must be a member of the `layer5io` org with `contents: read`)
 - `layer5labs/meshery-extensions` (private — PAT must be a member of the `layer5labs` org with `contents: read`)
 
-If the secret is absent, `actions/checkout@v4` will receive an empty `token:` input and fall back to unauthenticated access. The public `meshery/meshery` checkout still succeeds; both private siblings will fail and — thanks to `continue-on-error: true` — be skipped cleanly. The job remains green, the comment surfaces only the public column, and the "Skipped consumer checkouts" note lists which consumers were omitted.
+If the secret is ever removed or becomes under-scoped, `actions/checkout@v4` receives an empty `token:` input and falls back to unauthenticated access. The public `meshery/meshery` checkout still succeeds; both private siblings will fail and — thanks to `continue-on-error: true` — be skipped cleanly. The job remains green, the comment surfaces only the public column, and the "Skipped consumer checkouts" note lists which consumers were omitted. When the PAT nears expiry it must be rotated in the repo secrets; the workflow itself needs no change.
 
 ## Questions?
 
