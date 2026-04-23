@@ -251,7 +251,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "../../v1beta1/environment/api.yml#/components/schemas/EnvironmentPage"
+                $ref: "../../v1beta3/environment/api.yml#/components/schemas/EnvironmentPage"
         "400":
           $ref: "#/components/responses/400"
         "401":

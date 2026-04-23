@@ -115,11 +115,11 @@ properties:
     type: array
     description: Associated environments for this connection
     items:
-      x-go-type: "*environmentv1beta1.Environment"
+      x-go-type: "*environmentv1beta3.Environment"
       x-go-type-import:
-        path: github.com/meshery/schemas/models/v1beta1/environment
-        name: environmentv1beta1
-      $ref: ../../v1beta1/environment/api.yml#/components/schemas/Environment
+        path: github.com/meshery/schemas/models/v1beta3/environment
+        name: environmentv1beta3
+      $ref: ../../v1beta3/environment/api.yml#/components/schemas/Environment
     x-oapi-codegen-extra-tags:
       db: "-"
       gorm: "-"
