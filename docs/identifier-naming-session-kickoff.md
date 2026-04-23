@@ -31,16 +31,16 @@ Sibling repos (for read/write during agent execution):
 
 Read these in order. Do not skip. Do not skim.
 
-1. `docs/identifier-naming-option-b-migration.md` — master plan. §1 defines the contract; §5 defines the Common Agent Protocol every sub-agent follows; §11 is the orchestration DAG; §14 is the per-repo AGENTS.md boilerplate to paste; §17 is the sign-off gate you check your work against.
-2. `docs/option-b-plan-meshery.md` — high-level handoff scoped to `meshery/meshery`.
-3. `docs/option-b-plan-meshery-cloud.md` — high-level handoff scoped to `layer5io/meshery-cloud`.
-4. `docs/option-b-plan-meshery-extensions.md` — high-level handoff scoped to `layer5labs/meshery-extensions`.
+1. `docs/identifier-naming-migration.md` — master plan. §1 defines the contract; §5 defines the Common Agent Protocol every sub-agent follows; §11 is the orchestration DAG; §14 is the per-repo AGENTS.md boilerplate to paste; §17 is the sign-off gate you check your work against.
+2. `docs/identifier-naming-plan-meshery.md` — high-level handoff scoped to `meshery/meshery`.
+3. `docs/identifier-naming-plan-meshery-cloud.md` — high-level handoff scoped to `layer5io/meshery-cloud`.
+4. `docs/identifier-naming-plan-meshery-extensions.md` — high-level handoff scoped to `layer5labs/meshery-extensions`.
 
 After reading, you understand: the contract, the phase DAG, the Common Agent Protocol, the divergences in each downstream repo, the dependency ordering.
 
 ## 4. State of record (cross-session)
 
-Persistent execution state lives in GitHub issues on `meshery/schemas`, labeled `option-b-migration`. Each issue is a phase with a checklist of sub-agents. Issue URLs:
+Persistent execution state lives in GitHub issues on `meshery/schemas`, labeled `identifier-naming-migration`. Each issue is a phase with a checklist of sub-agents. Issue URLs:
 
 - Phase 0 — Baseline metrics: https://github.com/meshery/schemas/issues/776
 - Phase 1 — Schemas governance + validator hardening: https://github.com/meshery/schemas/issues/777
@@ -59,7 +59,7 @@ Do not rely on Claude Code's in-session `TaskList` for cross-session state. The 
 
 ## 5. Bootstrap action (what to do after you've read §3)
 
-1. Run `gh issue list --repo meshery/schemas --label option-b-migration --state open`.
+1. Run `gh issue list --repo meshery/schemas --label identifier-naming-migration --state open`.
 2. Identify the lowest-priority-number phase that is not yet `completed`.
 3. Within that phase issue, identify the first unchecked sub-agent whose dependencies (per §11 of master plan's DAG) are satisfied.
 4. Claim it by posting a comment: `Claimed by session <short-session-id> at <ISO timestamp>.`
@@ -87,7 +87,7 @@ You do the task yourself when:
 - It requires cross-referencing multiple in-flight PRs.
 - It's an orchestration step (claiming issues, updating checkpoints).
 
-Sub-agents you spawn follow the same Common Agent Protocol. You give them the exact charter from the master plan (e.g., "Execute Agent 2.A as defined in §8 of `/Users/l/code/schemas/docs/identifier-naming-option-b-migration.md`") plus the acceptance criteria. You do not re-author their prompts from scratch.
+Sub-agents you spawn follow the same Common Agent Protocol. You give them the exact charter from the master plan (e.g., "Execute Agent 2.A as defined in §8 of `/Users/l/code/schemas/docs/identifier-naming-migration.md`") plus the acceptance criteria. You do not re-author their prompts from scratch.
 
 ## 7. Stop conditions — when to checkpoint and exit
 
@@ -107,9 +107,9 @@ Before exit, every in-flight PR must be pushed with current state. Leave nothing
 Before exiting any session:
 
 1. All local changes pushed; no uncommitted files except session scratch (`state.json`, `.claude/`).
-2. Every open PR labeled `option-b-migration` and with the phase label.
+2. Every open PR labeled `identifier-naming-migration` and with the phase label.
 3. Progress comment posted on the active phase issue: what landed (SHAs), what's in flight, what the next session should claim first.
-4. If a new risk or gap surfaced, update the relevant per-repo handoff doc (`docs/option-b-plan-*.md`) in a follow-up commit.
+4. If a new risk or gap surfaced, update the relevant per-repo handoff doc (`docs/identifier-naming-plan-*.md`) in a follow-up commit.
 
 ## 9. Do-not-do list
 
@@ -127,7 +127,7 @@ Before exiting any session:
 The first session after the governance PR merges has a one-time setup:
 
 1. Confirm the governance PR is merged on `meshery/schemas`.
-2. Confirm the 5 phase-tracking issues exist on `meshery/schemas` with the `option-b-migration` label.
+2. Confirm the 5 phase-tracking issues exist on `meshery/schemas` with the `identifier-naming-migration` label.
 3. Back-fill the governance PR URL in §4 above (this doc) via a follow-up commit.
 4. Then proceed per §5 — starting with Phase 0 baseline agents.
 
@@ -136,7 +136,7 @@ The first session after the governance PR merges has a one-time setup:
 In a fresh Claude Code session opened at `/Users/l/code/schemas`, paste:
 
 ```
-Read docs/option-b-session-kickoff.md and execute per §5 of the master plan it references.
+Read docs/identifier-naming-session-kickoff.md and execute per §5 of the master plan it references.
 ```
 
 No additional context required. The kickoff doc and master plan carry everything.

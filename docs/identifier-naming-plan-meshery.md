@@ -111,7 +111,7 @@
 
 ## 10. Reference
 
-- Full detailed plan draft (for reference; not the operative document): `schemas/docs/identifier-naming-option-b-migration.md`
+- Full detailed plan draft (for reference; not the operative document): `schemas/docs/identifier-naming-migration.md`
 - Source of truth: `schemas/AGENTS.md § Casing rules at a glance` (post Phase 1.A amendment)
 - Prior audit sub-reports in this session's transcript (meshery-cloud, meshery, meshery-extensions audits)
 - PR #18856 (patternData wrapper precedent), PR #18857 (merged k8s panic fix — unrelated), PR #18858 (JSON error body — Option B-adjacent)

@@ -145,7 +145,7 @@ Every PR must include:
 - 1–3 bullets describing the change.
 
 ## Why
-- The governance rationale, linked to §<section> of identifier-naming-option-b-migration.md
+- The governance rationale, linked to §<section> of identifier-naming-migration.md
 
 ## Changes
 - File-level diff summary.
@@ -232,7 +232,7 @@ Serial execution; each depends on the prior landing. All work in `meshery/schema
 **Specific changes:**
 1. In `§ Casing rules at a glance`, replace the "DB-backed / DB-mirrored fields | exact snake_case db column name" row with: "JSON tag on DB-backed fields | **camelCase**; `db:` tag in `x-oapi-codegen-extra-tags` carries the snake_case DB column name separately".
 2. In `§ Intentional Design Decisions (Do Not Flag)`, convert `page_size`/`total_count` from a perpetual exception to a **deprecation list** — current forms accepted; migrates to `pageSize`/`totalCount` at the next API-version bump per resource.
-3. Add a new `§ Option B migration` section linking to this plan at `docs/identifier-naming-option-b-migration.md` within the same repo as the operative execution document.
+3. Add a new `§ Option B migration` section linking to this plan at `docs/identifier-naming-migration.md` within the same repo as the operative execution document.
 4. Add to `§ Common Mistakes to Avoid`: "❌ Introducing a `json:` tag that matches the `db:` tag on a new field — wire is camel, DB is snake; they differ by design on DB-backed fields."
 5. Update `§ Checklist for Schema Changes` to reflect the inverted rule.
 
@@ -441,7 +441,7 @@ All agents in this phase pin their target repo's `@meshery/schemas` dependency t
 
 ### Agent 2.E — Meshery-cloud `ContentID` JSON tag alignment
 **Repo:** `layer5io/meshery-cloud`  
-**Branch:** `fix/content-id-json-tag-option-b`  
+**Branch:** `fix/content-id-json-tag-alignment`  
 **Charter:** `CatalogRequest.ContentID` at `server/models/users.go:246` currently declares `json:"contentId" db:"content_id"`. Under Option B: `ContentID` Go field + `json:"contentId"` + `db:"content_id"` — this is actually **already correct** under Option B. Agent's task is to verify, and if correct, mark the previously-flagged finding as resolved.
 
 **Testing:** `go test ./...` green; search schemas consumer-audit output for `CatalogRequest`/`ContentID` — no findings.
@@ -468,7 +468,7 @@ All agents in this phase pin their target repo's `@meshery/schemas` dependency t
 
 ### Agent 2.G — Kanvas `catalog.ts` RTK case-flip removal + `designs.ts` wrapper alignment
 **Repo:** `layer5labs/meshery-extensions`  
-**Branch:** `fix/kanvas-rtk-option-b-alignment`  
+**Branch:** `fix/kanvas-rtk-camelcase-alignment`  
 **Charter:** Two related Kanvas fixes that go together:
 1. `meshmap/src/rtk-query/catalog.ts:110` `getWorkspaceForCatalog` — remove the `orgID: queryArg.orgId` transform; emit `orgId` in the URL directly.
 2. `meshmap/src/rtk-query/catalog.ts:58-59` `getPatternsPerUser` — unify to Option B canonical names.
@@ -716,7 +716,7 @@ The remaining 21 agents follow the template in §9.2 with per-resource file path
 ### Agent 4.E — Before/after impact report publication
 **Charter:** Re-run the baseline agents (0.A–0.D) to produce "after" numbers. Publish the before/after report per §15 of this plan; commit to `meshery/schemas/docs/` as the governance artifact.
 
-**Files:** `meshery/schemas/docs/option-b-impact-report.md`.
+**Files:** `meshery/schemas/docs/identifier-naming-impact-report.md`.
 
 **Acceptance:** Report published; metrics confirm §2 objectives met.
 
@@ -868,7 +868,7 @@ discrepancies as issues against `meshery/schemas`, not locally.
 ### Migration
 
 The Option B migration is tracked at
-`meshery/schemas/docs/identifier-naming-option-b-migration.md`. All
+`meshery/schemas/docs/identifier-naming-migration.md`. All
 contributors — human and AI agents — MUST read this plan before making
 any schema-aware change.
 ```
@@ -985,7 +985,7 @@ You are Phase 3.{Resource} agent.
 CHARTER
 Migrate the {resource} resource from {old-version} to {new-version}
 under the Option B contract defined in
-meshery/schemas/docs/identifier-naming-option-b-migration.md §1.
+meshery/schemas/docs/identifier-naming-migration.md §1.
 
 STEPS
 1. In /Users/l/code/schemas, create schemas/constructs/{new-version}/{resource}/
@@ -1061,7 +1061,7 @@ ACCEPTANCE
 | — SDK (cross-boundary) | `meshmap/src/globals/mesherySdk.ts` | Event-type ↔ dispatcher boundary |
 | — GraphQL plugin | `meshmap/graphql/` | Go side; `schema.graphql` |
 | — CLAUDE.md | `CLAUDE.md` | Project instructions |
-| — Plan (this file) | `docs/identifier-naming-option-b-migration.md` | Canonical execution reference |
+| — Plan (this file) | `docs/identifier-naming-migration.md` | Canonical execution reference |
 
 ---
 

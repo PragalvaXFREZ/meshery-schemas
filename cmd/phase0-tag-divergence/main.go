@@ -2,7 +2,7 @@
 // meshery-cloud server/models directories and produces the Phase 0 Agent 0.B
 // tag-divergence baseline (validation/baseline/tag-divergence.json) used by
 // the Option B identifier-naming migration
-// (docs/identifier-naming-option-b-migration.md §6).
+// (docs/identifier-naming-migration.md §6).
 //
 // Each scanned field is evaluated against three criteria from Agent 0.B's
 // charter:

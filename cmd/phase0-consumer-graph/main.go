@@ -2,7 +2,7 @@
 // graph across the downstream repos and produces the Phase 0 Agent 0.D
 // baseline (validation/baseline/consumer-graph.json) used by Phase 3 per-
 // resource sequencing in the Option B identifier-naming migration
-// (docs/identifier-naming-option-b-migration.md §6, §9).
+// (docs/identifier-naming-migration.md §6, §9).
 //
 // Two kinds of imports are attributed:
 //

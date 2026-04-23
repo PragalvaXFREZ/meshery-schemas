@@ -131,7 +131,7 @@
 
 ## 10. Reference
 
-- Full detailed plan draft (for reference; not operative): `schemas/docs/identifier-naming-option-b-migration.md`
+- Full detailed plan draft (for reference; not operative): `schemas/docs/identifier-naming-migration.md`
 - Source of truth: `schemas/AGENTS.md § Casing rules at a glance` (post Phase 1.A amendment)
 - Cloud consumer-audit input: `schemas/validation/consumer_echo.go` (parses `server/router/router.go`)
 - Related prior PRs: #18856 (patternData wrapper), #18858 (JSON error body — sets precedent for wire-error-shape normalization).

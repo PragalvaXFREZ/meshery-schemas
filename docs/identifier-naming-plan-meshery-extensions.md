@@ -122,7 +122,7 @@
 
 ## 10. Reference
 
-- Full detailed plan draft (for reference; not operative): `schemas/docs/identifier-naming-option-b-migration.md`
+- Full detailed plan draft (for reference; not operative): `schemas/docs/identifier-naming-migration.md`
 - Source of truth: `schemas/AGENTS.md § Casing rules at a glance` (post Phase 1.A amendment)
 - Kanvas Redux store setup (correctly uses schemas slices): `meshmap/src/redux/store.ts`
 - Prior PRs: #18856 (patternData wrapper precedent — sets the `designs.ts` target shape), #18857 (merged k8s panic fix — unrelated), #18858 (JSON error body — Meshery Server side).
