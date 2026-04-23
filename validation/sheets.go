@@ -3,7 +3,6 @@ package validation
 import (
 	"context"
 	"fmt"
-	"regexp"
 	"sort"
 	"strings"
 	"time"
@@ -15,8 +14,6 @@ import (
 
 const sheetName = "Verification of API Endpoints - Combined"
 const auditSummaryCellColumn = 2
-
-var signedDeltaRE = regexp.MustCompile(`[+-]\d+`)
 
 func sheetRange(r string) string {
 	return fmt.Sprintf("'%s'!%s", sheetName, r)
@@ -655,109 +652,6 @@ func summaryCellUpdates(previous [][]string, summary string, insertedTopRows int
 	}}
 }
 
-type richTextRange struct {
-	start  int
-	end    int
-	format *sheets.TextFormat
-}
-
-func auditSheetSummaryTextFormatRuns(summary string) []*sheets.TextFormatRun {
-	if summary == "" {
-		return nil
-	}
-
-	textFormat := func(color *sheets.Color) *sheets.TextFormat {
-		format := &sheets.TextFormat{}
-		if color != nil {
-			format.ForegroundColor = color
-			format.ForegroundColorStyle = &sheets.ColorStyle{RgbColor: color}
-		}
-		return format
-	}
-	green := textFormat(&sheets.Color{Red: 0x90 / 255.0, Green: 0xee / 255.0, Blue: 0x90 / 255.0})
-	red := textFormat(&sheets.Color{Red: 0xff / 255.0, Green: 0x7f / 255.0, Blue: 0x7f / 255.0})
-	normal := textFormat(nil)
-
-	labelFormats := map[string]*sheets.TextFormat{
-		"Missing schema:":   red,
-		"Path/param drift:": red,
-	}
-
-	var ranges []richTextRange
-	for label, format := range labelFormats {
-		for offset := 0; ; {
-			idx := strings.Index(summary[offset:], label)
-			if idx < 0 {
-				break
-			}
-			start := offset + idx
-			ranges = append(ranges, richTextRange{
-				start:  start,
-				end:    start + len(label),
-				format: format,
-			})
-			offset = start + len(label)
-		}
-	}
-
-	for _, loc := range signedDeltaRE.FindAllStringIndex(summary, -1) {
-		format := green
-		if strings.HasPrefix(summary[loc[0]:loc[1]], "-") {
-			format = red
-		}
-		ranges = append(ranges, richTextRange{
-			start:  loc[0],
-			end:    loc[1],
-			format: format,
-		})
-	}
-
-	sort.Slice(ranges, func(i, j int) bool {
-		if ranges[i].start != ranges[j].start {
-			return ranges[i].start < ranges[j].start
-		}
-		return ranges[i].end < ranges[j].end
-	})
-
-	runs := make([]*sheets.TextFormatRun, 0, len(ranges)*2)
-	for _, r := range ranges {
-		if r.start >= r.end {
-			continue
-		}
-		runs = append(runs, &sheets.TextFormatRun{
-			StartIndex:      utf16Index(summary, r.start),
-			Format:          r.format,
-			ForceSendFields: []string{"StartIndex"},
-		})
-		if r.end < len(summary) {
-			runs = append(runs, &sheets.TextFormatRun{
-				StartIndex:      utf16Index(summary, r.end),
-				Format:          normal,
-				ForceSendFields: []string{"StartIndex"},
-			})
-		}
-	}
-	return runs
-}
-
-func utf16Index(s string, byteIndex int) int64 {
-	if byteIndex <= 0 {
-		return 0
-	}
-	if byteIndex > len(s) {
-		byteIndex = len(s)
-	}
-	var count int64
-	for _, r := range s[:byteIndex] {
-		if r > 0xffff {
-			count += 2
-			continue
-		}
-		count++
-	}
-	return count
-}
-
 func rowCellUpdates(rowIndex int, layout auditSheetLayout, previous *ConsumerAuditRow, desired ConsumerAuditRow) []sheetCellUpdate {
 	var updates []sheetCellUpdate
 	for _, col := range generatedColumns {
@@ -819,27 +713,23 @@ func buildAuditSheetSummary(previousRows, currentRows []ConsumerAuditRow) string
 	cur := auditSheetSummaryStatsFromRows(currentRows)
 
 	return strings.Join([]string{
-		fmt.Sprintf("Total Endpoints: Server: %s, Cloud: %s",
-			formatCountDelta(cur.ServerEndpoints, prev.ServerEndpoints),
-			formatCountDelta(cur.CloudEndpoints, prev.CloudEndpoints)),
-		fmt.Sprintf("Missing schema: %s", formatCountDelta(cur.MissingSchema, prev.MissingSchema)),
-		fmt.Sprintf("Schema Driven - Server: %s", formatCountDelta(cur.SchemaDrivenServer, prev.SchemaDrivenServer)),
-		fmt.Sprintf("Schema Driven - Cloud: %s", formatCountDelta(cur.SchemaDrivenCloud, prev.SchemaDrivenCloud)),
-		fmt.Sprintf("Path/param drift: %s", formatCountDelta(cur.PathParamDrift, prev.PathParamDrift)),
-		fmt.Sprintf("Unimplemented endpoints with schema: %s", formatCountDelta(cur.UnimplementedEndpointsWithSchema, prev.UnimplementedEndpointsWithSchema)),
+		fmt.Sprintf("Total Endpoints: Server %s, Cloud %s",
+			formatCountWithDelta(cur.ServerEndpoints, prev.ServerEndpoints),
+			formatCountWithDelta(cur.CloudEndpoints, prev.CloudEndpoints)),
+		fmt.Sprintf("Missing schema: %s", formatCountWithDelta(cur.MissingSchema, prev.MissingSchema)),
+		fmt.Sprintf("Schema Driven - Server: %s", formatCountWithDelta(cur.SchemaDrivenServer, prev.SchemaDrivenServer)),
+		fmt.Sprintf("Schema Driven - Cloud: %s", formatCountWithDelta(cur.SchemaDrivenCloud, prev.SchemaDrivenCloud)),
+		fmt.Sprintf("Path/param drift: %s", formatCountWithDelta(cur.PathParamDrift, prev.PathParamDrift)),
+		fmt.Sprintf("Unimplemented endpoints with schema: %s", formatCountWithDelta(cur.UnimplementedEndpointsWithSchema, prev.UnimplementedEndpointsWithSchema)),
 	}, "\n")
 }
 
-func formatCountDelta(current, previous int) string {
+func formatCountWithDelta(current, previous int) string {
 	delta := current - previous
-	added := 0
-	removed := 0
-	if delta > 0 {
-		added = delta
-	} else if delta < 0 {
-		removed = -delta
+	if delta == 0 {
+		return fmt.Sprintf("%d", current)
 	}
-	return fmt.Sprintf("%d (+%d / -%d)", current, added, removed)
+	return fmt.Sprintf("%d (%+d)", current, delta)
 }
 
 func auditSheetSummaryStatsFromRows(rows []ConsumerAuditRow) auditSheetSummaryStats {
@@ -1010,46 +900,6 @@ func writeSheet(ctx context.Context, srv *sheets.Service, sheetID string, previo
 		if err != nil {
 			return fmt.Errorf("update managed sheet cells: %w", err)
 		}
-	}
-	if summary != "" {
-		if err := writeAuditSheetSummaryRichText(ctx, srv, sheetID, summary); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func writeAuditSheetSummaryRichText(ctx context.Context, srv *sheets.Service, sheetID, summary string) error {
-	props, err := sheetPropertiesByTitle(ctx, srv, sheetID, sheetName)
-	if err != nil {
-		return err
-	}
-
-	_, err = srv.Spreadsheets.BatchUpdate(sheetID, &sheets.BatchUpdateSpreadsheetRequest{
-		Requests: []*sheets.Request{
-			{
-				UpdateCells: &sheets.UpdateCellsRequest{
-					Start: &sheets.GridCoordinate{
-						SheetId:     props.SheetId,
-						RowIndex:    0,
-						ColumnIndex: auditSummaryCellColumn,
-					},
-					Rows: []*sheets.RowData{
-						{
-							Values: []*sheets.CellData{
-								{
-									TextFormatRuns: auditSheetSummaryTextFormatRuns(summary),
-								},
-							},
-						},
-					},
-					Fields: "textFormatRuns",
-				},
-			},
-		},
-	}).Context(ctx).Do()
-	if err != nil {
-		return fmt.Errorf("format audit summary cell: %w", err)
 	}
 	return nil
 }
