@@ -7,6 +7,38 @@ import (
 )
 
 // Casing validation helpers — ported from build/validate-schemas.js lines 238–381.
+//
+// Phase 4.D — deferred pruning of `knownLowercaseSuffixViolations`.
+//
+// Per Agent 4.D of docs/identifier-naming-migration.md, once every resource
+// is migrated to the canonical camelCase-on-the-wire contract, individual
+// entries in the `knownLowercaseSuffixViolations` map below become dead
+// code — their listed property names no longer exist on any published
+// schema. Phase 3 is still in flight (per-resource versioned migrations),
+// so each of these entries may still occur in a legacy construct that has
+// not yet been version-bumped. Accordingly, this file intentionally
+// retains the full map rather than pruning on a best-effort basis.
+//
+// The pruning rule: when the last per-resource offender for a given entry
+// is removed (i.e., after the matching Phase 3.<Resource> migration lands
+// and its legacy construct is deleted by Phase 4.A), the corresponding
+// entry in the map can be deleted in a follow-up PR. Until then, each
+// entry documents a real drift class still reachable through at least one
+// legacy resource — removing it prematurely would silently disable the
+// Rule 6 camelCase-suffix diagnostic for that class and allow a reviewer
+// to land a regression.
+//
+// This is the "noted and deferred" resolution of Phase 4.D: the rule
+// surface is left untouched; the follow-up prune tracks Phase 3 completion
+// on a per-entry cadence rather than in a single sweep.
+//
+// Concretely, as of this commit only `userid` is still referenced by
+// live schema YAML (v1alpha1/core/api.yml and v1beta1/core/api.yml
+// define a shared `userid` query parameter); the remaining entries
+// cover resources whose Phase 3 migrations are either pending or whose
+// legacy-version sunset (Phase 4.A) has not yet removed the offending
+// file. Do not read the "zero live occurrences" state as permission to
+// delete the entry — Phase 4.A is the sole authorised removal path.
 
 var (
 	camelCaseRE  = regexp.MustCompile(`^[a-z][a-zA-Z0-9]*$`)
