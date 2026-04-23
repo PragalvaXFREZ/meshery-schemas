@@ -1,9 +1,8 @@
 openapi: 3.0.0
 info:
   title: Events
-  x-deprecated: true
   description: OpenAPI schema for Meshery events and system notifications.
-  version: v1beta2
+  version: v1beta3
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -15,20 +14,15 @@ tags:
 - name: events
   description: APIs for Meshery Cloud events.
 paths:
-  /events/{id}:
+  /events/{eventId}:
     delete:
       x-internal: ["cloud", "meshery"]
       tags:
       - events
+      operationId: deleteEvent
       summary: Delete a single event
       parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-          format: uuid
-        description: ID of the event to delete
+      - $ref: '#/components/parameters/eventId'
       responses:
         '204':
           description: Event deleted
@@ -45,13 +39,14 @@ paths:
       x-internal: ["cloud", "meshery"]
       tags:
       - events
+      operationId: createEvent
       summary: Create a new event
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
+              $ref: '#/components/schemas/EventPayload'
       responses:
         '201':
           description: Event created
@@ -66,6 +61,7 @@ paths:
       x-internal: ["cloud", "meshery"]
       tags:
       - events
+      operationId: bulkDeleteEvents
       summary: Bulk delete events
       requestBody:
         required: true
@@ -75,17 +71,11 @@ paths:
               $ref: '#/components/schemas/BulkDeleteRequest'
       responses:
         '200':
-          description: event deleted
+          description: Events deleted
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  deleted:
-                    type: array
-                    items:
-                      type: string
-                      format: uuid
+                $ref: '#/components/schemas/BulkDeleteResponse'
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -97,6 +87,7 @@ paths:
       x-internal: ["cloud", "meshery"]
       tags:
       - events
+      operationId: bulkUpdateEventStatus
       summary: Bulk update event status
       requestBody:
         required: true
@@ -110,33 +101,22 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  updated:
-                    type: array
-                    items:
-                      type: string
-                      format: uuid
+                $ref: '#/components/schemas/BulkUpdateStatusResponse'
         '400':
           $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
         '500':
           $ref: '#/components/responses/500'
-  /events/{id}/status:
+  /events/{eventId}/status:
     put:
       x-internal: ["cloud", "meshery"]
       tags:
       - events
+      operationId: updateEventStatus
       summary: Update status of a single event
       parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-          format: uuid
-        description: ID of the event
+      - $ref: '#/components/parameters/eventId'
       requestBody:
         required: true
         content:
@@ -149,15 +129,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  event_id:
-                    type: string
-                    format: uuid
-                  status:
-                    type: string
+                $ref: '#/components/schemas/UpdateEventStatusResponse'
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -308,67 +280,134 @@ paths:
 components:
   responses:
     400:
-      $ref: ../core/api.yml#/components/responses/400
+      $ref: ../../v1beta2/core/api.yml#/components/responses/400
     401:
-      $ref: ../core/api.yml#/components/responses/401
+      $ref: ../../v1beta2/core/api.yml#/components/responses/401
     404:
-      $ref: ../core/api.yml#/components/responses/404
+      $ref: ../../v1beta2/core/api.yml#/components/responses/404
     500:
-      $ref: ../core/api.yml#/components/responses/500
+      $ref: ../../v1beta2/core/api.yml#/components/responses/500
   parameters:
+    eventId:
+      name: eventId
+      in: path
+      description: ID of the event.
+      required: true
+      schema:
+        type: string
+        format: uuid
     workspaceId:
       name: workspaceId
       in: path
       description: Workspace ID
       schema:
-        $ref: ../core/api.yml#/components/schemas/WorkspaceId
+        $ref: ../../v1beta2/core/api.yml#/components/schemas/WorkspaceId
       required: true
     page:
-      $ref: ../core/api.yml#/components/parameters/page
+      $ref: ../../v1beta2/core/api.yml#/components/parameters/page
     pagesize:
-      $ref: ../core/api.yml#/components/parameters/pagesize
+      $ref: ../../v1beta2/core/api.yml#/components/parameters/pagesize
     search:
-      $ref: ../core/api.yml#/components/parameters/search
+      $ref: ../../v1beta2/core/api.yml#/components/parameters/search
     order:
-      $ref: ../core/api.yml#/components/parameters/order
+      $ref: ../../v1beta2/core/api.yml#/components/parameters/order
     cumulative:
       name: cumulative
       in: query
+      description: When true, return cumulative aggregate counts across all time.
       required: false
       schema:
         type: boolean
     filter:
-      $ref: ../core/api.yml#/components/parameters/filter
+      $ref: ../../v1beta2/core/api.yml#/components/parameters/filter
     eventsFilter:
-      $ref: ../core/api.yml#/components/parameters/filter
+      $ref: ../../v1beta2/core/api.yml#/components/parameters/filter
   securitySchemes:
     jwt:
       type: http
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    EventPayload:
+      type: object
+      description: Payload for creating a new event.
+      additionalProperties: true
+      properties:
+        userId:
+          type: string
+          format: uuid
+          description: UUID of the user associated with the event.
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+          x-go-name: UserID
+          x-oapi-codegen-extra-tags:
+            json: "userId,omitempty"
+        category:
+          type: string
+          description: The category of the event.
+          maxLength: 500
+        action:
+          type: string
+          description: The action of the event.
+          maxLength: 500
+        description:
+          type: string
+          description: Description of the event.
+          maxLength: 5000
     UpdateEventStatusRequest:
       type: object
+      description: Payload for updating the status of a single event.
       required:
       - status
       properties:
         status:
           type: string
           example: completed
-          description: Current status of the resource.
+          description: Current status of the event.
+          maxLength: 255
+    UpdateEventStatusResponse:
+      type: object
+      description: Response body returned after updating an event's status.
+      properties:
+        message:
+          type: string
+          description: Human-readable status message.
+          maxLength: 500
+        eventId:
+          type: string
+          format: uuid
+          description: UUID of the event whose status was updated.
+          x-oapi-codegen-extra-tags:
+            json: "eventId,omitempty"
+        status:
+          type: string
+          description: Updated status of the event.
           maxLength: 255
     BulkDeleteRequest:
       type: object
+      description: Payload for bulk-deleting events by ID.
       required:
       - ids
       properties:
         ids:
           type: array
           items:
-            $ref: ../core/api.yml#/components/schemas/Uuid
-          description: The ids of the bulkdeleterequest.
+            $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: UUIDs of the events to delete.
+    BulkDeleteResponse:
+      type: object
+      description: Response body returned after bulk event deletion.
+      properties:
+        deleted:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: UUIDs of events that were deleted.
     BulkUpdateStatusRequest:
       type: object
+      description: Payload for bulk-updating the status of events.
       required:
       - ids
       - status
@@ -376,75 +415,104 @@ components:
         ids:
           type: array
           items:
-            $ref: ../core/api.yml#/components/schemas/Uuid
-          description: The ids of the bulkupdatestatusrequest.
+            $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+          description: UUIDs of the events to update.
         status:
           type: string
           example: failed
-          description: Current status of the resource.
+          description: New status to apply to the selected events.
           maxLength: 255
+    BulkUpdateStatusResponse:
+      type: object
+      description: Response body returned after bulk event status update.
+      properties:
+        updated:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: UUIDs of events whose status was updated.
     EventResult:
       $ref: ./event.yaml
     EventsPage:
       type: object
+      description: Paginated list of events.
       properties:
         page:
-          $ref: ../core/api.yml#/components/schemas/Number
-        page_size:
-          $ref: ../core/api.yml#/components/schemas/Number
-        total_count:
-          $ref: ../core/api.yml#/components/schemas/Number
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Number
+          description: Zero-based page index returned in this response.
+        pageSize:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Number
+          description: Maximum number of items returned on each page.
+          minimum: 1
+          x-oapi-codegen-extra-tags:
+            json: "pageSize,omitempty"
+        totalCount:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Number
+          description: Total number of items across all pages.
+          minimum: 0
+          x-oapi-codegen-extra-tags:
+            json: "totalCount,omitempty"
         data:
           type: array
           items:
             $ref: '#/components/schemas/EventResult'
-          description: The data of the eventspage.
+          description: The events returned on the current page.
     EventsAggregate:
       type: object
+      description: Aggregated event counts across categories.
       properties:
         audit:
           type: integer
-          description: The audit of the eventsaggregate.
+          description: Count of audit-category events.
           minimum: 0
       additionalProperties: true
     EventSummary:
       type: object
+      description: Per-user event summary entry.
       additionalProperties: true
     EventSummaryPage:
       type: object
+      description: Paginated list of per-user event summaries.
       properties:
         page:
           type: integer
           description: Current page number of the result set.
           minimum: 0
-        page_size:
+        pageSize:
           type: integer
           description: Number of items per page.
           minimum: 1
-        total_count:
+          x-oapi-codegen-extra-tags:
+            json: "pageSize,omitempty"
+        totalCount:
           type: integer
           description: Total number of items available.
           minimum: 0
+          x-oapi-codegen-extra-tags:
+            json: "totalCount,omitempty"
         data:
           type: array
           items:
             $ref: '#/components/schemas/EventSummary'
-          description: The data of the eventsummarypage.
+          description: The event summaries returned on the current page.
     EventType:
       type: object
+      description: A category/action pair describing one kind of event.
       properties:
         category:
           type: string
-          description: The category of the eventtype.
+          description: The category of the event type.
           maxLength: 500
         action:
           type: string
-          description: The action of the eventtype.
+          description: The action of the event type.
           maxLength: 500
     ErrorResponse:
       type: object
+      description: Generic error envelope returned for non-2xx responses.
       properties:
         error:
           type: string
-          description: The error of the errorresponse.
+          description: Human-readable error message.
           maxLength: 500
