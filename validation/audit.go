@@ -214,13 +214,9 @@ func auditEntitySchemas(constructDir string, opts AuditOptions,
 			addViolation(result, v, baseline)
 		}
 
-		// Rule 6: entity property casing must match contract/DB-backed rules.
+		// Rule 6: entity property casing (unconditional camelCase; no DB
+		// exception under the canonical identifier-naming contract).
 		for _, v := range checkRule6ForEntity(relPath, entity, opts) {
-			addViolation(result, v, baseline)
-		}
-
-		// Rule 32: DB-backed fields must use the exact snake_case db column name.
-		for _, v := range checkRule32ForEntity(relPath, entity, opts) {
 			addViolation(result, v, baseline)
 		}
 
@@ -303,11 +299,6 @@ func auditAPISpec(apiYmlPath, constructDir string, opts AuditOptions,
 
 	// Rule 8: enum values.
 	for _, v := range checkRule8(apiYmlPath, relPath, doc, opts, enumBaselineRef) {
-		addViolation(result, v, baseline)
-	}
-
-	// Rule 32: DB-backed property names.
-	for _, v := range checkRule32ForAPI(relPath, doc, opts) {
 		addViolation(result, v, baseline)
 	}
 

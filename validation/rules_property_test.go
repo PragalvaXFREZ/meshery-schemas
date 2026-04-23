@@ -435,3 +435,290 @@ func TestFingerprintSchema_IdenticalSchemasProduceSameFingerprint(t *testing.T) 
 		t.Errorf("identical schemas produced different fingerprints: %q vs %q", fp1, fp2)
 	}
 }
+
+// ---------------------------------------------------------------------------
+// Rule 6 (inverted): unconditional camelCase — no DB-mirroring exception.
+// See docs/identifier-naming-migration.md Phase 1.B.
+// ---------------------------------------------------------------------------
+
+// TestCheckRule6ForAPI_DBBackedSnakeFails is the first charter acceptance
+// case: a DB-backed field whose property name is snake_case (the legacy
+// pre-canonical pattern) must now trip Rule 6. This was previously exempted
+// by the DB-mirroring rule.
+func TestCheckRule6ForAPI_DBBackedSnakeFails(t *testing.T) {
+	schema := &openapi3.Schema{
+		Type: &openapi3.Types{"object"},
+		Properties: openapi3.Schemas{
+			"user_id": {
+				Value: &openapi3.Schema{
+					Type:        &openapi3.Types{"string"},
+					Description: "User id",
+					Extensions: map[string]any{
+						"x-oapi-codegen-extra-tags": map[string]any{
+							"db":   "user_id",
+							"json": "user_id",
+						},
+					},
+				},
+			},
+		},
+	}
+	doc := &openapi3.T{
+		Components: &openapi3.Components{
+			Schemas: openapi3.Schemas{
+				"LegacyResource": &openapi3.SchemaRef{Value: schema},
+			},
+		},
+	}
+
+	// --style-debt surfaces Rule 6 violations as advisory.
+	vs := checkRule6ForAPI("test.yml", doc, AuditOptions{StyleDebt: true})
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 Rule 6 violation for user_id, got %d: %+v", len(vs), vs)
+	}
+	if vs[0].RuleNumber != 6 {
+		t.Errorf("expected RuleNumber=6, got %d", vs[0].RuleNumber)
+	}
+}
+
+// TestCheckRule6ForAPI_DBBackedCamelPasses is the second charter acceptance
+// case: a DB-backed field whose property name is canonical-casing (camel on
+// the wire, db: tag carries snake) passes Rule 6 cleanly.
+func TestCheckRule6ForAPI_DBBackedCamelPasses(t *testing.T) {
+	schema := &openapi3.Schema{
+		Type: &openapi3.Types{"object"},
+		Properties: openapi3.Schemas{
+			"userId": {
+				Value: &openapi3.Schema{
+					Type:        &openapi3.Types{"string"},
+					Description: "User id",
+					Extensions: map[string]any{
+						"x-oapi-codegen-extra-tags": map[string]any{
+							"db":   "user_id",
+							"json": "userId",
+						},
+					},
+				},
+			},
+		},
+	}
+	doc := &openapi3.T{
+		Components: &openapi3.Components{
+			Schemas: openapi3.Schemas{
+				"CanonicalResource": &openapi3.SchemaRef{Value: schema},
+			},
+		},
+	}
+
+	vs := checkRule6ForAPI("test.yml", doc, AuditOptions{StyleDebt: true})
+	if len(vs) != 0 {
+		t.Errorf("expected no Rule 6 violations for camelCase DB-backed field, got %d: %+v", len(vs), vs)
+	}
+}
+
+// TestCheckRule6ForAPI_NonDBSnakeFails is the third charter acceptance
+// case: a non-DB-backed snake_case property name is (and always has been)
+// a Rule 6 violation — confirming the inversion did not accidentally
+// loosen this path.
+func TestCheckRule6ForAPI_NonDBSnakeFails(t *testing.T) {
+	schema := &openapi3.Schema{
+		Type: &openapi3.Types{"object"},
+		Properties: openapi3.Schemas{
+			"custom_field": {
+				Value: &openapi3.Schema{
+					Type:        &openapi3.Types{"string"},
+					Description: "A custom field with no DB backing.",
+				},
+			},
+		},
+	}
+	doc := &openapi3.T{
+		Components: &openapi3.Components{
+			Schemas: openapi3.Schemas{
+				"Resource": &openapi3.SchemaRef{Value: schema},
+			},
+		},
+	}
+
+	vs := checkRule6ForAPI("test.yml", doc, AuditOptions{StyleDebt: true})
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 Rule 6 violation for non-DB snake property, got %d: %+v", len(vs), vs)
+	}
+}
+
+// TestCheckRule6ForAPI_LegacyMirroredFieldAnnotated confirms that when a
+// dbMirroredFields-listed name fails Rule 6, the violation message surfaces
+// the legacy-migration guidance pointing at the plan.
+func TestCheckRule6ForAPI_LegacyMirroredFieldAnnotated(t *testing.T) {
+	schema := &openapi3.Schema{
+		Type: &openapi3.Types{"object"},
+		Properties: openapi3.Schemas{
+			"created_at": {
+				Value: &openapi3.Schema{
+					Type:        &openapi3.Types{"string"},
+					Description: "Creation timestamp.",
+					Extensions: map[string]any{
+						"x-oapi-codegen-extra-tags": map[string]any{
+							"db": "created_at",
+						},
+					},
+				},
+			},
+		},
+	}
+	doc := &openapi3.T{
+		Components: &openapi3.Components{
+			Schemas: openapi3.Schemas{
+				"Resource": &openapi3.SchemaRef{Value: schema},
+			},
+		},
+	}
+
+	vs := checkRule6ForAPI("test.yml", doc, AuditOptions{StyleDebt: true})
+	if len(vs) != 1 {
+		t.Fatalf("expected 1 Rule 6 violation for created_at, got %d: %+v", len(vs), vs)
+	}
+	if !contains(vs[0].Message, "legacy DB-mirrored") {
+		t.Errorf("expected message to flag 'legacy DB-mirrored', got: %q", vs[0].Message)
+	}
+}
+
+// TestCheckRule32ForAPI_Retired confirms the pre-canonical Rule 32 no
+// longer emits violations; it has been superseded by the canonical
+// contract's "json tag diverges from db tag by design" rule.
+func TestCheckRule32ForAPI_Retired(t *testing.T) {
+	schema := &openapi3.Schema{
+		Type: &openapi3.Types{"object"},
+		Properties: openapi3.Schemas{
+			"userId": {
+				Value: &openapi3.Schema{
+					Type: &openapi3.Types{"string"},
+					Extensions: map[string]any{
+						"x-oapi-codegen-extra-tags": map[string]any{
+							"db":   "user_id",
+							"json": "userId",
+						},
+					},
+				},
+			},
+		},
+	}
+	doc := &openapi3.T{
+		Components: &openapi3.Components{
+			Schemas: openapi3.Schemas{
+				"Resource": &openapi3.SchemaRef{Value: schema},
+			},
+		},
+	}
+	vs := checkRule32ForAPI("test.yml", doc, AuditOptions{Strict: true})
+	if len(vs) != 0 {
+		t.Errorf("Rule 32 is retired; expected 0 violations, got %d: %+v", len(vs), vs)
+	}
+}
+
+// TestCheckRule6ForAPI_WalksCompositionAndItems asserts that Rule 6 surfaces
+// inline snake_case property names inside allOf/anyOf/oneOf branches and
+// array items, not just at the top level. This protects baselines against
+// regressions as new constructs add inline composition shapes.
+func TestCheckRule6ForAPI_WalksCompositionAndItems(t *testing.T) {
+	mkStringProp := func() *openapi3.SchemaRef {
+		return &openapi3.SchemaRef{
+			Value: &openapi3.Schema{
+				Type:        &openapi3.Types{"string"},
+				Description: "placeholder",
+			},
+		}
+	}
+	schema := &openapi3.Schema{
+		AllOf: []*openapi3.SchemaRef{
+			{Value: &openapi3.Schema{
+				Type: &openapi3.Types{"object"},
+				Properties: openapi3.Schemas{
+					"nested_snake": mkStringProp(),
+				},
+			}},
+		},
+		Properties: openapi3.Schemas{
+			"items": {
+				Value: &openapi3.Schema{
+					Type: &openapi3.Types{"array"},
+					Items: &openapi3.SchemaRef{
+						Value: &openapi3.Schema{
+							Type: &openapi3.Types{"object"},
+							Properties: openapi3.Schemas{
+								"item_field": mkStringProp(),
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	doc := &openapi3.T{
+		Components: &openapi3.Components{
+			Schemas: openapi3.Schemas{
+				"Composite": &openapi3.SchemaRef{Value: schema},
+			},
+		},
+	}
+
+	vs := checkRule6ForAPI("test.yml", doc, AuditOptions{StyleDebt: true})
+	seen := map[string]bool{}
+	for _, v := range vs {
+		if contains(v.Message, "nested_snake") {
+			seen["nested_snake"] = true
+		}
+		if contains(v.Message, "item_field") {
+			seen["item_field"] = true
+		}
+	}
+	if !seen["nested_snake"] {
+		t.Errorf("expected Rule 6 to flag nested_snake inside allOf; violations: %+v", vs)
+	}
+	if !seen["item_field"] {
+		t.Errorf("expected Rule 6 to flag item_field inside array items; violations: %+v", vs)
+	}
+}
+
+// TestCheckRule6ForAPI_PropertyOrderDeterministic asserts that the order of
+// Rule 6 violations depends only on property names, not on Go map iteration
+// order. Baselines rely on stable ordering.
+func TestCheckRule6ForAPI_PropertyOrderDeterministic(t *testing.T) {
+	mk := func() *openapi3.T {
+		return &openapi3.T{
+			Components: &openapi3.Components{
+				Schemas: openapi3.Schemas{
+					"Zebra": &openapi3.SchemaRef{Value: &openapi3.Schema{
+						Type: &openapi3.Types{"object"},
+						Properties: openapi3.Schemas{
+							"zebra_field":  {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}}},
+							"alpha_field":  {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}}},
+							"middle_field": {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}}},
+						},
+					}},
+					"Alpha": &openapi3.SchemaRef{Value: &openapi3.Schema{
+						Type: &openapi3.Types{"object"},
+						Properties: openapi3.Schemas{
+							"some_field": {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}}},
+						},
+					}},
+				},
+			},
+		}
+	}
+
+	// Run many times; every run should produce identical output.
+	first := checkRule6ForAPI("test.yml", mk(), AuditOptions{StyleDebt: true})
+	for i := 0; i < 10; i++ {
+		again := checkRule6ForAPI("test.yml", mk(), AuditOptions{StyleDebt: true})
+		if len(first) != len(again) {
+			t.Fatalf("violation count changed between runs: %d vs %d", len(first), len(again))
+		}
+		for j := range first {
+			if first[j].Message != again[j].Message {
+				t.Errorf("violation order/content changed between runs at index %d:\n  a=%s\n  b=%s",
+					j, first[j].Message, again[j].Message)
+			}
+		}
+	}
+}

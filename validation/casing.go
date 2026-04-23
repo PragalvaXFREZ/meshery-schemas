@@ -45,8 +45,18 @@ var knownLowercaseSuffixViolations = map[string]bool{
 	"callbackurl": true, "redirecturl": true,
 }
 
-// dbMirroredFields are known contract-stable snake_case fields that may not
-// carry explicit db tags but are DB-backed.
+// dbMirroredFields enumerates known snake_case property names that originated
+// as DB column mirrors in pre-canonical-contract schemas.
+//
+// Under the canonical identifier-naming contract (see AGENTS.md § Casing
+// rules at a glance and docs/identifier-naming-migration.md), wire tags are
+// camelCase regardless of DB backing — so these names are no longer treated
+// as an exception to Rule 6. They surface as Rule 6 violations and are
+// routed through the same `--style-debt` severity path as every other
+// legacy snake_case violation. The set remains defined because
+// matcher.go still uses it to distinguish server-generated / DB-mirrored
+// fields from request-side client input when diffing consumer Go types
+// against schema shapes.
 var dbMirroredFields = map[string]bool{
 	"created_at": true, "updated_at": true, "deleted_at": true,
 	"user_id": true, "org_id": true, "organization_id": true,
@@ -151,19 +161,30 @@ type CasingIssue struct {
 	Description string
 }
 
-// GetCamelCaseIssues checks a name for camelCase violations.
-// If allowDBMirrored is true, known DB-backed snake_case fields are exempt.
-// dbTag and gormColumn are the values from x-oapi-codegen-extra-tags.
-func GetCamelCaseIssues(name string, allowDBMirrored bool, dbTag, gormColumn string) []CasingIssue {
-	if allowDBMirrored && isAllowedSnakeCaseProperty(name, dbTag, gormColumn) {
-		return nil
-	}
-
+// GetCamelCaseIssues checks a wire identifier (schema property name,
+// OpenAPI query/header parameter name, or any similar camelCase-expected
+// token) for casing violations.
+//
+// Under the canonical identifier-naming contract (AGENTS.md § Casing rules
+// at a glance, docs/identifier-naming-migration.md §1), wire names are
+// camelCase regardless of DB backing — the snake_case DB column name lives
+// only in `x-oapi-codegen-extra-tags.db`, not on the wire. Accordingly this
+// checker is unconditional: there is no DB-mirroring exception. The
+// legacy-DB-mirrored field set (dbMirroredFields) remains defined for use
+// by matcher.go's consumer-type diff, but it is no longer an exception.
+//
+// The returned issue descriptions are context-agnostic — each caller
+// (Rule 6 for schema/entity properties, Rule 9 for query/header
+// parameters, etc.) is responsible for adding any context-specific
+// guidance on top of the generic message. Severity is determined at the
+// caller via classifyStyleIssue / the --style-debt / --strict-consistency
+// flags.
+func GetCamelCaseIssues(name string) []CasingIssue {
 	var issues []CasingIssue
 
 	if HasUnderscore(name) {
 		issues = append(issues, CasingIssue{
-			Description: "uses snake_case (only DB-backed contract fields may use underscores)",
+			Description: "uses snake_case (must be camelCase)",
 		})
 	}
 	if len(name) > 0 && unicode.IsUpper(rune(name[0])) {
@@ -202,30 +223,6 @@ func GetCamelCaseIssues(name string, allowDBMirrored bool, dbTag, gormColumn str
 	}
 
 	return issues
-}
-
-// isAllowedSnakeCaseProperty returns true if a snake_case name is permitted
-// because it maps to a database column.
-func isAllowedSnakeCaseProperty(name, dbTag, gormColumn string) bool {
-	if dbMirroredFields[name] {
-		return true
-	}
-	if isDBBackedSnakeCaseProperty(name, dbTag, gormColumn) {
-		return true
-	}
-	return false
-}
-
-// isDBBackedSnakeCaseProperty returns true if the property name matches its
-// db or gorm column tag exactly.
-func isDBBackedSnakeCaseProperty(name, dbTag, gormColumn string) bool {
-	if dbTag != "" && IsValidDBTag(dbTag) && HasUnderscore(dbTag) && name == dbTag {
-		return true
-	}
-	if gormColumn != "" && IsValidDBTag(gormColumn) && HasUnderscore(gormColumn) && name == gormColumn {
-		return true
-	}
-	return false
 }
 
 // IsValidOperationID checks if an operationId is lower camelCase verbNoun.

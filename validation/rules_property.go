@@ -7,47 +7,23 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
-// --- Rule 32: DB-backed property names must match db tags ---
+// --- Rule 32: DB-backed property names must match db tags (retired) ---
 
-func checkRule32ForAPI(filePath string, doc *openapi3.T, _ AuditOptions) []Violation {
-	if doc == nil || doc.Components == nil || doc.Components.Schemas == nil {
-		return nil
-	}
-	var out []Violation
-	for name, ref := range doc.Components.Schemas {
-		if ref == nil || ref.Value == nil || ref.Value.Properties == nil {
-			continue
-		}
-		for propName, propRef := range ref.Value.Properties {
-			if propRef == nil || propRef.Value == nil {
-				continue
-			}
-			dbTag := getExtensionDBTag(propRef)
-			gormCol := getExtensionGormColumn(propRef)
-			col := dbTag
-			if col == "" {
-				col = gormCol
-			}
-			if col == "" || !IsValidDBTag(col) || !HasUnderscore(col) {
-				continue
-			}
-			if propName != col {
-				jsonTag := getExtraTag(propRef.Value.Extensions, "json")
-				if jsonTag != "" && jsonTag != "-" && jsonTag == col {
-					continue // deliberate semantic alias
-				}
-				src := "db"
-				if dbTag == "" {
-					src = "gorm column"
-				}
-				out = append(out, Violation{File: filePath,
-					Message: fmt.Sprintf(`Schema %q — property %q maps to database column %q (via %s tag). DB-backed property names must use the exact snake_case db name.`,
-						name, propName, col, src),
-					Severity: SeverityBlocking, RuleNumber: 32})
-			}
-		}
-	}
-	return out
+// Rule 32 is retired under the canonical identifier-naming contract.
+//
+// The pre-canonical rule required DB-backed property names to match their
+// snake_case `db:` tag exactly. Under the new contract (see
+// docs/identifier-naming-migration.md §1 and AGENTS.md § Casing rules at
+// a glance), the wire property name is camelCase and the snake_case DB
+// column name lives only in `x-oapi-codegen-extra-tags.db` — so a
+// property whose name differs from its `db:` tag is the *expected* shape
+// for DB-backed fields, not a violation.
+//
+// The function is retained as a retired stub so that historical audit-
+// pipeline callers remain linkable; it returns no violations. Retirement
+// is documented in Phase 1.B of the identifier-naming migration plan.
+func checkRule32ForAPI(_ string, _ *openapi3.T, _ AuditOptions) []Violation {
+	return nil
 }
 
 // --- Rule 33: Pagination envelopes use page_size / total_count ---
