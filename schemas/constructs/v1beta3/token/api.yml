@@ -1,7 +1,6 @@
 openapi: 3.0.0
 info:
   title: token
-  x-deprecated: true
   description: Documentation for Meshery Cloud REST APIs for user tokens and sessions
   contact:
     name: Meshery Maintainers
@@ -10,7 +9,7 @@ info:
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: v1beta2
+  version: v1beta3
 servers:
 - url: https://cloud.layer5.io
   description: Meshery Cloud production server URL
@@ -34,7 +33,7 @@ paths:
       operationId: getUserTokens
       description: Retrieves tokens associated with the authenticated user.
       parameters:
-      - $ref: '#/components/parameters/isOAuth'
+      - $ref: '#/components/parameters/isOauth'
       - $ref: '#/components/parameters/page'
       - $ref: '#/components/parameters/pagesize'
       - $ref: '#/components/parameters/search'
@@ -62,7 +61,7 @@ paths:
       - $ref: '#/components/parameters/name'
       - $ref: '#/components/parameters/purpose'
       responses:
-        '200':
+        '201':
           description: Token generated
           content:
             application/json:
@@ -83,7 +82,7 @@ paths:
       operationId: deleteUserToken
       description: Deletes a specific token for the authenticated user.
       parameters:
-      - $ref: '#/components/parameters/tokenId'
+      - $ref: '#/components/parameters/tokenIdQuery'
       responses:
         '200':
           description: Token deleted
@@ -97,7 +96,7 @@ paths:
           $ref: '#/components/responses/401'
         '500':
           $ref: '#/components/responses/500'
-  /api/identity/tokens/{id}:
+  /api/identity/tokens/{tokenId}:
     get:
       x-internal:
       - cloud
@@ -107,7 +106,7 @@ paths:
       operationId: getUserTokensById
       description: Retrieves a specific token by its ID.
       parameters:
-      - $ref: '#/components/parameters/id'
+      - $ref: '#/components/parameters/tokenId'
       responses:
         '200':
           description: Token response
@@ -131,8 +130,8 @@ paths:
       operationId: issueIndefiniteLifetimeToken
       description: Creates a non-expiring user token for provider admin use cases.
       parameters:
-      - $ref: '#/components/parameters/userId'
-      - $ref: '#/components/parameters/provider'
+      - $ref: '#/components/parameters/userIdQuery'
+      - $ref: '#/components/parameters/providerQuery'
       responses:
         '200':
           description: Token generated
@@ -154,31 +153,53 @@ components:
       bearerFormat: JWT
   responses:
     400:
-      $ref: ../core/api.yml#/components/responses/400
+      $ref: ../../v1beta2/core/api.yml#/components/responses/400
     401:
-      $ref: ../core/api.yml#/components/responses/401
+      $ref: ../../v1beta2/core/api.yml#/components/responses/401
     404:
-      $ref: ../core/api.yml#/components/responses/404
+      $ref: ../../v1beta2/core/api.yml#/components/responses/404
     500:
-      $ref: ../core/api.yml#/components/responses/500
+      $ref: ../../v1beta2/core/api.yml#/components/responses/500
   parameters:
-    id:
-      name: id
+    tokenId:
+      name: tokenId
       in: path
       description: Token ID
       required: true
       schema:
-        $ref: ../core/api.yml#/components/schemas/Uuid
+        $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    tokenIdQuery:
+      name: tokenId
+      in: query
+      description: ID of the token to delete.
+      required: true
+      schema:
+        $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    userIdQuery:
+      name: userId
+      in: query
+      description: UUID of the user to issue the indefinite token for.
+      required: true
+      schema:
+        $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    providerQuery:
+      name: provider
+      in: query
+      description: Authentication provider to associate with the indefinite token.
+      required: true
+      schema:
+        type: string
+        maxLength: 500
     page:
-      $ref: ../core/api.yml#/components/parameters/page
+      $ref: ../../v1beta2/core/api.yml#/components/parameters/page
     pagesize:
-      $ref: ../core/api.yml#/components/parameters/pagesize
+      $ref: ../../v1beta2/core/api.yml#/components/parameters/pagesize
     search:
-      $ref: ../core/api.yml#/components/parameters/search
+      $ref: ../../v1beta2/core/api.yml#/components/parameters/search
     order:
-      $ref: ../core/api.yml#/components/parameters/order
-    isOAuth:
-      name: isOAuth
+      $ref: ../../v1beta2/core/api.yml#/components/parameters/order
+    isOauth:
+      name: isOauth
       in: query
       description: Whether to retrieve OAuth-backed sessions instead of API tokens.
       schema:
@@ -190,33 +211,15 @@ components:
       required: true
       schema:
         type: string
+        minLength: 1
+        maxLength: 255
     purpose:
       name: purpose
       in: query
       description: Purpose for which the token is generated.
       schema:
         type: string
-    tokenId:
-      name: tokenId
-      in: query
-      description: ID of the token.
-      required: true
-      schema:
-        $ref: ../core/api.yml#/components/schemas/Uuid
-    userId:
-      name: userId
-      in: query
-      description: UUID of the user.
-      required: true
-      schema:
-        $ref: ../core/api.yml#/components/schemas/Uuid
-    provider:
-      name: provider
-      in: query
-      description: Remote provider.
-      required: true
-      schema:
-        type: string
+        maxLength: 500
   schemas:
     UserToken:
       $ref: ./token.yaml
@@ -225,9 +228,9 @@ components:
       description: A paginated list of tokens.
       required:
       - tokens
-      - total_count
+      - totalCount
       - page
-      - page_size
+      - pageSize
       properties:
         tokens:
           type: array
@@ -235,19 +238,26 @@ components:
             $ref: '#/components/schemas/UserToken'
             x-go-type: UserToken
           x-order: 1
-          description: The tokens of the tokenpage.
-        total_count:
+          description: Tokens returned on the current page.
+        totalCount:
           type: integer
           description: Total number of tokens across all pages.
-          x-order: 2
           minimum: 0
+          x-go-type-skip-optional-pointer: true
+          x-order: 2
+          x-oapi-codegen-extra-tags:
+            json: totalCount
         page:
           type: integer
           description: Current page number (zero-based).
-          x-order: 3
           minimum: 0
-        page_size:
+          x-go-type-skip-optional-pointer: true
+          x-order: 3
+        pageSize:
           type: integer
           description: Number of tokens per page.
-          x-order: 4
           minimum: 1
+          x-go-type-skip-optional-pointer: true
+          x-order: 4
+          x-oapi-codegen-extra-tags:
+            json: pageSize
