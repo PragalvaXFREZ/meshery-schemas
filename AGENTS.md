@@ -486,6 +486,27 @@ Each `*_REPO` variable is optional; consumers whose path is not provided are sil
 
 The TS findings section appears below the main audit report and is grouped by repo so reviewers can focus on one downstream at a time.
 
+### CI behavior (advisory)
+
+The `consumer-audit` job in `.github/workflows/schema-audit.yml` runs the audit against all three downstream repos on every `pull_request` event (and on `workflow_dispatch`). Per Phase 1.H of the [identifier-naming migration plan](docs/identifier-naming-migration.md), the job is **advisory-only through Phase 1**: it always exits 0, regardless of divergence. Phase 4.A flips it to exit non-zero once every downstream has migrated.
+
+On each run the job:
+
+1. Checks out `meshery/schemas` (the repo under test), then `meshery/meshery`, `layer5io/meshery-cloud`, and `layer5labs/meshery-extensions` under `./_consumer/`. The sibling checkouts use a PAT secret named `CI_CONSUMER_PAT` for private-repo access (`meshery-cloud` and `meshery-extensions` are private). Each sibling checkout has `continue-on-error: true`, so a missing PAT, insufficient scopes, or a temporary GitHub outage simply results in that column being skipped — the job still runs and posts a comment against whatever consumers *are* available.
+2. Invokes `make consumer-audit MESHERY_REPO=_consumer/meshery CLOUD_REPO=_consumer/meshery-cloud EXTENSIONS_REPO=_consumer/meshery-extensions VERBOSE=1` and captures the full output to `/tmp/consumer-audit.txt`. Non-zero exit from the make target is tolerated.
+3. Uploads the captured output as a build artifact named `consumer-audit-output` (retained for 14 days) so reviewers can download the raw per-endpoint list.
+4. Posts a summary comment on the PR listing the per-repo totals (`Total Endpoints`, `Schema Backed`, `Consumer Only`) pulled from the audit report table, plus a rolled-up count of TypeScript findings by kind (`case-flip`, `snake-case-wrapper`, `snake-case-param`) and the set of repos those findings span. The comment is keyed by an HTML marker and is upserted across runs so repeat pushes to the same PR update the existing comment rather than spamming new ones. Any sibling repo whose checkout failed is surfaced in a "Skipped consumer checkouts" note under the table so a zero in that column cannot be mistaken for perfect alignment.
+
+### Provisioning `CI_CONSUMER_PAT`
+
+The secret must be a fine-grained or classic PAT with read access to:
+
+- `meshery/meshery` (public — read access is implicit, but including the repo in the PAT's scope list keeps all three checkouts on a single credential path)
+- `layer5io/meshery-cloud` (private — PAT must be a member of the `layer5io` org with `contents: read`)
+- `layer5labs/meshery-extensions` (private — PAT must be a member of the `layer5labs` org with `contents: read`)
+
+If the secret is absent, `actions/checkout@v4` will receive an empty `token:` input and fall back to unauthenticated access. The public `meshery/meshery` checkout still succeeds; both private siblings will fail and — thanks to `continue-on-error: true` — be skipped cleanly. The job remains green, the comment surfaces only the public column, and the "Skipped consumer checkouts" note lists which consumers were omitted.
+
 ## Questions?
 
 If you're unsure about any schema modification:

@@ -9,6 +9,7 @@ on:
       - 'build/**'
       - 'validation/**'
       - 'cmd/validate-schemas/**'
+      - 'cmd/consumer-audit/**'
       - 'schemas/**'
       - 'models/**'
       - 'go.mod'
@@ -22,6 +23,7 @@ on:
       - 'build/**'
       - 'validation/**'
       - 'cmd/validate-schemas/**'
+      - 'cmd/consumer-audit/**'
       - 'schemas/**'
       - 'models/**'
       - 'go.mod'
@@ -61,3 +63,223 @@ jobs:
 
       - name: Run full schema audit
         run: make audit-schemas-full
+
+  # Per Phase 1.H of docs/identifier-naming-migration.md, this job is
+  # advisory-only: it always exits 0, and a summary of divergence counts is
+  # posted to the PR as a comment. Phase 4.A will flip this job to
+  # exit non-zero on divergence once all downstream repos are aligned.
+  #
+  # Downstream repo checkouts use a PAT (CI_CONSUMER_PAT) for private-repo
+  # access (meshery-cloud and meshery-extensions are private). If the secret
+  # is unset or lacks access to a given consumer repo, that checkout fails
+  # gracefully via continue-on-error and the consumer-audit Go tool silently
+  # skips the missing tree. Provision CI_CONSUMER_PAT as a repository secret
+  # with at minimum `repo:read` scope against layer5io/meshery-cloud and
+  # layer5labs/meshery-extensions.
+  consumer-audit:
+    name: Consumer audit (advisory)
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout schemas
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Checkout meshery/meshery
+        id: checkout-meshery
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: meshery/meshery
+          path: _consumer/meshery
+          token: ${{ secrets.CI_CONSUMER_PAT }}
+
+      - name: Checkout layer5io/meshery-cloud
+        id: checkout-cloud
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: layer5io/meshery-cloud
+          path: _consumer/meshery-cloud
+          token: ${{ secrets.CI_CONSUMER_PAT }}
+
+      - name: Checkout layer5labs/meshery-extensions
+        id: checkout-extensions
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: layer5labs/meshery-extensions
+          path: _consumer/meshery-extensions
+          token: ${{ secrets.CI_CONSUMER_PAT }}
+
+      # The Go tool silently skips any *_REPO that doesn't exist on disk, so
+      # passing the paths unconditionally is safe even when a sibling
+      # checkout failed. We tolerate a non-zero exit from the make target so
+      # this job remains advisory through Phase 1.
+      - name: Run consumer audit
+        run: |
+          set +e
+          mkdir -p _consumer
+          make consumer-audit \
+            MESHERY_REPO=_consumer/meshery \
+            CLOUD_REPO=_consumer/meshery-cloud \
+            EXTENSIONS_REPO=_consumer/meshery-extensions \
+            VERBOSE=1 \
+            > /tmp/consumer-audit.txt 2>&1
+          status=$?
+          echo "consumer-audit exit status: ${status}"
+          echo "--- First 40 lines of output ---"
+          head -40 /tmp/consumer-audit.txt || true
+          echo "--- End preview ---"
+          exit 0
+
+      - name: Upload consumer-audit output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: consumer-audit-output
+          path: /tmp/consumer-audit.txt
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Post PR comment with divergence summary
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        env:
+          AUDIT_OUTPUT_PATH: /tmp/consumer-audit.txt
+          ARTIFACT_NAME: consumer-audit-output
+        with:
+          script: |
+            const fs = require('fs');
+            const path = process.env.AUDIT_OUTPUT_PATH;
+
+            let text = '';
+            try {
+              text = fs.readFileSync(path, 'utf8');
+            } catch (e) {
+              core.warning(`Unable to read ${path}: ${e.message}`);
+              text = '';
+            }
+
+            // Parse the fixed-format summary block emitted by
+            // cmd/consumer-audit/main.go → printAuditReport. Rows look like:
+            //   Category                       Schema  Meshery  Cloud
+            //   Total Endpoints                179     217      282
+            //   Schema Backed                  -       61       166
+            //   Consumer Only                  -       172      120
+            // Columns are separated by two-or-more spaces.
+            const parseRow = (label) => {
+              const re = new RegExp(`^${label}\\s{2,}(\\S+)\\s+(\\S+)\\s+(\\S+)\\s*$`, 'm');
+              const m = text.match(re);
+              return m ? [m[1], m[2], m[3]] : ['?', '?', '?'];
+            };
+
+            const totals      = parseRow('Total Endpoints');
+            const schemaBacked = parseRow('Schema Backed');
+            const consumerOnly = parseRow('Consumer Only');
+
+            // Count TS findings by kind across all repos. The output section
+            // is rendered by printTSFindings; per-finding lines look like:
+            //   [case-flip] ui/rtk-query/user.ts:384  GET /api/foo  key="orgID"
+            const tsLineRe = /^\s*\[(case-flip|snake-case-wrapper|snake-case-param)\]\s/gm;
+            const tsRepoRe = /^\s{2}(\S[^(]*?)\s+\((\d+)\s+findings?\):\s*$/gm;
+            let caseFlips = 0, snakeWrappers = 0, snakeParams = 0;
+            for (const m of text.matchAll(tsLineRe)) {
+              if (m[1] === 'case-flip') caseFlips++;
+              else if (m[1] === 'snake-case-wrapper') snakeWrappers++;
+              else if (m[1] === 'snake-case-param') snakeParams++;
+            }
+            const tsRepos = [];
+            for (const m of text.matchAll(tsRepoRe)) {
+              tsRepos.push(m[1].trim());
+            }
+            const totalTs = caseFlips + snakeWrappers + snakeParams;
+
+            // Identify which consumer checkouts succeeded so reviewers can
+            // tell an empty column apart from a real zero.
+            const checkouts = {
+              meshery:    '${{ steps.checkout-meshery.outcome }}',
+              cloud:      '${{ steps.checkout-cloud.outcome }}',
+              extensions: '${{ steps.checkout-extensions.outcome }}',
+            };
+            const skipped = Object.entries(checkouts)
+              .filter(([, outcome]) => outcome !== 'success')
+              .map(([name]) => name);
+
+            const runUrl =
+              `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}` +
+              `/actions/runs/${context.runId}`;
+
+            const lines = [];
+            lines.push('## Consumer audit (advisory)');
+            lines.push('');
+            lines.push('| Category       | schemas | meshery | cloud |');
+            lines.push('|---|---|---|---|');
+            lines.push(`| Total Endpoints| ${totals[0]}     | ${totals[1]}     | ${totals[2]}   |`);
+            lines.push(`| Schema Backed  | ${schemaBacked[0]}       | ${schemaBacked[1]}      | ${schemaBacked[2]}   |`);
+            lines.push(`| Consumer Only  | ${consumerOnly[0]}       | ${consumerOnly[1]}     | ${consumerOnly[2]}   |`);
+            lines.push('');
+
+            if (totalTs > 0) {
+              const repoLabel = tsRepos.length > 0
+                ? `across ${tsRepos.join(', ')}`
+                : 'across the scanned repos';
+              lines.push(
+                `**TypeScript findings:** ${caseFlips} case-flips, ` +
+                `${snakeWrappers} snake-case-wrappers, ${snakeParams} snake-case-params ${repoLabel}.`
+              );
+            } else if (text.length > 0) {
+              lines.push('**TypeScript findings:** none.');
+            } else {
+              lines.push('**TypeScript findings:** audit output unavailable (see workflow logs).');
+            }
+            lines.push('');
+
+            if (skipped.length > 0) {
+              lines.push(
+                `_Skipped consumer checkouts_: ${skipped.join(', ')}. ` +
+                'Configure the `CI_CONSUMER_PAT` repository secret with read access to ' +
+                '`layer5io/meshery-cloud` and `layer5labs/meshery-extensions` to include those columns.'
+              );
+              lines.push('');
+            }
+
+            lines.push(
+              `Full output: download the \`${process.env.ARTIFACT_NAME}\` artifact from ` +
+              `[the workflow run](${runUrl}).`
+            );
+            lines.push('');
+            lines.push('<sub>Generated by `.github/workflows/schema-audit.yml` → `consumer-audit` job. This job is advisory only and never fails the build; see `docs/identifier-naming-migration.md` §7 Agent 1.H.</sub>');
+
+            const body = lines.join('\n');
+            const marker = '<!-- consumer-audit-comment -->';
+            const fullBody = `${marker}\n${body}`;
+
+            // Upsert the comment so repeat runs on the same PR don't spam.
+            const { owner, repo } = context.repo;
+            const issue_number = context.payload.pull_request.number;
+
+            const { data: existing } = await github.rest.issues.listComments({
+              owner, repo, issue_number, per_page: 100,
+            });
+            const prior = existing.find(
+              (c) => c.user && c.user.type === 'Bot' && c.body && c.body.startsWith(marker)
+            );
+
+            if (prior) {
+              await github.rest.issues.updateComment({
+                owner, repo, comment_id: prior.id, body: fullBody,
+              });
+              core.info(`Updated existing consumer-audit comment (id=${prior.id}).`);
+            } else {
+              await github.rest.issues.createComment({
+                owner, repo, issue_number, body: fullBody,
+              });
+              core.info('Posted new consumer-audit comment.');
+            }
