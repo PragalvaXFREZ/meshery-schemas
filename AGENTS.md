@@ -447,6 +447,20 @@ make baseline-consumer-audit  MESHERY_REPO=../meshery CLOUD_REPO=../meshery-clou
 make baseline-consumer-graph  MESHERY_REPO=../meshery CLOUD_REPO=../meshery-cloud EXTENSIONS_REPO=../meshery-extensions
 ```
 
+## Advisory baseline
+
+`make audit-schemas` suppresses violations listed in `build/validate-schemas.advisory-baseline.txt` (one `file\tmessage` per line, `#` comments allowed). This file holds the *pre-canonical* backlog so the `advisory-audit` CI job stays green while Phases 2–3 migrate each resource. **New violations introduced after the baseline was last refreshed block CI** — the baseline is subtractive, not additive, and it is intentional that any new `json:"snake_case"` tag or missing `orgIdQuery` ref on a list endpoint fails the advisory-audit workflow.
+
+To resolve a baselined violation, migrate the affected resource per the [Phase 3 plan](docs/identifier-naming-migration.md#9-phase-3-agents--per-resource-versioned-wire-migration) and then refresh the baseline:
+
+```bash
+make audit-schemas-style-full \
+  | awk '/^  schemas\// { f=$1; next } /^    → / { sub(/^    → /, "", $0); if (f) print f "\t" $0 }' \
+  | sort -u > build/validate-schemas.advisory-baseline.txt
+```
+
+Do not add new entries to the baseline by hand — every entry must correspond to a real audit finding that is deferred to a Phase 3 migration.
+
 ## Consumer audit
 
 The consumer audit joins the schemas endpoint index against the routers and RTK Query clients of the downstream repos, producing a per-endpoint coverage and drift report. Three parsers are registered:
