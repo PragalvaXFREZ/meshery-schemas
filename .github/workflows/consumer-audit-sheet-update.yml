@@ -1,0 +1,97 @@
+name: Consumer Audit Sheet Update
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Twice daily, 12 hours apart. The :17 minute avoids the top-of-hour
+    # scheduler congestion that GitHub Actions commonly sees.
+    - cron: '17 3,15 * * *'
+
+concurrency:
+  group: consumer-audit-sheet-update
+  cancel-in-progress: false
+
+jobs:
+  update-sheet:
+    name: Update consumer audit sheet
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout schemas
+        uses: actions/checkout@v4
+
+      - name: Validate required secrets
+        env:
+          CI_CONSUMER_PAT: ${{ secrets.CI_CONSUMER_PAT }}
+          CONSUMER_AUDIT_SHEET_ID: ${{ secrets.CONSUMER_AUDIT_SHEET_ID }}
+          CONSUMER_AUDIT_GOOGLE_SHEET_B64: ${{ secrets.CONSUMER_AUDIT_GOOGLE_SHEET_B64 }}
+        run: |
+          missing=()
+          [ -n "$CI_CONSUMER_PAT" ] || missing+=("CI_CONSUMER_PAT")
+          [ -n "$CONSUMER_AUDIT_SHEET_ID" ] || missing+=("CONSUMER_AUDIT_SHEET_ID")
+          [ -n "$CONSUMER_AUDIT_GOOGLE_SHEET_B64" ] || missing+=("CONSUMER_AUDIT_GOOGLE_SHEET_B64")
+
+          if [ "${#missing[@]}" -gt 0 ]; then
+            printf 'Missing required repository secrets: %s\n' "${missing[*]}" >&2
+            exit 1
+          fi
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Checkout meshery/meshery
+        uses: actions/checkout@v4
+        with:
+          repository: meshery/meshery
+          path: _consumer/meshery
+          token: ${{ secrets.CI_CONSUMER_PAT }}
+
+      - name: Checkout layer5io/meshery-cloud
+        uses: actions/checkout@v4
+        with:
+          repository: layer5io/meshery-cloud
+          path: _consumer/meshery-cloud
+          token: ${{ secrets.CI_CONSUMER_PAT }}
+
+      - name: Checkout layer5labs/meshery-extensions
+        uses: actions/checkout@v4
+        with:
+          repository: layer5labs/meshery-extensions
+          path: _consumer/meshery-extensions
+          token: ${{ secrets.CI_CONSUMER_PAT }}
+
+      - name: Decode Google Sheets credentials
+        env:
+          CONSUMER_AUDIT_GOOGLE_SHEET_B64: ${{ secrets.CONSUMER_AUDIT_GOOGLE_SHEET_B64 }}
+        run: |
+          set -euo pipefail
+          umask 077
+          printf '%s' "$CONSUMER_AUDIT_GOOGLE_SHEET_B64" | base64 --decode > "$RUNNER_TEMP/consumer-audit-sheets.json"
+
+      - name: Reconcile and update consumer audit sheet
+        env:
+          SHEET_ID: ${{ secrets.CONSUMER_AUDIT_SHEET_ID }}
+          CREDENTIALS: ${{ runner.temp }}/consumer-audit-sheets.json
+        run: |
+          set -o pipefail
+          make consumer-audit-update \
+            MESHERY_REPO=_consumer/meshery \
+            CLOUD_REPO=_consumer/meshery-cloud \
+            EXTENSIONS_REPO=_consumer/meshery-extensions \
+            VERBOSE=1 \
+            SHEET_ID="$SHEET_ID" \
+            CREDENTIALS="$CREDENTIALS" \
+            2>&1 | tee /tmp/consumer-audit-sheet-update.txt
+
+      - name: Upload consumer-audit sheet update output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: consumer-audit-sheet-update-output
+          path: /tmp/consumer-audit-sheet-update.txt
+          if-no-files-found: warn
+          retention-days: 14
