@@ -37,7 +37,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Go
         uses: actions/setup-go@v5
@@ -54,7 +54,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Go
         uses: actions/setup-go@v5
@@ -71,12 +71,13 @@ jobs:
   # The PR-comment step is pinned to `if: always()` so reviewers still get the
   # divergence summary when the audit command fails.
   #
-  # Downstream repo checkouts use the Meshery CI PAT (MESHERY_CI) for private-repo
-  # access (meshery-cloud and meshery-extensions are private). If the secret
-  # is unset or lacks access to a given consumer repo, that checkout fails
-  # gracefully via continue-on-error and the consumer-audit Go tool silently
-  # skips the missing tree. Provision MESHERY_CI as a repository secret
-  # with at minimum `repo:read` scope against layer5io/meshery-cloud and
+  # Downstream repo checkouts prefer the Meshery CI PAT (MESHERY_CI) for
+  # private-repo access (meshery-cloud and meshery-extensions are private) and
+  # fall back to the run token when the secret is unavailable. If the token
+  # lacks access to a given consumer repo, that checkout fails gracefully via
+  # continue-on-error and the consumer-audit Go tool silently skips the missing
+  # tree. Provision MESHERY_CI as a repository secret with at minimum
+  # `repo:read` scope against layer5io/meshery-cloud and
   # layer5labs/meshery-extensions.
   consumer-audit:
     name: Consumer audit report
@@ -87,7 +88,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout schemas
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Go
         uses: actions/setup-go@v5
@@ -97,29 +98,29 @@ jobs:
       - name: Checkout meshery/meshery
         id: checkout-meshery
         continue-on-error: true
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: meshery/meshery
           path: _consumer/meshery
-          token: ${{ secrets.MESHERY_CI }}
+          token: ${{ secrets.MESHERY_CI || github.token }}
 
       - name: Checkout layer5io/meshery-cloud
         id: checkout-cloud
         continue-on-error: true
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: layer5io/meshery-cloud
           path: _consumer/meshery-cloud
-          token: ${{ secrets.MESHERY_CI }}
+          token: ${{ secrets.MESHERY_CI || github.token }}
 
       - name: Checkout layer5labs/meshery-extensions
         id: checkout-extensions
         continue-on-error: true
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: layer5labs/meshery-extensions
           path: _consumer/meshery-extensions
-          token: ${{ secrets.MESHERY_CI }}
+          token: ${{ secrets.MESHERY_CI || github.token }}
 
       # The Go tool treats missing consumer checkout paths as empty/skipped, so
       # passing paths unconditionally is safe even when a sibling checkout
