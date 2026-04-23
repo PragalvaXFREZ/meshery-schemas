@@ -18,7 +18,7 @@
 //  2. otherwise, the OpenAPI property name itself.
 //
 // The report is the input to Phase 1 rule authoring and Phase 3 sequencing in
-// the Option B identifier-naming migration
+// the identifier-naming migration
 // (docs/identifier-naming-migration.md §6).
 package main
 

@@ -1,12 +1,12 @@
-# Option B Migration — High-Level Plan: `meshery/meshery`
+# Identifier-Naming Migration — High-Level Plan: `meshery/meshery`
 
 > Handoff artifact for the downstream detailed-plan agent. Contains the known scope, concrete findings, and dependencies — not the final runbook. A subsequent agent will expand this into per-file / per-PR specifications.
 
-## 1. Role in the Option B migration
+## 1. Role in the identifier-naming migration
 
-`meshery/meshery` is the Go server + Meshery UI (Next.js) + `mesheryctl` CLI. It consumes `@meshery/schemas` as the source of truth and hosts the routing logic that the schemas consumer-audit validates against. Its job in the migration: align every identifier it emits (outbound URLs, JSON bodies), every identifier it reads (query params, response shapes), and every hook it exposes to Kanvas with the Option B canonical form.
+`meshery/meshery` is the Go server + Meshery UI (Next.js) + `mesheryctl` CLI. It consumes `@meshery/schemas` as the source of truth and hosts the routing logic that the schemas consumer-audit validates against. Its job in the migration: align every identifier it emits (outbound URLs, JSON bodies), every identifier it reads (query params, response shapes), and every hook it exposes to Kanvas with the canonical form.
 
-## 2. The Option B contract — recap
+## 2. The canonical contract — recap
 
 - **Wire (JSON tags, URL query/path params, TS properties, OpenAPI properties):** camelCase, `Id` suffix (lowercase `d`).
 - **DB column / `db:` tag:** snake_case (unchanged; the sole remaining translation boundary).
@@ -17,7 +17,7 @@
 
 | Upstream | Blocks this repo's |
 |---|---|
-| `meshery/schemas` Phase 1 (governance + validator hardening + package publish) | All non-trivial Option B work in this repo |
+| `meshery/schemas` Phase 1 (governance + validator hardening + package publish) | All non-trivial identifier-naming work in this repo |
 | `meshery/schemas` Phase 3 per-resource versioned schemas | Any handler / model / hook that imports a migrated-resource type |
 | `layer5io/meshery-cloud` Phase 2.C (constant + dual-accept retirement) | Timing of outbound URL alignment — can land before or after; no hard ordering |
 
@@ -28,7 +28,7 @@
 **Query-parameter extraction drift (sibling endpoints, different keys):**
 - `server/handlers/workspace_handlers.go:24,46` — reads `q.Get("orgID")` (ALL CAPS). Should be `q.Get("orgId")`. *Non-breaking if companion UI fix lands.*
 - `server/handlers/meshery_pattern_handler.go:557` — `q["orgID"]`. Same fix.
-- `server/handlers/environments_handlers.go:24,45` — already reads `q.Get("orgId")`. **Correct under Option B.**
+- `server/handlers/environments_handlers.go:24,45` — already reads `q.Get("orgId")`. **Correct under the canonical contract.**
 
 **Outbound URL construction (Meshery Server → Meshery Cloud):**
 - `server/models/remote_provider.go:5174` — `q.Set("orgID", orgID)` in `GetEnvironments`. Change to `"orgId"`.
@@ -40,10 +40,10 @@
 **JSON tag drift on locally-declared Go models (partial-casing-migration violations):**
 - `server/models/meshery_pattern.go:93,109,110` — `MesheryPattern` struct mixes three JSON-tag conventions on three DB-backed ID fields: `json:"user_id"`, `json:"workspace_id"`, `json:"orgId"`. Violates AGENTS.md "Partial casing migrations forbidden". Two resolution paths:
   - **Phase 2 interim:** Normalize back to all snake (revert `orgId` → `org_id`) so the struct is consistent with DB-backing — non-breaking, internal consistency restored.
-  - **Phase 3 final:** Displace the local struct with `github.com/meshery/schemas/models/v1beta3/design.MesheryPattern` once the v1beta3 design schema lands under Option B.
+  - **Phase 3 final:** Displace the local struct with `github.com/meshery/schemas/models/v1beta3/design.MesheryPattern` once the v1beta3 design schema lands under the canonical contract.
 - `server/models/meshery_filter.go:19,36` — `MesheryFilter.UserID json:"user_id"`. Candidate for schemas export + displacement.
 - `server/models/meshery_application.go:42` — same class.
-- `server/models/k8s_context.go:37-38` — `MesheryInstanceID json:"meshery_instance_id"`, `KubernetesServerID json:"kubernetes_server_id"`. Meshery-local (not in schemas); wire form needs Option B camelCase (`mesheryInstanceId`, `kubernetesServerId`) once a `v1beta*` K8sContext schema is authored.
+- `server/models/k8s_context.go:37-38` — `MesheryInstanceID json:"meshery_instance_id"`, `KubernetesServerID json:"kubernetes_server_id"`. Meshery-local (not in schemas); wire form needs canonical camelCase (`mesheryInstanceId`, `kubernetesServerId`) once a `v1beta*` K8sContext schema is authored.
 
 **`mesheryctl` CLI (not yet surveyed — gap):**
 - Subsequent audit pass needed. Expected divergences: command-line flag casing (`--org-id` vs `--orgId`), config-file key casing.
@@ -103,7 +103,7 @@
 
 ## 9. Known open questions for the detailed-plan agent
 
-1. Does the `mesheryctl` config file format need its own versioning for an Option B migration, or can it migrate in place?
+1. Does the `mesheryctl` config file format need its own versioning for an identifier-naming migration, or can it migrate in place?
 2. Should `K8sContext` be exported to `meshery/schemas` for reuse (it currently is not), and if so, under which version?
 3. Which resources in the 22-resource inventory have meshery-server-specific shape extensions (e.g., pagination envelope on `/api/pattern`) that need schemas-side updates before this repo can consume them?
 4. Are there generated GraphQL types in `server/internal/graphql/generated/generated.go` that reference snake-case identifiers inherited from a GraphQL SDL file? That file was mentioned in prior audits but not traced end-to-end.
@@ -114,4 +114,4 @@
 - Full detailed plan draft (for reference; not the operative document): `schemas/docs/identifier-naming-migration.md`
 - Source of truth: `schemas/AGENTS.md § Casing rules at a glance` (post Phase 1.A amendment)
 - Prior audit sub-reports in this session's transcript (meshery-cloud, meshery, meshery-extensions audits)
-- PR #18856 (patternData wrapper precedent), PR #18857 (merged k8s panic fix — unrelated), PR #18858 (JSON error body — Option B-adjacent)
+- PR #18856 (patternData wrapper precedent), PR #18857 (merged k8s panic fix — unrelated), PR #18858 (JSON error body — canonical-casing-adjacent)

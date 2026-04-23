@@ -1,12 +1,12 @@
-# Option B Migration — High-Level Plan: `layer5labs/meshery-extensions` (Kanvas)
+# Identifier-Naming Migration — High-Level Plan: `layer5labs/meshery-extensions` (Kanvas)
 
 > Handoff artifact for the downstream detailed-plan agent. Contains the known scope, concrete findings, and dependencies — not the final runbook. A subsequent agent will expand this into per-file / per-PR specifications.
 
-## 1. Role in the Option B migration
+## 1. Role in the identifier-naming migration
 
-`layer5labs/meshery-extensions` houses Kanvas (the Meshery UI extension — React/TypeScript) plus a Go GraphQL plugin. It is a **consumer only**: it does not own any wire contract but consumes both `@meshery/schemas/mesheryApi` and `@meshery/schemas/cloudApi`, emits RTK requests to Meshery Server, and crosses an injection boundary (via `mesherySdk.ts`) to Meshery UI. Its job in the migration: stop the client-side case-flip transformations, align its request-body wrappers with what Meshery Server expects post-Option-B, resolve same-file casing contradictions, and displace its hand-rolled RTK endpoints where schemas equivalents exist.
+`layer5labs/meshery-extensions` houses Kanvas (the Meshery UI extension — React/TypeScript) plus a Go GraphQL plugin. It is a **consumer only**: it does not own any wire contract but consumes both `@meshery/schemas/mesheryApi` and `@meshery/schemas/cloudApi`, emits RTK requests to Meshery Server, and crosses an injection boundary (via `mesherySdk.ts`) to Meshery UI. Its job in the migration: stop the client-side case-flip transformations, align its request-body wrappers with what Meshery Server expects post-migration, resolve same-file casing contradictions, and displace its hand-rolled RTK endpoints where schemas equivalents exist.
 
-## 2. The Option B contract — recap
+## 2. The canonical contract — recap
 
 - **Wire (JSON tags, URL query/path params, TS properties, OpenAPI properties):** camelCase, `Id` suffix.
 - **DB column / `db:` tag:** snake_case (unchanged).
@@ -17,7 +17,7 @@
 
 | Upstream | Blocks this repo's |
 |---|---|
-| `meshery/schemas` Phase 1 (governance + validator hardening + package publish) | All non-trivial Option B work |
+| `meshery/schemas` Phase 1 (governance + validator hardening + package publish) | All non-trivial identifier-naming work |
 | `meshery/meshery` Phase 2.A (handler query-param alignment) | `getWorkspaceForCatalog` case-flip removal (no harm in leading; no harm in trailing) |
 | `meshery/meshery` Phase 2.B (outbound URL alignment) | Server-side; unrelated here |
 | `meshery/schemas` Phase 3.Design / Phase 3.Workspace | Any Kanvas endpoint that references those resources' types |
@@ -28,7 +28,7 @@
 
 **Client-side case-flip transformation (sends `orgID` to match Cloud legacy wire):**
 - `meshmap/src/rtk-query/catalog.ts:110` — `getWorkspaceForCatalog` endpoint maps input `queryArg.orgId` → URL param `orgID: queryArg.orgId`. Must remove once backend canonical is `orgId`.
-- `meshmap/src/rtk-query/catalog.ts:58-59` — `getPatternsPerUser` uses mixed `orgID` (caps) and `user_id` (snake) params in the same endpoint. Align to Option B canonical.
+- `meshmap/src/rtk-query/catalog.ts:58-59` — `getPatternsPerUser` uses mixed `orgID` (caps) and `user_id` (snake) params in the same endpoint. Align to canonical.
 
 **Mutation body wrapper-key drift** (snake wrappers with camelCase inner fields — partial-migration violation):
 - `meshmap/src/rtk-query/designs.ts:308` — `uploadPatternBySourceType` body is `{ pattern_data: { name, patternFile }, save }`. Wrapper snake, inner camel. Should be `{ patternData: { ... } }` to align with the precedent set by PR #18856 (`SaveMesheryPattern` wire contract).
@@ -68,7 +68,7 @@
 
 **Minimal divergence:**
 - `graphql/schema/schema.graphql` — uses UPPERCASE composite identifiers: `designID`, `k8sclusterIDs`, `connectionID`.
-- Under Option B, GraphQL identifier fields should align with the canonical wire form (camelCase + `Id`), same as REST.
+- Under the canonical contract, GraphQL identifier fields should align with the canonical wire form (camelCase + `Id`), same as REST.
 - `graphql/model/models_gen.go` — generated types; will follow schema changes.
 
 **Candidate changes:**
@@ -95,7 +95,7 @@
 - Lint: `make kanvas-lint` (ESLint + Prettier) clean.
 - Kanvas dev server (`make kanvas`) loads against a live Meshery server; manually verify save, load, delete design flows.
 - `cd graphql && make graphql-lint && make graphql` clean for any GraphQL changes.
-- Meshery Server + Kanvas integration smoke: design save succeeds end-to-end after Option B wrapper changes.
+- Meshery Server + Kanvas integration smoke: design save succeeds end-to-end after canonical-casing wrapper changes.
 
 ## 7. Documentation requirements (every PR)
 

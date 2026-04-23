@@ -112,12 +112,12 @@ audit-schemas-style-full:
 audit-schemas-debt-full:
 	go run ./cmd/validate-schemas --warn --no-baseline --style-debt --contract-debt
 
-## Regenerate the Option B Phase 0 field-count baseline artifact
+## Regenerate the Phase 0 field-count baseline artifact
 .PHONY: baseline-field-count
 baseline-field-count:
 	go run ./cmd/phase0-field-count
 
-## Regenerate the Option B Phase 0 tag-divergence baseline artifact
+## Regenerate the Phase 0 tag-divergence baseline artifact
 ## (scans json/db struct tags in $(MESHERY_REPO) and $(CLOUD_REPO))
 .PHONY: baseline-tag-divergence
 baseline-tag-divergence:
@@ -125,7 +125,7 @@ baseline-tag-divergence:
 		$(if $(MESHERY_REPO),--meshery-repo=$(MESHERY_REPO)) \
 		$(if $(CLOUD_REPO),--cloud-repo=$(CLOUD_REPO))
 
-## Regenerate the Option B Phase 0 consumer-audit verbatim baseline
+## Regenerate the Phase 0 consumer-audit verbatim baseline
 ## (captures verbose make consumer-audit output against local sibling repos)
 .PHONY: baseline-consumer-audit
 baseline-consumer-audit:
@@ -146,7 +146,7 @@ baseline-consumer-audit:
 		exit $$status; \
 	fi
 
-## Regenerate the Option B Phase 0 consumer-dependency graph
+## Regenerate the Phase 0 consumer-dependency graph
 ## (Go + TS imports of schemas across all three downstream repos)
 .PHONY: baseline-consumer-graph
 baseline-consumer-graph:

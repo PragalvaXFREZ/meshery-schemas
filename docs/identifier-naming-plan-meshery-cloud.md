@@ -1,12 +1,12 @@
-# Option B Migration — High-Level Plan: `layer5io/meshery-cloud`
+# Identifier-Naming Migration — High-Level Plan: `layer5io/meshery-cloud`
 
 > Handoff artifact for the downstream detailed-plan agent. Contains the known scope, concrete findings, and dependencies — not the final runbook. A subsequent agent will expand this into per-file / per-PR specifications.
 
-## 1. Role in the Option B migration
+## 1. Role in the identifier-naming migration
 
-`layer5io/meshery-cloud` is the Go remote provider (Echo-based server) plus the Cloud Next.js UI. It is the receiving end of every Meshery-Server-proxied request and the largest surface of locally-declared RTK endpoints (~30+ in `ui/api/api.ts`). Its job in the migration: accept the Option B canonical query/body shapes on the wire, stop masking drift via `utils.QueryParam` fallbacks, align all 9 mapping-model JSON tags, and displace duplicated RTK endpoints with schemas-generated equivalents.
+`layer5io/meshery-cloud` is the Go remote provider (Echo-based server) plus the Cloud Next.js UI. It is the receiving end of every Meshery-Server-proxied request and the largest surface of locally-declared RTK endpoints (~30+ in `ui/api/api.ts`). Its job in the migration: accept the canonical camelCase query/body shapes on the wire, stop masking drift via `utils.QueryParam` fallbacks, align all 9 mapping-model JSON tags, and displace duplicated RTK endpoints with schemas-generated equivalents.
 
-## 2. The Option B contract — recap
+## 2. The canonical contract — recap
 
 - **Wire (JSON tags, URL query/path params, TS properties, OpenAPI properties):** camelCase, `Id` suffix.
 - **DB column / `db:` tag:** snake_case (unchanged).
@@ -17,7 +17,7 @@
 
 | Upstream | Blocks this repo's |
 |---|---|
-| `meshery/schemas` Phase 1 (governance + validator hardening + package publish) | All non-trivial Option B work |
+| `meshery/schemas` Phase 1 (governance + validator hardening + package publish) | All non-trivial identifier-naming work |
 | `meshery/schemas` Phase 3 per-resource versioned schemas | Any handler / model / hook that imports a migrated-resource type |
 | `meshery/meshery` Phase 2.A and 2.B (server query-param + outbound URL alignment) | Retirement of `utils.QueryParam` dual-accept (cannot retire until server emits single form) |
 
@@ -35,7 +35,7 @@
 - `server/handlers/flow_emails.go:245` — `orgId`/`orgID` dual-accept.
 - `server/handlers/middlewares_authz_scope.go:241` — `orgId`/`orgID` dual-accept.
 - Additional sites to be located via `grep -rn 'QueryParam.*"[a-z]*Id".*"[a-z_]*id"' server/`.
-- **Outlier with no fallback:** `server/handlers/meshery_filters.go:212` — reads only `q.Get("user_id")` (snake), silently drops `userId` if received. Either add fallback or align to Option B canonical.
+- **Outlier with no fallback:** `server/handlers/meshery_filters.go:212` — reads only `q.Get("user_id")` (snake), silently drops `userId` if received. Either add fallback or align to canonical.
 
 **Mapping-model JSON tags — `json:"ID"` ALL CAPS across 9 files** (AGENTS.md requires lowercase `"id"`):
 - `server/models/model_environment_connection_mapping.go:13` — `EnvironmentConnectionMapping.ID`.
@@ -49,9 +49,9 @@
 - `server/models/model_keychain_filter.go:10` — `KeychainFilter` — `roleID json:"roleID"` (ALL CAPS) with `db:"role_id"`.
 
 **Go field / JSON tag / DB tag three-way splits:**
-- `server/models/users.go:246` — `CatalogRequest.ContentID`: Go `ContentID`, `json:"contentId"`, `db:"content_id"`. **Actually correct under Option B** — confirm and mark as resolved rather than fix.
-- `server/models/users.go:332` — `Messages.UserId`: field `UserId` with `json:"userId"`. No DB tag (in-memory). Consistent within the struct; **correct under Option B** (Go field PascalCase + camelCase JSON on non-DB-backed).
-- `server/models/meshery_patterns.go:62` — `MesheryPattern.OrgID` with `json:"orgId" db:"-"`. Correct under Option B on JSON; `db:"-"` omits it (computed / joined field), so no DB conflict. **Verify and mark resolved.**
+- `server/models/users.go:246` — `CatalogRequest.ContentID`: Go `ContentID`, `json:"contentId"`, `db:"content_id"`. **Actually correct under the canonical contract** — confirm and mark as resolved rather than fix.
+- `server/models/users.go:332` — `Messages.UserId`: field `UserId` with `json:"userId"`. No DB tag (in-memory). Consistent within the struct; **correct under the canonical contract** (Go field PascalCase + camelCase JSON on non-DB-backed).
+- `server/models/meshery_patterns.go:62` — `MesheryPattern.OrgID` with `json:"orgId" db:"-"`. Correct under the canonical contract on JSON; `db:"-"` omits it (computed / joined field), so no DB conflict. **Verify and mark resolved.**
 
 **Locally-declared request body duplicating schemas:**
 - `server/handlers/meshery_patterns.go:140` — `MesheryPatternRequestBody` with a `TODO(local-struct migration)` comment referencing `github.com/meshery/schemas/models/v1beta2/design.MesheryPatternRequestBody`. Awaiting schemas issue #5063. When schemas resolves, displace.
@@ -102,7 +102,7 @@
 - `go test ./...` green; new Pop ORM DAO tests for any model-tag change (round-trip Marshal/Unmarshal against fixture DB rows).
 - Allure-Go test reports updated for handler changes.
 - Cloud UI: `npm run build`, `npm test`, ESLint + Prettier clean.
-- Jest regression tests already exist under `ui/__tests__/components/workspaces/*regression*.test.tsx` — extend these with Option B assertions.
+- Jest regression tests already exist under `ui/__tests__/components/workspaces/*regression*.test.tsx` — extend these with canonical-casing assertions.
 - Integration test against staging Cloud endpoint after backend changes.
 
 ## 7. Documentation requirements (every PR)
@@ -119,7 +119,7 @@
 - **`QueryParamOrganizationID` constant flip (Phase 2.C PR 1) is non-breaking** — backend accepts `orgId` via the fallback already; the constant flip just makes `orgId` the canonical form in error messages and logs.
 - **9 mapping-model JSON tag fix is API-breaking** for any consumer reading the `ID` field by name. Survey consumers across all three downstream repos before merging; add a `MarshalJSON` shim emitting both `ID` and `id` for one release if needed.
 - **`ui/api/api.ts` dedup is the largest Cloud-specific workstream.** Best tackled by component group (workspaces endpoints first, then events, then catalog, etc.) rather than as one mega-PR.
-- **Cloud UI already has regression tests guarding orgID behavior** (`workspace-widget-orgid.regression.test.tsx`, etc.) — extend these to guard Option B canonicality as well.
+- **Cloud UI already has regression tests guarding orgID behavior** (`workspace-widget-orgid.regression.test.tsx`, etc.) — extend these to guard canonicality as well.
 
 ## 9. Known open questions for the detailed-plan agent
 
@@ -127,7 +127,7 @@
 2. For the 9 mapping-model `json:"ID"` fix: is the breaking-change blast radius small enough to ship without a `MarshalJSON` shim, or must we stage?
 3. Does Cloud's `meshery_patterns.go MesheryPattern` diverge from Meshery Server's in ways that block a single schemas-sourced struct? Or is it field-identical modulo JSON tags?
 4. Is there a Cloud-specific identifier (e.g., `PlanId`, `SubscriptionId`, `BadgeId`) whose current wire format conflicts with the schemas canonical? Enumerate before Phase 3.
-5. What is Cloud's stance on supporting Meshery Server versions that predate the Option B migration? The `utils.QueryParam` removal window needs to be coordinated with the oldest supported Meshery Server release.
+5. What is Cloud's stance on supporting Meshery Server versions that predate the identifier-naming migration? The `utils.QueryParam` removal window needs to be coordinated with the oldest supported Meshery Server release.
 
 ## 10. Reference
 

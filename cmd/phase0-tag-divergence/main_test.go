@@ -88,7 +88,7 @@ func TestClassifyFieldMismatches(t *testing.T) {
 		json, db string
 		want     []classification
 	}{
-		{"perfectly consistent camel+snake (Option B canonical)", "userId", "user_id",
+		{"perfectly consistent camel+snake (canonical)", "userId", "user_id",
 			[]classification{classJSONDBFormMismatch}}, // form differs (camel vs snake)
 		{"snake+snake (legacy)", "user_id", "user_id", nil},
 		{"value-name divergence", "type", "source_type",

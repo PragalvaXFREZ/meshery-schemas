@@ -1,7 +1,7 @@
 // Command phase0-tag-divergence scans Go struct tags across the meshery and
 // meshery-cloud server/models directories and produces the Phase 0 Agent 0.B
 // tag-divergence baseline (validation/baseline/tag-divergence.json) used by
-// the Option B identifier-naming migration
+// the identifier-naming migration
 // (docs/identifier-naming-migration.md §6).
 //
 // Each scanned field is evaluated against three criteria from Agent 0.B's
@@ -12,7 +12,7 @@
 //  2. Multiple JSON-tag conventions appear within a single struct (e.g., one
 //     field camelCase, another snake_case).
 //  3. The `json:` tag is ALL CAPS or contains an all-caps acronym token like
-//     `ID` / `URL` that Option B retires.
+//     `ID` / `URL` that the canonical contract retires.
 //
 // Output JSON is structured as a flat record list plus a summary of per-
 // classification counts, suitable for diff-auditing across the migration.
@@ -48,7 +48,7 @@ const (
 
 // classification flags a field against Agent 0.B's criteria. A field can
 // carry more than one flag; the zero value (an empty slice) means the field
-// is clean under Option B.
+// is clean under the canonical contract.
 type classification string
 
 const (
@@ -296,7 +296,7 @@ func scanFile(label, repoAbs, absPath string) ([]fieldRecord, int, error) {
 			dbName := tagName(dbRaw)
 
 			if len(field.Names) == 0 {
-				// Embedded / unnamed fields are not the target of Option B's
+				// Embedded / unnamed fields are not the target of the canonical contract's
 				// identifier-naming rules.
 				continue
 			}
@@ -364,7 +364,7 @@ func tagName(raw string) string {
 }
 
 // classify names the casing form of a tag token. See Agent 0.B's charter and
-// the Option B contract for the discriminators.
+// the canonical contract for the discriminators.
 func classify(s string) casingForm {
 	if s == "" {
 		return casingEmpty

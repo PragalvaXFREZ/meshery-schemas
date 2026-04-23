@@ -1,4 +1,4 @@
-# Identifier Naming Standardization — Option B Migration Plan
+# Identifier-Naming Standardization — Migration Plan
 
 **Canonical plan — fully executable by an orchestrated system of agents.**
 
@@ -7,7 +7,7 @@
 | Status | Active |
 | Authority | `meshery/schemas/AGENTS.md` after Phase 1.A |
 | Scope | `meshery/schemas`, `meshery/meshery`, `layer5io/meshery-cloud`, `layer5labs/meshery-extensions` |
-| Governance decision | Option B — camelCase on wire, snake_case only at the DB/ORM boundary |
+| Contract | camelCase on wire, snake_case only at the DB/ORM boundary |
 | Supersedes | Earlier three-layer audit report (the conditional "DB-backed → snake_case JSON tag" rule is retired) |
 | Effective | On merge of Phase 1.A |
 | Sunset | Old wire forms retired per resource over one release cycle after Phase 3 |
@@ -224,15 +224,15 @@ Baseline metrics collection. Read-only. Output drives Phase 1 rule authoring and
 
 Serial execution; each depends on the prior landing. All work in `meshery/schemas`.
 
-### Agent 1.A — `AGENTS.md` Option B amendment
-**Charter:** Replace `§ Casing rules at a glance`, `§ Intentional Design Decisions (Do Not Flag)`, and related paragraphs with the Option B contract from §1 of this plan.
+### Agent 1.A — `AGENTS.md` identifier-naming amendment
+**Charter:** Replace `§ Casing rules at a glance`, `§ Intentional Design Decisions (Do Not Flag)`, and related paragraphs with the canonical contract from §1 of this plan.
 
 **Files:** `meshery/schemas/AGENTS.md` (symlinked as `CLAUDE.md`).
 
 **Specific changes:**
 1. In `§ Casing rules at a glance`, replace the "DB-backed / DB-mirrored fields | exact snake_case db column name" row with: "JSON tag on DB-backed fields | **camelCase**; `db:` tag in `x-oapi-codegen-extra-tags` carries the snake_case DB column name separately".
 2. In `§ Intentional Design Decisions (Do Not Flag)`, convert `page_size`/`total_count` from a perpetual exception to a **deprecation list** — current forms accepted; migrates to `pageSize`/`totalCount` at the next API-version bump per resource.
-3. Add a new `§ Option B migration` section linking to this plan at `docs/identifier-naming-migration.md` within the same repo as the operative execution document.
+3. Add a new `§ Identifier-naming migration` section linking to this plan at `docs/identifier-naming-migration.md` within the same repo as the operative execution document.
 4. Add to `§ Common Mistakes to Avoid`: "❌ Introducing a `json:` tag that matches the `db:` tag on a new field — wire is camel, DB is snake; they differ by design on DB-backed fields."
 5. Update `§ Checklist for Schema Changes` to reflect the inverted rule.
 
@@ -254,9 +254,9 @@ Serial execution; each depends on the prior landing. All work in `meshery/schema
 
 **Testing:** `cd /Users/l/code/schemas && go test ./validation/ -run "TestCasing|TestRule6"` — green. `make validate-schemas` — current schemas will now surface a large number of violations; these get baselined in Agent 1.G.
 
-**Docs:** In the Go file, the docstring for `checkRule6ForAPI` documents the Option B inversion and links to `AGENTS.md § Option B migration`.
+**Docs:** In the Go file, the docstring for `checkRule6ForAPI` documents the camelCase-wire rule inversion and links to `AGENTS.md § Identifier-naming migration`.
 
-**Acceptance:** Tests pass; Rule 6 now flags the pre-Option-B schemas; baseline pending (1.G).
+**Acceptance:** Tests pass; Rule 6 now flags the legacy schemas; baseline pending (1.G).
 
 ### Agent 1.C — "Partial casing migrations forbidden" rule
 **Charter:** Author a new rule (call it Rule 45) that walks every `components/schemas/<Entity>` object and flags structs that mix JSON-tag conventions (some camel, some snake, some ALL CAPS) on their properties.
@@ -269,7 +269,7 @@ Serial execution; each depends on the prior landing. All work in `meshery/schema
 
 **Docs:** Rule description in the Go docstring references `AGENTS.md § Casing rules at a glance` and notes this rule catches the `MesheryPattern.OrgID json:"orgId"` + `WorkspaceID json:"workspace_id"` + `UserID json:"user_id"` class of drift.
 
-**Acceptance:** Rule 45 fires on fixtures; runs green against the post-Option-B schemas once Phase 3 completes.
+**Acceptance:** Rule 45 fires on fixtures; runs green against the post-migration schemas once Phase 3 completes.
 
 ### Agent 1.D — "Sibling-endpoint parameter parity" rule
 **Charter:** Author Rule 46 — when two sibling paths in the same API version follow the pattern `GET /api/<entity-plural>`, and one declares `$ref: "#/components/parameters/orgIdQuery"`, the sibling should too. Covers the workspaces-missing-`orgIdQuery` class of omission.
@@ -340,7 +340,7 @@ Serial execution; each depends on the prior landing. All work in `meshery/schema
 
 **Testing:** `npm pack` locally; inspect package contents; `go mod tidy` in a consumer repo against the new version.
 
-**Docs:** Release notes cover the Option B contract, link to this plan, note that Phase 2 downstream fixes depend on this version.
+**Docs:** Release notes cover the canonical contract, link to this plan, note that Phase 2 downstream fixes depend on this version.
 
 **Acceptance:** Version published; downstream repos can `npm install @meshery/schemas@<new-version>` and `go mod edit -require github.com/meshery/schemas@<new-tag>`.
 
@@ -442,11 +442,11 @@ All agents in this phase pin their target repo's `@meshery/schemas` dependency t
 ### Agent 2.E — Meshery-cloud `ContentID` JSON tag alignment
 **Repo:** `layer5io/meshery-cloud`  
 **Branch:** `fix/content-id-json-tag-alignment`  
-**Charter:** `CatalogRequest.ContentID` at `server/models/users.go:246` currently declares `json:"contentId" db:"content_id"`. Under Option B: `ContentID` Go field + `json:"contentId"` + `db:"content_id"` — this is actually **already correct** under Option B. Agent's task is to verify, and if correct, mark the previously-flagged finding as resolved.
+**Charter:** `CatalogRequest.ContentID` at `server/models/users.go:246` currently declares `json:"contentId" db:"content_id"`. Under the canonical contract: `ContentID` Go field + `json:"contentId"` + `db:"content_id"` — this is actually **already correct** under the canonical contract. Agent's task is to verify, and if correct, mark the previously-flagged finding as resolved.
 
 **Testing:** `go test ./...` green; search schemas consumer-audit output for `CatalogRequest`/`ContentID` — no findings.
 
-**Docs:** PR description explains that the original audit misclassified this as a violation; under Option B it is canonical.
+**Docs:** PR description explains that the original audit misclassified this as a violation; under the canonical contract it is canonical.
 
 **Acceptance:** Confirmed correct; no code change; baseline updated to retire the stale finding.
 
@@ -454,11 +454,11 @@ All agents in this phase pin their target repo's `@meshery/schemas` dependency t
 **Repo:** `layer5io/meshery-cloud`  
 **Branch:** `refactor/cloud-ui-api-dedup`  
 **Charter:** Audit each of the 30+ hand-rolled endpoints in `meshery-cloud/ui/api/api.ts`. For each:
-1. Check if `@meshery/schemas/cloudApi` exposes an equivalent endpoint (same URL + method + params, under Option B).
+1. Check if `@meshery/schemas/cloudApi` exposes an equivalent endpoint (same URL + method + params, under the canonical contract).
 2. If yes: displace — import and re-export the generated hook; remove the hand-rolled definition.
 3. If no (legitimate customization): document the reason inline (`// LOCAL: <reason>`) and open a follow-up issue in `meshery/schemas` to consider exporting.
 
-**Additional:** Remove the input-`orgId` → URL-`orgID` case-flip transformation at lines 1264, 1272, 1201, ~96. Under Option B both sides of the wire are `orgId`.
+**Additional:** Remove the input-`orgId` → URL-`orgID` case-flip transformation at lines 1264, 1272, 1201, ~96. Under the canonical contract both sides of the wire are `orgId`.
 
 **Testing:** `npm run build`, `npm test`, `eslint --max-warnings=0` all green. Integration-test one representative flow (workspaces list) in a dev environment to confirm no regression.
 
@@ -471,7 +471,7 @@ All agents in this phase pin their target repo's `@meshery/schemas` dependency t
 **Branch:** `fix/kanvas-rtk-camelcase-alignment`  
 **Charter:** Two related Kanvas fixes that go together:
 1. `meshmap/src/rtk-query/catalog.ts:110` `getWorkspaceForCatalog` — remove the `orgID: queryArg.orgId` transform; emit `orgId` in the URL directly.
-2. `meshmap/src/rtk-query/catalog.ts:58-59` `getPatternsPerUser` — unify to Option B canonical names.
+2. `meshmap/src/rtk-query/catalog.ts:58-59` `getPatternsPerUser` — unify to canonical names.
 3. `meshmap/src/rtk-query/designs.ts:308` `uploadPatternBySourceType` body wrapper — change `{ pattern_data: {...} }` to `{ patternData: {...} }` to match the `SaveMesheryPattern` wire contract already established by PR #18856.
 4. `meshmap/src/rtk-query/designs.ts:336-342` `patternFiletoCytoJson` body — align to camelCase throughout.
 5. `meshmap/src/rtk-query/designs.ts:188` `k8sYamlToPattern` body — `{ k8s_manifest: ... }` → `{ k8sManifest: ... }`.
@@ -500,7 +500,7 @@ All agents in this phase pin their target repo's `@meshery/schemas` dependency t
 
 **Testing:** `cd ui && npm run build && npm test` — green. The `environments` wrapper removal touches many call sites; every import of `useGetEnvironmentsQuery` from the local wrapper must be updated to import from `@meshery/schemas/mesheryApi`. Compile-error-driven; TypeScript's type system catches misses.
 
-**Docs:** `ui/CONTRIBUTING.md` adds a paragraph: "Do not wrap schemas-generated hooks solely to alias parameter names; propagate the canonical Option B name."
+**Docs:** `ui/CONTRIBUTING.md` adds a paragraph: "Do not wrap schemas-generated hooks solely to alias parameter names; propagate the canonical identifier."
 
 **Acceptance:** PR merged; no same-file `orgID`/`orgId` mix remains; thin wrappers eliminated.
 
@@ -693,7 +693,7 @@ The remaining 21 agents follow the template in §9.2 with per-resource file path
 **Acceptance:** Drift introduced in a test PR fails CI; reverted, green.
 
 ### Agent 4.C — Universal `AGENTS.md` + `CLAUDE.md` updates across every repo
-**Charter:** In each of the four repos (`meshery/schemas`, `meshery/meshery`, `layer5io/meshery-cloud`, `layer5labs/meshery-extensions`), ensure `AGENTS.md` and `CLAUDE.md` (symlinked or duplicated) contain the Option B mandate with a strong "MUST" / "MUST NOT" section referencing `schemas/AGENTS.md § Casing rules at a glance` as the authority. Boilerplate text in §14 of this plan.
+**Charter:** In each of the four repos (`meshery/schemas`, `meshery/meshery`, `layer5io/meshery-cloud`, `layer5labs/meshery-extensions`), ensure `AGENTS.md` and `CLAUDE.md` (symlinked or duplicated) contain the identifier-naming mandate with a strong "MUST" / "MUST NOT" section referencing `schemas/AGENTS.md § Casing rules at a glance` as the authority. Boilerplate text in §14 of this plan.
 
 **Files (per repo):**
 - `AGENTS.md`
@@ -711,7 +711,7 @@ The remaining 21 agents follow the template in §9.2 with per-resource file path
 
 **Testing:** `make validate-schemas` green; `make audit-schemas-full` green; no regressions in existing test fixtures.
 
-**Acceptance:** Validator has the minimum rule set that enforces Option B going forward.
+**Acceptance:** Validator has the minimum rule set that enforces the canonical contract going forward.
 
 ### Agent 4.E — Before/after impact report publication
 **Charter:** Re-run the baseline agents (0.A–0.D) to produce "after" numbers. Publish the before/after report per §15 of this plan; commit to `meshery/schemas/docs/` as the governance artifact.
@@ -782,7 +782,7 @@ Every agent's PR includes documentation updates whenever its change affects user
 - [ ] External user docs linked or updated (PR to `layer5io/docs` if needed)
 - [ ] `CHANGELOG.md` entry
 
-**Explicit doc sites whose names and URLs will change under Option B:**
+**Explicit doc sites whose names and URLs will change under the canonical contract:**
 - API reference sample bodies (`{ "user_id": "..." }` → `{ "userId": "..." }`).
 - Query-string examples (`?orgID=` → `?orgId=`).
 - Go import paths (version bumps).
@@ -814,7 +814,7 @@ Every repo's `AGENTS.md` (symlinked as `CLAUDE.md`) must contain the following b
 ```markdown
 ## Identifier Naming Conventions — MANDATORY
 
-This repository adheres to the **Option B** identifier-naming contract
+This repository adheres to the canonical camelCase-wire identifier-naming contract
 defined authoritatively in `meshery/schemas/AGENTS.md § Casing rules at a
 glance`. The contract is **not optional**; deviations block PRs via the
 schemas consumer-audit CI gate.
@@ -867,13 +867,13 @@ discrepancies as issues against `meshery/schemas`, not locally.
 
 ### Migration
 
-The Option B migration is tracked at
+The identifier-naming migration is tracked at
 `meshery/schemas/docs/identifier-naming-migration.md`. All
 contributors — human and AI agents — MUST read this plan before making
 any schema-aware change.
 ```
 
-Each repo's AGENTS.md also retains its repo-specific sections (build, tools, tests). The Option B section is additive.
+Each repo's AGENTS.md also retains its repo-specific sections (build, tools, tests). The identifier-naming section is additive.
 
 ---
 
@@ -896,7 +896,7 @@ Each repo's AGENTS.md also retains its repo-specific sections (build, tools, tes
 
 ### 15.2 Narrative impact
 
-**Cognitive overhead per contributor:** reduced from "remember three conventions, know DB-backing per field, recall intentional exceptions" to "camel on wire, snake at DB, PascalCase in Go". One rule, one DB boundary, one Go idiom. A new contributor reading `AGENTS.md § Option B` has everything they need in one screen.
+**Cognitive overhead per contributor:** reduced from "remember three conventions, know DB-backing per field, recall intentional exceptions" to "camel on wire, snake at DB, PascalCase in Go". One rule, one DB boundary, one Go idiom. A new contributor reading `AGENTS.md § Identifier-naming migration` has everything they need in one screen.
 
 **AI-audit false-positive rate:** the conditional "DB-backed → snake" rule is the single largest source of false positives in automated reviewers. Removing it collapses the rule surface and removes the ambiguity that produces the false-positive class.
 
@@ -935,7 +935,7 @@ Each agent has explicit escalation per §5.7. Additional per-class guidance:
 ## 17. Success criteria & sign-off gates
 
 ### Phase 1 sign-off
-- [ ] `AGENTS.md` Option B amendment merged; maintainer-approved.
+- [ ] `AGENTS.md` identifier-naming amendment merged; maintainer-approved.
 - [ ] Rules 4-extended, 45, 46 encoded with tests.
 - [ ] `consumer_ts.go` authoring complete with tests.
 - [ ] Advisory baseline refreshed; `make validate-schemas` and `make audit-schemas-full` green.
@@ -984,7 +984,7 @@ You are Phase 3.{Resource} agent.
 
 CHARTER
 Migrate the {resource} resource from {old-version} to {new-version}
-under the Option B contract defined in
+under the canonical contract defined in
 meshery/schemas/docs/identifier-naming-migration.md §1.
 
 STEPS
@@ -1069,6 +1069,6 @@ ACCEPTANCE
 
 | Revision | Date | Author | Change |
 |---|---|---|---|
-| 1.0 | 2026-04-22 | Lee Calcote (via orchestrator) | Initial authoring. Option B decision recorded. Phases 0–4 defined. Agent templates inlined. |
+| 1.0 | 2026-04-22 | Lee Calcote (via orchestrator) | Initial authoring. camelCase-on-wire decision recorded. Phases 0–4 defined. Agent templates inlined. |
 
 End of plan.

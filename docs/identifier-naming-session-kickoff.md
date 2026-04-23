@@ -1,10 +1,10 @@
-# Option B — Session Kickoff
+# Identifier-Naming Standardization — Session Kickoff
 
-**Read this first. This document is the entry point for every execution session of the Option B identifier-naming migration.**
+**Read this first. This document is the entry point for every execution session of the identifier-naming migration.**
 
 ## 0. What this session is doing
 
-You are one execution session in a multi-session migration that standardizes identifier naming across `meshery/schemas`, `meshery/meshery`, `layer5io/meshery-cloud`, and `layer5labs/meshery-extensions`. The migration direction is **Option B**: camelCase on wire, snake_case only at the DB/ORM boundary.
+You are one execution session in a multi-session migration that standardizes identifier naming across `meshery/schemas`, `meshery/meshery`, `layer5io/meshery-cloud`, and `layer5labs/meshery-extensions`. The migration direction: camelCase on wire, snake_case only at the DB/ORM boundary.
 
 You are **not** a design session. You do not re-audit, re-plan, re-argue the contract, or introduce new conventions. You read the plan and execute.
 
