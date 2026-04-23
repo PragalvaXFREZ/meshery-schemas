@@ -73,6 +73,7 @@ type ConsumerAuditRow struct {
 	SchemaDrivenMeshery string
 	SchemaDrivenCloud   string
 	SchemaCompleteness  string
+	PathDrift           string
 	Notes               string
 	// ChangeLog is the UTC timestamp of the last state transition
 	// (new / changed) for this row, in format "YYYY-MM-DD HH:MM:SS".
@@ -149,6 +150,11 @@ var generatedColumns = []columnDef{
 		Reconcile: true,
 		get:       func(r ConsumerAuditRow) string { return r.SchemaCompleteness },
 		set:       func(r *ConsumerAuditRow, v string) { r.SchemaCompleteness = v },
+	},
+	{
+		Name: "Path Drift",
+		get:  func(r ConsumerAuditRow) string { return r.PathDrift },
+		set:  func(r *ConsumerAuditRow, v string) { r.PathDrift = v },
 	},
 	{
 		Name: "Notes",
@@ -473,6 +479,7 @@ func newSchemaRow(
 		row.SchemaCompleteness = boolAuditStatus(schemaComplete)
 	}
 
+	row.PathDrift = pathDriftValue(assessmentHasPathDrift(mesheryAssessment), assessmentHasPathDrift(cloudAssessment))
 	row.Notes = buildLabeledNotes(mesheryAssessment, cloudAssessment)
 	return row
 }
@@ -620,6 +627,28 @@ func buildLabeledNotes(meshery, cloud consumerAssessment) string {
 	notes = append(notes, collectRepoNotes("meshery", "meshery", meshery)...)
 	notes = append(notes, collectRepoNotes("cloud", "meshery-cloud", cloud)...)
 	return joinLabeledNotes(notes)
+}
+
+func pathDriftValue(meshery, cloud bool) string {
+	switch {
+	case meshery && cloud:
+		return "Both"
+	case meshery:
+		return "Meshery"
+	case cloud:
+		return "Cloud"
+	default:
+		return ""
+	}
+}
+
+func assessmentHasPathDrift(a consumerAssessment) bool {
+	for _, note := range a.Notes {
+		if strings.Contains(note, "path parameter name differs from spec:") {
+			return true
+		}
+	}
+	return false
 }
 
 func collectRepoNotes(source, repo string, a consumerAssessment) []labeledNote {
