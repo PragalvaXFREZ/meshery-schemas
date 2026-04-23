@@ -1,7 +1,6 @@
 package validation
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"path/filepath"
@@ -9,94 +8,11 @@ import (
 	"strings"
 )
 
-// Sheet layout constants.
-// metadataColumnIndex is always column Z (index 25) — machine-only JSON blob.
-// totalColumns covers A–Z (26) so row slices are always the same width.
-// User-owned columns begin immediately after the last generated column and
-// extend to column Y (index 24). The number of generated columns is derived
-// from len(generatedColumns), not a constant, so adding or removing a column
-// only requires updating generatedColumns below.
-const (
-	metadataColumnIndex = 25
-	totalColumns        = 26
-)
-
-// RowMetadata is the opaque JSON blob stored in column Z of each data
-// row. It is machine-only — no human reads column Z directly.
-type RowMetadata struct {
-	State          string   `json:"state,omitempty"`
-	ChangedColumns []string `json:"changed_columns,omitempty"`
-	FirstSeen      string   `json:"first_seen,omitempty"`
-	LastReconciled string   `json:"last_reconciled,omitempty"`
-}
-
-// isZero reports whether no metadata fields are set.
-func (m RowMetadata) isZero() bool {
-	return m.State == "" && len(m.ChangedColumns) == 0 && m.FirstSeen == "" && m.LastReconciled == ""
-}
-
-// encode serializes the metadata to compact JSON. Empty metadata
-// encodes to an empty string rather than "{}" so the sheet cell stays
-// clean for rows that have no recorded history.
-func (m RowMetadata) encode() string {
-	if m.isZero() {
-		return ""
-	}
-	b, err := json.Marshal(m)
-	if err != nil {
-		return ""
-	}
-	return string(b)
-}
-
-// decodeRowMetadata parses a column-Z cell. An empty or malformed blob
-// yields a zero RowMetadata — the reconciler will repopulate it.
-func decodeRowMetadata(s string) RowMetadata {
-	s = strings.TrimSpace(s)
-	if s == "" {
-		return RowMetadata{}
-	}
-	var m RowMetadata
-	if err := json.Unmarshal([]byte(s), &m); err != nil {
-		return RowMetadata{}
-	}
-	return m
-}
-
-// DeletionRecord is one entry in the deletion ledger kept in row 1 of
-// column Z. The ledger is append-only and machine-only.
+// DeletionRecord is one endpoint removed from the current audit run.
 type DeletionRecord struct {
-	Endpoint      string `json:"endpoint"`
-	Method        string `json:"method"`
-	RemovedAt     string `json:"removed_at"`
-	LastChangeLog string `json:"last_change_log,omitempty"`
-}
-
-// encodeDeletionLedger serializes the ledger for storage in Z1. An
-// empty ledger encodes to an empty string.
-func encodeDeletionLedger(ledger []DeletionRecord) string {
-	if len(ledger) == 0 {
-		return ""
-	}
-	b, err := json.Marshal(ledger)
-	if err != nil {
-		return ""
-	}
-	return string(b)
-}
-
-// decodeDeletionLedger parses Z1. Unparseable content yields an empty
-// ledger; the reconciler will rebuild it.
-func decodeDeletionLedger(s string) []DeletionRecord {
-	s = strings.TrimSpace(s)
-	if s == "" {
-		return nil
-	}
-	var out []DeletionRecord
-	if err := json.Unmarshal([]byte(s), &out); err != nil {
-		return nil
-	}
-	return out
+	Endpoint  string
+	Method    string
+	RemovedAt string
 }
 
 // ConsumerAuditOptions configures a single consumer-audit run.
@@ -130,15 +46,8 @@ type ConsumerAuditResult struct {
 	// Reconciled state (nil if no previous state was provided).
 	Tracked []TrackedEndpoint
 
-	// NewDeletions are endpoints detected as removed on this run. They
-	// have been appended to DeletionLedger already; this slice exists so
-	// the CLI can surface them separately in the diff.
+	// NewDeletions are endpoints detected as removed on this run.
 	NewDeletions []DeletionRecord
-
-	// DeletionLedger is the full updated ledger that will be written to
-	// Z1 of the sheet. Includes NewDeletions plus everything previously
-	// recorded.
-	DeletionLedger []DeletionRecord
 
 	// Output rows for sheet serialization (sorted, deterministic).
 	Rows []AuditRow
@@ -169,8 +78,6 @@ type ConsumerAuditRow struct {
 	// (new / changed) for this row, in format "YYYY-MM-DD HH:MM:SS".
 	// Empty on rows that have never been touched by reconciliation.
 	ChangeLog string
-	// Metadata is machine-only data serialized as JSON in column Z.
-	Metadata RowMetadata
 }
 
 // AuditRow remains a short alias used throughout the validation package.
@@ -179,7 +86,7 @@ type AuditRow = ConsumerAuditRow
 // columnDef is one generated sheet column. The slice index in
 // generatedColumns is the column's position in the sheet (A=0, B=1, …).
 // Reconcile marks columns whose changes trigger a StateChanged transition.
-// get and set allow toRow/rowFromStrings to operate without referencing
+// get and set allow row serializers to operate without referencing
 // column indices anywhere else in the codebase.
 type columnDef struct {
 	Name      string
@@ -255,37 +162,27 @@ var generatedColumns = []columnDef{
 	},
 }
 
-// auditHeader is the canonical header row for sheet output. User-owned
-// columns begin immediately after the last generated column and extend to
-// column Y. Column Z always holds the deletion ledger (row 1) or
-// per-row metadata (all other rows).
+// auditHeader is the canonical header row for generated sheet output.
 var auditHeader = func() []string {
-	h := make([]string, totalColumns)
+	h := make([]string, len(generatedColumns))
 	for i, col := range generatedColumns {
 		h[i] = col.Name
 	}
-	h[metadataColumnIndex] = "__metadata__"
 	return h
 }()
 
 // toRow converts the audit row to its serialized string slice. The
-// returned slice is always totalColumns wide; user-owned columns between
-// the last generated column and Y are left empty, and Z carries the
-// JSON-encoded metadata.
+// returned slice contains generated columns only.
 func (r ConsumerAuditRow) toRow() []string {
-	cells := make([]string, totalColumns)
+	cells := make([]string, len(generatedColumns))
 	for i, col := range generatedColumns {
 		cells[i] = col.get(r)
 	}
-	cells[metadataColumnIndex] = r.Metadata.encode()
 	return cells
 }
 
 // rowFromStrings reconstructs an AuditRow from a serialized string slice.
-// Missing trailing columns are tolerated. Legacy Change Log prefixes
-// ("+added YYYY-MM-DD", "~changed ...", "-removed ...") are recognized
-// and migrated on-the-fly: the date is promoted to an RFC3339 timestamp
-// and any missing metadata fields are seeded.
+// Missing trailing columns are tolerated.
 func rowFromStrings(cols []string) ConsumerAuditRow {
 	get := func(i int) string {
 		if i < len(cols) {
@@ -297,75 +194,10 @@ func rowFromStrings(cols []string) ConsumerAuditRow {
 	for i, col := range generatedColumns {
 		col.set(&row, get(i))
 	}
-	row.Metadata = decodeRowMetadata(get(metadataColumnIndex))
-	row.ChangeLog, row.Metadata = normalizeLegacyChangeLog(row.ChangeLog, row.Metadata)
 	return row
 }
 
-// isLegacyTombstone reports whether a row loaded from the sheet is a
-// deletion tombstone. The primary signal is Metadata.State == "removed",
-// which is set by normalizeLegacyChangeLog when it encounters a legacy
-// "-removed YYYY-MM-DD" ChangeLog. The prefix check is kept as a fallback
-// for bare "-removed" entries that have no associated date (and thus no
-// metadata migration).
-func isLegacyTombstone(row ConsumerAuditRow) bool {
-	if row.Metadata.State == "removed" {
-		return true
-	}
-	return strings.HasPrefix(strings.TrimSpace(row.ChangeLog), "-removed")
-}
-
-// normalizeLegacyChangeLog rewrites the legacy "+added YYYY-MM-DD",
-// "~changed YYYY-MM-DD: Col1, Col2" formats into the new readable UTC
-// timestamp and seeds any missing metadata fields derived from the
-// prefix. Rows already in the new format are returned unchanged.
-func normalizeLegacyChangeLog(changeLog string, meta RowMetadata) (string, RowMetadata) {
-	trimmed := strings.TrimSpace(changeLog)
-	if trimmed == "" {
-		return changeLog, meta
-	}
-	var state, rest string
-	switch {
-	case strings.HasPrefix(trimmed, "+added "):
-		state = "new"
-		rest = strings.TrimPrefix(trimmed, "+added ")
-	case strings.HasPrefix(trimmed, "~changed "):
-		state = "changed"
-		rest = strings.TrimPrefix(trimmed, "~changed ")
-	case strings.HasPrefix(trimmed, "-removed "):
-		state = "removed"
-		rest = strings.TrimPrefix(trimmed, "-removed ")
-	default:
-		return changeLog, meta
-	}
-	date := rest
-	var changedCols []string
-	if idx := strings.Index(rest, ":"); idx >= 0 {
-		date = strings.TrimSpace(rest[:idx])
-		for _, c := range strings.Split(rest[idx+1:], ",") {
-			if c = strings.TrimSpace(c); c != "" {
-				changedCols = append(changedCols, c)
-			}
-		}
-	} else {
-		date = strings.TrimSpace(date)
-	}
-	ts := date + " 00:00:00"
-	if meta.State == "" {
-		meta.State = state
-	}
-	if meta.FirstSeen == "" {
-		meta.FirstSeen = ts
-	}
-	if len(meta.ChangedColumns) == 0 && len(changedCols) > 0 {
-		meta.ChangedColumns = changedCols
-	}
-	return ts, meta
-}
-
-// EndpointState enumerates the reconciliation states a live audit row
-// can be in. Deletions are tracked separately in the deletion ledger
-// and never appear as a TrackedEndpoint.
+// EndpointState enumerates the reconciliation states a live audit row can be in.
 type EndpointState int
 
 const (
@@ -375,8 +207,7 @@ const (
 )
 
 // TrackedEndpoint is one reconciled row with state transition. The CLI
-// consumes this to render the diff section. The Row already carries
-// the authoritative ChangeLog timestamp and Metadata blob.
+// consumes this to render the diff section.
 type TrackedEndpoint struct {
 	Row   ConsumerAuditRow
 	State EndpointState
@@ -399,7 +230,6 @@ type auditSummary struct {
 	AnnotatedMeshery int
 	AnnotatedCloud   int
 	AnnotatedBoth    int
-	AnnotatedNone    int
 	// SchemaCompletenessTrue is the count of schema-defined endpoints whose
 	// schema passes blocking validation.
 	SchemaCompletenessTrue int
@@ -415,7 +245,6 @@ type schemaCompletenessIndex struct {
 }
 
 const (
-	XAnnotatedNone        = "None"
 	XAnnotatedBoth        = "Both"
 	XAnnotatedCloudOnly   = "Cloud only"
 	XAnnotatedMesheryOnly = "Meshery only"
@@ -673,9 +502,8 @@ func newConsumerOnlyRow(consumers []consumerEndpoint, mesheryProvided, cloudProv
 // classifyXAnnotated returns the x-annotated column value derived from an
 // endpoint's x-internal list.
 //
-// "None"     — no x-internal annotation; both consumers are implicitly in scope.
-// "Both"     — x-internal: ["cloud","meshery"]; both consumers explicitly targeted.
-// "Cloud only" — x-internal: ["cloud"] only.
+// "Both"         — x-internal includes both "cloud" and "meshery".
+// "Cloud only"   — x-internal: ["cloud"] only.
 // "Meshery only" — x-internal: ["meshery"] only.
 func classifyXAnnotated(xInternal []string) string {
 	has := func(s string) bool {
@@ -687,8 +515,6 @@ func classifyXAnnotated(xInternal []string) string {
 		return false
 	}
 	switch {
-	case len(xInternal) == 0:
-		return XAnnotatedNone
 	case has("meshery") && has("cloud"):
 		return XAnnotatedBoth
 	case has("cloud"):
@@ -696,7 +522,7 @@ func classifyXAnnotated(xInternal []string) string {
 	case has("meshery"):
 		return XAnnotatedMesheryOnly
 	}
-	return XAnnotatedNone
+	return ""
 }
 
 // computeEndpointStatus reports whether the endpoint is live in each consumer
@@ -987,8 +813,6 @@ func computeSummary(
 			s.AnnotatedCloud++
 		case XAnnotatedBoth:
 			s.AnnotatedBoth++
-		default: // XAnnotatedNone
-			s.AnnotatedNone++
 		}
 		if row.SchemaCompleteness == auditStatusTrue {
 			s.SchemaCompletenessTrue++

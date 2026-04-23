@@ -4,14 +4,11 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
 )
-
-// validatedVersions are the API versions that are audited.
-// v1alpha* schemas are legacy and kept for backward compatibility.
-var validatedVersions = []string{"v1beta1", "v1beta2"}
 
 // httpMethods are the HTTP methods checked in path-item operations.
 var httpMethods = []string{"get", "post", "put", "patch", "delete"}
@@ -51,6 +48,7 @@ func walkValidatedConstructSpecs(rootDir string, fn func(constructSpec) error) e
 		return versionEntries[i].Name() < versionEntries[j].Name()
 	})
 
+	latestByConstruct := make(map[string]constructSpec)
 	for _, vEntry := range versionEntries {
 		if !vEntry.IsDir() {
 			continue
@@ -76,30 +74,50 @@ func walkValidatedConstructSpecs(rootDir string, fn func(constructSpec) error) e
 
 			constructDir := filepath.Join(versionDir, cEntry.Name())
 			apiYmlPath := filepath.Join(constructDir, "api.yml")
+			if _, err := os.Stat(apiYmlPath); err != nil {
+				continue
+			}
+
 			spec := constructSpec{
 				Version:      version,
 				Construct:    cEntry.Name(),
 				ConstructDir: constructDir,
 				APIYMLPath:   apiYmlPath,
 				RelativePath: relativeToRoot(apiYmlPath, rootDir),
+				APIExists:    true,
 			}
 
-			if _, err := os.Stat(apiYmlPath); err == nil {
-				spec.APIExists = true
-				doc, loadErr := loadAPISpec(apiYmlPath)
-				if loadErr != nil {
-					spec.LoadErr = loadErr
-				} else {
-					if isDeprecatedDoc(doc) {
-						continue
-					}
-					spec.Doc = doc
+			doc, loadErr := loadAPISpec(apiYmlPath)
+			if loadErr != nil {
+				spec.LoadErr = loadErr
+			} else {
+				if isDeprecatedDoc(doc) {
+					continue
 				}
+				spec.Doc = doc
 			}
 
-			if err := fn(spec); err != nil {
-				return err
+			prev, ok := latestByConstruct[spec.Construct]
+			if !ok || compareAPIVersions(spec.Version, prev.Version) > 0 {
+				latestByConstruct[spec.Construct] = spec
 			}
+		}
+	}
+
+	specs := make([]constructSpec, 0, len(latestByConstruct))
+	for _, spec := range latestByConstruct {
+		specs = append(specs, spec)
+	}
+	sort.Slice(specs, func(i, j int) bool {
+		if specs[i].Construct != specs[j].Construct {
+			return specs[i].Construct < specs[j].Construct
+		}
+		return compareAPIVersions(specs[i].Version, specs[j].Version) < 0
+	})
+
+	for _, spec := range specs {
+		if err := fn(spec); err != nil {
+			return err
 		}
 	}
 
@@ -170,14 +188,64 @@ func Audit(opts AuditOptions) AuditResult {
 	return result
 }
 
-// shouldValidateVersion returns true if the version should be audited.
+// shouldValidateVersion returns true if the version directory participates in
+// schema discovery. Version selection happens per construct after discovery,
+// mirroring `make schemas-versions-latest`.
 func shouldValidateVersion(version string) bool {
-	for _, v := range validatedVersions {
-		if version == v || strings.HasPrefix(version, v) {
-			return true
-		}
+	return strings.HasPrefix(version, "v")
+}
+
+type apiVersionParts struct {
+	major int
+	stage int
+	minor int
+	raw   string
+}
+
+func compareAPIVersions(a, b string) int {
+	av := parseAPIVersion(a)
+	bv := parseAPIVersion(b)
+	switch {
+	case av.major != bv.major:
+		return av.major - bv.major
+	case av.stage != bv.stage:
+		return av.stage - bv.stage
+	case av.minor != bv.minor:
+		return av.minor - bv.minor
+	case av.raw < bv.raw:
+		return -1
+	case av.raw > bv.raw:
+		return 1
 	}
-	return false
+	return 0
+}
+
+func parseAPIVersion(version string) apiVersionParts {
+	parts := apiVersionParts{raw: version, stage: -1}
+	rest := strings.TrimPrefix(version, "v")
+	majorEnd := 0
+	for majorEnd < len(rest) && rest[majorEnd] >= '0' && rest[majorEnd] <= '9' {
+		majorEnd++
+	}
+	if majorEnd == 0 {
+		return parts
+	}
+	parts.major, _ = strconv.Atoi(rest[:majorEnd])
+	rest = rest[majorEnd:]
+
+	switch {
+	case strings.HasPrefix(rest, "alpha"):
+		parts.stage = 0
+		parts.minor, _ = strconv.Atoi(strings.TrimPrefix(rest, "alpha"))
+	case strings.HasPrefix(rest, "beta"):
+		parts.stage = 1
+		parts.minor, _ = strconv.Atoi(strings.TrimPrefix(rest, "beta"))
+	case rest == "":
+		parts.stage = 2
+	default:
+		parts.stage = -1
+	}
+	return parts
 }
 
 // isDeprecatedDoc checks if a loaded api.yml has x-deprecated: true in info.

@@ -136,7 +136,6 @@ func printAuditReport(out io.Writer, result *validation.ConsumerAuditResult) {
 	t.AddRow("x-Annotated (Meshery only)", s.AnnotatedMeshery, "-", "-")
 	t.AddRow("x-Annotated (Cloud only)", s.AnnotatedCloud, "-", "-")
 	t.AddRow("x-Annotated (Both)", s.AnnotatedBoth, "-", "-")
-	t.AddRow("x-Annotated (None)", s.AnnotatedNone, "-", "-")
 	t.AddRow("Schema Completeness (TRUE)", s.SchemaCompletenessTrue, "-", "-")
 	t.AddRow("Schema Only (Not Implemented)",
 		s.SchemaOnly,
@@ -280,9 +279,9 @@ func buildConsumerActionSummary(
 func appliesToConsumer(row validation.ConsumerAuditRow, consumer string) bool {
 	switch consumer {
 	case "meshery":
-		return row.XAnnotated == validation.XAnnotatedNone || row.XAnnotated == validation.XAnnotatedMesheryOnly || row.XAnnotated == validation.XAnnotatedBoth
+		return row.XAnnotated == validation.XAnnotatedMesheryOnly || row.XAnnotated == validation.XAnnotatedBoth
 	case "cloud":
-		return row.XAnnotated == validation.XAnnotatedNone || row.XAnnotated == validation.XAnnotatedCloudOnly || row.XAnnotated == validation.XAnnotatedBoth
+		return row.XAnnotated == validation.XAnnotatedCloudOnly || row.XAnnotated == validation.XAnnotatedBoth
 	default:
 		return false
 	}
@@ -466,7 +465,11 @@ func printDiff(out io.Writer, tracked []validation.TrackedEndpoint, deletions []
 		fmt.Fprintf(out, "\n  Changed (%d):\n", len(changed))
 		for _, t := range changed {
 			fmt.Fprintf(out, "    %-7s %s\n", t.Row.Method, t.Row.Endpoint)
-			for _, col := range t.Row.Metadata.ChangedColumns {
+			var changedColumns []string
+			if t.Prev != nil {
+				changedColumns = validation.AuditedChangedColumns(*t.Prev, t.Row)
+			}
+			for _, col := range changedColumns {
 				if col == "Notes" {
 					continue
 				}

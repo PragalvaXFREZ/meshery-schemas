@@ -282,12 +282,9 @@ func consumerWithParamMismatchNote(c consumerEndpoint, specPath string) consumer
 	return c
 }
 
-// xInternalAllows returns true if a schema endpoint with the given x-internal
-// list is meant to be implemented by the named repo.
+// xInternalAllows returns true when the endpoint's x-internal list explicitly
+// targets the named repo.
 func xInternalAllows(xInternal []string, repo string) bool {
-	if len(xInternal) == 0 {
-		return true
-	}
 	for _, target := range xInternal {
 		if target == repo {
 			return true

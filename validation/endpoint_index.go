@@ -172,8 +172,8 @@ func mergeQueryParams(pathLevel, opLevel openapi3.Parameters) []schemaQueryParam
 	return out
 }
 
-// parseXInternal extracts x-internal target list from operation extensions.
-// Returns nil if not present (= the endpoint applies to all consumer repos).
+// parseXInternal extracts the explicit x-internal target list from operation
+// extensions.
 func parseXInternal(extensions map[string]any) ([]string, error) {
 	if extensions == nil {
 		return nil, nil
