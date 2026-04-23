@@ -2,9 +2,7 @@ openapi: 3.0.0
 info:
   title: Connection API
   description: API for managing Meshery connections - managed and unmanaged resources tracked by Meshery.
-  x-deprecated: true
-  x-superseded-by: v1beta3
-  version: v1beta2
+  version: v1beta3
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -26,15 +24,17 @@ paths:
       description: Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support
       parameters:
         - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/orgIdQuery"
         - name: filter
           in: query
           description: Filter connections (general filter string)
           required: false
           schema:
             type: string
+            maxLength: 500
         - name: kind
           in: query
           description: Filter by connection kind (e.g., kubernetes, prometheus, grafana)
@@ -43,6 +43,7 @@ paths:
             type: array
             items:
               type: string
+              maxLength: 255
         - name: status
           in: query
           description: Filter by connection status
@@ -59,12 +60,14 @@ paths:
             type: array
             items:
               type: string
+              maxLength: 255
         - name: name
           in: query
           description: Filter by connection name (partial match supported)
           required: false
           schema:
             type: string
+            maxLength: 255
       responses:
         "200":
           description: Paginated list of connections with summary information
@@ -187,13 +190,7 @@ paths:
       summary: Delete Meshery instance connection
       description: Delete a Meshery server connection by server ID
       parameters:
-        - name: mesheryServerId
-          in: path
-          required: true
-          description: Meshery server ID
-          schema:
-            type: string
-            format: uuid
+        - $ref: "#/components/parameters/mesheryServerId"
       responses:
         "204":
           description: Meshery connection deleted
@@ -274,13 +271,13 @@ paths:
 components:
   responses:
     400:
-      $ref: "../core/api.yml#/components/responses/400"
+      $ref: "../../v1beta2/core/api.yml#/components/responses/400"
     401:
-      $ref: "../core/api.yml#/components/responses/401"
+      $ref: "../../v1beta2/core/api.yml#/components/responses/401"
     404:
-      $ref: "../core/api.yml#/components/responses/404"
+      $ref: "../../v1beta2/core/api.yml#/components/responses/404"
     500:
-      $ref: "../core/api.yml#/components/responses/500"
+      $ref: "../../v1beta2/core/api.yml#/components/responses/500"
 
   securitySchemes:
     jwt:
@@ -305,12 +302,22 @@ components:
       description: Connection kind (meshery, kubernetes, prometheus, grafana, etc.)
       schema:
         type: string
+        maxLength: 255
 
     environmentId:
       name: environmentId
       in: path
       required: true
       description: Environment ID
+      schema:
+        type: string
+        format: uuid
+
+    mesheryServerId:
+      name: mesheryServerId
+      in: path
+      required: true
+      description: Meshery server ID
       schema:
         type: string
         format: uuid
@@ -322,15 +329,17 @@ components:
       required: false
       schema:
         type: integer
+        minimum: 0
         default: 0
 
-    pagesize:
-      name: pagesize
+    pageSize:
+      name: pageSize
       in: query
       description: Number of items per page
       required: false
       schema:
         type: integer
+        minimum: 1
         default: 10
 
     search:
@@ -340,6 +349,7 @@ components:
       required: false
       schema:
         type: string
+        maxLength: 500
 
     order:
       name: order
@@ -348,6 +358,16 @@ components:
       required: false
       schema:
         type: string
+        maxLength: 500
+
+    orgIdQuery:
+      name: orgId
+      in: query
+      description: Organization ID to scope the request.
+      required: false
+      schema:
+        type: string
+        format: uuid
 
   schemas:
     Connection:
@@ -359,9 +379,9 @@ components:
       type: object
       required:
         - connections
-        - total_count
+        - totalCount
         - page
-        - page_size
+        - pageSize
       properties:
         connections:
           type: array
@@ -370,9 +390,11 @@ components:
           items:
             $ref: "./connection.yaml"
           x-order: 1
-        total_count:
+        totalCount:
           type: integer
           description: Total number of connections on all pages
+          x-oapi-codegen-extra-tags:
+            json: totalCount
           x-order: 2
           minimum: 0
         page:
@@ -380,9 +402,11 @@ components:
           description: Current page number
           x-order: 3
           minimum: 0
-        page_size:
+        pageSize:
           type: integer
           description: Number of elements per page
+          x-oapi-codegen-extra-tags:
+            json: pageSize
           x-order: 4
           minimum: 1
         statusSummary:
@@ -509,11 +533,11 @@ components:
       type: object
       description: Paginated list of connection status counts
       properties:
-        total_count:
+        totalCount:
           type: integer
           description: Total number of status entries
           x-oapi-codegen-extra-tags:
-            json: "total_count"
+            json: "totalCount"
           minimum: 0
         page:
           type: integer
@@ -521,11 +545,11 @@ components:
           x-oapi-codegen-extra-tags:
             json: "page"
           minimum: 0
-        page_size:
+        pageSize:
           type: integer
           description: Number of items per page
           x-oapi-codegen-extra-tags:
-            json: "page_size"
+            json: "pageSize"
           minimum: 1
         connectionsStatus:
           type: array
@@ -535,9 +559,9 @@ components:
           x-oapi-codegen-extra-tags:
             json: "connectionsStatus"
       required:
-        - total_count
+        - totalCount
         - page
-        - page_size
+        - pageSize
         - connectionsStatus
 
     MesheryInstance:
@@ -560,56 +584,56 @@ components:
             db: "name"
           minLength: 1
           maxLength: 255
-        server_id:
+        serverId:
           type: string
           description: Server ID
           x-go-name: ServerID
           x-oapi-codegen-extra-tags:
-            json: "server_id,omitempty"
+            json: "serverId,omitempty"
             db: "server_id"
           maxLength: 500
           format: uuid
-        server_version:
+        serverVersion:
           type: string
           description: Meshery server version
           x-oapi-codegen-extra-tags:
-            json: "server_version,omitempty"
+            json: "serverVersion,omitempty"
             db: "server_version"
           maxLength: 500
-        server_location:
+        serverLocation:
           type: string
           description: Server location URL
           x-oapi-codegen-extra-tags:
-            json: "server_location,omitempty"
+            json: "serverLocation,omitempty"
             db: "server_location"
           maxLength: 500
-        server_build_sha:
+        serverBuildSha:
           type: string
           description: Server build SHA
           x-go-name: ServerBuildSHA
           x-oapi-codegen-extra-tags:
-            json: "server_build_sha,omitempty"
+            json: "serverBuildSha,omitempty"
             db: "server_build_sha"
           maxLength: 500
-        created_at:
+        createdAt:
           type: string
           description: Creation timestamp
           x-oapi-codegen-extra-tags:
-            json: "created_at,omitempty"
+            json: "createdAt,omitempty"
             db: "created_at"
           format: date-time
-        updated_at:
+        updatedAt:
           type: string
           description: Last update timestamp
           x-oapi-codegen-extra-tags:
-            json: "updated_at,omitempty"
+            json: "updatedAt,omitempty"
             db: "updated_at"
           format: date-time
-        deleted_at:
+        deletedAt:
           type: string
           description: Deletion timestamp
           x-oapi-codegen-extra-tags:
-            json: "deleted_at,omitempty"
+            json: "deletedAt,omitempty"
             db: "deleted_at"
           format: date-time
 
@@ -630,23 +654,23 @@ components:
           x-oapi-codegen-extra-tags:
             json: "page"
           minimum: 0
-        page_size:
+        pageSize:
           type: integer
           description: Number of items per page
           x-oapi-codegen-extra-tags:
-            json: "page_size"
+            json: "pageSize"
           minimum: 1
-        total_count:
+        totalCount:
           type: integer
           description: Total number of instances
           x-oapi-codegen-extra-tags:
-            json: "total_count"
+            json: "totalCount"
           minimum: 0
       required:
         - mesheryInstances
         - page
-        - page_size
-        - total_count
+        - pageSize
+        - totalCount
 
     MesheryCompatibility:
       type: object

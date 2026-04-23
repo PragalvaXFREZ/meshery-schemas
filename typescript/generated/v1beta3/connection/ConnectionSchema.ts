@@ -8,9 +8,7 @@ const ConnectionSchema: Record<string, unknown> = {
   "info": {
     "title": "Connection API",
     "description": "API for managing Meshery connections - managed and unmanaged resources tracked by Meshery.",
-    "x-deprecated": true,
-    "x-superseded-by": "v1beta3",
-    "version": "v1beta2",
+    "version": "v1beta3",
     "contact": {
       "name": "Meshery Maintainers",
       "email": "maintainers@meshery.io",
@@ -47,16 +45,18 @@ const ConnectionSchema: Record<string, unknown> = {
             "required": false,
             "schema": {
               "type": "integer",
+              "minimum": 0,
               "default": 0
             }
           },
           {
-            "name": "pagesize",
+            "name": "pageSize",
             "in": "query",
             "description": "Number of items per page",
             "required": false,
             "schema": {
               "type": "integer",
+              "minimum": 1,
               "default": 10
             }
           },
@@ -66,7 +66,8 @@ const ConnectionSchema: Record<string, unknown> = {
             "description": "Search term",
             "required": false,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 500
             }
           },
           {
@@ -75,7 +76,18 @@ const ConnectionSchema: Record<string, unknown> = {
             "description": "Sort order",
             "required": false,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 500
+            }
+          },
+          {
+            "name": "orgId",
+            "in": "query",
+            "description": "Organization ID to scope the request.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
             }
           },
           {
@@ -84,7 +96,8 @@ const ConnectionSchema: Record<string, unknown> = {
             "description": "Filter connections (general filter string)",
             "required": false,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 500
             }
           },
           {
@@ -95,7 +108,8 @@ const ConnectionSchema: Record<string, unknown> = {
             "schema": {
               "type": "array",
               "items": {
-                "type": "string"
+                "type": "string",
+                "maxLength": 255
               }
             }
           },
@@ -131,7 +145,8 @@ const ConnectionSchema: Record<string, unknown> = {
             "schema": {
               "type": "array",
               "items": {
-                "type": "string"
+                "type": "string",
+                "maxLength": 255
               }
             }
           },
@@ -141,7 +156,8 @@ const ConnectionSchema: Record<string, unknown> = {
             "description": "Filter by connection name (partial match supported)",
             "required": false,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "maxLength": 255
             }
           }
         ],
@@ -156,9 +172,9 @@ const ConnectionSchema: Record<string, unknown> = {
                   "type": "object",
                   "required": [
                     "connections",
-                    "total_count",
+                    "totalCount",
                     "page",
-                    "page_size"
+                    "pageSize"
                   ],
                   "properties": {
                     "connections": {
@@ -176,7 +192,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           "schemaVersion",
                           "name",
                           "type",
-                          "sub_type",
+                          "subType",
                           "kind",
                           "status"
                         ],
@@ -186,8 +202,7 @@ const ConnectionSchema: Record<string, unknown> = {
                             "x-order": 1,
                             "x-go-name": "ID",
                             "x-oapi-codegen-extra-tags": {
-                              "db": "id",
-                              "yaml": "id"
+                              "db": "id"
                             },
                             "type": "string",
                             "format": "uuid",
@@ -198,8 +213,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           },
                           "name": {
                             "x-oapi-codegen-extra-tags": {
-                              "db": "name",
-                              "yaml": "name"
+                              "db": "name"
                             },
                             "x-order": 2,
                             "type": "string",
@@ -207,11 +221,11 @@ const ConnectionSchema: Record<string, unknown> = {
                             "minLength": 1,
                             "maxLength": 255
                           },
-                          "credential_id": {
+                          "credentialId": {
                             "x-go-name": "CredentialID",
                             "x-oapi-codegen-extra-tags": {
                               "db": "credential_id",
-                              "yaml": "credential_id"
+                              "json": "credentialId"
                             },
                             "x-order": 3,
                             "description": "Associated Credential ID",
@@ -224,18 +238,17 @@ const ConnectionSchema: Record<string, unknown> = {
                           },
                           "type": {
                             "x-oapi-codegen-extra-tags": {
-                              "db": "type",
-                              "yaml": "type"
+                              "db": "type"
                             },
                             "x-order": 4,
                             "type": "string",
                             "description": "Connection Type (platform, telemetry, collaboration)",
                             "maxLength": 255
                           },
-                          "sub_type": {
+                          "subType": {
                             "x-oapi-codegen-extra-tags": {
                               "db": "sub_type",
-                              "yaml": "sub_type"
+                              "json": "subType"
                             },
                             "x-order": 5,
                             "type": "string",
@@ -244,8 +257,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           },
                           "kind": {
                             "x-oapi-codegen-extra-tags": {
-                              "db": "kind",
-                              "yaml": "kind"
+                              "db": "kind"
                             },
                             "x-order": 6,
                             "type": "string",
@@ -254,8 +266,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           },
                           "metadata": {
                             "x-oapi-codegen-extra-tags": {
-                              "db": "metadata",
-                              "yaml": "metadata"
+                              "db": "metadata"
                             },
                             "x-order": 7,
                             "x-go-type": "core.Map",
@@ -268,8 +279,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           },
                           "status": {
                             "x-oapi-codegen-extra-tags": {
-                              "db": "status",
-                              "yaml": "status"
+                              "db": "status"
                             },
                             "x-order": 8,
                             "description": "Connection Status",
@@ -285,11 +295,11 @@ const ConnectionSchema: Record<string, unknown> = {
                               "not found"
                             ]
                           },
-                          "user_id": {
+                          "userId": {
                             "x-go-name": "UserID",
                             "x-oapi-codegen-extra-tags": {
                               "db": "user_id",
-                              "yaml": "user_id"
+                              "json": "userId"
                             },
                             "x-order": 9,
                             "description": "User ID who owns this connection",
@@ -300,33 +310,35 @@ const ConnectionSchema: Record<string, unknown> = {
                               "path": "github.com/gofrs/uuid"
                             }
                           },
-                          "created_at": {
+                          "createdAt": {
+                            "description": "Timestamp when the connection was created.",
                             "x-oapi-codegen-extra-tags": {
                               "db": "created_at",
-                              "yaml": "created_at"
+                              "json": "createdAt"
                             },
                             "x-order": 10,
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "updated_at": {
+                          "updatedAt": {
+                            "description": "Timestamp when the connection was last updated.",
                             "x-oapi-codegen-extra-tags": {
                               "db": "updated_at",
-                              "yaml": "updated_at"
+                              "json": "updatedAt"
                             },
                             "x-order": 11,
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "deleted_at": {
+                          "deletedAt": {
+                            "description": "Timestamp when the connection was soft-deleted, if applicable.",
                             "x-oapi-codegen-extra-tags": {
                               "db": "deleted_at",
-                              "yaml": "deleted_at"
+                              "json": "deletedAt"
                             },
                             "x-order": 12,
-                            "description": "SQL null Timestamp to handle null values of time.",
                             "x-go-type": "meshcore.NullTime",
                             "x-go-type-import": {
                               "name": "meshcore",
@@ -516,7 +528,6 @@ const ConnectionSchema: Record<string, unknown> = {
                             },
                             "x-oapi-codegen-extra-tags": {
                               "db": "-",
-                              "yaml": "environments",
                               "gorm": "-"
                             },
                             "x-go-type-skip-optional-pointer": true,
@@ -526,11 +537,10 @@ const ConnectionSchema: Record<string, unknown> = {
                             "description": "Specifies the version of the schema used for the definition.",
                             "x-order": 14,
                             "x-oapi-codegen-extra-tags": {
-                              "yaml": "schemaVersion",
                               "db": "-",
                               "gorm": "-"
                             },
-                            "default": "connections.meshery.io/v1beta2",
+                            "default": "connections.meshery.io/v1beta3",
                             "type": "string",
                             "minLength": 2,
                             "maxLength": 100,
@@ -548,9 +558,12 @@ const ConnectionSchema: Record<string, unknown> = {
                       },
                       "x-order": 1
                     },
-                    "total_count": {
+                    "totalCount": {
                       "type": "integer",
                       "description": "Total number of connections on all pages",
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "totalCount"
+                      },
                       "x-order": 2,
                       "minimum": 0
                     },
@@ -560,9 +573,12 @@ const ConnectionSchema: Record<string, unknown> = {
                       "x-order": 3,
                       "minimum": 0
                     },
-                    "page_size": {
+                    "pageSize": {
                       "type": "integer",
                       "description": "Number of elements per page",
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "pageSize"
+                      },
                       "x-order": 4,
                       "minimum": 1
                     },
@@ -735,7 +751,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "schemaVersion",
                     "name",
                     "type",
-                    "sub_type",
+                    "subType",
                     "kind",
                     "status"
                   ],
@@ -745,8 +761,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "x-order": 1,
                       "x-go-name": "ID",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "id",
-                        "yaml": "id"
+                        "db": "id"
                       },
                       "type": "string",
                       "format": "uuid",
@@ -757,8 +772,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     },
                     "name": {
                       "x-oapi-codegen-extra-tags": {
-                        "db": "name",
-                        "yaml": "name"
+                        "db": "name"
                       },
                       "x-order": 2,
                       "type": "string",
@@ -766,11 +780,11 @@ const ConnectionSchema: Record<string, unknown> = {
                       "minLength": 1,
                       "maxLength": 255
                     },
-                    "credential_id": {
+                    "credentialId": {
                       "x-go-name": "CredentialID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "credential_id",
-                        "yaml": "credential_id"
+                        "json": "credentialId"
                       },
                       "x-order": 3,
                       "description": "Associated Credential ID",
@@ -783,18 +797,17 @@ const ConnectionSchema: Record<string, unknown> = {
                     },
                     "type": {
                       "x-oapi-codegen-extra-tags": {
-                        "db": "type",
-                        "yaml": "type"
+                        "db": "type"
                       },
                       "x-order": 4,
                       "type": "string",
                       "description": "Connection Type (platform, telemetry, collaboration)",
                       "maxLength": 255
                     },
-                    "sub_type": {
+                    "subType": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "sub_type",
-                        "yaml": "sub_type"
+                        "json": "subType"
                       },
                       "x-order": 5,
                       "type": "string",
@@ -803,8 +816,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     },
                     "kind": {
                       "x-oapi-codegen-extra-tags": {
-                        "db": "kind",
-                        "yaml": "kind"
+                        "db": "kind"
                       },
                       "x-order": 6,
                       "type": "string",
@@ -813,8 +825,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     },
                     "metadata": {
                       "x-oapi-codegen-extra-tags": {
-                        "db": "metadata",
-                        "yaml": "metadata"
+                        "db": "metadata"
                       },
                       "x-order": 7,
                       "x-go-type": "core.Map",
@@ -827,8 +838,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     },
                     "status": {
                       "x-oapi-codegen-extra-tags": {
-                        "db": "status",
-                        "yaml": "status"
+                        "db": "status"
                       },
                       "x-order": 8,
                       "description": "Connection Status",
@@ -844,11 +854,11 @@ const ConnectionSchema: Record<string, unknown> = {
                         "not found"
                       ]
                     },
-                    "user_id": {
+                    "userId": {
                       "x-go-name": "UserID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "user_id",
-                        "yaml": "user_id"
+                        "json": "userId"
                       },
                       "x-order": 9,
                       "description": "User ID who owns this connection",
@@ -859,33 +869,35 @@ const ConnectionSchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       }
                     },
-                    "created_at": {
+                    "createdAt": {
+                      "description": "Timestamp when the connection was created.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "created_at",
-                        "yaml": "created_at"
+                        "json": "createdAt"
                       },
                       "x-order": 10,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     },
-                    "updated_at": {
+                    "updatedAt": {
+                      "description": "Timestamp when the connection was last updated.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "updated_at",
-                        "yaml": "updated_at"
+                        "json": "updatedAt"
                       },
                       "x-order": 11,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     },
-                    "deleted_at": {
+                    "deletedAt": {
+                      "description": "Timestamp when the connection was soft-deleted, if applicable.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "deleted_at",
-                        "yaml": "deleted_at"
+                        "json": "deletedAt"
                       },
                       "x-order": 12,
-                      "description": "SQL null Timestamp to handle null values of time.",
                       "x-go-type": "meshcore.NullTime",
                       "x-go-type-import": {
                         "name": "meshcore",
@@ -1075,7 +1087,6 @@ const ConnectionSchema: Record<string, unknown> = {
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "-",
-                        "yaml": "environments",
                         "gorm": "-"
                       },
                       "x-go-type-skip-optional-pointer": true,
@@ -1085,11 +1096,10 @@ const ConnectionSchema: Record<string, unknown> = {
                       "description": "Specifies the version of the schema used for the definition.",
                       "x-order": 14,
                       "x-oapi-codegen-extra-tags": {
-                        "yaml": "schemaVersion",
                         "db": "-",
                         "gorm": "-"
                       },
-                      "default": "connections.meshery.io/v1beta2",
+                      "default": "connections.meshery.io/v1beta3",
                       "type": "string",
                       "minLength": 2,
                       "maxLength": 100,
@@ -1181,7 +1191,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "schemaVersion",
                     "name",
                     "type",
-                    "sub_type",
+                    "subType",
                     "kind",
                     "status"
                   ],
@@ -1191,8 +1201,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "x-order": 1,
                       "x-go-name": "ID",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "id",
-                        "yaml": "id"
+                        "db": "id"
                       },
                       "type": "string",
                       "format": "uuid",
@@ -1203,8 +1212,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     },
                     "name": {
                       "x-oapi-codegen-extra-tags": {
-                        "db": "name",
-                        "yaml": "name"
+                        "db": "name"
                       },
                       "x-order": 2,
                       "type": "string",
@@ -1212,11 +1220,11 @@ const ConnectionSchema: Record<string, unknown> = {
                       "minLength": 1,
                       "maxLength": 255
                     },
-                    "credential_id": {
+                    "credentialId": {
                       "x-go-name": "CredentialID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "credential_id",
-                        "yaml": "credential_id"
+                        "json": "credentialId"
                       },
                       "x-order": 3,
                       "description": "Associated Credential ID",
@@ -1229,18 +1237,17 @@ const ConnectionSchema: Record<string, unknown> = {
                     },
                     "type": {
                       "x-oapi-codegen-extra-tags": {
-                        "db": "type",
-                        "yaml": "type"
+                        "db": "type"
                       },
                       "x-order": 4,
                       "type": "string",
                       "description": "Connection Type (platform, telemetry, collaboration)",
                       "maxLength": 255
                     },
-                    "sub_type": {
+                    "subType": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "sub_type",
-                        "yaml": "sub_type"
+                        "json": "subType"
                       },
                       "x-order": 5,
                       "type": "string",
@@ -1249,8 +1256,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     },
                     "kind": {
                       "x-oapi-codegen-extra-tags": {
-                        "db": "kind",
-                        "yaml": "kind"
+                        "db": "kind"
                       },
                       "x-order": 6,
                       "type": "string",
@@ -1259,8 +1265,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     },
                     "metadata": {
                       "x-oapi-codegen-extra-tags": {
-                        "db": "metadata",
-                        "yaml": "metadata"
+                        "db": "metadata"
                       },
                       "x-order": 7,
                       "x-go-type": "core.Map",
@@ -1273,8 +1278,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     },
                     "status": {
                       "x-oapi-codegen-extra-tags": {
-                        "db": "status",
-                        "yaml": "status"
+                        "db": "status"
                       },
                       "x-order": 8,
                       "description": "Connection Status",
@@ -1290,11 +1294,11 @@ const ConnectionSchema: Record<string, unknown> = {
                         "not found"
                       ]
                     },
-                    "user_id": {
+                    "userId": {
                       "x-go-name": "UserID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "user_id",
-                        "yaml": "user_id"
+                        "json": "userId"
                       },
                       "x-order": 9,
                       "description": "User ID who owns this connection",
@@ -1305,33 +1309,35 @@ const ConnectionSchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       }
                     },
-                    "created_at": {
+                    "createdAt": {
+                      "description": "Timestamp when the connection was created.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "created_at",
-                        "yaml": "created_at"
+                        "json": "createdAt"
                       },
                       "x-order": 10,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     },
-                    "updated_at": {
+                    "updatedAt": {
+                      "description": "Timestamp when the connection was last updated.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "updated_at",
-                        "yaml": "updated_at"
+                        "json": "updatedAt"
                       },
                       "x-order": 11,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     },
-                    "deleted_at": {
+                    "deletedAt": {
+                      "description": "Timestamp when the connection was soft-deleted, if applicable.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "deleted_at",
-                        "yaml": "deleted_at"
+                        "json": "deletedAt"
                       },
                       "x-order": 12,
-                      "description": "SQL null Timestamp to handle null values of time.",
                       "x-go-type": "meshcore.NullTime",
                       "x-go-type-import": {
                         "name": "meshcore",
@@ -1521,7 +1527,6 @@ const ConnectionSchema: Record<string, unknown> = {
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "-",
-                        "yaml": "environments",
                         "gorm": "-"
                       },
                       "x-go-type-skip-optional-pointer": true,
@@ -1531,11 +1536,10 @@ const ConnectionSchema: Record<string, unknown> = {
                       "description": "Specifies the version of the schema used for the definition.",
                       "x-order": 14,
                       "x-oapi-codegen-extra-tags": {
-                        "yaml": "schemaVersion",
                         "db": "-",
                         "gorm": "-"
                       },
-                      "default": "connections.meshery.io/v1beta2",
+                      "default": "connections.meshery.io/v1beta3",
                       "type": "string",
                       "minLength": 2,
                       "maxLength": 100,
@@ -1728,7 +1732,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "schemaVersion",
                     "name",
                     "type",
-                    "sub_type",
+                    "subType",
                     "kind",
                     "status"
                   ],
@@ -1738,8 +1742,7 @@ const ConnectionSchema: Record<string, unknown> = {
                       "x-order": 1,
                       "x-go-name": "ID",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "id",
-                        "yaml": "id"
+                        "db": "id"
                       },
                       "type": "string",
                       "format": "uuid",
@@ -1750,8 +1753,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     },
                     "name": {
                       "x-oapi-codegen-extra-tags": {
-                        "db": "name",
-                        "yaml": "name"
+                        "db": "name"
                       },
                       "x-order": 2,
                       "type": "string",
@@ -1759,11 +1761,11 @@ const ConnectionSchema: Record<string, unknown> = {
                       "minLength": 1,
                       "maxLength": 255
                     },
-                    "credential_id": {
+                    "credentialId": {
                       "x-go-name": "CredentialID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "credential_id",
-                        "yaml": "credential_id"
+                        "json": "credentialId"
                       },
                       "x-order": 3,
                       "description": "Associated Credential ID",
@@ -1776,18 +1778,17 @@ const ConnectionSchema: Record<string, unknown> = {
                     },
                     "type": {
                       "x-oapi-codegen-extra-tags": {
-                        "db": "type",
-                        "yaml": "type"
+                        "db": "type"
                       },
                       "x-order": 4,
                       "type": "string",
                       "description": "Connection Type (platform, telemetry, collaboration)",
                       "maxLength": 255
                     },
-                    "sub_type": {
+                    "subType": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "sub_type",
-                        "yaml": "sub_type"
+                        "json": "subType"
                       },
                       "x-order": 5,
                       "type": "string",
@@ -1796,8 +1797,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     },
                     "kind": {
                       "x-oapi-codegen-extra-tags": {
-                        "db": "kind",
-                        "yaml": "kind"
+                        "db": "kind"
                       },
                       "x-order": 6,
                       "type": "string",
@@ -1806,8 +1806,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     },
                     "metadata": {
                       "x-oapi-codegen-extra-tags": {
-                        "db": "metadata",
-                        "yaml": "metadata"
+                        "db": "metadata"
                       },
                       "x-order": 7,
                       "x-go-type": "core.Map",
@@ -1820,8 +1819,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     },
                     "status": {
                       "x-oapi-codegen-extra-tags": {
-                        "db": "status",
-                        "yaml": "status"
+                        "db": "status"
                       },
                       "x-order": 8,
                       "description": "Connection Status",
@@ -1837,11 +1835,11 @@ const ConnectionSchema: Record<string, unknown> = {
                         "not found"
                       ]
                     },
-                    "user_id": {
+                    "userId": {
                       "x-go-name": "UserID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "user_id",
-                        "yaml": "user_id"
+                        "json": "userId"
                       },
                       "x-order": 9,
                       "description": "User ID who owns this connection",
@@ -1852,33 +1850,35 @@ const ConnectionSchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       }
                     },
-                    "created_at": {
+                    "createdAt": {
+                      "description": "Timestamp when the connection was created.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "created_at",
-                        "yaml": "created_at"
+                        "json": "createdAt"
                       },
                       "x-order": 10,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     },
-                    "updated_at": {
+                    "updatedAt": {
+                      "description": "Timestamp when the connection was last updated.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "updated_at",
-                        "yaml": "updated_at"
+                        "json": "updatedAt"
                       },
                       "x-order": 11,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     },
-                    "deleted_at": {
+                    "deletedAt": {
+                      "description": "Timestamp when the connection was soft-deleted, if applicable.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "deleted_at",
-                        "yaml": "deleted_at"
+                        "json": "deletedAt"
                       },
                       "x-order": 12,
-                      "description": "SQL null Timestamp to handle null values of time.",
                       "x-go-type": "meshcore.NullTime",
                       "x-go-type-import": {
                         "name": "meshcore",
@@ -2068,7 +2068,6 @@ const ConnectionSchema: Record<string, unknown> = {
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "-",
-                        "yaml": "environments",
                         "gorm": "-"
                       },
                       "x-go-type-skip-optional-pointer": true,
@@ -2078,11 +2077,10 @@ const ConnectionSchema: Record<string, unknown> = {
                       "description": "Specifies the version of the schema used for the definition.",
                       "x-order": 14,
                       "x-oapi-codegen-extra-tags": {
-                        "yaml": "schemaVersion",
                         "db": "-",
                         "gorm": "-"
                       },
-                      "default": "connections.meshery.io/v1beta2",
+                      "default": "connections.meshery.io/v1beta3",
                       "type": "string",
                       "minLength": 2,
                       "maxLength": 100,
@@ -2550,7 +2548,8 @@ const ConnectionSchema: Record<string, unknown> = {
         "required": true,
         "description": "Connection kind (meshery, kubernetes, prometheus, grafana, etc.)",
         "schema": {
-          "type": "string"
+          "type": "string",
+          "maxLength": 255
         }
       },
       "environmentId": {
@@ -2563,6 +2562,16 @@ const ConnectionSchema: Record<string, unknown> = {
           "format": "uuid"
         }
       },
+      "mesheryServerId": {
+        "name": "mesheryServerId",
+        "in": "path",
+        "required": true,
+        "description": "Meshery server ID",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
       "page": {
         "name": "page",
         "in": "query",
@@ -2570,16 +2579,18 @@ const ConnectionSchema: Record<string, unknown> = {
         "required": false,
         "schema": {
           "type": "integer",
+          "minimum": 0,
           "default": 0
         }
       },
-      "pagesize": {
-        "name": "pagesize",
+      "pageSize": {
+        "name": "pageSize",
         "in": "query",
         "description": "Number of items per page",
         "required": false,
         "schema": {
           "type": "integer",
+          "minimum": 1,
           "default": 10
         }
       },
@@ -2589,7 +2600,8 @@ const ConnectionSchema: Record<string, unknown> = {
         "description": "Search term",
         "required": false,
         "schema": {
-          "type": "string"
+          "type": "string",
+          "maxLength": 500
         }
       },
       "order": {
@@ -2598,7 +2610,18 @@ const ConnectionSchema: Record<string, unknown> = {
         "description": "Sort order",
         "required": false,
         "schema": {
-          "type": "string"
+          "type": "string",
+          "maxLength": 500
+        }
+      },
+      "orgIdQuery": {
+        "name": "orgId",
+        "in": "query",
+        "description": "Organization ID to scope the request.",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
         }
       }
     },
@@ -2614,7 +2637,7 @@ const ConnectionSchema: Record<string, unknown> = {
           "schemaVersion",
           "name",
           "type",
-          "sub_type",
+          "subType",
           "kind",
           "status"
         ],
@@ -2624,8 +2647,7 @@ const ConnectionSchema: Record<string, unknown> = {
             "x-order": 1,
             "x-go-name": "ID",
             "x-oapi-codegen-extra-tags": {
-              "db": "id",
-              "yaml": "id"
+              "db": "id"
             },
             "type": "string",
             "format": "uuid",
@@ -2636,8 +2658,7 @@ const ConnectionSchema: Record<string, unknown> = {
           },
           "name": {
             "x-oapi-codegen-extra-tags": {
-              "db": "name",
-              "yaml": "name"
+              "db": "name"
             },
             "x-order": 2,
             "type": "string",
@@ -2645,11 +2666,11 @@ const ConnectionSchema: Record<string, unknown> = {
             "minLength": 1,
             "maxLength": 255
           },
-          "credential_id": {
+          "credentialId": {
             "x-go-name": "CredentialID",
             "x-oapi-codegen-extra-tags": {
               "db": "credential_id",
-              "yaml": "credential_id"
+              "json": "credentialId"
             },
             "x-order": 3,
             "description": "Associated Credential ID",
@@ -2662,18 +2683,17 @@ const ConnectionSchema: Record<string, unknown> = {
           },
           "type": {
             "x-oapi-codegen-extra-tags": {
-              "db": "type",
-              "yaml": "type"
+              "db": "type"
             },
             "x-order": 4,
             "type": "string",
             "description": "Connection Type (platform, telemetry, collaboration)",
             "maxLength": 255
           },
-          "sub_type": {
+          "subType": {
             "x-oapi-codegen-extra-tags": {
               "db": "sub_type",
-              "yaml": "sub_type"
+              "json": "subType"
             },
             "x-order": 5,
             "type": "string",
@@ -2682,8 +2702,7 @@ const ConnectionSchema: Record<string, unknown> = {
           },
           "kind": {
             "x-oapi-codegen-extra-tags": {
-              "db": "kind",
-              "yaml": "kind"
+              "db": "kind"
             },
             "x-order": 6,
             "type": "string",
@@ -2692,8 +2711,7 @@ const ConnectionSchema: Record<string, unknown> = {
           },
           "metadata": {
             "x-oapi-codegen-extra-tags": {
-              "db": "metadata",
-              "yaml": "metadata"
+              "db": "metadata"
             },
             "x-order": 7,
             "x-go-type": "core.Map",
@@ -2706,8 +2724,7 @@ const ConnectionSchema: Record<string, unknown> = {
           },
           "status": {
             "x-oapi-codegen-extra-tags": {
-              "db": "status",
-              "yaml": "status"
+              "db": "status"
             },
             "x-order": 8,
             "description": "Connection Status",
@@ -2723,11 +2740,11 @@ const ConnectionSchema: Record<string, unknown> = {
               "not found"
             ]
           },
-          "user_id": {
+          "userId": {
             "x-go-name": "UserID",
             "x-oapi-codegen-extra-tags": {
               "db": "user_id",
-              "yaml": "user_id"
+              "json": "userId"
             },
             "x-order": 9,
             "description": "User ID who owns this connection",
@@ -2738,33 +2755,35 @@ const ConnectionSchema: Record<string, unknown> = {
               "path": "github.com/gofrs/uuid"
             }
           },
-          "created_at": {
+          "createdAt": {
+            "description": "Timestamp when the connection was created.",
             "x-oapi-codegen-extra-tags": {
               "db": "created_at",
-              "yaml": "created_at"
+              "json": "createdAt"
             },
             "x-order": 10,
             "type": "string",
             "format": "date-time",
             "x-go-type-skip-optional-pointer": true
           },
-          "updated_at": {
+          "updatedAt": {
+            "description": "Timestamp when the connection was last updated.",
             "x-oapi-codegen-extra-tags": {
               "db": "updated_at",
-              "yaml": "updated_at"
+              "json": "updatedAt"
             },
             "x-order": 11,
             "type": "string",
             "format": "date-time",
             "x-go-type-skip-optional-pointer": true
           },
-          "deleted_at": {
+          "deletedAt": {
+            "description": "Timestamp when the connection was soft-deleted, if applicable.",
             "x-oapi-codegen-extra-tags": {
               "db": "deleted_at",
-              "yaml": "deleted_at"
+              "json": "deletedAt"
             },
             "x-order": 12,
-            "description": "SQL null Timestamp to handle null values of time.",
             "x-go-type": "meshcore.NullTime",
             "x-go-type-import": {
               "name": "meshcore",
@@ -2954,7 +2973,6 @@ const ConnectionSchema: Record<string, unknown> = {
             },
             "x-oapi-codegen-extra-tags": {
               "db": "-",
-              "yaml": "environments",
               "gorm": "-"
             },
             "x-go-type-skip-optional-pointer": true,
@@ -2964,11 +2982,10 @@ const ConnectionSchema: Record<string, unknown> = {
             "description": "Specifies the version of the schema used for the definition.",
             "x-order": 14,
             "x-oapi-codegen-extra-tags": {
-              "yaml": "schemaVersion",
               "db": "-",
               "gorm": "-"
             },
-            "default": "connections.meshery.io/v1beta2",
+            "default": "connections.meshery.io/v1beta3",
             "type": "string",
             "minLength": 2,
             "maxLength": 100,
@@ -2990,9 +3007,9 @@ const ConnectionSchema: Record<string, unknown> = {
         "type": "object",
         "required": [
           "connections",
-          "total_count",
+          "totalCount",
           "page",
-          "page_size"
+          "pageSize"
         ],
         "properties": {
           "connections": {
@@ -3010,7 +3027,7 @@ const ConnectionSchema: Record<string, unknown> = {
                 "schemaVersion",
                 "name",
                 "type",
-                "sub_type",
+                "subType",
                 "kind",
                 "status"
               ],
@@ -3020,8 +3037,7 @@ const ConnectionSchema: Record<string, unknown> = {
                   "x-order": 1,
                   "x-go-name": "ID",
                   "x-oapi-codegen-extra-tags": {
-                    "db": "id",
-                    "yaml": "id"
+                    "db": "id"
                   },
                   "type": "string",
                   "format": "uuid",
@@ -3032,8 +3048,7 @@ const ConnectionSchema: Record<string, unknown> = {
                 },
                 "name": {
                   "x-oapi-codegen-extra-tags": {
-                    "db": "name",
-                    "yaml": "name"
+                    "db": "name"
                   },
                   "x-order": 2,
                   "type": "string",
@@ -3041,11 +3056,11 @@ const ConnectionSchema: Record<string, unknown> = {
                   "minLength": 1,
                   "maxLength": 255
                 },
-                "credential_id": {
+                "credentialId": {
                   "x-go-name": "CredentialID",
                   "x-oapi-codegen-extra-tags": {
                     "db": "credential_id",
-                    "yaml": "credential_id"
+                    "json": "credentialId"
                   },
                   "x-order": 3,
                   "description": "Associated Credential ID",
@@ -3058,18 +3073,17 @@ const ConnectionSchema: Record<string, unknown> = {
                 },
                 "type": {
                   "x-oapi-codegen-extra-tags": {
-                    "db": "type",
-                    "yaml": "type"
+                    "db": "type"
                   },
                   "x-order": 4,
                   "type": "string",
                   "description": "Connection Type (platform, telemetry, collaboration)",
                   "maxLength": 255
                 },
-                "sub_type": {
+                "subType": {
                   "x-oapi-codegen-extra-tags": {
                     "db": "sub_type",
-                    "yaml": "sub_type"
+                    "json": "subType"
                   },
                   "x-order": 5,
                   "type": "string",
@@ -3078,8 +3092,7 @@ const ConnectionSchema: Record<string, unknown> = {
                 },
                 "kind": {
                   "x-oapi-codegen-extra-tags": {
-                    "db": "kind",
-                    "yaml": "kind"
+                    "db": "kind"
                   },
                   "x-order": 6,
                   "type": "string",
@@ -3088,8 +3101,7 @@ const ConnectionSchema: Record<string, unknown> = {
                 },
                 "metadata": {
                   "x-oapi-codegen-extra-tags": {
-                    "db": "metadata",
-                    "yaml": "metadata"
+                    "db": "metadata"
                   },
                   "x-order": 7,
                   "x-go-type": "core.Map",
@@ -3102,8 +3114,7 @@ const ConnectionSchema: Record<string, unknown> = {
                 },
                 "status": {
                   "x-oapi-codegen-extra-tags": {
-                    "db": "status",
-                    "yaml": "status"
+                    "db": "status"
                   },
                   "x-order": 8,
                   "description": "Connection Status",
@@ -3119,11 +3130,11 @@ const ConnectionSchema: Record<string, unknown> = {
                     "not found"
                   ]
                 },
-                "user_id": {
+                "userId": {
                   "x-go-name": "UserID",
                   "x-oapi-codegen-extra-tags": {
                     "db": "user_id",
-                    "yaml": "user_id"
+                    "json": "userId"
                   },
                   "x-order": 9,
                   "description": "User ID who owns this connection",
@@ -3134,33 +3145,35 @@ const ConnectionSchema: Record<string, unknown> = {
                     "path": "github.com/gofrs/uuid"
                   }
                 },
-                "created_at": {
+                "createdAt": {
+                  "description": "Timestamp when the connection was created.",
                   "x-oapi-codegen-extra-tags": {
                     "db": "created_at",
-                    "yaml": "created_at"
+                    "json": "createdAt"
                   },
                   "x-order": 10,
                   "type": "string",
                   "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
                 },
-                "updated_at": {
+                "updatedAt": {
+                  "description": "Timestamp when the connection was last updated.",
                   "x-oapi-codegen-extra-tags": {
                     "db": "updated_at",
-                    "yaml": "updated_at"
+                    "json": "updatedAt"
                   },
                   "x-order": 11,
                   "type": "string",
                   "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
                 },
-                "deleted_at": {
+                "deletedAt": {
+                  "description": "Timestamp when the connection was soft-deleted, if applicable.",
                   "x-oapi-codegen-extra-tags": {
                     "db": "deleted_at",
-                    "yaml": "deleted_at"
+                    "json": "deletedAt"
                   },
                   "x-order": 12,
-                  "description": "SQL null Timestamp to handle null values of time.",
                   "x-go-type": "meshcore.NullTime",
                   "x-go-type-import": {
                     "name": "meshcore",
@@ -3350,7 +3363,6 @@ const ConnectionSchema: Record<string, unknown> = {
                   },
                   "x-oapi-codegen-extra-tags": {
                     "db": "-",
-                    "yaml": "environments",
                     "gorm": "-"
                   },
                   "x-go-type-skip-optional-pointer": true,
@@ -3360,11 +3372,10 @@ const ConnectionSchema: Record<string, unknown> = {
                   "description": "Specifies the version of the schema used for the definition.",
                   "x-order": 14,
                   "x-oapi-codegen-extra-tags": {
-                    "yaml": "schemaVersion",
                     "db": "-",
                     "gorm": "-"
                   },
-                  "default": "connections.meshery.io/v1beta2",
+                  "default": "connections.meshery.io/v1beta3",
                   "type": "string",
                   "minLength": 2,
                   "maxLength": 100,
@@ -3382,9 +3393,12 @@ const ConnectionSchema: Record<string, unknown> = {
             },
             "x-order": 1
           },
-          "total_count": {
+          "totalCount": {
             "type": "integer",
             "description": "Total number of connections on all pages",
+            "x-oapi-codegen-extra-tags": {
+              "json": "totalCount"
+            },
             "x-order": 2,
             "minimum": 0
           },
@@ -3394,9 +3408,12 @@ const ConnectionSchema: Record<string, unknown> = {
             "x-order": 3,
             "minimum": 0
           },
-          "page_size": {
+          "pageSize": {
             "type": "integer",
             "description": "Number of elements per page",
+            "x-oapi-codegen-extra-tags": {
+              "json": "pageSize"
+            },
             "x-order": 4,
             "minimum": 1
           },
@@ -3557,11 +3574,11 @@ const ConnectionSchema: Record<string, unknown> = {
         "type": "object",
         "description": "Paginated list of connection status counts",
         "properties": {
-          "total_count": {
+          "totalCount": {
             "type": "integer",
             "description": "Total number of status entries",
             "x-oapi-codegen-extra-tags": {
-              "json": "total_count"
+              "json": "totalCount"
             },
             "minimum": 0
           },
@@ -3573,11 +3590,11 @@ const ConnectionSchema: Record<string, unknown> = {
             },
             "minimum": 0
           },
-          "page_size": {
+          "pageSize": {
             "type": "integer",
             "description": "Number of items per page",
             "x-oapi-codegen-extra-tags": {
-              "json": "page_size"
+              "json": "pageSize"
             },
             "minimum": 1
           },
@@ -3618,9 +3635,9 @@ const ConnectionSchema: Record<string, unknown> = {
           }
         },
         "required": [
-          "total_count",
+          "totalCount",
           "page",
-          "page_size",
+          "pageSize",
           "connectionsStatus"
         ]
       },
@@ -3648,68 +3665,68 @@ const ConnectionSchema: Record<string, unknown> = {
             "minLength": 1,
             "maxLength": 255
           },
-          "server_id": {
+          "serverId": {
             "type": "string",
             "description": "Server ID",
             "x-go-name": "ServerID",
             "x-oapi-codegen-extra-tags": {
-              "json": "server_id,omitempty",
+              "json": "serverId,omitempty",
               "db": "server_id"
             },
             "maxLength": 500,
             "format": "uuid"
           },
-          "server_version": {
+          "serverVersion": {
             "type": "string",
             "description": "Meshery server version",
             "x-oapi-codegen-extra-tags": {
-              "json": "server_version,omitempty",
+              "json": "serverVersion,omitempty",
               "db": "server_version"
             },
             "maxLength": 500
           },
-          "server_location": {
+          "serverLocation": {
             "type": "string",
             "description": "Server location URL",
             "x-oapi-codegen-extra-tags": {
-              "json": "server_location,omitempty",
+              "json": "serverLocation,omitempty",
               "db": "server_location"
             },
             "maxLength": 500
           },
-          "server_build_sha": {
+          "serverBuildSha": {
             "type": "string",
             "description": "Server build SHA",
             "x-go-name": "ServerBuildSHA",
             "x-oapi-codegen-extra-tags": {
-              "json": "server_build_sha,omitempty",
+              "json": "serverBuildSha,omitempty",
               "db": "server_build_sha"
             },
             "maxLength": 500
           },
-          "created_at": {
+          "createdAt": {
             "type": "string",
             "description": "Creation timestamp",
             "x-oapi-codegen-extra-tags": {
-              "json": "created_at,omitempty",
+              "json": "createdAt,omitempty",
               "db": "created_at"
             },
             "format": "date-time"
           },
-          "updated_at": {
+          "updatedAt": {
             "type": "string",
             "description": "Last update timestamp",
             "x-oapi-codegen-extra-tags": {
-              "json": "updated_at,omitempty",
+              "json": "updatedAt,omitempty",
               "db": "updated_at"
             },
             "format": "date-time"
           },
-          "deleted_at": {
+          "deletedAt": {
             "type": "string",
             "description": "Deletion timestamp",
             "x-oapi-codegen-extra-tags": {
-              "json": "deleted_at,omitempty",
+              "json": "deletedAt,omitempty",
               "db": "deleted_at"
             },
             "format": "date-time"
@@ -3747,68 +3764,68 @@ const ConnectionSchema: Record<string, unknown> = {
                   "minLength": 1,
                   "maxLength": 255
                 },
-                "server_id": {
+                "serverId": {
                   "type": "string",
                   "description": "Server ID",
                   "x-go-name": "ServerID",
                   "x-oapi-codegen-extra-tags": {
-                    "json": "server_id,omitempty",
+                    "json": "serverId,omitempty",
                     "db": "server_id"
                   },
                   "maxLength": 500,
                   "format": "uuid"
                 },
-                "server_version": {
+                "serverVersion": {
                   "type": "string",
                   "description": "Meshery server version",
                   "x-oapi-codegen-extra-tags": {
-                    "json": "server_version,omitempty",
+                    "json": "serverVersion,omitempty",
                     "db": "server_version"
                   },
                   "maxLength": 500
                 },
-                "server_location": {
+                "serverLocation": {
                   "type": "string",
                   "description": "Server location URL",
                   "x-oapi-codegen-extra-tags": {
-                    "json": "server_location,omitempty",
+                    "json": "serverLocation,omitempty",
                     "db": "server_location"
                   },
                   "maxLength": 500
                 },
-                "server_build_sha": {
+                "serverBuildSha": {
                   "type": "string",
                   "description": "Server build SHA",
                   "x-go-name": "ServerBuildSHA",
                   "x-oapi-codegen-extra-tags": {
-                    "json": "server_build_sha,omitempty",
+                    "json": "serverBuildSha,omitempty",
                     "db": "server_build_sha"
                   },
                   "maxLength": 500
                 },
-                "created_at": {
+                "createdAt": {
                   "type": "string",
                   "description": "Creation timestamp",
                   "x-oapi-codegen-extra-tags": {
-                    "json": "created_at,omitempty",
+                    "json": "createdAt,omitempty",
                     "db": "created_at"
                   },
                   "format": "date-time"
                 },
-                "updated_at": {
+                "updatedAt": {
                   "type": "string",
                   "description": "Last update timestamp",
                   "x-oapi-codegen-extra-tags": {
-                    "json": "updated_at,omitempty",
+                    "json": "updatedAt,omitempty",
                     "db": "updated_at"
                   },
                   "format": "date-time"
                 },
-                "deleted_at": {
+                "deletedAt": {
                   "type": "string",
                   "description": "Deletion timestamp",
                   "x-oapi-codegen-extra-tags": {
-                    "json": "deleted_at,omitempty",
+                    "json": "deletedAt,omitempty",
                     "db": "deleted_at"
                   },
                   "format": "date-time"
@@ -3827,19 +3844,19 @@ const ConnectionSchema: Record<string, unknown> = {
             },
             "minimum": 0
           },
-          "page_size": {
+          "pageSize": {
             "type": "integer",
             "description": "Number of items per page",
             "x-oapi-codegen-extra-tags": {
-              "json": "page_size"
+              "json": "pageSize"
             },
             "minimum": 1
           },
-          "total_count": {
+          "totalCount": {
             "type": "integer",
             "description": "Total number of instances",
             "x-oapi-codegen-extra-tags": {
-              "json": "total_count"
+              "json": "totalCount"
             },
             "minimum": 0
           }
@@ -3847,8 +3864,8 @@ const ConnectionSchema: Record<string, unknown> = {
         "required": [
           "mesheryInstances",
           "page",
-          "page_size",
-          "total_count"
+          "pageSize",
+          "totalCount"
         ]
       },
       "MesheryCompatibility": {
