@@ -2,8 +2,6 @@ openapi: 3.0.0
 info:
   title: role
   description: Documentation for Meshery Cloud REST APIs for Roles
-  x-deprecated: true
-  x-superseded-by: v1beta2
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -11,7 +9,7 @@ info:
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-  version: v1beta1
+  version: v1beta2
 servers:
   - url: https://cloud.layer5.io
     description: Meshery Cloud production server URL
@@ -52,7 +50,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  /api/identity/roles/{id}:
+  /api/identity/roles/{roleId}:
     delete:
       x-internal: ["cloud"]
       tags:
@@ -61,7 +59,7 @@ paths:
       operationId: deleteRole
       description: Removes a role assignment by ID.
       parameters:
-        - $ref: "#/components/parameters/id"
+        - $ref: "#/components/parameters/roleId"
       responses:
         "204":
           description: Role deleted
@@ -85,12 +83,12 @@ paths:
       parameters:
         - $ref: "#/components/parameters/orgId"
         - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/all"
         - $ref: "#/components/parameters/selector"
-        - $ref: "#/components/parameters/teamId"
+        - $ref: "#/components/parameters/teamIdQuery"
       responses:
         "200":
           description: Roles response
@@ -118,7 +116,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Role"
+              $ref: "#/components/schemas/RolePayload"
       responses:
         "200":
           description: Role upserted
@@ -175,7 +173,7 @@ paths:
         - $ref: "#/components/parameters/orgId"
         - $ref: "#/components/parameters/roleId"
         - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/pageSize"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
       responses:
@@ -188,7 +186,7 @@ paths:
                 x-go-type-import:
                   path: "github.com/meshery/schemas/models/v1beta1/keychain"
                   name: keychainv1beta1
-                $ref: "../keychain/api.yml#/components/schemas/KeychainPage"
+                $ref: "../../v1beta1/keychain/api.yml#/components/schemas/KeychainPage"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -253,86 +251,86 @@ components:
 
   responses:
     400:
-      $ref: "../core/api.yml#/components/responses/400"
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
     401:
-      $ref: "../core/api.yml#/components/responses/401"
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
     404:
-      $ref: "../core/api.yml#/components/responses/404"
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/404"
     500:
-      $ref: "../core/api.yml#/components/responses/500"
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
 
   parameters:
-    id:
-      name: id
-      in: path
-      description: Role ID
-      required: true
-      schema:
-        $ref: "../core/api.yml#/components/schemas/uuid"
     orgId:
       name: orgId
       in: path
       description: Organization ID
       required: true
       schema:
-        $ref: "../core/api.yml#/components/schemas/uuid"
+        $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
     roleId:
       name: roleId
       in: path
       description: Role ID
       required: true
       schema:
-        $ref: "../core/api.yml#/components/schemas/uuid"
+        $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
     keychainId:
       name: keychainId
       in: path
       description: Keychain ID
       required: true
       schema:
-        $ref: "../core/api.yml#/components/schemas/uuid"
+        $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
     page:
-      $ref: "../core/api.yml#/components/parameters/page"
-    pagesize:
-      $ref: "../core/api.yml#/components/parameters/pagesize"
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/page"
+    pageSize:
+      name: pageSize
+      in: query
+      description: Get responses by page size
+      schema:
+        type: string
     search:
-      $ref: "../core/api.yml#/components/parameters/search"
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/search"
     order:
-      $ref: "../core/api.yml#/components/parameters/order"
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/order"
     all:
-      $ref: "../core/api.yml#/components/parameters/all"
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/all"
     selector:
       name: selector
       in: query
       description: Role grouping selector such as provider, organization, or team.
       schema:
         type: string
-    teamId:
+        maxLength: 100
+    teamIdQuery:
       name: teamId
       in: query
       description: Team ID used when selector is team.
       schema:
-        $ref: "../core/api.yml#/components/schemas/uuid"
+        $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
 
   schemas:
     Role:
       type: object
       description: Role definition for Layer5 Cloud (Meshery).
       required:
-        - role_name
+        - roleName
         - description
       properties:
         id:
-          $ref: "../core/api.yml#/components/schemas/uuid"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
           description: Unique identifier for the role.
           x-order: 1
+          x-go-name: ID
           x-oapi-codegen-extra-tags:
             db: "id"
-        role_name:
+        roleName:
           type: string
           description: Unique name of the role.
           x-order: 2
           x-oapi-codegen-extra-tags:
             db: "role_name"
+            json: roleName
           maxLength: 500
         description:
           type: string
@@ -341,26 +339,59 @@ components:
           x-oapi-codegen-extra-tags:
             db: "description"
           maxLength: 5000
-        created_at:
-          $ref: "../core/api.yml#/components/schemas/created_at"
+        createdAt:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+          description: Timestamp when the role was created.
           x-order: 4
-        updated_at:
-          $ref: "../core/api.yml#/components/schemas/updated_at"
+          x-oapi-codegen-extra-tags:
+            db: "created_at"
+            json: createdAt
+        updatedAt:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+          description: Timestamp when the role was last updated.
           x-order: 5
-        deleted_at:
-          $ref: "../core/api.yml#/components/schemas/nullTime"
-          description: Timestamp when the role was soft-deleted.
+          x-oapi-codegen-extra-tags:
+            db: "updated_at"
+            json: updatedAt
+        deletedAt:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/nullTime"
+          description: Timestamp when the role was soft-deleted, if applicable.
           x-order: 6
           x-oapi-codegen-extra-tags:
             db: "deleted_at"
+            json: deletedAt
+
+    RolePayload:
+      type: object
+      description: Payload for upserting a role. Includes only client-settable fields.
+      required:
+        - roleName
+        - description
+      properties:
+        id:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          description: Existing role ID for updates; omit on create.
+          x-go-name: ID
+          x-oapi-codegen-extra-tags:
+            json: "id,omitempty"
+        roleName:
+          type: string
+          description: Unique name of the role.
+          x-oapi-codegen-extra-tags:
+            json: roleName
+          maxLength: 500
+        description:
+          type: string
+          description: Human-readable description of the role.
+          maxLength: 5000
 
     RolesPage:
       type: object
       description: A paginated list of roles.
       required:
         - page
-        - page_size
-        - total_count
+        - pageSize
+        - totalCount
         - roles
       properties:
         page:
@@ -368,12 +399,12 @@ components:
           description: Current page number (zero-based).
           x-order: 1
           minimum: 0
-        page_size:
+        pageSize:
           type: integer
           description: Number of roles per page.
           x-order: 2
           minimum: 1
-        total_count:
+        totalCount:
           type: integer
           description: Total number of roles across all pages.
           x-order: 3
@@ -391,39 +422,53 @@ components:
       description: Mapping between a role and a keychain.
       required:
         - id
-        - keychain_id
-        - role_id
-        - created_at
-        - updated_at
+        - keychainId
+        - roleId
+        - createdAt
+        - updatedAt
       properties:
         id:
-          $ref: "../core/api.yml#/components/schemas/uuid"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          description: Unique identifier for the mapping record.
           x-order: 1
+          x-go-name: ID
           x-oapi-codegen-extra-tags:
             db: "id"
-        keychain_id:
-          $ref: "../core/api.yml#/components/schemas/uuid"
+        keychainId:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
           description: UUID of the associated keychain.
           x-order: 2
           x-oapi-codegen-extra-tags:
             db: "keychain_id"
-        role_id:
-          $ref: "../core/api.yml#/components/schemas/uuid"
+            json: keychainId
+        roleId:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
           description: UUID of the associated role.
           x-order: 3
           x-oapi-codegen-extra-tags:
             db: "role_id"
-        created_at:
-          $ref: "../core/api.yml#/components/schemas/created_at"
+            json: roleId
+        createdAt:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+          description: Timestamp when the mapping was created.
           x-order: 4
-        updated_at:
-          $ref: "../core/api.yml#/components/schemas/updated_at"
+          x-oapi-codegen-extra-tags:
+            db: "created_at"
+            json: createdAt
+        updatedAt:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+          description: Timestamp when the mapping was last updated.
           x-order: 5
-        deleted_at:
-          $ref: "../core/api.yml#/components/schemas/nullTime"
+          x-oapi-codegen-extra-tags:
+            db: "updated_at"
+            json: updatedAt
+        deletedAt:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/nullTime"
+          description: Timestamp when the mapping was soft-deleted, if applicable.
           x-order: 6
           x-oapi-codegen-extra-tags:
             db: "deleted_at"
+            json: deletedAt
 
     RoleHolderRequest:
       type: object
@@ -437,10 +482,12 @@ components:
           format: email
           description: Email of the user to assign roles to.
           x-order: 1
+          maxLength: 500
         roleNames:
           type: array
           items:
             type: string
+            maxLength: 500
           description: List of role names to assign.
           x-order: 2
 
@@ -449,51 +496,67 @@ components:
       description: Request to update role assignments for a user.
       properties:
         id:
-          $ref: "../core/api.yml#/components/schemas/uuid"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          description: User ID of the user whose role assignments are being updated.
           x-order: 1
-        user_id:
-          $ref: "../core/api.yml#/components/schemas/uuid"
+          x-go-name: ID
+        userId:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          description: Alternate field for identifying the user by ID.
           x-order: 2
+          x-oapi-codegen-extra-tags:
+            json: userId
         username:
           type: string
           x-order: 3
-          description: The username of the userroleupdaterequest.
+          description: The username of the user.
           maxLength: 500
         email:
           type: string
           format: email
           x-order: 4
-          description: Email address.
+          description: Email address of the user.
+          maxLength: 500
         firstName:
           type: string
           x-order: 5
-          description: The first name of the userroleupdaterequest.
+          description: First name of the user.
           maxLength: 500
         lastName:
           type: string
           x-order: 6
-          description: The last name of the userroleupdaterequest.
+          description: Last name of the user.
           maxLength: 500
         status:
           type: string
           x-order: 7
-          description: Current status of the resource.
+          description: Current status of the user.
           maxLength: 255
         roleNames:
           type: array
           items:
             type: string
+            maxLength: 500
           x-order: 8
-          description: The role names of the userroleupdaterequest.
-        created_at:
-          $ref: "../core/api.yml#/components/schemas/Time"
+          description: Role names currently or newly assigned to the user.
+        createdAt:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+          description: Timestamp when the user was created.
           x-order: 9
-        updated_at:
-          $ref: "../core/api.yml#/components/schemas/Time"
+          x-oapi-codegen-extra-tags:
+            json: createdAt
+        updatedAt:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+          description: Timestamp when the user was last updated.
           x-order: 10
-        deleted_at:
-          $ref: "../core/api.yml#/components/schemas/nullTime"
+          x-oapi-codegen-extra-tags:
+            json: updatedAt
+        deletedAt:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/nullTime"
+          description: Timestamp when the user was soft-deleted, if applicable.
           x-order: 11
+          x-oapi-codegen-extra-tags:
+            json: deletedAt
 
     Preference:
       type: object
