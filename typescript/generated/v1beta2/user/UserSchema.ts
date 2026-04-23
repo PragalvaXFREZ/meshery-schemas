@@ -8,9 +8,7 @@ const UserSchema: Record<string, unknown> = {
   "info": {
     "title": "User",
     "description": "OpenAPI schema for user management in Meshery Cloud.",
-    "x-deprecated": true,
-    "x-superseded-by": "v1beta2",
-    "version": "v1beta1",
+    "version": "v1beta2",
     "contact": {
       "name": "Meshery Maintainers",
       "email": "maintainers@meshery.io",
@@ -24,6 +22,12 @@ const UserSchema: Record<string, unknown> = {
   "security": [
     {
       "jwt": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "users",
+      "description": "Operations related to users"
     }
   ],
   "paths": {
@@ -47,17 +51,7 @@ const UserSchema: Record<string, unknown> = {
             "description": "Organization ID",
             "schema": {
               "type": "string",
-              "format": "uuid",
-              "x-go-type": "uuid.UUID",
-              "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
-              },
-              "x-oapi-codegen-extra-tags": {
-                "db": "org_id",
-                "json": "org_id"
-              },
-              "x-go-type-name": "OrganizationId",
-              "x-go-type-skip-optional-pointer": true
+              "format": "uuid"
             }
           },
           {
@@ -69,9 +63,9 @@ const UserSchema: Record<string, unknown> = {
             }
           },
           {
-            "name": "pagesize",
+            "name": "pageSize",
             "in": "query",
-            "description": "Get responses by pagesize",
+            "description": "Get responses by page size",
             "schema": {
               "type": "string"
             }
@@ -107,17 +101,7 @@ const UserSchema: Record<string, unknown> = {
             "description": "Optional team filter when listing organization users",
             "schema": {
               "type": "string",
-              "format": "uuid",
-              "x-go-type": "uuid.UUID",
-              "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
-              },
-              "x-oapi-codegen-extra-tags": {
-                "db": "team_id",
-                "json": "team_id"
-              },
-              "x-go-type-name": "TeamId",
-              "x-go-type-skip-optional-pointer": true
+              "format": "uuid"
             }
           }
         ],
@@ -135,12 +119,12 @@ const UserSchema: Record<string, unknown> = {
                       "description": "Current page number of the result set.",
                       "minimum": 0
                     },
-                    "page_size": {
+                    "pageSize": {
                       "type": "integer",
                       "description": "Number of items per page.",
                       "minimum": 1
                     },
-                    "total_count": {
+                    "totalCount": {
                       "type": "integer",
                       "description": "Total number of items available.",
                       "minimum": 0
@@ -152,16 +136,16 @@ const UserSchema: Record<string, unknown> = {
                         "description": "Represents a user in Layer5 Cloud (Meshery)",
                         "required": [
                           "id",
-                          "user_id",
+                          "userId",
                           "provider",
                           "email",
-                          "first_name",
-                          "last_name",
+                          "firstName",
+                          "lastName",
                           "status",
-                          "created_at",
-                          "updated_at",
-                          "last_login_time",
-                          "deleted_at"
+                          "createdAt",
+                          "updatedAt",
+                          "lastLoginTime",
+                          "deletedAt"
                         ],
                         "properties": {
                           "id": {
@@ -178,13 +162,13 @@ const UserSchema: Record<string, unknown> = {
                               "path": "github.com/gofrs/uuid"
                             }
                           },
-                          "user_id": {
+                          "userId": {
                             "type": "string",
                             "maxLength": 200,
                             "description": "User identifier (username or external ID)",
                             "x-oapi-codegen-extra-tags": {
                               "db": "user_id",
-                              "json": "user_id"
+                              "json": "userId"
                             },
                             "x-id-format": "external"
                           },
@@ -213,32 +197,32 @@ const UserSchema: Record<string, unknown> = {
                               "json": "email"
                             }
                           },
-                          "first_name": {
+                          "firstName": {
                             "type": "string",
                             "maxLength": 200,
                             "description": "User's first name",
                             "x-oapi-codegen-extra-tags": {
                               "db": "first_name",
-                              "json": "first_name"
+                              "json": "firstName"
                             }
                           },
-                          "last_name": {
+                          "lastName": {
                             "type": "string",
                             "maxLength": 300,
                             "description": "User's last name",
                             "x-oapi-codegen-extra-tags": {
                               "db": "last_name",
-                              "json": "last_name"
+                              "json": "lastName"
                             }
                           },
-                          "avatar_url": {
+                          "avatarUrl": {
                             "type": "string",
                             "format": "uri",
                             "maxLength": 500,
                             "description": "URL to user's avatar image",
                             "x-oapi-codegen-extra-tags": {
                               "db": "avatar_url",
-                              "json": "avatar_url"
+                              "json": "avatarUrl"
                             }
                           },
                           "status": {
@@ -300,7 +284,7 @@ const UserSchema: Record<string, unknown> = {
                             "required": [
                               "anonymousUsageStats",
                               "anonymousPerfResults",
-                              "updated_at",
+                              "updatedAt",
                               "dashboardPreferences",
                               "selectedOrganizationId",
                               "selectedWorkspaceForOrganizations",
@@ -321,12 +305,12 @@ const UserSchema: Record<string, unknown> = {
                                 "x-go-type": "Grafana",
                                 "type": "object",
                                 "properties": {
-                                  "grafanaURL": {
+                                  "grafanaUrl": {
                                     "type": "string",
                                     "description": "Grafana URL for the user configuration.",
                                     "maxLength": 500
                                   },
-                                  "grafanaAPIKey": {
+                                  "grafanaApiKey": {
                                     "type": "string",
                                     "description": "Grafana API key for the user configuration.",
                                     "maxLength": 500
@@ -365,9 +349,9 @@ const UserSchema: Record<string, unknown> = {
                                 "x-go-type": "Prometheus",
                                 "type": "object",
                                 "properties": {
-                                  "prometheusURL": {
+                                  "prometheusUrl": {
                                     "type": "string",
-                                    "description": "The prometheus u r l of the prometheus.",
+                                    "description": "The prometheus URL of the prometheus.",
                                     "maxLength": 500
                                   },
                                   "selectedPrometheusBoardsConfigs": {
@@ -434,7 +418,7 @@ const UserSchema: Record<string, unknown> = {
                                 "type": "boolean",
                                 "description": "The anonymous perf results of the preference."
                               },
-                              "updated_at": {
+                              "updatedAt": {
                                 "type": "string",
                                 "format": "date-time",
                                 "description": "Timestamp of when the resource was last updated."
@@ -469,51 +453,51 @@ const UserSchema: Record<string, unknown> = {
                               }
                             }
                           },
-                          "accepted_terms_at": {
+                          "acceptedTermsAt": {
                             "description": "Timestamp when user accepted terms and conditions",
                             "x-oapi-codegen-extra-tags": {
                               "db": "accepted_terms_at",
-                              "json": "accepted_terms_at"
+                              "json": "acceptedTermsAt"
                             },
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "first_login_time": {
+                          "firstLoginTime": {
                             "description": "Timestamp of user's first login",
                             "x-oapi-codegen-extra-tags": {
                               "db": "first_login_time",
-                              "json": "first_login_time"
+                              "json": "firstLoginTime"
                             },
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "last_login_time": {
+                          "lastLoginTime": {
                             "description": "Timestamp of user's most recent login",
                             "x-oapi-codegen-extra-tags": {
                               "db": "last_login_time",
-                              "json": "last_login_time"
+                              "json": "lastLoginTime"
                             },
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "created_at": {
+                          "createdAt": {
                             "description": "Timestamp when the user record was created",
                             "x-oapi-codegen-extra-tags": {
                               "db": "created_at",
-                              "json": "created_at"
+                              "json": "createdAt"
                             },
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "updated_at": {
+                          "updatedAt": {
                             "description": "Timestamp when the user record was last updated",
                             "x-oapi-codegen-extra-tags": {
                               "db": "updated_at",
-                              "json": "updated_at"
+                              "json": "updatedAt"
                             },
                             "type": "string",
                             "format": "date-time",
@@ -549,7 +533,7 @@ const UserSchema: Record<string, unknown> = {
                               "json": "socials"
                             }
                           },
-                          "deleted_at": {
+                          "deletedAt": {
                             "type": "string",
                             "format": "date-time",
                             "nullable": true,
@@ -557,10 +541,10 @@ const UserSchema: Record<string, unknown> = {
                             "x-go-type": "core.NullTime",
                             "x-oapi-codegen-extra-tags": {
                               "db": "deleted_at",
-                              "json": "deleted_at"
+                              "json": "deletedAt"
                             }
                           },
-                          "role_names": {
+                          "roleNames": {
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -582,7 +566,7 @@ const UserSchema: Record<string, unknown> = {
                             ],
                             "x-oapi-codegen-extra-tags": {
                               "db": "role_names",
-                              "json": "role_names"
+                              "json": "roleNames"
                             }
                           },
                           "teams": {
@@ -593,7 +577,7 @@ const UserSchema: Record<string, unknown> = {
                               "json": "teams"
                             },
                             "properties": {
-                              "teams_with_roles": {
+                              "teamsWithRoles": {
                                 "type": "array",
                                 "description": "Team memberships for the user with their assigned roles.",
                                 "items": {
@@ -601,16 +585,16 @@ const UserSchema: Record<string, unknown> = {
                                 },
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "teams_with_roles",
-                                  "json": "teams_with_roles"
+                                  "json": "teamsWithRoles"
                                 }
                               },
-                              "total_count": {
+                              "totalCount": {
                                 "type": "integer",
                                 "description": "Total number of team memberships returned for the user.",
                                 "minimum": 0,
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "total_count",
-                                  "json": "total_count"
+                                  "json": "totalCount"
                                 }
                               }
                             }
@@ -623,7 +607,7 @@ const UserSchema: Record<string, unknown> = {
                               "json": "organizations"
                             },
                             "properties": {
-                              "organizations_with_roles": {
+                              "organizationsWithRoles": {
                                 "type": "array",
                                 "description": "Organization memberships for the user with their assigned roles.",
                                 "items": {
@@ -631,16 +615,16 @@ const UserSchema: Record<string, unknown> = {
                                 },
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "organizations_with_roles",
-                                  "json": "organizations_with_roles"
+                                  "json": "organizationsWithRoles"
                                 }
                               },
-                              "total_count": {
+                              "totalCount": {
                                 "type": "integer",
                                 "description": "Total number of organization memberships returned for the user.",
                                 "minimum": 0,
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "total_count",
-                                  "json": "total_count"
+                                  "json": "totalCount"
                                 }
                               }
                             }
@@ -721,9 +705,9 @@ const UserSchema: Record<string, unknown> = {
             }
           },
           {
-            "name": "pagesize",
+            "name": "pageSize",
             "in": "query",
-            "description": "Get responses by pagesize",
+            "description": "Get responses by page size",
             "schema": {
               "type": "string"
             }
@@ -767,12 +751,12 @@ const UserSchema: Record<string, unknown> = {
                       "description": "Current page number of the result set.",
                       "minimum": 0
                     },
-                    "page_size": {
+                    "pageSize": {
                       "type": "integer",
                       "description": "Number of items per page.",
                       "minimum": 1
                     },
-                    "total_count": {
+                    "totalCount": {
                       "type": "integer",
                       "description": "Total number of items available.",
                       "minimum": 0
@@ -784,16 +768,16 @@ const UserSchema: Record<string, unknown> = {
                         "description": "Represents a user in Layer5 Cloud (Meshery)",
                         "required": [
                           "id",
-                          "user_id",
+                          "userId",
                           "provider",
                           "email",
-                          "first_name",
-                          "last_name",
+                          "firstName",
+                          "lastName",
                           "status",
-                          "created_at",
-                          "updated_at",
-                          "last_login_time",
-                          "deleted_at"
+                          "createdAt",
+                          "updatedAt",
+                          "lastLoginTime",
+                          "deletedAt"
                         ],
                         "properties": {
                           "id": {
@@ -810,13 +794,13 @@ const UserSchema: Record<string, unknown> = {
                               "path": "github.com/gofrs/uuid"
                             }
                           },
-                          "user_id": {
+                          "userId": {
                             "type": "string",
                             "maxLength": 200,
                             "description": "User identifier (username or external ID)",
                             "x-oapi-codegen-extra-tags": {
                               "db": "user_id",
-                              "json": "user_id"
+                              "json": "userId"
                             },
                             "x-id-format": "external"
                           },
@@ -845,32 +829,32 @@ const UserSchema: Record<string, unknown> = {
                               "json": "email"
                             }
                           },
-                          "first_name": {
+                          "firstName": {
                             "type": "string",
                             "maxLength": 200,
                             "description": "User's first name",
                             "x-oapi-codegen-extra-tags": {
                               "db": "first_name",
-                              "json": "first_name"
+                              "json": "firstName"
                             }
                           },
-                          "last_name": {
+                          "lastName": {
                             "type": "string",
                             "maxLength": 300,
                             "description": "User's last name",
                             "x-oapi-codegen-extra-tags": {
                               "db": "last_name",
-                              "json": "last_name"
+                              "json": "lastName"
                             }
                           },
-                          "avatar_url": {
+                          "avatarUrl": {
                             "type": "string",
                             "format": "uri",
                             "maxLength": 500,
                             "description": "URL to user's avatar image",
                             "x-oapi-codegen-extra-tags": {
                               "db": "avatar_url",
-                              "json": "avatar_url"
+                              "json": "avatarUrl"
                             }
                           },
                           "status": {
@@ -932,7 +916,7 @@ const UserSchema: Record<string, unknown> = {
                             "required": [
                               "anonymousUsageStats",
                               "anonymousPerfResults",
-                              "updated_at",
+                              "updatedAt",
                               "dashboardPreferences",
                               "selectedOrganizationId",
                               "selectedWorkspaceForOrganizations",
@@ -953,12 +937,12 @@ const UserSchema: Record<string, unknown> = {
                                 "x-go-type": "Grafana",
                                 "type": "object",
                                 "properties": {
-                                  "grafanaURL": {
+                                  "grafanaUrl": {
                                     "type": "string",
                                     "description": "Grafana URL for the user configuration.",
                                     "maxLength": 500
                                   },
-                                  "grafanaAPIKey": {
+                                  "grafanaApiKey": {
                                     "type": "string",
                                     "description": "Grafana API key for the user configuration.",
                                     "maxLength": 500
@@ -997,9 +981,9 @@ const UserSchema: Record<string, unknown> = {
                                 "x-go-type": "Prometheus",
                                 "type": "object",
                                 "properties": {
-                                  "prometheusURL": {
+                                  "prometheusUrl": {
                                     "type": "string",
-                                    "description": "The prometheus u r l of the prometheus.",
+                                    "description": "The prometheus URL of the prometheus.",
                                     "maxLength": 500
                                   },
                                   "selectedPrometheusBoardsConfigs": {
@@ -1066,7 +1050,7 @@ const UserSchema: Record<string, unknown> = {
                                 "type": "boolean",
                                 "description": "The anonymous perf results of the preference."
                               },
-                              "updated_at": {
+                              "updatedAt": {
                                 "type": "string",
                                 "format": "date-time",
                                 "description": "Timestamp of when the resource was last updated."
@@ -1101,51 +1085,51 @@ const UserSchema: Record<string, unknown> = {
                               }
                             }
                           },
-                          "accepted_terms_at": {
+                          "acceptedTermsAt": {
                             "description": "Timestamp when user accepted terms and conditions",
                             "x-oapi-codegen-extra-tags": {
                               "db": "accepted_terms_at",
-                              "json": "accepted_terms_at"
+                              "json": "acceptedTermsAt"
                             },
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "first_login_time": {
+                          "firstLoginTime": {
                             "description": "Timestamp of user's first login",
                             "x-oapi-codegen-extra-tags": {
                               "db": "first_login_time",
-                              "json": "first_login_time"
+                              "json": "firstLoginTime"
                             },
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "last_login_time": {
+                          "lastLoginTime": {
                             "description": "Timestamp of user's most recent login",
                             "x-oapi-codegen-extra-tags": {
                               "db": "last_login_time",
-                              "json": "last_login_time"
+                              "json": "lastLoginTime"
                             },
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "created_at": {
+                          "createdAt": {
                             "description": "Timestamp when the user record was created",
                             "x-oapi-codegen-extra-tags": {
                               "db": "created_at",
-                              "json": "created_at"
+                              "json": "createdAt"
                             },
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "updated_at": {
+                          "updatedAt": {
                             "description": "Timestamp when the user record was last updated",
                             "x-oapi-codegen-extra-tags": {
                               "db": "updated_at",
-                              "json": "updated_at"
+                              "json": "updatedAt"
                             },
                             "type": "string",
                             "format": "date-time",
@@ -1181,7 +1165,7 @@ const UserSchema: Record<string, unknown> = {
                               "json": "socials"
                             }
                           },
-                          "deleted_at": {
+                          "deletedAt": {
                             "type": "string",
                             "format": "date-time",
                             "nullable": true,
@@ -1189,10 +1173,10 @@ const UserSchema: Record<string, unknown> = {
                             "x-go-type": "core.NullTime",
                             "x-oapi-codegen-extra-tags": {
                               "db": "deleted_at",
-                              "json": "deleted_at"
+                              "json": "deletedAt"
                             }
                           },
-                          "role_names": {
+                          "roleNames": {
                             "type": "array",
                             "items": {
                               "type": "string",
@@ -1214,7 +1198,7 @@ const UserSchema: Record<string, unknown> = {
                             ],
                             "x-oapi-codegen-extra-tags": {
                               "db": "role_names",
-                              "json": "role_names"
+                              "json": "roleNames"
                             }
                           },
                           "teams": {
@@ -1225,7 +1209,7 @@ const UserSchema: Record<string, unknown> = {
                               "json": "teams"
                             },
                             "properties": {
-                              "teams_with_roles": {
+                              "teamsWithRoles": {
                                 "type": "array",
                                 "description": "Team memberships for the user with their assigned roles.",
                                 "items": {
@@ -1233,16 +1217,16 @@ const UserSchema: Record<string, unknown> = {
                                 },
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "teams_with_roles",
-                                  "json": "teams_with_roles"
+                                  "json": "teamsWithRoles"
                                 }
                               },
-                              "total_count": {
+                              "totalCount": {
                                 "type": "integer",
                                 "description": "Total number of team memberships returned for the user.",
                                 "minimum": 0,
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "total_count",
-                                  "json": "total_count"
+                                  "json": "totalCount"
                                 }
                               }
                             }
@@ -1255,7 +1239,7 @@ const UserSchema: Record<string, unknown> = {
                               "json": "organizations"
                             },
                             "properties": {
-                              "organizations_with_roles": {
+                              "organizationsWithRoles": {
                                 "type": "array",
                                 "description": "Organization memberships for the user with their assigned roles.",
                                 "items": {
@@ -1263,16 +1247,16 @@ const UserSchema: Record<string, unknown> = {
                                 },
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "organizations_with_roles",
-                                  "json": "organizations_with_roles"
+                                  "json": "organizationsWithRoles"
                                 }
                               },
-                              "total_count": {
+                              "totalCount": {
                                 "type": "integer",
                                 "description": "Total number of organization memberships returned for the user.",
                                 "minimum": 0,
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "total_count",
-                                  "json": "total_count"
+                                  "json": "totalCount"
                                 }
                               }
                             }
@@ -1358,16 +1342,16 @@ const UserSchema: Record<string, unknown> = {
                   "description": "Represents a user in Layer5 Cloud (Meshery)",
                   "required": [
                     "id",
-                    "user_id",
+                    "userId",
                     "provider",
                     "email",
-                    "first_name",
-                    "last_name",
+                    "firstName",
+                    "lastName",
                     "status",
-                    "created_at",
-                    "updated_at",
-                    "last_login_time",
-                    "deleted_at"
+                    "createdAt",
+                    "updatedAt",
+                    "lastLoginTime",
+                    "deletedAt"
                   ],
                   "properties": {
                     "id": {
@@ -1384,13 +1368,13 @@ const UserSchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       }
                     },
-                    "user_id": {
+                    "userId": {
                       "type": "string",
                       "maxLength": 200,
                       "description": "User identifier (username or external ID)",
                       "x-oapi-codegen-extra-tags": {
                         "db": "user_id",
-                        "json": "user_id"
+                        "json": "userId"
                       },
                       "x-id-format": "external"
                     },
@@ -1419,32 +1403,32 @@ const UserSchema: Record<string, unknown> = {
                         "json": "email"
                       }
                     },
-                    "first_name": {
+                    "firstName": {
                       "type": "string",
                       "maxLength": 200,
                       "description": "User's first name",
                       "x-oapi-codegen-extra-tags": {
                         "db": "first_name",
-                        "json": "first_name"
+                        "json": "firstName"
                       }
                     },
-                    "last_name": {
+                    "lastName": {
                       "type": "string",
                       "maxLength": 300,
                       "description": "User's last name",
                       "x-oapi-codegen-extra-tags": {
                         "db": "last_name",
-                        "json": "last_name"
+                        "json": "lastName"
                       }
                     },
-                    "avatar_url": {
+                    "avatarUrl": {
                       "type": "string",
                       "format": "uri",
                       "maxLength": 500,
                       "description": "URL to user's avatar image",
                       "x-oapi-codegen-extra-tags": {
                         "db": "avatar_url",
-                        "json": "avatar_url"
+                        "json": "avatarUrl"
                       }
                     },
                     "status": {
@@ -1506,7 +1490,7 @@ const UserSchema: Record<string, unknown> = {
                       "required": [
                         "anonymousUsageStats",
                         "anonymousPerfResults",
-                        "updated_at",
+                        "updatedAt",
                         "dashboardPreferences",
                         "selectedOrganizationId",
                         "selectedWorkspaceForOrganizations",
@@ -1527,12 +1511,12 @@ const UserSchema: Record<string, unknown> = {
                           "x-go-type": "Grafana",
                           "type": "object",
                           "properties": {
-                            "grafanaURL": {
+                            "grafanaUrl": {
                               "type": "string",
                               "description": "Grafana URL for the user configuration.",
                               "maxLength": 500
                             },
-                            "grafanaAPIKey": {
+                            "grafanaApiKey": {
                               "type": "string",
                               "description": "Grafana API key for the user configuration.",
                               "maxLength": 500
@@ -1571,9 +1555,9 @@ const UserSchema: Record<string, unknown> = {
                           "x-go-type": "Prometheus",
                           "type": "object",
                           "properties": {
-                            "prometheusURL": {
+                            "prometheusUrl": {
                               "type": "string",
-                              "description": "The prometheus u r l of the prometheus.",
+                              "description": "The prometheus URL of the prometheus.",
                               "maxLength": 500
                             },
                             "selectedPrometheusBoardsConfigs": {
@@ -1640,7 +1624,7 @@ const UserSchema: Record<string, unknown> = {
                           "type": "boolean",
                           "description": "The anonymous perf results of the preference."
                         },
-                        "updated_at": {
+                        "updatedAt": {
                           "type": "string",
                           "format": "date-time",
                           "description": "Timestamp of when the resource was last updated."
@@ -1675,51 +1659,51 @@ const UserSchema: Record<string, unknown> = {
                         }
                       }
                     },
-                    "accepted_terms_at": {
+                    "acceptedTermsAt": {
                       "description": "Timestamp when user accepted terms and conditions",
                       "x-oapi-codegen-extra-tags": {
                         "db": "accepted_terms_at",
-                        "json": "accepted_terms_at"
+                        "json": "acceptedTermsAt"
                       },
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     },
-                    "first_login_time": {
+                    "firstLoginTime": {
                       "description": "Timestamp of user's first login",
                       "x-oapi-codegen-extra-tags": {
                         "db": "first_login_time",
-                        "json": "first_login_time"
+                        "json": "firstLoginTime"
                       },
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     },
-                    "last_login_time": {
+                    "lastLoginTime": {
                       "description": "Timestamp of user's most recent login",
                       "x-oapi-codegen-extra-tags": {
                         "db": "last_login_time",
-                        "json": "last_login_time"
+                        "json": "lastLoginTime"
                       },
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     },
-                    "created_at": {
+                    "createdAt": {
                       "description": "Timestamp when the user record was created",
                       "x-oapi-codegen-extra-tags": {
                         "db": "created_at",
-                        "json": "created_at"
+                        "json": "createdAt"
                       },
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     },
-                    "updated_at": {
+                    "updatedAt": {
                       "description": "Timestamp when the user record was last updated",
                       "x-oapi-codegen-extra-tags": {
                         "db": "updated_at",
-                        "json": "updated_at"
+                        "json": "updatedAt"
                       },
                       "type": "string",
                       "format": "date-time",
@@ -1755,7 +1739,7 @@ const UserSchema: Record<string, unknown> = {
                         "json": "socials"
                       }
                     },
-                    "deleted_at": {
+                    "deletedAt": {
                       "type": "string",
                       "format": "date-time",
                       "nullable": true,
@@ -1763,10 +1747,10 @@ const UserSchema: Record<string, unknown> = {
                       "x-go-type": "core.NullTime",
                       "x-oapi-codegen-extra-tags": {
                         "db": "deleted_at",
-                        "json": "deleted_at"
+                        "json": "deletedAt"
                       }
                     },
-                    "role_names": {
+                    "roleNames": {
                       "type": "array",
                       "items": {
                         "type": "string",
@@ -1788,7 +1772,7 @@ const UserSchema: Record<string, unknown> = {
                       ],
                       "x-oapi-codegen-extra-tags": {
                         "db": "role_names",
-                        "json": "role_names"
+                        "json": "roleNames"
                       }
                     },
                     "teams": {
@@ -1799,7 +1783,7 @@ const UserSchema: Record<string, unknown> = {
                         "json": "teams"
                       },
                       "properties": {
-                        "teams_with_roles": {
+                        "teamsWithRoles": {
                           "type": "array",
                           "description": "Team memberships for the user with their assigned roles.",
                           "items": {
@@ -1807,16 +1791,16 @@ const UserSchema: Record<string, unknown> = {
                           },
                           "x-oapi-codegen-extra-tags": {
                             "db": "teams_with_roles",
-                            "json": "teams_with_roles"
+                            "json": "teamsWithRoles"
                           }
                         },
-                        "total_count": {
+                        "totalCount": {
                           "type": "integer",
                           "description": "Total number of team memberships returned for the user.",
                           "minimum": 0,
                           "x-oapi-codegen-extra-tags": {
                             "db": "total_count",
-                            "json": "total_count"
+                            "json": "totalCount"
                           }
                         }
                       }
@@ -1829,7 +1813,7 @@ const UserSchema: Record<string, unknown> = {
                         "json": "organizations"
                       },
                       "properties": {
-                        "organizations_with_roles": {
+                        "organizationsWithRoles": {
                           "type": "array",
                           "description": "Organization memberships for the user with their assigned roles.",
                           "items": {
@@ -1837,16 +1821,16 @@ const UserSchema: Record<string, unknown> = {
                           },
                           "x-oapi-codegen-extra-tags": {
                             "db": "organizations_with_roles",
-                            "json": "organizations_with_roles"
+                            "json": "organizationsWithRoles"
                           }
                         },
-                        "total_count": {
+                        "totalCount": {
                           "type": "integer",
                           "description": "Total number of organization memberships returned for the user.",
                           "minimum": 0,
                           "x-oapi-codegen-extra-tags": {
                             "db": "total_count",
-                            "json": "total_count"
+                            "json": "totalCount"
                           }
                         }
                       }
@@ -1921,16 +1905,16 @@ const UserSchema: Record<string, unknown> = {
                   "description": "Represents a user in Layer5 Cloud (Meshery)",
                   "required": [
                     "id",
-                    "user_id",
+                    "userId",
                     "provider",
                     "email",
-                    "first_name",
-                    "last_name",
+                    "firstName",
+                    "lastName",
                     "status",
-                    "created_at",
-                    "updated_at",
-                    "last_login_time",
-                    "deleted_at"
+                    "createdAt",
+                    "updatedAt",
+                    "lastLoginTime",
+                    "deletedAt"
                   ],
                   "properties": {
                     "id": {
@@ -1947,13 +1931,13 @@ const UserSchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       }
                     },
-                    "user_id": {
+                    "userId": {
                       "type": "string",
                       "maxLength": 200,
                       "description": "User identifier (username or external ID)",
                       "x-oapi-codegen-extra-tags": {
                         "db": "user_id",
-                        "json": "user_id"
+                        "json": "userId"
                       },
                       "x-id-format": "external"
                     },
@@ -1982,32 +1966,32 @@ const UserSchema: Record<string, unknown> = {
                         "json": "email"
                       }
                     },
-                    "first_name": {
+                    "firstName": {
                       "type": "string",
                       "maxLength": 200,
                       "description": "User's first name",
                       "x-oapi-codegen-extra-tags": {
                         "db": "first_name",
-                        "json": "first_name"
+                        "json": "firstName"
                       }
                     },
-                    "last_name": {
+                    "lastName": {
                       "type": "string",
                       "maxLength": 300,
                       "description": "User's last name",
                       "x-oapi-codegen-extra-tags": {
                         "db": "last_name",
-                        "json": "last_name"
+                        "json": "lastName"
                       }
                     },
-                    "avatar_url": {
+                    "avatarUrl": {
                       "type": "string",
                       "format": "uri",
                       "maxLength": 500,
                       "description": "URL to user's avatar image",
                       "x-oapi-codegen-extra-tags": {
                         "db": "avatar_url",
-                        "json": "avatar_url"
+                        "json": "avatarUrl"
                       }
                     },
                     "status": {
@@ -2069,7 +2053,7 @@ const UserSchema: Record<string, unknown> = {
                       "required": [
                         "anonymousUsageStats",
                         "anonymousPerfResults",
-                        "updated_at",
+                        "updatedAt",
                         "dashboardPreferences",
                         "selectedOrganizationId",
                         "selectedWorkspaceForOrganizations",
@@ -2090,12 +2074,12 @@ const UserSchema: Record<string, unknown> = {
                           "x-go-type": "Grafana",
                           "type": "object",
                           "properties": {
-                            "grafanaURL": {
+                            "grafanaUrl": {
                               "type": "string",
                               "description": "Grafana URL for the user configuration.",
                               "maxLength": 500
                             },
-                            "grafanaAPIKey": {
+                            "grafanaApiKey": {
                               "type": "string",
                               "description": "Grafana API key for the user configuration.",
                               "maxLength": 500
@@ -2134,9 +2118,9 @@ const UserSchema: Record<string, unknown> = {
                           "x-go-type": "Prometheus",
                           "type": "object",
                           "properties": {
-                            "prometheusURL": {
+                            "prometheusUrl": {
                               "type": "string",
-                              "description": "The prometheus u r l of the prometheus.",
+                              "description": "The prometheus URL of the prometheus.",
                               "maxLength": 500
                             },
                             "selectedPrometheusBoardsConfigs": {
@@ -2203,7 +2187,7 @@ const UserSchema: Record<string, unknown> = {
                           "type": "boolean",
                           "description": "The anonymous perf results of the preference."
                         },
-                        "updated_at": {
+                        "updatedAt": {
                           "type": "string",
                           "format": "date-time",
                           "description": "Timestamp of when the resource was last updated."
@@ -2238,51 +2222,51 @@ const UserSchema: Record<string, unknown> = {
                         }
                       }
                     },
-                    "accepted_terms_at": {
+                    "acceptedTermsAt": {
                       "description": "Timestamp when user accepted terms and conditions",
                       "x-oapi-codegen-extra-tags": {
                         "db": "accepted_terms_at",
-                        "json": "accepted_terms_at"
+                        "json": "acceptedTermsAt"
                       },
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     },
-                    "first_login_time": {
+                    "firstLoginTime": {
                       "description": "Timestamp of user's first login",
                       "x-oapi-codegen-extra-tags": {
                         "db": "first_login_time",
-                        "json": "first_login_time"
+                        "json": "firstLoginTime"
                       },
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     },
-                    "last_login_time": {
+                    "lastLoginTime": {
                       "description": "Timestamp of user's most recent login",
                       "x-oapi-codegen-extra-tags": {
                         "db": "last_login_time",
-                        "json": "last_login_time"
+                        "json": "lastLoginTime"
                       },
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     },
-                    "created_at": {
+                    "createdAt": {
                       "description": "Timestamp when the user record was created",
                       "x-oapi-codegen-extra-tags": {
                         "db": "created_at",
-                        "json": "created_at"
+                        "json": "createdAt"
                       },
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     },
-                    "updated_at": {
+                    "updatedAt": {
                       "description": "Timestamp when the user record was last updated",
                       "x-oapi-codegen-extra-tags": {
                         "db": "updated_at",
-                        "json": "updated_at"
+                        "json": "updatedAt"
                       },
                       "type": "string",
                       "format": "date-time",
@@ -2318,7 +2302,7 @@ const UserSchema: Record<string, unknown> = {
                         "json": "socials"
                       }
                     },
-                    "deleted_at": {
+                    "deletedAt": {
                       "type": "string",
                       "format": "date-time",
                       "nullable": true,
@@ -2326,10 +2310,10 @@ const UserSchema: Record<string, unknown> = {
                       "x-go-type": "core.NullTime",
                       "x-oapi-codegen-extra-tags": {
                         "db": "deleted_at",
-                        "json": "deleted_at"
+                        "json": "deletedAt"
                       }
                     },
-                    "role_names": {
+                    "roleNames": {
                       "type": "array",
                       "items": {
                         "type": "string",
@@ -2351,7 +2335,7 @@ const UserSchema: Record<string, unknown> = {
                       ],
                       "x-oapi-codegen-extra-tags": {
                         "db": "role_names",
-                        "json": "role_names"
+                        "json": "roleNames"
                       }
                     },
                     "teams": {
@@ -2362,7 +2346,7 @@ const UserSchema: Record<string, unknown> = {
                         "json": "teams"
                       },
                       "properties": {
-                        "teams_with_roles": {
+                        "teamsWithRoles": {
                           "type": "array",
                           "description": "Team memberships for the user with their assigned roles.",
                           "items": {
@@ -2370,16 +2354,16 @@ const UserSchema: Record<string, unknown> = {
                           },
                           "x-oapi-codegen-extra-tags": {
                             "db": "teams_with_roles",
-                            "json": "teams_with_roles"
+                            "json": "teamsWithRoles"
                           }
                         },
-                        "total_count": {
+                        "totalCount": {
                           "type": "integer",
                           "description": "Total number of team memberships returned for the user.",
                           "minimum": 0,
                           "x-oapi-codegen-extra-tags": {
                             "db": "total_count",
-                            "json": "total_count"
+                            "json": "totalCount"
                           }
                         }
                       }
@@ -2392,7 +2376,7 @@ const UserSchema: Record<string, unknown> = {
                         "json": "organizations"
                       },
                       "properties": {
-                        "organizations_with_roles": {
+                        "organizationsWithRoles": {
                           "type": "array",
                           "description": "Organization memberships for the user with their assigned roles.",
                           "items": {
@@ -2400,16 +2384,16 @@ const UserSchema: Record<string, unknown> = {
                           },
                           "x-oapi-codegen-extra-tags": {
                             "db": "organizations_with_roles",
-                            "json": "organizations_with_roles"
+                            "json": "organizationsWithRoles"
                           }
                         },
-                        "total_count": {
+                        "totalCount": {
                           "type": "integer",
                           "description": "Total number of organization memberships returned for the user.",
                           "minimum": 0,
                           "x-oapi-codegen-extra-tags": {
                             "db": "total_count",
-                            "json": "total_count"
+                            "json": "totalCount"
                           }
                         }
                       }
@@ -2510,17 +2494,7 @@ const UserSchema: Record<string, unknown> = {
         "description": "Organization ID",
         "schema": {
           "type": "string",
-          "format": "uuid",
-          "x-go-type": "uuid.UUID",
-          "x-go-type-import": {
-            "path": "github.com/gofrs/uuid"
-          },
-          "x-oapi-codegen-extra-tags": {
-            "db": "org_id",
-            "json": "org_id"
-          },
-          "x-go-type-name": "OrganizationId",
-          "x-go-type-skip-optional-pointer": true
+          "format": "uuid"
         }
       },
       "page": {
@@ -2531,10 +2505,10 @@ const UserSchema: Record<string, unknown> = {
           "type": "string"
         }
       },
-      "pagesize": {
-        "name": "pagesize",
+      "pageSize": {
+        "name": "pageSize",
         "in": "query",
-        "description": "Get responses by pagesize",
+        "description": "Get responses by page size",
         "schema": {
           "type": "string"
         }
@@ -2570,17 +2544,7 @@ const UserSchema: Record<string, unknown> = {
         "description": "Optional team filter when listing organization users",
         "schema": {
           "type": "string",
-          "format": "uuid",
-          "x-go-type": "uuid.UUID",
-          "x-go-type-import": {
-            "path": "github.com/gofrs/uuid"
-          },
-          "x-oapi-codegen-extra-tags": {
-            "db": "team_id",
-            "json": "team_id"
-          },
-          "x-go-type-name": "TeamId",
-          "x-go-type-skip-optional-pointer": true
+          "format": "uuid"
         }
       }
     },
@@ -2597,16 +2561,16 @@ const UserSchema: Record<string, unknown> = {
         "description": "Represents a user in Layer5 Cloud (Meshery)",
         "required": [
           "id",
-          "user_id",
+          "userId",
           "provider",
           "email",
-          "first_name",
-          "last_name",
+          "firstName",
+          "lastName",
           "status",
-          "created_at",
-          "updated_at",
-          "last_login_time",
-          "deleted_at"
+          "createdAt",
+          "updatedAt",
+          "lastLoginTime",
+          "deletedAt"
         ],
         "properties": {
           "id": {
@@ -2623,13 +2587,13 @@ const UserSchema: Record<string, unknown> = {
               "path": "github.com/gofrs/uuid"
             }
           },
-          "user_id": {
+          "userId": {
             "type": "string",
             "maxLength": 200,
             "description": "User identifier (username or external ID)",
             "x-oapi-codegen-extra-tags": {
               "db": "user_id",
-              "json": "user_id"
+              "json": "userId"
             },
             "x-id-format": "external"
           },
@@ -2658,32 +2622,32 @@ const UserSchema: Record<string, unknown> = {
               "json": "email"
             }
           },
-          "first_name": {
+          "firstName": {
             "type": "string",
             "maxLength": 200,
             "description": "User's first name",
             "x-oapi-codegen-extra-tags": {
               "db": "first_name",
-              "json": "first_name"
+              "json": "firstName"
             }
           },
-          "last_name": {
+          "lastName": {
             "type": "string",
             "maxLength": 300,
             "description": "User's last name",
             "x-oapi-codegen-extra-tags": {
               "db": "last_name",
-              "json": "last_name"
+              "json": "lastName"
             }
           },
-          "avatar_url": {
+          "avatarUrl": {
             "type": "string",
             "format": "uri",
             "maxLength": 500,
             "description": "URL to user's avatar image",
             "x-oapi-codegen-extra-tags": {
               "db": "avatar_url",
-              "json": "avatar_url"
+              "json": "avatarUrl"
             }
           },
           "status": {
@@ -2745,7 +2709,7 @@ const UserSchema: Record<string, unknown> = {
             "required": [
               "anonymousUsageStats",
               "anonymousPerfResults",
-              "updated_at",
+              "updatedAt",
               "dashboardPreferences",
               "selectedOrganizationId",
               "selectedWorkspaceForOrganizations",
@@ -2766,12 +2730,12 @@ const UserSchema: Record<string, unknown> = {
                 "x-go-type": "Grafana",
                 "type": "object",
                 "properties": {
-                  "grafanaURL": {
+                  "grafanaUrl": {
                     "type": "string",
                     "description": "Grafana URL for the user configuration.",
                     "maxLength": 500
                   },
-                  "grafanaAPIKey": {
+                  "grafanaApiKey": {
                     "type": "string",
                     "description": "Grafana API key for the user configuration.",
                     "maxLength": 500
@@ -2810,9 +2774,9 @@ const UserSchema: Record<string, unknown> = {
                 "x-go-type": "Prometheus",
                 "type": "object",
                 "properties": {
-                  "prometheusURL": {
+                  "prometheusUrl": {
                     "type": "string",
-                    "description": "The prometheus u r l of the prometheus.",
+                    "description": "The prometheus URL of the prometheus.",
                     "maxLength": 500
                   },
                   "selectedPrometheusBoardsConfigs": {
@@ -2879,7 +2843,7 @@ const UserSchema: Record<string, unknown> = {
                 "type": "boolean",
                 "description": "The anonymous perf results of the preference."
               },
-              "updated_at": {
+              "updatedAt": {
                 "type": "string",
                 "format": "date-time",
                 "description": "Timestamp of when the resource was last updated."
@@ -2914,51 +2878,51 @@ const UserSchema: Record<string, unknown> = {
               }
             }
           },
-          "accepted_terms_at": {
+          "acceptedTermsAt": {
             "description": "Timestamp when user accepted terms and conditions",
             "x-oapi-codegen-extra-tags": {
               "db": "accepted_terms_at",
-              "json": "accepted_terms_at"
+              "json": "acceptedTermsAt"
             },
             "type": "string",
             "format": "date-time",
             "x-go-type-skip-optional-pointer": true
           },
-          "first_login_time": {
+          "firstLoginTime": {
             "description": "Timestamp of user's first login",
             "x-oapi-codegen-extra-tags": {
               "db": "first_login_time",
-              "json": "first_login_time"
+              "json": "firstLoginTime"
             },
             "type": "string",
             "format": "date-time",
             "x-go-type-skip-optional-pointer": true
           },
-          "last_login_time": {
+          "lastLoginTime": {
             "description": "Timestamp of user's most recent login",
             "x-oapi-codegen-extra-tags": {
               "db": "last_login_time",
-              "json": "last_login_time"
+              "json": "lastLoginTime"
             },
             "type": "string",
             "format": "date-time",
             "x-go-type-skip-optional-pointer": true
           },
-          "created_at": {
+          "createdAt": {
             "description": "Timestamp when the user record was created",
             "x-oapi-codegen-extra-tags": {
               "db": "created_at",
-              "json": "created_at"
+              "json": "createdAt"
             },
             "type": "string",
             "format": "date-time",
             "x-go-type-skip-optional-pointer": true
           },
-          "updated_at": {
+          "updatedAt": {
             "description": "Timestamp when the user record was last updated",
             "x-oapi-codegen-extra-tags": {
               "db": "updated_at",
-              "json": "updated_at"
+              "json": "updatedAt"
             },
             "type": "string",
             "format": "date-time",
@@ -2994,7 +2958,7 @@ const UserSchema: Record<string, unknown> = {
               "json": "socials"
             }
           },
-          "deleted_at": {
+          "deletedAt": {
             "type": "string",
             "format": "date-time",
             "nullable": true,
@@ -3002,10 +2966,10 @@ const UserSchema: Record<string, unknown> = {
             "x-go-type": "core.NullTime",
             "x-oapi-codegen-extra-tags": {
               "db": "deleted_at",
-              "json": "deleted_at"
+              "json": "deletedAt"
             }
           },
-          "role_names": {
+          "roleNames": {
             "type": "array",
             "items": {
               "type": "string",
@@ -3027,7 +2991,7 @@ const UserSchema: Record<string, unknown> = {
             ],
             "x-oapi-codegen-extra-tags": {
               "db": "role_names",
-              "json": "role_names"
+              "json": "roleNames"
             }
           },
           "teams": {
@@ -3038,7 +3002,7 @@ const UserSchema: Record<string, unknown> = {
               "json": "teams"
             },
             "properties": {
-              "teams_with_roles": {
+              "teamsWithRoles": {
                 "type": "array",
                 "description": "Team memberships for the user with their assigned roles.",
                 "items": {
@@ -3046,16 +3010,16 @@ const UserSchema: Record<string, unknown> = {
                 },
                 "x-oapi-codegen-extra-tags": {
                   "db": "teams_with_roles",
-                  "json": "teams_with_roles"
+                  "json": "teamsWithRoles"
                 }
               },
-              "total_count": {
+              "totalCount": {
                 "type": "integer",
                 "description": "Total number of team memberships returned for the user.",
                 "minimum": 0,
                 "x-oapi-codegen-extra-tags": {
                   "db": "total_count",
-                  "json": "total_count"
+                  "json": "totalCount"
                 }
               }
             }
@@ -3068,7 +3032,7 @@ const UserSchema: Record<string, unknown> = {
               "json": "organizations"
             },
             "properties": {
-              "organizations_with_roles": {
+              "organizationsWithRoles": {
                 "type": "array",
                 "description": "Organization memberships for the user with their assigned roles.",
                 "items": {
@@ -3076,16 +3040,16 @@ const UserSchema: Record<string, unknown> = {
                 },
                 "x-oapi-codegen-extra-tags": {
                   "db": "organizations_with_roles",
-                  "json": "organizations_with_roles"
+                  "json": "organizationsWithRoles"
                 }
               },
-              "total_count": {
+              "totalCount": {
                 "type": "integer",
                 "description": "Total number of organization memberships returned for the user.",
                 "minimum": 0,
                 "x-oapi-codegen-extra-tags": {
                   "db": "total_count",
-                  "json": "total_count"
+                  "json": "totalCount"
                 }
               }
             }
@@ -3102,12 +3066,12 @@ const UserSchema: Record<string, unknown> = {
             "description": "Current page number of the result set.",
             "minimum": 0
           },
-          "page_size": {
+          "pageSize": {
             "type": "integer",
             "description": "Number of items per page.",
             "minimum": 1
           },
-          "total_count": {
+          "totalCount": {
             "type": "integer",
             "description": "Total number of items available.",
             "minimum": 0
@@ -3119,16 +3083,16 @@ const UserSchema: Record<string, unknown> = {
               "description": "Represents a user in Layer5 Cloud (Meshery)",
               "required": [
                 "id",
-                "user_id",
+                "userId",
                 "provider",
                 "email",
-                "first_name",
-                "last_name",
+                "firstName",
+                "lastName",
                 "status",
-                "created_at",
-                "updated_at",
-                "last_login_time",
-                "deleted_at"
+                "createdAt",
+                "updatedAt",
+                "lastLoginTime",
+                "deletedAt"
               ],
               "properties": {
                 "id": {
@@ -3145,13 +3109,13 @@ const UserSchema: Record<string, unknown> = {
                     "path": "github.com/gofrs/uuid"
                   }
                 },
-                "user_id": {
+                "userId": {
                   "type": "string",
                   "maxLength": 200,
                   "description": "User identifier (username or external ID)",
                   "x-oapi-codegen-extra-tags": {
                     "db": "user_id",
-                    "json": "user_id"
+                    "json": "userId"
                   },
                   "x-id-format": "external"
                 },
@@ -3180,32 +3144,32 @@ const UserSchema: Record<string, unknown> = {
                     "json": "email"
                   }
                 },
-                "first_name": {
+                "firstName": {
                   "type": "string",
                   "maxLength": 200,
                   "description": "User's first name",
                   "x-oapi-codegen-extra-tags": {
                     "db": "first_name",
-                    "json": "first_name"
+                    "json": "firstName"
                   }
                 },
-                "last_name": {
+                "lastName": {
                   "type": "string",
                   "maxLength": 300,
                   "description": "User's last name",
                   "x-oapi-codegen-extra-tags": {
                     "db": "last_name",
-                    "json": "last_name"
+                    "json": "lastName"
                   }
                 },
-                "avatar_url": {
+                "avatarUrl": {
                   "type": "string",
                   "format": "uri",
                   "maxLength": 500,
                   "description": "URL to user's avatar image",
                   "x-oapi-codegen-extra-tags": {
                     "db": "avatar_url",
-                    "json": "avatar_url"
+                    "json": "avatarUrl"
                   }
                 },
                 "status": {
@@ -3267,7 +3231,7 @@ const UserSchema: Record<string, unknown> = {
                   "required": [
                     "anonymousUsageStats",
                     "anonymousPerfResults",
-                    "updated_at",
+                    "updatedAt",
                     "dashboardPreferences",
                     "selectedOrganizationId",
                     "selectedWorkspaceForOrganizations",
@@ -3288,12 +3252,12 @@ const UserSchema: Record<string, unknown> = {
                       "x-go-type": "Grafana",
                       "type": "object",
                       "properties": {
-                        "grafanaURL": {
+                        "grafanaUrl": {
                           "type": "string",
                           "description": "Grafana URL for the user configuration.",
                           "maxLength": 500
                         },
-                        "grafanaAPIKey": {
+                        "grafanaApiKey": {
                           "type": "string",
                           "description": "Grafana API key for the user configuration.",
                           "maxLength": 500
@@ -3332,9 +3296,9 @@ const UserSchema: Record<string, unknown> = {
                       "x-go-type": "Prometheus",
                       "type": "object",
                       "properties": {
-                        "prometheusURL": {
+                        "prometheusUrl": {
                           "type": "string",
-                          "description": "The prometheus u r l of the prometheus.",
+                          "description": "The prometheus URL of the prometheus.",
                           "maxLength": 500
                         },
                         "selectedPrometheusBoardsConfigs": {
@@ -3401,7 +3365,7 @@ const UserSchema: Record<string, unknown> = {
                       "type": "boolean",
                       "description": "The anonymous perf results of the preference."
                     },
-                    "updated_at": {
+                    "updatedAt": {
                       "type": "string",
                       "format": "date-time",
                       "description": "Timestamp of when the resource was last updated."
@@ -3436,51 +3400,51 @@ const UserSchema: Record<string, unknown> = {
                     }
                   }
                 },
-                "accepted_terms_at": {
+                "acceptedTermsAt": {
                   "description": "Timestamp when user accepted terms and conditions",
                   "x-oapi-codegen-extra-tags": {
                     "db": "accepted_terms_at",
-                    "json": "accepted_terms_at"
+                    "json": "acceptedTermsAt"
                   },
                   "type": "string",
                   "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
                 },
-                "first_login_time": {
+                "firstLoginTime": {
                   "description": "Timestamp of user's first login",
                   "x-oapi-codegen-extra-tags": {
                     "db": "first_login_time",
-                    "json": "first_login_time"
+                    "json": "firstLoginTime"
                   },
                   "type": "string",
                   "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
                 },
-                "last_login_time": {
+                "lastLoginTime": {
                   "description": "Timestamp of user's most recent login",
                   "x-oapi-codegen-extra-tags": {
                     "db": "last_login_time",
-                    "json": "last_login_time"
+                    "json": "lastLoginTime"
                   },
                   "type": "string",
                   "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
                 },
-                "created_at": {
+                "createdAt": {
                   "description": "Timestamp when the user record was created",
                   "x-oapi-codegen-extra-tags": {
                     "db": "created_at",
-                    "json": "created_at"
+                    "json": "createdAt"
                   },
                   "type": "string",
                   "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
                 },
-                "updated_at": {
+                "updatedAt": {
                   "description": "Timestamp when the user record was last updated",
                   "x-oapi-codegen-extra-tags": {
                     "db": "updated_at",
-                    "json": "updated_at"
+                    "json": "updatedAt"
                   },
                   "type": "string",
                   "format": "date-time",
@@ -3516,7 +3480,7 @@ const UserSchema: Record<string, unknown> = {
                     "json": "socials"
                   }
                 },
-                "deleted_at": {
+                "deletedAt": {
                   "type": "string",
                   "format": "date-time",
                   "nullable": true,
@@ -3524,10 +3488,10 @@ const UserSchema: Record<string, unknown> = {
                   "x-go-type": "core.NullTime",
                   "x-oapi-codegen-extra-tags": {
                     "db": "deleted_at",
-                    "json": "deleted_at"
+                    "json": "deletedAt"
                   }
                 },
-                "role_names": {
+                "roleNames": {
                   "type": "array",
                   "items": {
                     "type": "string",
@@ -3549,7 +3513,7 @@ const UserSchema: Record<string, unknown> = {
                   ],
                   "x-oapi-codegen-extra-tags": {
                     "db": "role_names",
-                    "json": "role_names"
+                    "json": "roleNames"
                   }
                 },
                 "teams": {
@@ -3560,7 +3524,7 @@ const UserSchema: Record<string, unknown> = {
                     "json": "teams"
                   },
                   "properties": {
-                    "teams_with_roles": {
+                    "teamsWithRoles": {
                       "type": "array",
                       "description": "Team memberships for the user with their assigned roles.",
                       "items": {
@@ -3568,16 +3532,16 @@ const UserSchema: Record<string, unknown> = {
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "teams_with_roles",
-                        "json": "teams_with_roles"
+                        "json": "teamsWithRoles"
                       }
                     },
-                    "total_count": {
+                    "totalCount": {
                       "type": "integer",
                       "description": "Total number of team memberships returned for the user.",
                       "minimum": 0,
                       "x-oapi-codegen-extra-tags": {
                         "db": "total_count",
-                        "json": "total_count"
+                        "json": "totalCount"
                       }
                     }
                   }
@@ -3590,7 +3554,7 @@ const UserSchema: Record<string, unknown> = {
                     "json": "organizations"
                   },
                   "properties": {
-                    "organizations_with_roles": {
+                    "organizationsWithRoles": {
                       "type": "array",
                       "description": "Organization memberships for the user with their assigned roles.",
                       "items": {
@@ -3598,16 +3562,16 @@ const UserSchema: Record<string, unknown> = {
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "organizations_with_roles",
-                        "json": "organizations_with_roles"
+                        "json": "organizationsWithRoles"
                       }
                     },
-                    "total_count": {
+                    "totalCount": {
                       "type": "integer",
                       "description": "Total number of organization memberships returned for the user.",
                       "minimum": 0,
                       "x-oapi-codegen-extra-tags": {
                         "db": "total_count",
-                        "json": "total_count"
+                        "json": "totalCount"
                       }
                     }
                   }
@@ -3628,12 +3592,12 @@ const UserSchema: Record<string, unknown> = {
             "description": "Current page number of the result set.",
             "minimum": 0
           },
-          "page_size": {
+          "pageSize": {
             "type": "integer",
             "description": "Number of items per page.",
             "minimum": 1
           },
-          "total_count": {
+          "totalCount": {
             "type": "integer",
             "description": "Total number of items available.",
             "minimum": 0
@@ -3645,16 +3609,16 @@ const UserSchema: Record<string, unknown> = {
               "description": "Represents a user in Layer5 Cloud (Meshery)",
               "required": [
                 "id",
-                "user_id",
+                "userId",
                 "provider",
                 "email",
-                "first_name",
-                "last_name",
+                "firstName",
+                "lastName",
                 "status",
-                "created_at",
-                "updated_at",
-                "last_login_time",
-                "deleted_at"
+                "createdAt",
+                "updatedAt",
+                "lastLoginTime",
+                "deletedAt"
               ],
               "properties": {
                 "id": {
@@ -3671,13 +3635,13 @@ const UserSchema: Record<string, unknown> = {
                     "path": "github.com/gofrs/uuid"
                   }
                 },
-                "user_id": {
+                "userId": {
                   "type": "string",
                   "maxLength": 200,
                   "description": "User identifier (username or external ID)",
                   "x-oapi-codegen-extra-tags": {
                     "db": "user_id",
-                    "json": "user_id"
+                    "json": "userId"
                   },
                   "x-id-format": "external"
                 },
@@ -3706,32 +3670,32 @@ const UserSchema: Record<string, unknown> = {
                     "json": "email"
                   }
                 },
-                "first_name": {
+                "firstName": {
                   "type": "string",
                   "maxLength": 200,
                   "description": "User's first name",
                   "x-oapi-codegen-extra-tags": {
                     "db": "first_name",
-                    "json": "first_name"
+                    "json": "firstName"
                   }
                 },
-                "last_name": {
+                "lastName": {
                   "type": "string",
                   "maxLength": 300,
                   "description": "User's last name",
                   "x-oapi-codegen-extra-tags": {
                     "db": "last_name",
-                    "json": "last_name"
+                    "json": "lastName"
                   }
                 },
-                "avatar_url": {
+                "avatarUrl": {
                   "type": "string",
                   "format": "uri",
                   "maxLength": 500,
                   "description": "URL to user's avatar image",
                   "x-oapi-codegen-extra-tags": {
                     "db": "avatar_url",
-                    "json": "avatar_url"
+                    "json": "avatarUrl"
                   }
                 },
                 "status": {
@@ -3793,7 +3757,7 @@ const UserSchema: Record<string, unknown> = {
                   "required": [
                     "anonymousUsageStats",
                     "anonymousPerfResults",
-                    "updated_at",
+                    "updatedAt",
                     "dashboardPreferences",
                     "selectedOrganizationId",
                     "selectedWorkspaceForOrganizations",
@@ -3814,12 +3778,12 @@ const UserSchema: Record<string, unknown> = {
                       "x-go-type": "Grafana",
                       "type": "object",
                       "properties": {
-                        "grafanaURL": {
+                        "grafanaUrl": {
                           "type": "string",
                           "description": "Grafana URL for the user configuration.",
                           "maxLength": 500
                         },
-                        "grafanaAPIKey": {
+                        "grafanaApiKey": {
                           "type": "string",
                           "description": "Grafana API key for the user configuration.",
                           "maxLength": 500
@@ -3858,9 +3822,9 @@ const UserSchema: Record<string, unknown> = {
                       "x-go-type": "Prometheus",
                       "type": "object",
                       "properties": {
-                        "prometheusURL": {
+                        "prometheusUrl": {
                           "type": "string",
-                          "description": "The prometheus u r l of the prometheus.",
+                          "description": "The prometheus URL of the prometheus.",
                           "maxLength": 500
                         },
                         "selectedPrometheusBoardsConfigs": {
@@ -3927,7 +3891,7 @@ const UserSchema: Record<string, unknown> = {
                       "type": "boolean",
                       "description": "The anonymous perf results of the preference."
                     },
-                    "updated_at": {
+                    "updatedAt": {
                       "type": "string",
                       "format": "date-time",
                       "description": "Timestamp of when the resource was last updated."
@@ -3962,51 +3926,51 @@ const UserSchema: Record<string, unknown> = {
                     }
                   }
                 },
-                "accepted_terms_at": {
+                "acceptedTermsAt": {
                   "description": "Timestamp when user accepted terms and conditions",
                   "x-oapi-codegen-extra-tags": {
                     "db": "accepted_terms_at",
-                    "json": "accepted_terms_at"
+                    "json": "acceptedTermsAt"
                   },
                   "type": "string",
                   "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
                 },
-                "first_login_time": {
+                "firstLoginTime": {
                   "description": "Timestamp of user's first login",
                   "x-oapi-codegen-extra-tags": {
                     "db": "first_login_time",
-                    "json": "first_login_time"
+                    "json": "firstLoginTime"
                   },
                   "type": "string",
                   "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
                 },
-                "last_login_time": {
+                "lastLoginTime": {
                   "description": "Timestamp of user's most recent login",
                   "x-oapi-codegen-extra-tags": {
                     "db": "last_login_time",
-                    "json": "last_login_time"
+                    "json": "lastLoginTime"
                   },
                   "type": "string",
                   "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
                 },
-                "created_at": {
+                "createdAt": {
                   "description": "Timestamp when the user record was created",
                   "x-oapi-codegen-extra-tags": {
                     "db": "created_at",
-                    "json": "created_at"
+                    "json": "createdAt"
                   },
                   "type": "string",
                   "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
                 },
-                "updated_at": {
+                "updatedAt": {
                   "description": "Timestamp when the user record was last updated",
                   "x-oapi-codegen-extra-tags": {
                     "db": "updated_at",
-                    "json": "updated_at"
+                    "json": "updatedAt"
                   },
                   "type": "string",
                   "format": "date-time",
@@ -4042,7 +4006,7 @@ const UserSchema: Record<string, unknown> = {
                     "json": "socials"
                   }
                 },
-                "deleted_at": {
+                "deletedAt": {
                   "type": "string",
                   "format": "date-time",
                   "nullable": true,
@@ -4050,10 +4014,10 @@ const UserSchema: Record<string, unknown> = {
                   "x-go-type": "core.NullTime",
                   "x-oapi-codegen-extra-tags": {
                     "db": "deleted_at",
-                    "json": "deleted_at"
+                    "json": "deletedAt"
                   }
                 },
-                "role_names": {
+                "roleNames": {
                   "type": "array",
                   "items": {
                     "type": "string",
@@ -4075,7 +4039,7 @@ const UserSchema: Record<string, unknown> = {
                   ],
                   "x-oapi-codegen-extra-tags": {
                     "db": "role_names",
-                    "json": "role_names"
+                    "json": "roleNames"
                   }
                 },
                 "teams": {
@@ -4086,7 +4050,7 @@ const UserSchema: Record<string, unknown> = {
                     "json": "teams"
                   },
                   "properties": {
-                    "teams_with_roles": {
+                    "teamsWithRoles": {
                       "type": "array",
                       "description": "Team memberships for the user with their assigned roles.",
                       "items": {
@@ -4094,16 +4058,16 @@ const UserSchema: Record<string, unknown> = {
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "teams_with_roles",
-                        "json": "teams_with_roles"
+                        "json": "teamsWithRoles"
                       }
                     },
-                    "total_count": {
+                    "totalCount": {
                       "type": "integer",
                       "description": "Total number of team memberships returned for the user.",
                       "minimum": 0,
                       "x-oapi-codegen-extra-tags": {
                         "db": "total_count",
-                        "json": "total_count"
+                        "json": "totalCount"
                       }
                     }
                   }
@@ -4116,7 +4080,7 @@ const UserSchema: Record<string, unknown> = {
                     "json": "organizations"
                   },
                   "properties": {
-                    "organizations_with_roles": {
+                    "organizationsWithRoles": {
                       "type": "array",
                       "description": "Organization memberships for the user with their assigned roles.",
                       "items": {
@@ -4124,16 +4088,16 @@ const UserSchema: Record<string, unknown> = {
                       },
                       "x-oapi-codegen-extra-tags": {
                         "db": "organizations_with_roles",
-                        "json": "organizations_with_roles"
+                        "json": "organizationsWithRoles"
                       }
                     },
-                    "total_count": {
+                    "totalCount": {
                       "type": "integer",
                       "description": "Total number of organization memberships returned for the user.",
                       "minimum": 0,
                       "x-oapi-codegen-extra-tags": {
                         "db": "total_count",
-                        "json": "total_count"
+                        "json": "totalCount"
                       }
                     }
                   }
@@ -4151,7 +4115,7 @@ const UserSchema: Record<string, unknown> = {
         "required": [
           "anonymousUsageStats",
           "anonymousPerfResults",
-          "updated_at",
+          "updatedAt",
           "dashboardPreferences",
           "selectedOrganizationId",
           "selectedWorkspaceForOrganizations",
@@ -4172,12 +4136,12 @@ const UserSchema: Record<string, unknown> = {
             "x-go-type": "Grafana",
             "type": "object",
             "properties": {
-              "grafanaURL": {
+              "grafanaUrl": {
                 "type": "string",
                 "description": "Grafana URL for the user configuration.",
                 "maxLength": 500
               },
-              "grafanaAPIKey": {
+              "grafanaApiKey": {
                 "type": "string",
                 "description": "Grafana API key for the user configuration.",
                 "maxLength": 500
@@ -4216,9 +4180,9 @@ const UserSchema: Record<string, unknown> = {
             "x-go-type": "Prometheus",
             "type": "object",
             "properties": {
-              "prometheusURL": {
+              "prometheusUrl": {
                 "type": "string",
-                "description": "The prometheus u r l of the prometheus.",
+                "description": "The prometheus URL of the prometheus.",
                 "maxLength": 500
               },
               "selectedPrometheusBoardsConfigs": {
@@ -4285,7 +4249,7 @@ const UserSchema: Record<string, unknown> = {
             "type": "boolean",
             "description": "The anonymous perf results of the preference."
           },
-          "updated_at": {
+          "updatedAt": {
             "type": "string",
             "format": "date-time",
             "description": "Timestamp of when the resource was last updated."
@@ -4327,12 +4291,12 @@ const UserSchema: Record<string, unknown> = {
       "Grafana": {
         "type": "object",
         "properties": {
-          "grafanaURL": {
+          "grafanaUrl": {
             "type": "string",
             "description": "Grafana URL for the user configuration.",
             "maxLength": 500
           },
-          "grafanaAPIKey": {
+          "grafanaApiKey": {
             "type": "string",
             "description": "Grafana API key for the user configuration.",
             "maxLength": 500
@@ -4402,9 +4366,9 @@ const UserSchema: Record<string, unknown> = {
       "Prometheus": {
         "type": "object",
         "properties": {
-          "prometheusURL": {
+          "prometheusUrl": {
             "type": "string",
-            "description": "The prometheus u r l of the prometheus.",
+            "description": "The prometheus URL of the prometheus.",
             "maxLength": 500
           },
           "selectedPrometheusBoardsConfigs": {

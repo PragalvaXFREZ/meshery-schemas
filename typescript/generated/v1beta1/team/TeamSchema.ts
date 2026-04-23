@@ -8,6 +8,8 @@ const TeamSchema: Record<string, unknown> = {
   "info": {
     "title": "Team",
     "description": "OpenAPI schema for team management in Meshery Cloud.",
+    "x-deprecated": true,
+    "x-superseded-by": "v1beta2",
     "version": "v1beta1",
     "contact": {
       "name": "Meshery Maintainers",

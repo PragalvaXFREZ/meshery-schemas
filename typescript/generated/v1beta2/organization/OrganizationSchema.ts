@@ -981,42 +981,39 @@ const OrganizationSchema: Record<string, unknown> = {
                     },
                     "createdAt": {
                       "description": "Timestamp when the organization was created.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "created_at",
-                        "yaml": "created_at",
-                        "json": "createdAt"
-                      },
-                      "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
+                      "x-go-type": "time.Time",
                       "x-go-name": "CreatedAt",
-                      "x-go-type-skip-optional-pointer": true
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "json": "createdAt"
+                      }
                     },
                     "updatedAt": {
                       "description": "Timestamp when the organization was last updated.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "updated_at",
-                        "yaml": "updated_at",
-                        "json": "updatedAt"
-                      },
-                      "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
+                      "x-go-type": "time.Time",
                       "x-go-name": "UpdatedAt",
-                      "x-go-type-skip-optional-pointer": true
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "json": "updatedAt"
+                      }
                     },
                     "deletedAt": {
                       "description": "Timestamp when the organization was soft-deleted. Null while the organization is active.",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "deleted_at",
-                        "yaml": "deleted_at",
-                        "json": "deletedAt,omitempty"
-                      },
-                      "x-go-type": "NullTime",
                       "type": "string",
                       "format": "date-time",
+                      "x-go-type": "core.NullTime",
                       "x-go-name": "DeletedAt",
-                      "x-go-type-skip-optional-pointer": true
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deleted_at",
+                        "json": "deletedAt,omitempty"
+                      }
                     }
                   }
                 }
@@ -3893,42 +3890,39 @@ const OrganizationSchema: Record<string, unknown> = {
           },
           "createdAt": {
             "description": "Timestamp when the organization was created.",
-            "x-oapi-codegen-extra-tags": {
-              "db": "created_at",
-              "yaml": "created_at",
-              "json": "createdAt"
-            },
-            "x-go-type": "time.Time",
             "type": "string",
             "format": "date-time",
+            "x-go-type": "time.Time",
             "x-go-name": "CreatedAt",
-            "x-go-type-skip-optional-pointer": true
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at",
+              "json": "createdAt"
+            }
           },
           "updatedAt": {
             "description": "Timestamp when the organization was last updated.",
-            "x-oapi-codegen-extra-tags": {
-              "db": "updated_at",
-              "yaml": "updated_at",
-              "json": "updatedAt"
-            },
-            "x-go-type": "time.Time",
             "type": "string",
             "format": "date-time",
+            "x-go-type": "time.Time",
             "x-go-name": "UpdatedAt",
-            "x-go-type-skip-optional-pointer": true
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at",
+              "json": "updatedAt"
+            }
           },
           "deletedAt": {
             "description": "Timestamp when the organization was soft-deleted. Null while the organization is active.",
-            "x-oapi-codegen-extra-tags": {
-              "db": "deleted_at",
-              "yaml": "deleted_at",
-              "json": "deletedAt,omitempty"
-            },
-            "x-go-type": "NullTime",
             "type": "string",
             "format": "date-time",
+            "x-go-type": "core.NullTime",
             "x-go-name": "DeletedAt",
-            "x-go-type-skip-optional-pointer": true
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "deleted_at",
+              "json": "deletedAt,omitempty"
+            }
           }
         }
       },

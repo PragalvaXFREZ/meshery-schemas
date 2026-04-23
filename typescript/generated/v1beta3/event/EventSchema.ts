@@ -7,9 +7,8 @@ const EventSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Events",
-    "x-deprecated": true,
     "description": "OpenAPI schema for Meshery events and system notifications.",
-    "version": "v1beta2",
+    "version": "v1beta3",
     "contact": {
       "name": "Meshery Maintainers",
       "email": "maintainers@meshery.io",
@@ -27,7 +26,7 @@ const EventSchema: Record<string, unknown> = {
     }
   ],
   "paths": {
-    "/events/{id}": {
+    "/events/{eventId}": {
       "delete": {
         "x-internal": [
           "cloud",
@@ -36,17 +35,18 @@ const EventSchema: Record<string, unknown> = {
         "tags": [
           "events"
         ],
+        "operationId": "deleteEvent",
         "summary": "Delete a single event",
         "parameters": [
           {
+            "name": "eventId",
             "in": "path",
-            "name": "id",
+            "description": "ID of the event.",
             "required": true,
             "schema": {
               "type": "string",
               "format": "uuid"
-            },
-            "description": "ID of the event to delete"
+            }
           }
         ],
         "responses": {
@@ -105,13 +105,46 @@ const EventSchema: Record<string, unknown> = {
         "tags": [
           "events"
         ],
+        "operationId": "createEvent",
         "summary": "Create a new event",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "type": "object"
+                "type": "object",
+                "description": "Payload for creating a new event.",
+                "additionalProperties": true,
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "UUID of the user associated with the event.",
+                    "x-go-type": "uuid.UUID",
+                    "x-go-type-import": {
+                      "path": "github.com/gofrs/uuid"
+                    },
+                    "x-go-name": "UserID",
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "userId,omitempty"
+                    }
+                  },
+                  "category": {
+                    "type": "string",
+                    "description": "The category of the event.",
+                    "maxLength": 500
+                  },
+                  "action": {
+                    "type": "string",
+                    "description": "The action of the event.",
+                    "maxLength": 500
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Description of the event.",
+                    "maxLength": 5000
+                  }
+                }
               }
             }
           }
@@ -162,6 +195,7 @@ const EventSchema: Record<string, unknown> = {
         "tags": [
           "events"
         ],
+        "operationId": "bulkDeleteEvents",
         "summary": "Bulk delete events",
         "requestBody": {
           "required": true,
@@ -169,6 +203,7 @@ const EventSchema: Record<string, unknown> = {
             "application/json": {
               "schema": {
                 "type": "object",
+                "description": "Payload for bulk-deleting events by ID.",
                 "required": [
                   "ids"
                 ],
@@ -184,7 +219,7 @@ const EventSchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       }
                     },
-                    "description": "The ids of the bulkdeleterequest."
+                    "description": "UUIDs of the events to delete."
                   }
                 }
               }
@@ -193,18 +228,20 @@ const EventSchema: Record<string, unknown> = {
         },
         "responses": {
           "200": {
-            "description": "event deleted",
+            "description": "Events deleted",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "description": "Response body returned after bulk event deletion.",
                   "properties": {
                     "deleted": {
                       "type": "array",
                       "items": {
                         "type": "string",
                         "format": "uuid"
-                      }
+                      },
+                      "description": "UUIDs of events that were deleted."
                     }
                   }
                 }
@@ -253,6 +290,7 @@ const EventSchema: Record<string, unknown> = {
         "tags": [
           "events"
         ],
+        "operationId": "bulkUpdateEventStatus",
         "summary": "Bulk update event status",
         "requestBody": {
           "required": true,
@@ -260,6 +298,7 @@ const EventSchema: Record<string, unknown> = {
             "application/json": {
               "schema": {
                 "type": "object",
+                "description": "Payload for bulk-updating the status of events.",
                 "required": [
                   "ids",
                   "status"
@@ -276,12 +315,12 @@ const EventSchema: Record<string, unknown> = {
                         "path": "github.com/gofrs/uuid"
                       }
                     },
-                    "description": "The ids of the bulkupdatestatusrequest."
+                    "description": "UUIDs of the events to update."
                   },
                   "status": {
                     "type": "string",
                     "example": "failed",
-                    "description": "Current status of the resource.",
+                    "description": "New status to apply to the selected events.",
                     "maxLength": 255
                   }
                 }
@@ -296,13 +335,15 @@ const EventSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "description": "Response body returned after bulk event status update.",
                   "properties": {
                     "updated": {
                       "type": "array",
                       "items": {
                         "type": "string",
                         "format": "uuid"
-                      }
+                      },
+                      "description": "UUIDs of events whose status was updated."
                     }
                   }
                 }
@@ -342,7 +383,7 @@ const EventSchema: Record<string, unknown> = {
         }
       }
     },
-    "/events/{id}/status": {
+    "/events/{eventId}/status": {
       "put": {
         "x-internal": [
           "cloud",
@@ -351,17 +392,18 @@ const EventSchema: Record<string, unknown> = {
         "tags": [
           "events"
         ],
+        "operationId": "updateEventStatus",
         "summary": "Update status of a single event",
         "parameters": [
           {
+            "name": "eventId",
             "in": "path",
-            "name": "id",
+            "description": "ID of the event.",
             "required": true,
             "schema": {
               "type": "string",
               "format": "uuid"
-            },
-            "description": "ID of the event"
+            }
           }
         ],
         "requestBody": {
@@ -370,6 +412,7 @@ const EventSchema: Record<string, unknown> = {
             "application/json": {
               "schema": {
                 "type": "object",
+                "description": "Payload for updating the status of a single event.",
                 "required": [
                   "status"
                 ],
@@ -377,7 +420,7 @@ const EventSchema: Record<string, unknown> = {
                   "status": {
                     "type": "string",
                     "example": "completed",
-                    "description": "Current status of the resource.",
+                    "description": "Current status of the event.",
                     "maxLength": 255
                   }
                 }
@@ -392,16 +435,25 @@ const EventSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "description": "Response body returned after updating an event's status.",
                   "properties": {
                     "message": {
-                      "type": "string"
-                    },
-                    "event_id": {
                       "type": "string",
-                      "format": "uuid"
+                      "description": "Human-readable status message.",
+                      "maxLength": 500
+                    },
+                    "eventId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "UUID of the event whose status was updated.",
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "eventId,omitempty"
+                      }
                     },
                     "status": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Updated status of the event.",
+                      "maxLength": 255
                     }
                   }
                 }
@@ -528,16 +580,28 @@ const EventSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "description": "Paginated list of events.",
                   "properties": {
                     "page": {
+                      "description": "Zero-based page index returned in this response.",
                       "type": "integer",
                       "x-go-type-skip-optional-pointer": true
                     },
-                    "page_size": {
+                    "pageSize": {
+                      "description": "Maximum number of items returned on each page.",
+                      "minimum": 1,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "pageSize,omitempty"
+                      },
                       "type": "integer",
                       "x-go-type-skip-optional-pointer": true
                     },
-                    "total_count": {
+                    "totalCount": {
+                      "description": "Total number of items across all pages.",
+                      "minimum": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "totalCount,omitempty"
+                      },
                       "type": "integer",
                       "x-go-type-skip-optional-pointer": true
                     },
@@ -548,32 +612,30 @@ const EventSchema: Record<string, unknown> = {
                         "additionalProperties": false,
                         "description": "EventResult entity schema.",
                         "properties": {
-                          "user_id": {
+                          "userId": {
                             "type": "string",
                             "format": "uuid",
+                            "description": "UUID of the user associated with the event.",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
-                            },
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "user_id",
-                              "json": "user_id"
                             },
                             "x-go-name": "UserID",
-                            "x-go-type-skip-optional-pointer": true
-                          },
-                          "system_id": {
-                            "type": "string",
-                            "format": "uuid",
-                            "x-go-type": "uuid.UUID",
-                            "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
-                            },
+                            "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
-                              "db": "system_id"
-                            },
-                            "x-go-name": "SystemID",
-                            "x-go-type-skip-optional-pointer": true
+                              "db": "user_id",
+                              "json": "userId"
+                            }
+                          },
+                          "systemId": {
+                            "type": "string",
+                            "description": "System identifier of the event source.",
+                            "maxLength": 255,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "system_id",
+                              "json": "systemId"
+                            }
                           },
                           "category": {
                             "type": "string",
@@ -592,45 +654,44 @@ const EventSchema: Record<string, unknown> = {
                           },
                           "firstName": {
                             "type": "string",
-                            "description": "The first name of the event.",
+                            "description": "The first name of the user associated with the event.",
                             "maxLength": 500
                           },
                           "lastName": {
                             "type": "string",
-                            "description": "The last name of the event.",
+                            "description": "The last name of the user associated with the event.",
                             "maxLength": 500
                           },
                           "email": {
+                            "description": "Email address of the user associated with the event.",
                             "type": "string",
                             "format": "email",
-                            "description": "email",
                             "x-go-type-skip-optional-pointer": true
                           },
                           "provider": {
+                            "description": "Authentication provider of the user associated with the event.",
                             "type": "string",
-                            "description": "One of (x-oapi-codegen-extra-tags-cloud, github, google)",
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "created_at": {
-                            "description": "Timestamp when the resource was created.",
-                            "x-go-type": "time.Time",
+                          "createdAt": {
                             "type": "string",
                             "format": "date-time",
-                            "x-go-name": "CreatedAt",
+                            "description": "Timestamp when the event was recorded.",
+                            "x-go-type": "time.Time",
+                            "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "created_at",
-                              "yaml": "created_at"
-                            },
-                            "x-go-type-skip-optional-pointer": true
+                              "json": "createdAt"
+                            }
                           }
                         },
                         "required": [
-                          "user_id",
+                          "userId",
                           "category",
                           "action"
                         ]
                       },
-                      "description": "The data of the eventspage."
+                      "description": "The events returned on the current page."
                     }
                   }
                 }
@@ -643,10 +704,11 @@ const EventSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "description": "Generic error envelope returned for non-2xx responses.",
                   "properties": {
                     "error": {
                       "type": "string",
-                      "description": "The error of the errorresponse.",
+                      "description": "Human-readable error message.",
                       "maxLength": 500
                     }
                   }
@@ -680,6 +742,7 @@ const EventSchema: Record<string, unknown> = {
           {
             "name": "cumulative",
             "in": "query",
+            "description": "When true, return cumulative aggregate counts across all time.",
             "required": false,
             "schema": {
               "type": "boolean"
@@ -693,10 +756,11 @@ const EventSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "description": "Aggregated event counts across categories.",
                   "properties": {
                     "audit": {
                       "type": "integer",
-                      "description": "The audit of the eventsaggregate.",
+                      "description": "Count of audit-category events.",
                       "minimum": 0
                     }
                   },
@@ -776,16 +840,28 @@ const EventSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "description": "Paginated list of events.",
                   "properties": {
                     "page": {
+                      "description": "Zero-based page index returned in this response.",
                       "type": "integer",
                       "x-go-type-skip-optional-pointer": true
                     },
-                    "page_size": {
+                    "pageSize": {
+                      "description": "Maximum number of items returned on each page.",
+                      "minimum": 1,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "pageSize,omitempty"
+                      },
                       "type": "integer",
                       "x-go-type-skip-optional-pointer": true
                     },
-                    "total_count": {
+                    "totalCount": {
+                      "description": "Total number of items across all pages.",
+                      "minimum": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "totalCount,omitempty"
+                      },
                       "type": "integer",
                       "x-go-type-skip-optional-pointer": true
                     },
@@ -796,32 +872,30 @@ const EventSchema: Record<string, unknown> = {
                         "additionalProperties": false,
                         "description": "EventResult entity schema.",
                         "properties": {
-                          "user_id": {
+                          "userId": {
                             "type": "string",
                             "format": "uuid",
+                            "description": "UUID of the user associated with the event.",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
-                            },
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "user_id",
-                              "json": "user_id"
                             },
                             "x-go-name": "UserID",
-                            "x-go-type-skip-optional-pointer": true
-                          },
-                          "system_id": {
-                            "type": "string",
-                            "format": "uuid",
-                            "x-go-type": "uuid.UUID",
-                            "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
-                            },
+                            "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
-                              "db": "system_id"
-                            },
-                            "x-go-name": "SystemID",
-                            "x-go-type-skip-optional-pointer": true
+                              "db": "user_id",
+                              "json": "userId"
+                            }
+                          },
+                          "systemId": {
+                            "type": "string",
+                            "description": "System identifier of the event source.",
+                            "maxLength": 255,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "system_id",
+                              "json": "systemId"
+                            }
                           },
                           "category": {
                             "type": "string",
@@ -840,45 +914,44 @@ const EventSchema: Record<string, unknown> = {
                           },
                           "firstName": {
                             "type": "string",
-                            "description": "The first name of the event.",
+                            "description": "The first name of the user associated with the event.",
                             "maxLength": 500
                           },
                           "lastName": {
                             "type": "string",
-                            "description": "The last name of the event.",
+                            "description": "The last name of the user associated with the event.",
                             "maxLength": 500
                           },
                           "email": {
+                            "description": "Email address of the user associated with the event.",
                             "type": "string",
                             "format": "email",
-                            "description": "email",
                             "x-go-type-skip-optional-pointer": true
                           },
                           "provider": {
+                            "description": "Authentication provider of the user associated with the event.",
                             "type": "string",
-                            "description": "One of (x-oapi-codegen-extra-tags-cloud, github, google)",
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "created_at": {
-                            "description": "Timestamp when the resource was created.",
-                            "x-go-type": "time.Time",
+                          "createdAt": {
                             "type": "string",
                             "format": "date-time",
-                            "x-go-name": "CreatedAt",
+                            "description": "Timestamp when the event was recorded.",
+                            "x-go-type": "time.Time",
+                            "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "created_at",
-                              "yaml": "created_at"
-                            },
-                            "x-go-type-skip-optional-pointer": true
+                              "json": "createdAt"
+                            }
                           }
                         },
                         "required": [
-                          "user_id",
+                          "userId",
                           "category",
                           "action"
                         ]
                       },
-                      "description": "The data of the eventspage."
+                      "description": "The events returned on the current page."
                     }
                   }
                 }
@@ -956,29 +1029,37 @@ const EventSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "description": "Paginated list of per-user event summaries.",
                   "properties": {
                     "page": {
                       "type": "integer",
                       "description": "Current page number of the result set.",
                       "minimum": 0
                     },
-                    "page_size": {
+                    "pageSize": {
                       "type": "integer",
                       "description": "Number of items per page.",
-                      "minimum": 1
+                      "minimum": 1,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "pageSize,omitempty"
+                      }
                     },
-                    "total_count": {
+                    "totalCount": {
                       "type": "integer",
                       "description": "Total number of items available.",
-                      "minimum": 0
+                      "minimum": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "totalCount,omitempty"
+                      }
                     },
                     "data": {
                       "type": "array",
                       "items": {
                         "type": "object",
+                        "description": "Per-user event summary entry.",
                         "additionalProperties": true
                       },
-                      "description": "The data of the eventsummarypage."
+                      "description": "The event summaries returned on the current page."
                     }
                   }
                 }
@@ -1034,15 +1115,16 @@ const EventSchema: Record<string, unknown> = {
                   "type": "array",
                   "items": {
                     "type": "object",
+                    "description": "A category/action pair describing one kind of event.",
                     "properties": {
                       "category": {
                         "type": "string",
-                        "description": "The category of the eventtype.",
+                        "description": "The category of the event type.",
                         "maxLength": 500
                       },
                       "action": {
                         "type": "string",
-                        "description": "The action of the eventtype.",
+                        "description": "The action of the event type.",
                         "maxLength": 500
                       }
                     }
@@ -1108,6 +1190,16 @@ const EventSchema: Record<string, unknown> = {
       }
     },
     "parameters": {
+      "eventId": {
+        "name": "eventId",
+        "in": "path",
+        "description": "ID of the event.",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
       "workspaceId": {
         "name": "workspaceId",
         "in": "path",
@@ -1163,6 +1255,7 @@ const EventSchema: Record<string, unknown> = {
       "cumulative": {
         "name": "cumulative",
         "in": "query",
+        "description": "When true, return cumulative aggregate counts across all time.",
         "required": false,
         "schema": {
           "type": "boolean"
@@ -1193,8 +1286,44 @@ const EventSchema: Record<string, unknown> = {
       }
     },
     "schemas": {
+      "EventPayload": {
+        "type": "object",
+        "description": "Payload for creating a new event.",
+        "additionalProperties": true,
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the user associated with the event.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-name": "UserID",
+            "x-oapi-codegen-extra-tags": {
+              "json": "userId,omitempty"
+            }
+          },
+          "category": {
+            "type": "string",
+            "description": "The category of the event.",
+            "maxLength": 500
+          },
+          "action": {
+            "type": "string",
+            "description": "The action of the event.",
+            "maxLength": 500
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the event.",
+            "maxLength": 5000
+          }
+        }
+      },
       "UpdateEventStatusRequest": {
         "type": "object",
+        "description": "Payload for updating the status of a single event.",
         "required": [
           "status"
         ],
@@ -1202,13 +1331,38 @@ const EventSchema: Record<string, unknown> = {
           "status": {
             "type": "string",
             "example": "completed",
-            "description": "Current status of the resource.",
+            "description": "Current status of the event.",
+            "maxLength": 255
+          }
+        }
+      },
+      "UpdateEventStatusResponse": {
+        "type": "object",
+        "description": "Response body returned after updating an event's status.",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable status message.",
+            "maxLength": 500
+          },
+          "eventId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the event whose status was updated.",
+            "x-oapi-codegen-extra-tags": {
+              "json": "eventId,omitempty"
+            }
+          },
+          "status": {
+            "type": "string",
+            "description": "Updated status of the event.",
             "maxLength": 255
           }
         }
       },
       "BulkDeleteRequest": {
         "type": "object",
+        "description": "Payload for bulk-deleting events by ID.",
         "required": [
           "ids"
         ],
@@ -1224,12 +1378,27 @@ const EventSchema: Record<string, unknown> = {
                 "path": "github.com/gofrs/uuid"
               }
             },
-            "description": "The ids of the bulkdeleterequest."
+            "description": "UUIDs of the events to delete."
+          }
+        }
+      },
+      "BulkDeleteResponse": {
+        "type": "object",
+        "description": "Response body returned after bulk event deletion.",
+        "properties": {
+          "deleted": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUIDs of events that were deleted."
           }
         }
       },
       "BulkUpdateStatusRequest": {
         "type": "object",
+        "description": "Payload for bulk-updating the status of events.",
         "required": [
           "ids",
           "status"
@@ -1246,13 +1415,27 @@ const EventSchema: Record<string, unknown> = {
                 "path": "github.com/gofrs/uuid"
               }
             },
-            "description": "The ids of the bulkupdatestatusrequest."
+            "description": "UUIDs of the events to update."
           },
           "status": {
             "type": "string",
             "example": "failed",
-            "description": "Current status of the resource.",
+            "description": "New status to apply to the selected events.",
             "maxLength": 255
+          }
+        }
+      },
+      "BulkUpdateStatusResponse": {
+        "type": "object",
+        "description": "Response body returned after bulk event status update.",
+        "properties": {
+          "updated": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUIDs of events whose status was updated."
           }
         }
       },
@@ -1261,32 +1444,30 @@ const EventSchema: Record<string, unknown> = {
         "additionalProperties": false,
         "description": "EventResult entity schema.",
         "properties": {
-          "user_id": {
+          "userId": {
             "type": "string",
             "format": "uuid",
+            "description": "UUID of the user associated with the event.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
-            },
-            "x-oapi-codegen-extra-tags": {
-              "db": "user_id",
-              "json": "user_id"
             },
             "x-go-name": "UserID",
-            "x-go-type-skip-optional-pointer": true
-          },
-          "system_id": {
-            "type": "string",
-            "format": "uuid",
-            "x-go-type": "uuid.UUID",
-            "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
-            },
+            "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
-              "db": "system_id"
-            },
-            "x-go-name": "SystemID",
-            "x-go-type-skip-optional-pointer": true
+              "db": "user_id",
+              "json": "userId"
+            }
+          },
+          "systemId": {
+            "type": "string",
+            "description": "System identifier of the event source.",
+            "maxLength": 255,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "system_id",
+              "json": "systemId"
+            }
           },
           "category": {
             "type": "string",
@@ -1305,56 +1486,67 @@ const EventSchema: Record<string, unknown> = {
           },
           "firstName": {
             "type": "string",
-            "description": "The first name of the event.",
+            "description": "The first name of the user associated with the event.",
             "maxLength": 500
           },
           "lastName": {
             "type": "string",
-            "description": "The last name of the event.",
+            "description": "The last name of the user associated with the event.",
             "maxLength": 500
           },
           "email": {
+            "description": "Email address of the user associated with the event.",
             "type": "string",
             "format": "email",
-            "description": "email",
             "x-go-type-skip-optional-pointer": true
           },
           "provider": {
+            "description": "Authentication provider of the user associated with the event.",
             "type": "string",
-            "description": "One of (x-oapi-codegen-extra-tags-cloud, github, google)",
             "x-go-type-skip-optional-pointer": true
           },
-          "created_at": {
-            "description": "Timestamp when the resource was created.",
-            "x-go-type": "time.Time",
+          "createdAt": {
             "type": "string",
             "format": "date-time",
-            "x-go-name": "CreatedAt",
+            "description": "Timestamp when the event was recorded.",
+            "x-go-type": "time.Time",
+            "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "created_at",
-              "yaml": "created_at"
-            },
-            "x-go-type-skip-optional-pointer": true
+              "json": "createdAt"
+            }
           }
         },
         "required": [
-          "user_id",
+          "userId",
           "category",
           "action"
         ]
       },
       "EventsPage": {
         "type": "object",
+        "description": "Paginated list of events.",
         "properties": {
           "page": {
+            "description": "Zero-based page index returned in this response.",
             "type": "integer",
             "x-go-type-skip-optional-pointer": true
           },
-          "page_size": {
+          "pageSize": {
+            "description": "Maximum number of items returned on each page.",
+            "minimum": 1,
+            "x-oapi-codegen-extra-tags": {
+              "json": "pageSize,omitempty"
+            },
             "type": "integer",
             "x-go-type-skip-optional-pointer": true
           },
-          "total_count": {
+          "totalCount": {
+            "description": "Total number of items across all pages.",
+            "minimum": 0,
+            "x-oapi-codegen-extra-tags": {
+              "json": "totalCount,omitempty"
+            },
             "type": "integer",
             "x-go-type-skip-optional-pointer": true
           },
@@ -1365,32 +1557,30 @@ const EventSchema: Record<string, unknown> = {
               "additionalProperties": false,
               "description": "EventResult entity schema.",
               "properties": {
-                "user_id": {
+                "userId": {
                   "type": "string",
                   "format": "uuid",
+                  "description": "UUID of the user associated with the event.",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
-                  },
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "user_id",
-                    "json": "user_id"
                   },
                   "x-go-name": "UserID",
-                  "x-go-type-skip-optional-pointer": true
-                },
-                "system_id": {
-                  "type": "string",
-                  "format": "uuid",
-                  "x-go-type": "uuid.UUID",
-                  "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
-                  },
+                  "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
-                    "db": "system_id"
-                  },
-                  "x-go-name": "SystemID",
-                  "x-go-type-skip-optional-pointer": true
+                    "db": "user_id",
+                    "json": "userId"
+                  }
+                },
+                "systemId": {
+                  "type": "string",
+                  "description": "System identifier of the event source.",
+                  "maxLength": 255,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "system_id",
+                    "json": "systemId"
+                  }
                 },
                 "category": {
                   "type": "string",
@@ -1409,54 +1599,54 @@ const EventSchema: Record<string, unknown> = {
                 },
                 "firstName": {
                   "type": "string",
-                  "description": "The first name of the event.",
+                  "description": "The first name of the user associated with the event.",
                   "maxLength": 500
                 },
                 "lastName": {
                   "type": "string",
-                  "description": "The last name of the event.",
+                  "description": "The last name of the user associated with the event.",
                   "maxLength": 500
                 },
                 "email": {
+                  "description": "Email address of the user associated with the event.",
                   "type": "string",
                   "format": "email",
-                  "description": "email",
                   "x-go-type-skip-optional-pointer": true
                 },
                 "provider": {
+                  "description": "Authentication provider of the user associated with the event.",
                   "type": "string",
-                  "description": "One of (x-oapi-codegen-extra-tags-cloud, github, google)",
                   "x-go-type-skip-optional-pointer": true
                 },
-                "created_at": {
-                  "description": "Timestamp when the resource was created.",
-                  "x-go-type": "time.Time",
+                "createdAt": {
                   "type": "string",
                   "format": "date-time",
-                  "x-go-name": "CreatedAt",
+                  "description": "Timestamp when the event was recorded.",
+                  "x-go-type": "time.Time",
+                  "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "created_at",
-                    "yaml": "created_at"
-                  },
-                  "x-go-type-skip-optional-pointer": true
+                    "json": "createdAt"
+                  }
                 }
               },
               "required": [
-                "user_id",
+                "userId",
                 "category",
                 "action"
               ]
             },
-            "description": "The data of the eventspage."
+            "description": "The events returned on the current page."
           }
         }
       },
       "EventsAggregate": {
         "type": "object",
+        "description": "Aggregated event counts across categories.",
         "properties": {
           "audit": {
             "type": "integer",
-            "description": "The audit of the eventsaggregate.",
+            "description": "Count of audit-category events.",
             "minimum": 0
           }
         },
@@ -1464,57 +1654,68 @@ const EventSchema: Record<string, unknown> = {
       },
       "EventSummary": {
         "type": "object",
+        "description": "Per-user event summary entry.",
         "additionalProperties": true
       },
       "EventSummaryPage": {
         "type": "object",
+        "description": "Paginated list of per-user event summaries.",
         "properties": {
           "page": {
             "type": "integer",
             "description": "Current page number of the result set.",
             "minimum": 0
           },
-          "page_size": {
+          "pageSize": {
             "type": "integer",
             "description": "Number of items per page.",
-            "minimum": 1
+            "minimum": 1,
+            "x-oapi-codegen-extra-tags": {
+              "json": "pageSize,omitempty"
+            }
           },
-          "total_count": {
+          "totalCount": {
             "type": "integer",
             "description": "Total number of items available.",
-            "minimum": 0
+            "minimum": 0,
+            "x-oapi-codegen-extra-tags": {
+              "json": "totalCount,omitempty"
+            }
           },
           "data": {
             "type": "array",
             "items": {
               "type": "object",
+              "description": "Per-user event summary entry.",
               "additionalProperties": true
             },
-            "description": "The data of the eventsummarypage."
+            "description": "The event summaries returned on the current page."
           }
         }
       },
       "EventType": {
         "type": "object",
+        "description": "A category/action pair describing one kind of event.",
         "properties": {
           "category": {
             "type": "string",
-            "description": "The category of the eventtype.",
+            "description": "The category of the event type.",
             "maxLength": 500
           },
           "action": {
             "type": "string",
-            "description": "The action of the eventtype.",
+            "description": "The action of the event type.",
             "maxLength": 500
           }
         }
       },
       "ErrorResponse": {
         "type": "object",
+        "description": "Generic error envelope returned for non-2xx responses.",
         "properties": {
           "error": {
             "type": "string",
-            "description": "The error of the errorresponse.",
+            "description": "Human-readable error message.",
             "maxLength": 500
           }
         }
