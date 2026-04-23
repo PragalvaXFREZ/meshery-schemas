@@ -2,9 +2,7 @@ openapi: 3.0.0
 info:
   title: Team
   description: OpenAPI schema for team management in Meshery Cloud.
-  x-deprecated: true
-  x-superseded-by: v1beta2
-  version: v1beta1
+  version: v1beta2
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -30,15 +28,15 @@ tags:
 components:
   responses:
     200:
-      $ref: "../core/api.yml#/components/responses/200"
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/200"
     400:
-      $ref: "../core/api.yml#/components/responses/400"
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
     401:
-      $ref: "../core/api.yml#/components/responses/401"
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
     404:
-      $ref: "../core/api.yml#/components/responses/404"
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/404"
     500:
-      $ref: "../core/api.yml#/components/responses/500"
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
 
   parameters:
     teamId:
@@ -46,23 +44,30 @@ components:
       in: path
       description: Team ID
       schema:
-        $ref: ../core/api.yml#/components/schemas/team_id
+        $ref: ../../v1alpha1/core/api.yml#/components/schemas/team_id
       required: true
     orgId:
       name: orgId
       in: path
       description: Organization ID
       schema:
-        $ref: ../core/api.yml#/components/schemas/organization_id
+        $ref: ../../v1alpha1/core/api.yml#/components/schemas/organization_id
+      required: true
+    userId:
+      name: userId
+      in: path
+      description: User ID
+      schema:
+        $ref: ../../v1alpha1/core/api.yml#/components/schemas/user_id
       required: true
     search:
-      $ref: ../core/api.yml#/components/parameters/search
+      $ref: ../../v1alpha1/core/api.yml#/components/parameters/search
     order:
-      $ref: ../core/api.yml#/components/parameters/order
+      $ref: ../../v1alpha1/core/api.yml#/components/parameters/order
     page:
-      $ref: ../core/api.yml#/components/parameters/page
+      $ref: ../../v1alpha1/core/api.yml#/components/parameters/page
     pagesize:
-      $ref: ../core/api.yml#/components/parameters/pagesize
+      $ref: ../../v1alpha1/core/api.yml#/components/parameters/pagesize
 
   securitySchemes:
     jwt:
@@ -81,10 +86,10 @@ components:
         - name
       properties:
         name:
-          $ref: ../core/api.yml#/components/schemas/Text
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Text
           description: Team name. Provide a meaningful name that represents this team.
         description:
-          $ref: ../core/api.yml#/components/schemas/Text
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Text
           description: A detailed description of the team's purpose and responsibilities.
 
     TeamUpdatePayload:
@@ -92,10 +97,10 @@ components:
       description: Payload for updating an existing team
       properties:
         name:
-          $ref: ../core/api.yml#/components/schemas/Text
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Text
           description: Updated team name
         description:
-          $ref: ../core/api.yml#/components/schemas/Text
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Text
           description: Updated team description
 
     TeamPage:
@@ -103,11 +108,17 @@ components:
       description: Paginated list of teams
       properties:
         page:
-          $ref: ../core/api.yml#/components/schemas/number
+          type: integer
+          description: Current page number of the result set.
+          minimum: 0
         page_size:
-          $ref: ../core/api.yml#/components/schemas/number
+          type: integer
+          description: Number of items per page.
+          minimum: 1
         total_count:
-          $ref: ../core/api.yml#/components/schemas/number
+          type: integer
+          description: Total number of items available.
+          minimum: 0
         teams:
           type: array
           x-go-type-skip-optional-pointer: true
@@ -121,33 +132,55 @@ components:
       description: Mapping between teams and users
       properties:
         id:
-          $ref: ../core/api.yml#/components/schemas/general_id
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/general_id
           x-go-name: ID
-        team_id:
-          $ref: ../core/api.yml#/components/schemas/team_id
-        user_id:
-          $ref: ../core/api.yml#/components/schemas/user_id
+        teamId:
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+          description: Team ID
+          x-oapi-codegen-extra-tags:
+            db: team_id
+            json: teamId
+        userId:
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+          description: User ID
           x-oapi-codegen-extra-tags:
             db: user_id
-        created_at:
-          $ref: ../core/api.yml#/components/schemas/created_at
-        updated_at:
-          $ref: ../core/api.yml#/components/schemas/updated_at
-        deleted_at:
-          $ref: ../core/api.yml#/components/schemas/nullTime
+            json: userId
+        createdAt:
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
+          description: Timestamp when the mapping was created.
+          x-oapi-codegen-extra-tags:
+            db: created_at
+            json: createdAt
+        updatedAt:
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
+          description: Timestamp when the mapping was last updated.
+          x-oapi-codegen-extra-tags:
+            db: updated_at
+            json: updatedAt
+        deletedAt:
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/nullTime
+          description: Timestamp when the mapping was soft-deleted, if applicable.
           x-oapi-codegen-extra-tags:
             db: deleted_at
+            json: deletedAt
 
     TeamsUsersMappingPage:
       type: object
       description: Paginated list of team-user mappings
       properties:
         page:
-          $ref: ../core/api.yml#/components/schemas/number
+          type: integer
+          description: Current page number of the result set.
+          minimum: 0
         page_size:
-          $ref: ../core/api.yml#/components/schemas/number
+          type: integer
+          description: Number of items per page.
+          minimum: 1
         total_count:
-          $ref: ../core/api.yml#/components/schemas/number
+          type: integer
+          description: Total number of items available.
+          minimum: 0
         teamsUsersMapping:
           type: array
           x-go-type-skip-optional-pointer: true
@@ -158,10 +191,12 @@ components:
 
     TeamMember:
       type: object
+      description: A user who is a prospective or existing team member.
       additionalProperties: true
 
     TeamMembersPage:
       type: object
+      description: Paginated list of team members.
       properties:
         page:
           type: integer
@@ -368,12 +403,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/orgId"
         - $ref: "#/components/parameters/teamId"
-        - name: userId
-          in: path
-          description: User ID
-          schema:
-            $ref: ../core/api.yml#/components/schemas/user_id
-          required: true
+        - $ref: "#/components/parameters/userId"
       responses:
         "201":
           description: User added to team
@@ -399,12 +429,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/orgId"
         - $ref: "#/components/parameters/teamId"
-        - name: userId
-          in: path
-          description: User ID
-          schema:
-            $ref: ../core/api.yml#/components/schemas/user_id
-          required: true
+        - $ref: "#/components/parameters/userId"
       responses:
         "204":
           description: User removed from team
