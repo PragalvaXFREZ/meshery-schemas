@@ -160,17 +160,30 @@ baseline-consumer-graph:
 #-----------------------------------------------------------------------------
 .PHONY: consumer-audit consumer-audit-update
 
-# Override via: make consumer-audit MESHERY_REPO=../meshery CLOUD_REPO=../meshery-cloud
-MESHERY_REPO ?=
-CLOUD_REPO   ?=
-SHEET_ID     ?=
-CREDENTIALS  ?=
+# Override via:
+#   make consumer-audit MESHERY_REPO=../meshery CLOUD_REPO=../meshery-cloud \
+#                       EXTENSIONS_REPO=../meshery-extensions
+# Each *_REPO variable is optional; the audit iterates every registered
+# consumer (Go Gorilla, Go Echo, TypeScript RTK Query) and skips trees that
+# were not provided. MESHERY_REPO_UI / CLOUD_REPO_UI override the TS scan
+# path independently of the Go path (rarely needed — only when the UI lives
+# in a separate checkout).
+MESHERY_REPO     ?=
+CLOUD_REPO       ?=
+EXTENSIONS_REPO  ?=
+MESHERY_REPO_UI  ?=
+CLOUD_REPO_UI    ?=
+SHEET_ID         ?=
+CREDENTIALS      ?=
 
 ## Dry-run the consumer audit without reconciling or updating Google Sheets.
 consumer-audit:
 	@go run ./cmd/consumer-audit \
 		$(if $(MESHERY_REPO),--meshery-repo=$(MESHERY_REPO)) \
 		$(if $(CLOUD_REPO),--cloud-repo=$(CLOUD_REPO)) \
+		$(if $(EXTENSIONS_REPO),--extensions-repo=$(EXTENSIONS_REPO)) \
+		$(if $(MESHERY_REPO_UI),--meshery-repo-ui=$(MESHERY_REPO_UI)) \
+		$(if $(CLOUD_REPO_UI),--cloud-repo-ui=$(CLOUD_REPO_UI)) \
 		$(if $(VERBOSE),--verbose)
 
 ## Reconcile the consumer audit against the canonical Google Sheet and update it.
@@ -181,6 +194,9 @@ consumer-audit-update:
 	@go run ./cmd/consumer-audit \
 		$(if $(MESHERY_REPO),--meshery-repo=$(MESHERY_REPO)) \
 		$(if $(CLOUD_REPO),--cloud-repo=$(CLOUD_REPO)) \
+		$(if $(EXTENSIONS_REPO),--extensions-repo=$(EXTENSIONS_REPO)) \
+		$(if $(MESHERY_REPO_UI),--meshery-repo-ui=$(MESHERY_REPO_UI)) \
+		$(if $(CLOUD_REPO_UI),--cloud-repo-ui=$(CLOUD_REPO_UI)) \
 		$(if $(VERBOSE),--verbose) \
 		--sheet-id=$(SHEET_ID) \
 		--credentials=$(CREDENTIALS)

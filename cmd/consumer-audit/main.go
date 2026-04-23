@@ -2,10 +2,16 @@
 // it against handler implementations in meshery/meshery and meshery-cloud,
 // and reports per-endpoint coverage and implementation drift.
 //
+// It also runs the TypeScript consumer auditor (validation.parseTSConsumer)
+// against each provided TS tree and surfaces RTK Query drift findings —
+// camelCase case-flips, snake_case body wrappers, and snake_case param keys
+// — as a post-script to the main endpoint table.
+//
 // Usage:
 //
 //	go run ./cmd/consumer-audit
 //	go run ./cmd/consumer-audit --meshery-repo=../meshery --cloud-repo=../meshery-cloud
+//	go run ./cmd/consumer-audit --extensions-repo=../meshery-extensions
 //	go run ./cmd/consumer-audit --sheet-id=<id> --credentials=<path>      # reconcile and update the canonical sheet
 package main
 
@@ -22,8 +28,11 @@ import (
 )
 
 func main() {
-	mesheryRepo := flag.String("meshery-repo", "", "Path to a meshery/meshery checkout (Gorilla router)")
-	cloudRepo := flag.String("cloud-repo", "", "Path to a meshery-cloud checkout (Echo router)")
+	mesheryRepo := flag.String("meshery-repo", "", "Path to a meshery/meshery checkout (Gorilla router + ui/rtk-query)")
+	cloudRepo := flag.String("cloud-repo", "", "Path to a meshery-cloud checkout (Echo router + ui/api + ui/rtk-query)")
+	extensionsRepo := flag.String("extensions-repo", "", "Path to a meshery-extensions checkout (meshmap/src/rtk-query)")
+	mesheryRepoUI := flag.String("meshery-repo-ui", "", "Override the TS scan path for meshery (defaults to --meshery-repo)")
+	cloudRepoUI := flag.String("cloud-repo-ui", "", "Override the TS scan path for meshery-cloud (defaults to --cloud-repo)")
 	verbose := flag.Bool("verbose", false, "Print per-endpoint Schema-only and Consumer-only lists")
 	sheetID := flag.String("sheet-id", "", "Google Sheet ID to reconcile against and update")
 	credentials := flag.String("credentials", "", "Path to Google service-account JSON credentials (required with --sheet-id)")
@@ -41,9 +50,12 @@ func main() {
 	}
 
 	opts := validation.ConsumerAuditOptions{
-		RootDir:     rootDir,
-		MesheryRepo: *mesheryRepo,
-		CloudRepo:   *cloudRepo,
+		RootDir:        rootDir,
+		MesheryRepo:    *mesheryRepo,
+		CloudRepo:      *cloudRepo,
+		MesheryRepoUI:  *mesheryRepoUI,
+		CloudRepoUI:    *cloudRepoUI,
+		ExtensionsRepo: *extensionsRepo,
 	}
 
 	if *sheetID != "" {
@@ -65,6 +77,7 @@ func main() {
 	out := io.Writer(os.Stdout)
 	printAuditReport(out, result)
 	printActionItems(out, result, *mesheryRepo != "", *cloudRepo != "")
+	printTSFindings(out, result.TSFindings)
 
 	if *verbose {
 		printVerbose(out, result)
@@ -351,6 +364,50 @@ func consumerScopeLabel(label string) string {
 		return "Cloud"
 	default:
 		return label
+	}
+}
+
+// printTSFindings renders the TypeScript consumer auditor output. Findings
+// are grouped by repo so reviewers can focus on a single downstream at a
+// time. An empty list is a no-op so we don't introduce a header row for
+// runs that didn't scan any TS tree.
+func printTSFindings(out io.Writer, findings []validation.TSFinding) {
+	if len(findings) == 0 {
+		return
+	}
+	fmt.Fprintln(out)
+	fmt.Fprintln(out, "TypeScript Consumer Findings")
+	fmt.Fprintln(out)
+
+	byRepo := map[validation.TSConsumerRepo][]validation.TSFinding{}
+	for _, f := range findings {
+		byRepo[f.Repo] = append(byRepo[f.Repo], f)
+	}
+	repos := make([]string, 0, len(byRepo))
+	for repo := range byRepo {
+		repos = append(repos, string(repo))
+	}
+	sort.Strings(repos)
+
+	for _, repoName := range repos {
+		repo := validation.TSConsumerRepo(repoName)
+		list := byRepo[repo]
+		if len(list) == 0 {
+			continue
+		}
+		fmt.Fprintf(out, "  %s (%d %s):\n", repo, len(list), pluralize("finding", len(list)))
+		for _, f := range list {
+			loc := f.File
+			if f.Line > 0 {
+				loc = fmt.Sprintf("%s:%d", f.File, f.Line)
+			}
+			fmt.Fprintf(out, "    [%s] %s  %s %s  key=%q\n",
+				f.Kind, loc, f.Method, f.URL, f.Key)
+			if f.Message != "" {
+				fmt.Fprintf(out, "      %s\n", f.Message)
+			}
+		}
+		fmt.Fprintln(out)
 	}
 }
 
