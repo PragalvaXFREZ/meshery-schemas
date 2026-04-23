@@ -7,7 +7,6 @@ const CredentialSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "credential",
-    "x-deprecated": true,
     "description": "Documentation for Meshery Cloud REST APIs for Credentials",
     "contact": {
       "name": "Meshery Maintainers",
@@ -18,7 +17,7 @@ const CredentialSchema: Record<string, unknown> = {
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "version": "v1beta1"
+    "version": "v1beta2"
   },
   "servers": [
     {
@@ -112,10 +111,15 @@ const CredentialSchema: Record<string, unknown> = {
                       "items": {
                         "x-go-type": "Credential",
                         "type": "object",
+                        "additionalProperties": false,
                         "description": "Meshery Credentials store sensitive information such as API keys, tokens, and passwords used by connections to external systems.\n",
                         "required": [
+                          "id",
                           "name",
-                          "type"
+                          "type",
+                          "userId",
+                          "createdAt",
+                          "updatedAt"
                         ],
                         "properties": {
                           "id": {
@@ -141,7 +145,7 @@ const CredentialSchema: Record<string, unknown> = {
                             "minLength": 1,
                             "maxLength": 255
                           },
-                          "user_id": {
+                          "userId": {
                             "description": "UUID of the user who owns this credential.",
                             "x-order": 3,
                             "x-oapi-codegen-extra-tags": {
@@ -176,51 +180,46 @@ const CredentialSchema: Record<string, unknown> = {
                               "db": "secret"
                             }
                           },
-                          "created_at": {
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Timestamp when the credential was created.",
+                            "x-go-type": "time.Time",
+                            "x-go-type-skip-optional-pointer": true,
                             "x-order": 6,
-                            "description": "Timestamp when the resource was created.",
-                            "x-go-type": "time.Time",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at"
+                            }
+                          },
+                          "updatedAt": {
                             "type": "string",
                             "format": "date-time",
-                            "x-go-name": "CreatedAt",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "created_at",
-                              "yaml": "created_at"
-                            },
-                            "x-go-type-skip-optional-pointer": true
-                          },
-                          "updated_at": {
+                            "description": "Timestamp when the credential was last updated.",
+                            "x-go-type": "time.Time",
+                            "x-go-type-skip-optional-pointer": true,
                             "x-order": 7,
-                            "description": "Timestamp when the resource was updated.",
-                            "x-go-type": "time.Time",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at"
+                            }
+                          },
+                          "deletedAt": {
                             "type": "string",
                             "format": "date-time",
-                            "x-go-name": "UpdatedAt",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "updated_at",
-                              "yaml": "updated_at"
-                            },
-                            "x-go-type-skip-optional-pointer": true
-                          },
-                          "deleted_at": {
                             "description": "Timestamp when the credential was soft-deleted.",
+                            "x-go-type": "core.NullTime",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
+                            "x-go-type-skip-optional-pointer": true,
                             "x-order": 8,
                             "x-oapi-codegen-extra-tags": {
                               "db": "deleted_at"
-                            },
-                            "x-go-type": "meshcore.NullTime",
-                            "x-go-type-import": {
-                              "name": "meshcore",
-                              "path": "github.com/meshery/schemas/models/core"
-                            },
-                            "type": "string",
-                            "format": "date-time",
-                            "x-go-type-skip-optional-pointer": true
+                            }
                           }
                         }
                       },
                       "x-order": 1,
-                      "description": "The credentials of the credentialpage."
+                      "description": "The credentials returned on the current page."
                     },
                     "total_count": {
                       "type": "integer",
@@ -284,17 +283,17 @@ const CredentialSchema: Record<string, unknown> = {
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Meshery Credentials store sensitive information such as API keys, tokens, and passwords used by connections to external systems.\n",
+                "description": "Payload for creating or updating a credential.",
                 "required": [
                   "name",
                   "type"
                 ],
                 "properties": {
                   "id": {
-                    "description": "Unique identifier for the credential.",
+                    "description": "Existing credential ID for updates; omit on create.",
                     "x-order": 1,
                     "x-oapi-codegen-extra-tags": {
-                      "db": "id"
+                      "json": "id,omitempty"
                     },
                     "type": "string",
                     "format": "uuid",
@@ -307,17 +306,14 @@ const CredentialSchema: Record<string, unknown> = {
                     "type": "string",
                     "description": "Human-readable name for the credential.",
                     "x-order": 2,
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "name"
-                    },
                     "minLength": 1,
                     "maxLength": 255
                   },
-                  "user_id": {
+                  "userId": {
                     "description": "UUID of the user who owns this credential.",
                     "x-order": 3,
                     "x-oapi-codegen-extra-tags": {
-                      "db": "user_id"
+                      "json": "userId,omitempty"
                     },
                     "type": "string",
                     "format": "uuid",
@@ -330,9 +326,6 @@ const CredentialSchema: Record<string, unknown> = {
                     "type": "string",
                     "description": "Credential type (e.g. token, basic, AWS).",
                     "x-order": 4,
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "type"
-                    },
                     "maxLength": 255
                   },
                   "secret": {
@@ -343,50 +336,6 @@ const CredentialSchema: Record<string, unknown> = {
                     "x-go-type-import": {
                       "path": "github.com/meshery/schemas/models/core"
                     },
-                    "x-go-type-skip-optional-pointer": true,
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "secret"
-                    }
-                  },
-                  "created_at": {
-                    "x-order": 6,
-                    "description": "Timestamp when the resource was created.",
-                    "x-go-type": "time.Time",
-                    "type": "string",
-                    "format": "date-time",
-                    "x-go-name": "CreatedAt",
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "created_at",
-                      "yaml": "created_at"
-                    },
-                    "x-go-type-skip-optional-pointer": true
-                  },
-                  "updated_at": {
-                    "x-order": 7,
-                    "description": "Timestamp when the resource was updated.",
-                    "x-go-type": "time.Time",
-                    "type": "string",
-                    "format": "date-time",
-                    "x-go-name": "UpdatedAt",
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "updated_at",
-                      "yaml": "updated_at"
-                    },
-                    "x-go-type-skip-optional-pointer": true
-                  },
-                  "deleted_at": {
-                    "description": "Timestamp when the credential was soft-deleted.",
-                    "x-order": 8,
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "deleted_at"
-                    },
-                    "x-go-type": "meshcore.NullTime",
-                    "x-go-type-import": {
-                      "name": "meshcore",
-                      "path": "github.com/meshery/schemas/models/core"
-                    },
-                    "type": "string",
-                    "format": "date-time",
                     "x-go-type-skip-optional-pointer": true
                   }
                 }
@@ -401,10 +350,15 @@ const CredentialSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "additionalProperties": false,
                   "description": "Meshery Credentials store sensitive information such as API keys, tokens, and passwords used by connections to external systems.\n",
                   "required": [
+                    "id",
                     "name",
-                    "type"
+                    "type",
+                    "userId",
+                    "createdAt",
+                    "updatedAt"
                   ],
                   "properties": {
                     "id": {
@@ -430,7 +384,7 @@ const CredentialSchema: Record<string, unknown> = {
                       "minLength": 1,
                       "maxLength": 255
                     },
-                    "user_id": {
+                    "userId": {
                       "description": "UUID of the user who owns this credential.",
                       "x-order": 3,
                       "x-oapi-codegen-extra-tags": {
@@ -465,46 +419,41 @@ const CredentialSchema: Record<string, unknown> = {
                         "db": "secret"
                       }
                     },
-                    "created_at": {
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Timestamp when the credential was created.",
+                      "x-go-type": "time.Time",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-order": 6,
-                      "description": "Timestamp when the resource was created.",
-                      "x-go-type": "time.Time",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at"
+                      }
+                    },
+                    "updatedAt": {
                       "type": "string",
                       "format": "date-time",
-                      "x-go-name": "CreatedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "created_at",
-                        "yaml": "created_at"
-                      },
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "updated_at": {
+                      "description": "Timestamp when the credential was last updated.",
+                      "x-go-type": "time.Time",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-order": 7,
-                      "description": "Timestamp when the resource was updated.",
-                      "x-go-type": "time.Time",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at"
+                      }
+                    },
+                    "deletedAt": {
                       "type": "string",
                       "format": "date-time",
-                      "x-go-name": "UpdatedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "updated_at",
-                        "yaml": "updated_at"
-                      },
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "deleted_at": {
                       "description": "Timestamp when the credential was soft-deleted.",
+                      "x-go-type": "core.NullTime",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
+                      "x-go-type-skip-optional-pointer": true,
                       "x-order": 8,
                       "x-oapi-codegen-extra-tags": {
                         "db": "deleted_at"
-                      },
-                      "x-go-type": "meshcore.NullTime",
-                      "x-go-type-import": {
-                        "name": "meshcore",
-                        "path": "github.com/meshery/schemas/models/core"
-                      },
-                      "type": "string",
-                      "format": "date-time",
-                      "x-go-type-skip-optional-pointer": true
+                      }
                     }
                   }
                 }
@@ -560,17 +509,17 @@ const CredentialSchema: Record<string, unknown> = {
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Meshery Credentials store sensitive information such as API keys, tokens, and passwords used by connections to external systems.\n",
+                "description": "Payload for creating or updating a credential.",
                 "required": [
                   "name",
                   "type"
                 ],
                 "properties": {
                   "id": {
-                    "description": "Unique identifier for the credential.",
+                    "description": "Existing credential ID for updates; omit on create.",
                     "x-order": 1,
                     "x-oapi-codegen-extra-tags": {
-                      "db": "id"
+                      "json": "id,omitempty"
                     },
                     "type": "string",
                     "format": "uuid",
@@ -583,17 +532,14 @@ const CredentialSchema: Record<string, unknown> = {
                     "type": "string",
                     "description": "Human-readable name for the credential.",
                     "x-order": 2,
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "name"
-                    },
                     "minLength": 1,
                     "maxLength": 255
                   },
-                  "user_id": {
+                  "userId": {
                     "description": "UUID of the user who owns this credential.",
                     "x-order": 3,
                     "x-oapi-codegen-extra-tags": {
-                      "db": "user_id"
+                      "json": "userId,omitempty"
                     },
                     "type": "string",
                     "format": "uuid",
@@ -606,9 +552,6 @@ const CredentialSchema: Record<string, unknown> = {
                     "type": "string",
                     "description": "Credential type (e.g. token, basic, AWS).",
                     "x-order": 4,
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "type"
-                    },
                     "maxLength": 255
                   },
                   "secret": {
@@ -619,50 +562,6 @@ const CredentialSchema: Record<string, unknown> = {
                     "x-go-type-import": {
                       "path": "github.com/meshery/schemas/models/core"
                     },
-                    "x-go-type-skip-optional-pointer": true,
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "secret"
-                    }
-                  },
-                  "created_at": {
-                    "x-order": 6,
-                    "description": "Timestamp when the resource was created.",
-                    "x-go-type": "time.Time",
-                    "type": "string",
-                    "format": "date-time",
-                    "x-go-name": "CreatedAt",
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "created_at",
-                      "yaml": "created_at"
-                    },
-                    "x-go-type-skip-optional-pointer": true
-                  },
-                  "updated_at": {
-                    "x-order": 7,
-                    "description": "Timestamp when the resource was updated.",
-                    "x-go-type": "time.Time",
-                    "type": "string",
-                    "format": "date-time",
-                    "x-go-name": "UpdatedAt",
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "updated_at",
-                      "yaml": "updated_at"
-                    },
-                    "x-go-type-skip-optional-pointer": true
-                  },
-                  "deleted_at": {
-                    "description": "Timestamp when the credential was soft-deleted.",
-                    "x-order": 8,
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "deleted_at"
-                    },
-                    "x-go-type": "meshcore.NullTime",
-                    "x-go-type-import": {
-                      "name": "meshcore",
-                      "path": "github.com/meshery/schemas/models/core"
-                    },
-                    "type": "string",
-                    "format": "date-time",
                     "x-go-type-skip-optional-pointer": true
                   }
                 }
@@ -677,10 +576,15 @@ const CredentialSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "additionalProperties": false,
                   "description": "Meshery Credentials store sensitive information such as API keys, tokens, and passwords used by connections to external systems.\n",
                   "required": [
+                    "id",
                     "name",
-                    "type"
+                    "type",
+                    "userId",
+                    "createdAt",
+                    "updatedAt"
                   ],
                   "properties": {
                     "id": {
@@ -706,7 +610,7 @@ const CredentialSchema: Record<string, unknown> = {
                       "minLength": 1,
                       "maxLength": 255
                     },
-                    "user_id": {
+                    "userId": {
                       "description": "UUID of the user who owns this credential.",
                       "x-order": 3,
                       "x-oapi-codegen-extra-tags": {
@@ -741,46 +645,41 @@ const CredentialSchema: Record<string, unknown> = {
                         "db": "secret"
                       }
                     },
-                    "created_at": {
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Timestamp when the credential was created.",
+                      "x-go-type": "time.Time",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-order": 6,
-                      "description": "Timestamp when the resource was created.",
-                      "x-go-type": "time.Time",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at"
+                      }
+                    },
+                    "updatedAt": {
                       "type": "string",
                       "format": "date-time",
-                      "x-go-name": "CreatedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "created_at",
-                        "yaml": "created_at"
-                      },
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "updated_at": {
+                      "description": "Timestamp when the credential was last updated.",
+                      "x-go-type": "time.Time",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-order": 7,
-                      "description": "Timestamp when the resource was updated.",
-                      "x-go-type": "time.Time",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at"
+                      }
+                    },
+                    "deletedAt": {
                       "type": "string",
                       "format": "date-time",
-                      "x-go-name": "UpdatedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "updated_at",
-                        "yaml": "updated_at"
-                      },
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "deleted_at": {
                       "description": "Timestamp when the credential was soft-deleted.",
+                      "x-go-type": "core.NullTime",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
+                      "x-go-type-skip-optional-pointer": true,
                       "x-order": 8,
                       "x-oapi-codegen-extra-tags": {
                         "db": "deleted_at"
-                      },
-                      "x-go-type": "meshcore.NullTime",
-                      "x-go-type-import": {
-                        "name": "meshcore",
-                        "path": "github.com/meshery/schemas/models/core"
-                      },
-                      "type": "string",
-                      "format": "date-time",
-                      "x-go-type-skip-optional-pointer": true
+                      }
                     }
                   }
                 }
@@ -904,7 +803,7 @@ const CredentialSchema: Record<string, unknown> = {
         }
       }
     },
-    "/api/integrations/credentials/{id}": {
+    "/api/integrations/credentials/{credentialId}": {
       "get": {
         "x-internal": [
           "cloud",
@@ -918,7 +817,7 @@ const CredentialSchema: Record<string, unknown> = {
         "description": "Retrieves a specific credential by its ID.",
         "parameters": [
           {
-            "name": "id",
+            "name": "credentialId",
             "in": "path",
             "description": "Credential ID",
             "required": true,
@@ -940,10 +839,15 @@ const CredentialSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "additionalProperties": false,
                   "description": "Meshery Credentials store sensitive information such as API keys, tokens, and passwords used by connections to external systems.\n",
                   "required": [
+                    "id",
                     "name",
-                    "type"
+                    "type",
+                    "userId",
+                    "createdAt",
+                    "updatedAt"
                   ],
                   "properties": {
                     "id": {
@@ -969,7 +873,7 @@ const CredentialSchema: Record<string, unknown> = {
                       "minLength": 1,
                       "maxLength": 255
                     },
-                    "user_id": {
+                    "userId": {
                       "description": "UUID of the user who owns this credential.",
                       "x-order": 3,
                       "x-oapi-codegen-extra-tags": {
@@ -1004,46 +908,41 @@ const CredentialSchema: Record<string, unknown> = {
                         "db": "secret"
                       }
                     },
-                    "created_at": {
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Timestamp when the credential was created.",
+                      "x-go-type": "time.Time",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-order": 6,
-                      "description": "Timestamp when the resource was created.",
-                      "x-go-type": "time.Time",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at"
+                      }
+                    },
+                    "updatedAt": {
                       "type": "string",
                       "format": "date-time",
-                      "x-go-name": "CreatedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "created_at",
-                        "yaml": "created_at"
-                      },
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "updated_at": {
+                      "description": "Timestamp when the credential was last updated.",
+                      "x-go-type": "time.Time",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-order": 7,
-                      "description": "Timestamp when the resource was updated.",
-                      "x-go-type": "time.Time",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at"
+                      }
+                    },
+                    "deletedAt": {
                       "type": "string",
                       "format": "date-time",
-                      "x-go-name": "UpdatedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "updated_at",
-                        "yaml": "updated_at"
-                      },
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "deleted_at": {
                       "description": "Timestamp when the credential was soft-deleted.",
+                      "x-go-type": "core.NullTime",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
+                      "x-go-type-skip-optional-pointer": true,
                       "x-order": 8,
                       "x-oapi-codegen-extra-tags": {
                         "db": "deleted_at"
-                      },
-                      "x-go-type": "meshcore.NullTime",
-                      "x-go-type-import": {
-                        "name": "meshcore",
-                        "path": "github.com/meshery/schemas/models/core"
-                      },
-                      "type": "string",
-                      "format": "date-time",
-                      "x-go-type-skip-optional-pointer": true
+                      }
                     }
                   }
                 }
@@ -1135,8 +1034,8 @@ const CredentialSchema: Record<string, unknown> = {
       }
     },
     "parameters": {
-      "id": {
-        "name": "id",
+      "credentialId": {
+        "name": "credentialId",
         "in": "path",
         "description": "Credential ID",
         "required": true,
@@ -1150,7 +1049,7 @@ const CredentialSchema: Record<string, unknown> = {
           }
         }
       },
-      "credentialId": {
+      "credentialIdQuery": {
         "name": "credentialId",
         "in": "query",
         "description": "Credential ID",
@@ -1201,10 +1100,15 @@ const CredentialSchema: Record<string, unknown> = {
     "schemas": {
       "Credential": {
         "type": "object",
+        "additionalProperties": false,
         "description": "Meshery Credentials store sensitive information such as API keys, tokens, and passwords used by connections to external systems.\n",
         "required": [
+          "id",
           "name",
-          "type"
+          "type",
+          "userId",
+          "createdAt",
+          "updatedAt"
         ],
         "properties": {
           "id": {
@@ -1230,7 +1134,7 @@ const CredentialSchema: Record<string, unknown> = {
             "minLength": 1,
             "maxLength": 255
           },
-          "user_id": {
+          "userId": {
             "description": "UUID of the user who owns this credential.",
             "x-order": 3,
             "x-oapi-codegen-extra-tags": {
@@ -1265,45 +1169,99 @@ const CredentialSchema: Record<string, unknown> = {
               "db": "secret"
             }
           },
-          "created_at": {
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the credential was created.",
+            "x-go-type": "time.Time",
+            "x-go-type-skip-optional-pointer": true,
             "x-order": 6,
-            "description": "Timestamp when the resource was created.",
-            "x-go-type": "time.Time",
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at"
+            }
+          },
+          "updatedAt": {
             "type": "string",
             "format": "date-time",
-            "x-go-name": "CreatedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "created_at",
-              "yaml": "created_at"
-            },
-            "x-go-type-skip-optional-pointer": true
-          },
-          "updated_at": {
+            "description": "Timestamp when the credential was last updated.",
+            "x-go-type": "time.Time",
+            "x-go-type-skip-optional-pointer": true,
             "x-order": 7,
-            "description": "Timestamp when the resource was updated.",
-            "x-go-type": "time.Time",
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at"
+            }
+          },
+          "deletedAt": {
             "type": "string",
             "format": "date-time",
-            "x-go-name": "UpdatedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "updated_at",
-              "yaml": "updated_at"
-            },
-            "x-go-type-skip-optional-pointer": true
-          },
-          "deleted_at": {
             "description": "Timestamp when the credential was soft-deleted.",
+            "x-go-type": "core.NullTime",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/core"
+            },
+            "x-go-type-skip-optional-pointer": true,
             "x-order": 8,
             "x-oapi-codegen-extra-tags": {
               "db": "deleted_at"
-            },
-            "x-go-type": "meshcore.NullTime",
-            "x-go-type-import": {
-              "name": "meshcore",
-              "path": "github.com/meshery/schemas/models/core"
+            }
+          }
+        }
+      },
+      "CredentialPayload": {
+        "type": "object",
+        "description": "Payload for creating or updating a credential.",
+        "required": [
+          "name",
+          "type"
+        ],
+        "properties": {
+          "id": {
+            "description": "Existing credential ID for updates; omit on create.",
+            "x-order": 1,
+            "x-oapi-codegen-extra-tags": {
+              "json": "id,omitempty"
             },
             "type": "string",
-            "format": "date-time",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable name for the credential.",
+            "x-order": 2,
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "userId": {
+            "description": "UUID of the user who owns this credential.",
+            "x-order": 3,
+            "x-oapi-codegen-extra-tags": {
+              "json": "userId,omitempty"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "type": {
+            "type": "string",
+            "description": "Credential type (e.g. token, basic, AWS).",
+            "x-order": 4,
+            "maxLength": 255
+          },
+          "secret": {
+            "type": "object",
+            "description": "Key-value pairs containing the sensitive credential data.",
+            "x-order": 5,
+            "x-go-type": "core.Map",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/core"
+            },
             "x-go-type-skip-optional-pointer": true
           }
         }
@@ -1323,10 +1281,15 @@ const CredentialSchema: Record<string, unknown> = {
             "items": {
               "x-go-type": "Credential",
               "type": "object",
+              "additionalProperties": false,
               "description": "Meshery Credentials store sensitive information such as API keys, tokens, and passwords used by connections to external systems.\n",
               "required": [
+                "id",
                 "name",
-                "type"
+                "type",
+                "userId",
+                "createdAt",
+                "updatedAt"
               ],
               "properties": {
                 "id": {
@@ -1352,7 +1315,7 @@ const CredentialSchema: Record<string, unknown> = {
                   "minLength": 1,
                   "maxLength": 255
                 },
-                "user_id": {
+                "userId": {
                   "description": "UUID of the user who owns this credential.",
                   "x-order": 3,
                   "x-oapi-codegen-extra-tags": {
@@ -1387,51 +1350,46 @@ const CredentialSchema: Record<string, unknown> = {
                     "db": "secret"
                   }
                 },
-                "created_at": {
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Timestamp when the credential was created.",
+                  "x-go-type": "time.Time",
+                  "x-go-type-skip-optional-pointer": true,
                   "x-order": 6,
-                  "description": "Timestamp when the resource was created.",
-                  "x-go-type": "time.Time",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "created_at"
+                  }
+                },
+                "updatedAt": {
                   "type": "string",
                   "format": "date-time",
-                  "x-go-name": "CreatedAt",
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "created_at",
-                    "yaml": "created_at"
-                  },
-                  "x-go-type-skip-optional-pointer": true
-                },
-                "updated_at": {
+                  "description": "Timestamp when the credential was last updated.",
+                  "x-go-type": "time.Time",
+                  "x-go-type-skip-optional-pointer": true,
                   "x-order": 7,
-                  "description": "Timestamp when the resource was updated.",
-                  "x-go-type": "time.Time",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "updated_at"
+                  }
+                },
+                "deletedAt": {
                   "type": "string",
                   "format": "date-time",
-                  "x-go-name": "UpdatedAt",
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "updated_at",
-                    "yaml": "updated_at"
-                  },
-                  "x-go-type-skip-optional-pointer": true
-                },
-                "deleted_at": {
                   "description": "Timestamp when the credential was soft-deleted.",
+                  "x-go-type": "core.NullTime",
+                  "x-go-type-import": {
+                    "path": "github.com/meshery/schemas/models/core"
+                  },
+                  "x-go-type-skip-optional-pointer": true,
                   "x-order": 8,
                   "x-oapi-codegen-extra-tags": {
                     "db": "deleted_at"
-                  },
-                  "x-go-type": "meshcore.NullTime",
-                  "x-go-type-import": {
-                    "name": "meshcore",
-                    "path": "github.com/meshery/schemas/models/core"
-                  },
-                  "type": "string",
-                  "format": "date-time",
-                  "x-go-type-skip-optional-pointer": true
+                  }
                 }
               }
             },
             "x-order": 1,
-            "description": "The credentials of the credentialpage."
+            "description": "The credentials returned on the current page."
           },
           "total_count": {
             "type": "integer",

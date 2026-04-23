@@ -1,6 +1,5 @@
 import { mesheryBaseApi as api } from "./api";
 export const addTagTypes = [
-  "credential_credentials",
   "Environment_environments",
   "Evaluation_Evaluation",
   "Key_users",
@@ -9,8 +8,9 @@ export const addTagTypes = [
   "Team_teams",
   "User_users",
   "Connection_API_Connections",
-  "Design_designs",
+  "credential_credentials",
   "Events_events",
+  "Design_designs",
   "Workspace_workspaces",
   "Workspace_designs",
   "Workspace_views",
@@ -21,40 +21,6 @@ const injectedRtkApi = api
   })
   .injectEndpoints({
     endpoints: (build) => ({
-      getUserCredentials: build.query<GetUserCredentialsApiResponse, GetUserCredentialsApiArg>({
-        query: (queryArg) => ({
-          url: `/api/integrations/credentials`,
-          params: {
-            page: queryArg.page,
-            pagesize: queryArg.pagesize,
-            search: queryArg.search,
-            order: queryArg.order,
-          },
-        }),
-        providesTags: ["credential_credentials"],
-      }),
-      saveUserCredential: build.mutation<SaveUserCredentialApiResponse, SaveUserCredentialApiArg>({
-        query: (queryArg) => ({ url: `/api/integrations/credentials`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["credential_credentials"],
-      }),
-      updateUserCredential: build.mutation<UpdateUserCredentialApiResponse, UpdateUserCredentialApiArg>({
-        query: (queryArg) => ({ url: `/api/integrations/credentials`, method: "PUT", body: queryArg.body }),
-        invalidatesTags: ["credential_credentials"],
-      }),
-      deleteUserCredential: build.mutation<DeleteUserCredentialApiResponse, DeleteUserCredentialApiArg>({
-        query: (queryArg) => ({
-          url: `/api/integrations/credentials`,
-          method: "DELETE",
-          params: {
-            credentialId: queryArg.credentialId,
-          },
-        }),
-        invalidatesTags: ["credential_credentials"],
-      }),
-      getCredentialById: build.query<GetCredentialByIdApiResponse, GetCredentialByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/integrations/credentials/${queryArg.id}` }),
-        providesTags: ["credential_credentials"],
-      }),
       createEnvironment: build.mutation<CreateEnvironmentApiResponse, CreateEnvironmentApiArg>({
         query: (queryArg) => ({ url: `/api/environments`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Environment_environments"],
@@ -372,9 +338,39 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Connection_API_Connections"],
       }),
-      importDesign: build.mutation<ImportDesignApiResponse, ImportDesignApiArg>({
-        query: (queryArg) => ({ url: `/api/pattern/import`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["Design_designs"],
+      getUserCredentials: build.query<GetUserCredentialsApiResponse, GetUserCredentialsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/credentials`,
+          params: {
+            page: queryArg.page,
+            pagesize: queryArg.pagesize,
+            search: queryArg.search,
+            order: queryArg.order,
+          },
+        }),
+        providesTags: ["credential_credentials"],
+      }),
+      saveUserCredential: build.mutation<SaveUserCredentialApiResponse, SaveUserCredentialApiArg>({
+        query: (queryArg) => ({ url: `/api/integrations/credentials`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["credential_credentials"],
+      }),
+      updateUserCredential: build.mutation<UpdateUserCredentialApiResponse, UpdateUserCredentialApiArg>({
+        query: (queryArg) => ({ url: `/api/integrations/credentials`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["credential_credentials"],
+      }),
+      deleteUserCredential: build.mutation<DeleteUserCredentialApiResponse, DeleteUserCredentialApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/credentials`,
+          method: "DELETE",
+          params: {
+            credentialId: queryArg.credentialId,
+          },
+        }),
+        invalidatesTags: ["credential_credentials"],
+      }),
+      getCredentialById: build.query<GetCredentialByIdApiResponse, GetCredentialByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/integrations/credentials/${queryArg.credentialId}` }),
+        providesTags: ["credential_credentials"],
       }),
       deleteEventsById: build.mutation<DeleteEventsByIdApiResponse, DeleteEventsByIdApiArg>({
         query: (queryArg) => ({ url: `/events/${queryArg.id}`, method: "DELETE" }),
@@ -395,6 +391,10 @@ const injectedRtkApi = api
       putEventsByIdStatus: build.mutation<PutEventsByIdStatusApiResponse, PutEventsByIdStatusApiArg>({
         query: (queryArg) => ({ url: `/events/${queryArg.id}/status`, method: "PUT", body: queryArg.body }),
         invalidatesTags: ["Events_events"],
+      }),
+      importDesign: build.mutation<ImportDesignApiResponse, ImportDesignApiArg>({
+        query: (queryArg) => ({ url: `/api/pattern/import`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Design_designs"],
       }),
       getWorkspaces: build.query<GetWorkspacesApiResponse, GetWorkspacesApiArg>({
         query: (queryArg) => ({
@@ -547,146 +547,6 @@ const injectedRtkApi = api
     overrideExisting: false,
   });
 export { injectedRtkApi as mesheryApi, injectedRtkApi };
-export type GetUserCredentialsApiResponse = /** status 200 Credentials response */ {
-  /** The credentials of the credentialpage. */
-  credentials: {
-    /** Unique identifier for the credential. */
-    id?: string;
-    /** Human-readable name for the credential. */
-    name: string;
-    /** UUID of the user who owns this credential. */
-    user_id?: string;
-    /** Credential type (e.g. token, basic, AWS). */
-    type: string;
-    /** Key-value pairs containing the sensitive credential data. */
-    secret?: object;
-    /** Timestamp when the resource was created. */
-    created_at?: string;
-    /** Timestamp when the resource was updated. */
-    updated_at?: string;
-    /** Timestamp when the credential was soft-deleted. */
-    deleted_at?: string;
-  }[];
-  /** Total number of credentials across all pages. */
-  total_count: number;
-  /** Current page number (zero-based). */
-  page: number;
-  /** Number of credentials per page. */
-  page_size: number;
-};
-export type GetUserCredentialsApiArg = {
-  /** Get responses by page */
-  page?: string;
-  /** Get responses by pagesize */
-  pagesize?: string;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-};
-export type SaveUserCredentialApiResponse = /** status 201 Credential saved */ {
-  /** Unique identifier for the credential. */
-  id?: string;
-  /** Human-readable name for the credential. */
-  name: string;
-  /** UUID of the user who owns this credential. */
-  user_id?: string;
-  /** Credential type (e.g. token, basic, AWS). */
-  type: string;
-  /** Key-value pairs containing the sensitive credential data. */
-  secret?: object;
-  /** Timestamp when the resource was created. */
-  created_at?: string;
-  /** Timestamp when the resource was updated. */
-  updated_at?: string;
-  /** Timestamp when the credential was soft-deleted. */
-  deleted_at?: string;
-};
-export type SaveUserCredentialApiArg = {
-  body: {
-    /** Unique identifier for the credential. */
-    id?: string;
-    /** Human-readable name for the credential. */
-    name: string;
-    /** UUID of the user who owns this credential. */
-    user_id?: string;
-    /** Credential type (e.g. token, basic, AWS). */
-    type: string;
-    /** Key-value pairs containing the sensitive credential data. */
-    secret?: object;
-    /** Timestamp when the resource was created. */
-    created_at?: string;
-    /** Timestamp when the resource was updated. */
-    updated_at?: string;
-    /** Timestamp when the credential was soft-deleted. */
-    deleted_at?: string;
-  };
-};
-export type UpdateUserCredentialApiResponse = /** status 200 Credential updated */ {
-  /** Unique identifier for the credential. */
-  id?: string;
-  /** Human-readable name for the credential. */
-  name: string;
-  /** UUID of the user who owns this credential. */
-  user_id?: string;
-  /** Credential type (e.g. token, basic, AWS). */
-  type: string;
-  /** Key-value pairs containing the sensitive credential data. */
-  secret?: object;
-  /** Timestamp when the resource was created. */
-  created_at?: string;
-  /** Timestamp when the resource was updated. */
-  updated_at?: string;
-  /** Timestamp when the credential was soft-deleted. */
-  deleted_at?: string;
-};
-export type UpdateUserCredentialApiArg = {
-  body: {
-    /** Unique identifier for the credential. */
-    id?: string;
-    /** Human-readable name for the credential. */
-    name: string;
-    /** UUID of the user who owns this credential. */
-    user_id?: string;
-    /** Credential type (e.g. token, basic, AWS). */
-    type: string;
-    /** Key-value pairs containing the sensitive credential data. */
-    secret?: object;
-    /** Timestamp when the resource was created. */
-    created_at?: string;
-    /** Timestamp when the resource was updated. */
-    updated_at?: string;
-    /** Timestamp when the credential was soft-deleted. */
-    deleted_at?: string;
-  };
-};
-export type DeleteUserCredentialApiResponse = unknown;
-export type DeleteUserCredentialApiArg = {
-  /** Credential ID */
-  credentialId: string;
-};
-export type GetCredentialByIdApiResponse = /** status 200 Credential response */ {
-  /** Unique identifier for the credential. */
-  id?: string;
-  /** Human-readable name for the credential. */
-  name: string;
-  /** UUID of the user who owns this credential. */
-  user_id?: string;
-  /** Credential type (e.g. token, basic, AWS). */
-  type: string;
-  /** Key-value pairs containing the sensitive credential data. */
-  secret?: object;
-  /** Timestamp when the resource was created. */
-  created_at?: string;
-  /** Timestamp when the resource was updated. */
-  updated_at?: string;
-  /** Timestamp when the credential was soft-deleted. */
-  deleted_at?: string;
-};
-export type GetCredentialByIdApiArg = {
-  /** Credential ID */
-  id: string;
-};
 export type CreateEnvironmentApiResponse = /** status 201 Created environment */ {
   /** ID */
   id: string;
@@ -4640,25 +4500,133 @@ export type RemoveConnectionFromEnvironmentApiArg = {
   /** Connection ID */
   connectionId: string;
 };
-export type ImportDesignApiResponse = /** status 200 Successful Import */ {
-  message?: string;
+export type GetUserCredentialsApiResponse = /** status 200 Credentials response */ {
+  /** The credentials returned on the current page. */
+  credentials: {
+    /** Unique identifier for the credential. */
+    id: string;
+    /** Human-readable name for the credential. */
+    name: string;
+    /** UUID of the user who owns this credential. */
+    userId: string;
+    /** Credential type (e.g. token, basic, AWS). */
+    type: string;
+    /** Key-value pairs containing the sensitive credential data. */
+    secret?: object;
+    /** Timestamp when the credential was created. */
+    createdAt: string;
+    /** Timestamp when the credential was last updated. */
+    updatedAt: string;
+    /** Timestamp when the credential was soft-deleted. */
+    deletedAt?: string;
+  }[];
+  /** Total number of credentials across all pages. */
+  total_count: number;
+  /** Current page number (zero-based). */
+  page: number;
+  /** Number of credentials per page. */
+  page_size: number;
 };
-export type ImportDesignApiArg = {
-  body:
-    | {
-        /** Base64-encoded file bytes. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details. */
-        file: string;
-        /** The name of the pattern file being imported. Include the extension (e.g. `design.yaml`), as the server uses it to identify the file type. */
-        file_name: string;
-        /** Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it. */
-        name?: string;
-      }
-    | {
-        /** A direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details. */
-        url: string;
-        /** Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it. */
-        name?: string;
-      };
+export type GetUserCredentialsApiArg = {
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+};
+export type SaveUserCredentialApiResponse = /** status 201 Credential saved */ {
+  /** Unique identifier for the credential. */
+  id: string;
+  /** Human-readable name for the credential. */
+  name: string;
+  /** UUID of the user who owns this credential. */
+  userId: string;
+  /** Credential type (e.g. token, basic, AWS). */
+  type: string;
+  /** Key-value pairs containing the sensitive credential data. */
+  secret?: object;
+  /** Timestamp when the credential was created. */
+  createdAt: string;
+  /** Timestamp when the credential was last updated. */
+  updatedAt: string;
+  /** Timestamp when the credential was soft-deleted. */
+  deletedAt?: string;
+};
+export type SaveUserCredentialApiArg = {
+  body: {
+    /** Existing credential ID for updates; omit on create. */
+    id?: string;
+    /** Human-readable name for the credential. */
+    name: string;
+    /** UUID of the user who owns this credential. */
+    userId?: string;
+    /** Credential type (e.g. token, basic, AWS). */
+    type: string;
+    /** Key-value pairs containing the sensitive credential data. */
+    secret?: object;
+  };
+};
+export type UpdateUserCredentialApiResponse = /** status 200 Credential updated */ {
+  /** Unique identifier for the credential. */
+  id: string;
+  /** Human-readable name for the credential. */
+  name: string;
+  /** UUID of the user who owns this credential. */
+  userId: string;
+  /** Credential type (e.g. token, basic, AWS). */
+  type: string;
+  /** Key-value pairs containing the sensitive credential data. */
+  secret?: object;
+  /** Timestamp when the credential was created. */
+  createdAt: string;
+  /** Timestamp when the credential was last updated. */
+  updatedAt: string;
+  /** Timestamp when the credential was soft-deleted. */
+  deletedAt?: string;
+};
+export type UpdateUserCredentialApiArg = {
+  body: {
+    /** Existing credential ID for updates; omit on create. */
+    id?: string;
+    /** Human-readable name for the credential. */
+    name: string;
+    /** UUID of the user who owns this credential. */
+    userId?: string;
+    /** Credential type (e.g. token, basic, AWS). */
+    type: string;
+    /** Key-value pairs containing the sensitive credential data. */
+    secret?: object;
+  };
+};
+export type DeleteUserCredentialApiResponse = unknown;
+export type DeleteUserCredentialApiArg = {
+  /** Credential ID */
+  credentialId: string;
+};
+export type GetCredentialByIdApiResponse = /** status 200 Credential response */ {
+  /** Unique identifier for the credential. */
+  id: string;
+  /** Human-readable name for the credential. */
+  name: string;
+  /** UUID of the user who owns this credential. */
+  userId: string;
+  /** Credential type (e.g. token, basic, AWS). */
+  type: string;
+  /** Key-value pairs containing the sensitive credential data. */
+  secret?: object;
+  /** Timestamp when the credential was created. */
+  createdAt: string;
+  /** Timestamp when the credential was last updated. */
+  updatedAt: string;
+  /** Timestamp when the credential was soft-deleted. */
+  deletedAt?: string;
+};
+export type GetCredentialByIdApiArg = {
+  /** Credential ID */
+  credentialId: string;
 };
 export type DeleteEventsByIdApiResponse = unknown;
 export type DeleteEventsByIdApiArg = {
@@ -4701,6 +4669,26 @@ export type PutEventsByIdStatusApiArg = {
     /** Current status of the resource. */
     status: string;
   };
+};
+export type ImportDesignApiResponse = /** status 200 Successful Import */ {
+  message?: string;
+};
+export type ImportDesignApiArg = {
+  body:
+    | {
+        /** Base64-encoded file bytes. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details. */
+        file: string;
+        /** The name of the pattern file being imported. Include the extension (e.g. `design.yaml`), as the server uses it to identify the file type. */
+        fileName: string;
+        /** Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it. */
+        name?: string;
+      }
+    | {
+        /** A direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details. */
+        url: string;
+        /** Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it. */
+        name?: string;
+      };
 };
 export type GetWorkspacesApiResponse = /** status 200 Workspaces */ {
   /** Zero-based page index returned in this response. */
@@ -6145,11 +6133,6 @@ export type UnassignViewFromWorkspaceApiArg = {
   viewId: string;
 };
 export const {
-  useGetUserCredentialsQuery,
-  useSaveUserCredentialMutation,
-  useUpdateUserCredentialMutation,
-  useDeleteUserCredentialMutation,
-  useGetCredentialByIdQuery,
   useCreateEnvironmentMutation,
   useGetEnvironmentsQuery,
   useGetEnvironmentByIdQuery,
@@ -6192,12 +6175,17 @@ export const {
   useGetKubernetesContextQuery,
   useAddConnectionToEnvironmentMutation,
   useRemoveConnectionFromEnvironmentMutation,
-  useImportDesignMutation,
+  useGetUserCredentialsQuery,
+  useSaveUserCredentialMutation,
+  useUpdateUserCredentialMutation,
+  useDeleteUserCredentialMutation,
+  useGetCredentialByIdQuery,
   useDeleteEventsByIdMutation,
   usePostEventsMutation,
   usePostEventsDeleteMutation,
   usePutEventsStatusMutation,
   usePutEventsByIdStatusMutation,
+  useImportDesignMutation,
   useGetWorkspacesQuery,
   useCreateWorkspaceMutation,
   useGetWorkspaceByIdQuery,

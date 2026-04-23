@@ -1,7 +1,6 @@
 import { cloudBaseApi as api } from "./api";
 export const addTagTypes = [
   "Badge_Badge",
-  "credential_credentials",
   "Environment_environments",
   "Feature_Features",
   "Key_users",
@@ -16,13 +15,14 @@ export const addTagTypes = [
   "View_views",
   "Academy_API_Academy",
   "Connection_API_Connections",
-  "Design_designs",
+  "credential_credentials",
   "Events_events",
   "Invitation_Invitation",
   "Plan_Plans",
   "Subscription_Subscriptions",
   "Subscription_Payment Processors",
   "token_tokens",
+  "Design_designs",
   "Workspace_workspaces",
   "Workspace_designs",
   "Workspace_views",
@@ -52,40 +52,6 @@ const injectedRtkApi = api
       assignBadges: build.mutation<AssignBadgesApiResponse, AssignBadgesApiArg>({
         query: (queryArg) => ({ url: `/api/identity/users/badges`, method: "PUT", body: queryArg.body }),
         invalidatesTags: ["Badge_Badge"],
-      }),
-      getUserCredentials: build.query<GetUserCredentialsApiResponse, GetUserCredentialsApiArg>({
-        query: (queryArg) => ({
-          url: `/api/integrations/credentials`,
-          params: {
-            page: queryArg.page,
-            pagesize: queryArg.pagesize,
-            search: queryArg.search,
-            order: queryArg.order,
-          },
-        }),
-        providesTags: ["credential_credentials"],
-      }),
-      saveUserCredential: build.mutation<SaveUserCredentialApiResponse, SaveUserCredentialApiArg>({
-        query: (queryArg) => ({ url: `/api/integrations/credentials`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["credential_credentials"],
-      }),
-      updateUserCredential: build.mutation<UpdateUserCredentialApiResponse, UpdateUserCredentialApiArg>({
-        query: (queryArg) => ({ url: `/api/integrations/credentials`, method: "PUT", body: queryArg.body }),
-        invalidatesTags: ["credential_credentials"],
-      }),
-      deleteUserCredential: build.mutation<DeleteUserCredentialApiResponse, DeleteUserCredentialApiArg>({
-        query: (queryArg) => ({
-          url: `/api/integrations/credentials`,
-          method: "DELETE",
-          params: {
-            credentialId: queryArg.credentialId,
-          },
-        }),
-        invalidatesTags: ["credential_credentials"],
-      }),
-      getCredentialById: build.query<GetCredentialByIdApiResponse, GetCredentialByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/integrations/credentials/${queryArg.id}` }),
-        providesTags: ["credential_credentials"],
       }),
       createEnvironment: build.mutation<CreateEnvironmentApiResponse, CreateEnvironmentApiArg>({
         query: (queryArg) => ({ url: `/api/environments`, method: "POST", body: queryArg.body }),
@@ -778,36 +744,9 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Connection_API_Connections"],
       }),
-      getPatterns: build.query<GetPatternsApiResponse, GetPatternsApiArg>({
+      getUserCredentials: build.query<GetUserCredentialsApiResponse, GetUserCredentialsApiArg>({
         query: (queryArg) => ({
-          url: `/api/content/patterns`,
-          params: {
-            page: queryArg.page,
-            pagesize: queryArg.pagesize,
-            search: queryArg.search,
-            order: queryArg.order,
-            visibility: queryArg.visibility,
-            userId: queryArg.userId,
-            orgId: queryArg.orgId,
-            metrics: queryArg.metrics,
-            workspaceId: queryArg.workspaceId,
-            populate: queryArg.populate,
-            shared: queryArg.shared,
-          },
-        }),
-        providesTags: ["Design_designs"],
-      }),
-      upsertPattern: build.mutation<UpsertPatternApiResponse, UpsertPatternApiArg>({
-        query: (queryArg) => ({ url: `/api/content/patterns`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["Design_designs"],
-      }),
-      deletePatterns: build.mutation<DeletePatternsApiResponse, DeletePatternsApiArg>({
-        query: (queryArg) => ({ url: `/api/content/patterns/delete`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["Design_designs"],
-      }),
-      getPatternResources: build.query<GetPatternResourcesApiResponse, GetPatternResourcesApiArg>({
-        query: (queryArg) => ({
-          url: `/api/content/patterns/resource`,
+          url: `/api/integrations/credentials`,
           params: {
             page: queryArg.page,
             pagesize: queryArg.pagesize,
@@ -815,147 +754,29 @@ const injectedRtkApi = api
             order: queryArg.order,
           },
         }),
-        providesTags: ["Design_designs"],
+        providesTags: ["credential_credentials"],
       }),
-      upsertPatternResource: build.mutation<UpsertPatternResourceApiResponse, UpsertPatternResourceApiArg>({
-        query: () => ({ url: `/api/content/patterns/resource`, method: "POST" }),
-        invalidatesTags: ["Design_designs"],
+      saveUserCredential: build.mutation<SaveUserCredentialApiResponse, SaveUserCredentialApiArg>({
+        query: (queryArg) => ({ url: `/api/integrations/credentials`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["credential_credentials"],
       }),
-      getPatternResource: build.query<GetPatternResourceApiResponse, GetPatternResourceApiArg>({
-        query: (queryArg) => ({ url: `/api/content/patterns/resource/${queryArg.id}` }),
-        providesTags: ["Design_designs"],
+      updateUserCredential: build.mutation<UpdateUserCredentialApiResponse, UpdateUserCredentialApiArg>({
+        query: (queryArg) => ({ url: `/api/integrations/credentials`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["credential_credentials"],
       }),
-      deletePatternResource: build.mutation<DeletePatternResourceApiResponse, DeletePatternResourceApiArg>({
-        query: (queryArg) => ({ url: `/api/content/patterns/resource/${queryArg.id}`, method: "DELETE" }),
-        invalidatesTags: ["Design_designs"],
-      }),
-      getPattern: build.query<GetPatternApiResponse, GetPatternApiArg>({
-        query: (queryArg) => ({ url: `/api/content/patterns/${queryArg.id}` }),
-        providesTags: ["Design_designs"],
-      }),
-      deletePattern: build.mutation<DeletePatternApiResponse, DeletePatternApiArg>({
-        query: (queryArg) => ({ url: `/api/content/patterns/${queryArg.id}`, method: "DELETE" }),
-        invalidatesTags: ["Design_designs"],
-      }),
-      clonePattern: build.mutation<ClonePatternApiResponse, ClonePatternApiArg>({
-        query: (queryArg) => ({ url: `/api/content/patterns/clone/${queryArg.id}`, method: "POST" }),
-        invalidatesTags: ["Design_designs"],
-      }),
-      getDesignPatternFile: build.query<GetDesignPatternFileApiResponse, GetDesignPatternFileApiArg>({
-        query: (queryArg) => ({ url: `/api/content/patterns/download/${queryArg.id}` }),
-        providesTags: ["Design_designs"],
-      }),
-      upsertPatternSourceContent: build.mutation<
-        UpsertPatternSourceContentApiResponse,
-        UpsertPatternSourceContentApiArg
-      >({
+      deleteUserCredential: build.mutation<DeleteUserCredentialApiResponse, DeleteUserCredentialApiArg>({
         query: (queryArg) => ({
-          url: `/api/content/patterns/upload/${queryArg.id}`,
-          method: "POST",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["Design_designs"],
-      }),
-      importDesign: build.mutation<ImportDesignApiResponse, ImportDesignApiArg>({
-        query: (queryArg) => ({ url: `/api/pattern/import`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["Design_designs"],
-      }),
-      getCatalogContent: build.query<GetCatalogContentApiResponse, GetCatalogContentApiArg>({
-        query: (queryArg) => ({
-          url: `/api/catalog/content/${queryArg.pathType}`,
+          url: `/api/integrations/credentials`,
+          method: "DELETE",
           params: {
-            page: queryArg.page,
-            pagesize: queryArg.pagesize,
-            search: queryArg.search,
-            order: queryArg.order,
-            type: queryArg.queryType,
-            technology: queryArg.technology,
-            metrics: queryArg.metrics,
-            class: queryArg["class"],
-            userId: queryArg.userId,
-            orgId: queryArg.orgId,
-            workspaceId: queryArg.workspaceId,
-            teamId: queryArg.teamId,
-            populate: queryArg.populate,
+            credentialId: queryArg.credentialId,
           },
         }),
-        providesTags: ["Design_designs"],
+        invalidatesTags: ["credential_credentials"],
       }),
-      publishCatalogContent: build.mutation<PublishCatalogContentApiResponse, PublishCatalogContentApiArg>({
-        query: (queryArg) => ({ url: `/api/catalog/content/${queryArg["type"]}`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["Design_designs"],
-      }),
-      unPublishCatalogContent: build.mutation<UnPublishCatalogContentApiResponse, UnPublishCatalogContentApiArg>({
-        query: (queryArg) => ({
-          url: `/api/catalog/content/${queryArg["type"]}/unpublish`,
-          method: "POST",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["Design_designs"],
-      }),
-      getCatalogContentClasses: build.query<GetCatalogContentClassesApiResponse, GetCatalogContentClassesApiArg>({
-        query: (queryArg) => ({
-          url: `/api/catalog/content/classes`,
-          params: {
-            page: queryArg.page,
-            pagesize: queryArg.pagesize,
-          },
-        }),
-        providesTags: ["Design_designs"],
-      }),
-      approveCatalogRequest: build.mutation<ApproveCatalogRequestApiResponse, ApproveCatalogRequestApiArg>({
-        query: (queryArg) => ({ url: `/api/catalog/requests/approve`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["Design_designs"],
-      }),
-      denyCatalogRequest: build.mutation<DenyCatalogRequestApiResponse, DenyCatalogRequestApiArg>({
-        query: (queryArg) => ({ url: `/api/catalog/requests/deny`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["Design_designs"],
-      }),
-      getFilter: build.query<GetFilterApiResponse, GetFilterApiArg>({
-        query: (queryArg) => ({ url: `/api/content/filters/${queryArg.id}` }),
-        providesTags: ["Design_designs"],
-      }),
-      cloneFilter: build.mutation<CloneFilterApiResponse, CloneFilterApiArg>({
-        query: (queryArg) => ({
-          url: `/api/content/filters/clone/${queryArg.id}`,
-          method: "POST",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["Design_designs"],
-      }),
-      handleResourceShare: build.mutation<HandleResourceShareApiResponse, HandleResourceShareApiArg>({
-        query: (queryArg) => ({
-          url: `/api/resource/${queryArg.resourceType}/share/${queryArg.resourceId}`,
-          method: "POST",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["Design_designs"],
-      }),
-      getResourceAccessActorsByType: build.query<
-        GetResourceAccessActorsByTypeApiResponse,
-        GetResourceAccessActorsByTypeApiArg
-      >({
-        query: (queryArg) => ({
-          url: `/api/resource/${queryArg.resourceType}/share/${queryArg.resourceId}/${queryArg.actorType}`,
-        }),
-        providesTags: ["Design_designs"],
-      }),
-      shareDesign: build.mutation<ShareDesignApiResponse, ShareDesignApiArg>({
-        query: (queryArg) => ({ url: `/api/content/design/share`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["Design_designs"],
-      }),
-      getCatalogRequest: build.query<GetCatalogRequestApiResponse, GetCatalogRequestApiArg>({
-        query: (queryArg) => ({
-          url: `/api/catalog/requests`,
-          params: {
-            page: queryArg.page,
-            pagesize: queryArg.pagesize,
-            search: queryArg.search,
-            order: queryArg.order,
-            filter: queryArg.filter,
-          },
-        }),
-        providesTags: ["Design_designs"],
+      getCredentialById: build.query<GetCredentialByIdApiResponse, GetCredentialByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/integrations/credentials/${queryArg.credentialId}` }),
+        providesTags: ["credential_credentials"],
       }),
       deleteEventsById: build.mutation<DeleteEventsByIdApiResponse, DeleteEventsByIdApiArg>({
         query: (queryArg) => ({ url: `/events/${queryArg.id}`, method: "DELETE" }),
@@ -1212,6 +1033,185 @@ const injectedRtkApi = api
         }),
         providesTags: ["token_tokens"],
       }),
+      getPatterns: build.query<GetPatternsApiResponse, GetPatternsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/content/patterns`,
+          params: {
+            page: queryArg.page,
+            pageSize: queryArg.pageSize,
+            search: queryArg.search,
+            order: queryArg.order,
+            orgId: queryArg.orgId,
+            visibility: queryArg.visibility,
+            userId: queryArg.userId,
+            metrics: queryArg.metrics,
+            workspaceId: queryArg.workspaceId,
+            populate: queryArg.populate,
+            shared: queryArg.shared,
+          },
+        }),
+        providesTags: ["Design_designs"],
+      }),
+      upsertPattern: build.mutation<UpsertPatternApiResponse, UpsertPatternApiArg>({
+        query: (queryArg) => ({ url: `/api/content/patterns`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Design_designs"],
+      }),
+      deletePatterns: build.mutation<DeletePatternsApiResponse, DeletePatternsApiArg>({
+        query: (queryArg) => ({ url: `/api/content/patterns/delete`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Design_designs"],
+      }),
+      getPatternResources: build.query<GetPatternResourcesApiResponse, GetPatternResourcesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/content/patterns/resource`,
+          params: {
+            page: queryArg.page,
+            pageSize: queryArg.pageSize,
+            search: queryArg.search,
+            order: queryArg.order,
+          },
+        }),
+        providesTags: ["Design_designs"],
+      }),
+      upsertPatternResource: build.mutation<UpsertPatternResourceApiResponse, UpsertPatternResourceApiArg>({
+        query: () => ({ url: `/api/content/patterns/resource`, method: "POST" }),
+        invalidatesTags: ["Design_designs"],
+      }),
+      getPatternResource: build.query<GetPatternResourceApiResponse, GetPatternResourceApiArg>({
+        query: (queryArg) => ({ url: `/api/content/patterns/resource/${queryArg.designId}` }),
+        providesTags: ["Design_designs"],
+      }),
+      deletePatternResource: build.mutation<DeletePatternResourceApiResponse, DeletePatternResourceApiArg>({
+        query: (queryArg) => ({ url: `/api/content/patterns/resource/${queryArg.designId}`, method: "DELETE" }),
+        invalidatesTags: ["Design_designs"],
+      }),
+      getPattern: build.query<GetPatternApiResponse, GetPatternApiArg>({
+        query: (queryArg) => ({ url: `/api/content/patterns/${queryArg.designId}` }),
+        providesTags: ["Design_designs"],
+      }),
+      deletePattern: build.mutation<DeletePatternApiResponse, DeletePatternApiArg>({
+        query: (queryArg) => ({ url: `/api/content/patterns/${queryArg.designId}`, method: "DELETE" }),
+        invalidatesTags: ["Design_designs"],
+      }),
+      clonePattern: build.mutation<ClonePatternApiResponse, ClonePatternApiArg>({
+        query: (queryArg) => ({ url: `/api/content/patterns/clone/${queryArg.designId}`, method: "POST" }),
+        invalidatesTags: ["Design_designs"],
+      }),
+      getDesignPatternFile: build.query<GetDesignPatternFileApiResponse, GetDesignPatternFileApiArg>({
+        query: (queryArg) => ({ url: `/api/content/patterns/download/${queryArg.designId}` }),
+        providesTags: ["Design_designs"],
+      }),
+      upsertPatternSourceContent: build.mutation<
+        UpsertPatternSourceContentApiResponse,
+        UpsertPatternSourceContentApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/content/patterns/upload/${queryArg.designId}`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Design_designs"],
+      }),
+      importDesign: build.mutation<ImportDesignApiResponse, ImportDesignApiArg>({
+        query: (queryArg) => ({ url: `/api/pattern/import`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Design_designs"],
+      }),
+      getCatalogContent: build.query<GetCatalogContentApiResponse, GetCatalogContentApiArg>({
+        query: (queryArg) => ({
+          url: `/api/catalog/content/${queryArg.pathType}`,
+          params: {
+            page: queryArg.page,
+            pageSize: queryArg.pageSize,
+            search: queryArg.search,
+            order: queryArg.order,
+            type: queryArg.queryType,
+            technology: queryArg.technology,
+            metrics: queryArg.metrics,
+            class: queryArg["class"],
+            userId: queryArg.userId,
+            orgId: queryArg.orgId,
+            workspaceId: queryArg.workspaceId,
+            teamId: queryArg.teamId,
+            populate: queryArg.populate,
+          },
+        }),
+        providesTags: ["Design_designs"],
+      }),
+      publishCatalogContent: build.mutation<PublishCatalogContentApiResponse, PublishCatalogContentApiArg>({
+        query: (queryArg) => ({ url: `/api/catalog/content/${queryArg["type"]}`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Design_designs"],
+      }),
+      unPublishCatalogContent: build.mutation<UnPublishCatalogContentApiResponse, UnPublishCatalogContentApiArg>({
+        query: (queryArg) => ({
+          url: `/api/catalog/content/${queryArg["type"]}/unpublish`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Design_designs"],
+      }),
+      getCatalogContentClasses: build.query<GetCatalogContentClassesApiResponse, GetCatalogContentClassesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/catalog/content/classes`,
+          params: {
+            page: queryArg.page,
+            pageSize: queryArg.pageSize,
+          },
+        }),
+        providesTags: ["Design_designs"],
+      }),
+      approveCatalogRequest: build.mutation<ApproveCatalogRequestApiResponse, ApproveCatalogRequestApiArg>({
+        query: (queryArg) => ({ url: `/api/catalog/requests/approve`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Design_designs"],
+      }),
+      denyCatalogRequest: build.mutation<DenyCatalogRequestApiResponse, DenyCatalogRequestApiArg>({
+        query: (queryArg) => ({ url: `/api/catalog/requests/deny`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Design_designs"],
+      }),
+      getFilter: build.query<GetFilterApiResponse, GetFilterApiArg>({
+        query: (queryArg) => ({ url: `/api/content/filters/${queryArg.filterId}` }),
+        providesTags: ["Design_designs"],
+      }),
+      cloneFilter: build.mutation<CloneFilterApiResponse, CloneFilterApiArg>({
+        query: (queryArg) => ({
+          url: `/api/content/filters/clone/${queryArg.filterId}`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Design_designs"],
+      }),
+      handleResourceShare: build.mutation<HandleResourceShareApiResponse, HandleResourceShareApiArg>({
+        query: (queryArg) => ({
+          url: `/api/resource/${queryArg.resourceType}/share/${queryArg.resourceId}`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Design_designs"],
+      }),
+      getResourceAccessActorsByType: build.query<
+        GetResourceAccessActorsByTypeApiResponse,
+        GetResourceAccessActorsByTypeApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/resource/${queryArg.resourceType}/share/${queryArg.resourceId}/${queryArg.actorType}`,
+        }),
+        providesTags: ["Design_designs"],
+      }),
+      shareDesign: build.mutation<ShareDesignApiResponse, ShareDesignApiArg>({
+        query: (queryArg) => ({ url: `/api/content/design/share`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Design_designs"],
+      }),
+      getCatalogRequest: build.query<GetCatalogRequestApiResponse, GetCatalogRequestApiArg>({
+        query: (queryArg) => ({
+          url: `/api/catalog/requests`,
+          params: {
+            page: queryArg.page,
+            pageSize: queryArg.pageSize,
+            search: queryArg.search,
+            order: queryArg.order,
+            filter: queryArg.filter,
+          },
+        }),
+        providesTags: ["Design_designs"],
+      }),
       getWorkspaces: build.query<GetWorkspacesApiResponse, GetWorkspacesApiArg>({
         query: (queryArg) => ({
           url: `/api/workspaces`,
@@ -1466,146 +1466,6 @@ export type AssignBadgesApiArg = {
     /** The notify of the badgeassignment. */
     notify?: boolean;
   };
-};
-export type GetUserCredentialsApiResponse = /** status 200 Credentials response */ {
-  /** The credentials of the credentialpage. */
-  credentials: {
-    /** Unique identifier for the credential. */
-    id?: string;
-    /** Human-readable name for the credential. */
-    name: string;
-    /** UUID of the user who owns this credential. */
-    user_id?: string;
-    /** Credential type (e.g. token, basic, AWS). */
-    type: string;
-    /** Key-value pairs containing the sensitive credential data. */
-    secret?: object;
-    /** Timestamp when the resource was created. */
-    created_at?: string;
-    /** Timestamp when the resource was updated. */
-    updated_at?: string;
-    /** Timestamp when the credential was soft-deleted. */
-    deleted_at?: string;
-  }[];
-  /** Total number of credentials across all pages. */
-  total_count: number;
-  /** Current page number (zero-based). */
-  page: number;
-  /** Number of credentials per page. */
-  page_size: number;
-};
-export type GetUserCredentialsApiArg = {
-  /** Get responses by page */
-  page?: string;
-  /** Get responses by pagesize */
-  pagesize?: string;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-};
-export type SaveUserCredentialApiResponse = /** status 201 Credential saved */ {
-  /** Unique identifier for the credential. */
-  id?: string;
-  /** Human-readable name for the credential. */
-  name: string;
-  /** UUID of the user who owns this credential. */
-  user_id?: string;
-  /** Credential type (e.g. token, basic, AWS). */
-  type: string;
-  /** Key-value pairs containing the sensitive credential data. */
-  secret?: object;
-  /** Timestamp when the resource was created. */
-  created_at?: string;
-  /** Timestamp when the resource was updated. */
-  updated_at?: string;
-  /** Timestamp when the credential was soft-deleted. */
-  deleted_at?: string;
-};
-export type SaveUserCredentialApiArg = {
-  body: {
-    /** Unique identifier for the credential. */
-    id?: string;
-    /** Human-readable name for the credential. */
-    name: string;
-    /** UUID of the user who owns this credential. */
-    user_id?: string;
-    /** Credential type (e.g. token, basic, AWS). */
-    type: string;
-    /** Key-value pairs containing the sensitive credential data. */
-    secret?: object;
-    /** Timestamp when the resource was created. */
-    created_at?: string;
-    /** Timestamp when the resource was updated. */
-    updated_at?: string;
-    /** Timestamp when the credential was soft-deleted. */
-    deleted_at?: string;
-  };
-};
-export type UpdateUserCredentialApiResponse = /** status 200 Credential updated */ {
-  /** Unique identifier for the credential. */
-  id?: string;
-  /** Human-readable name for the credential. */
-  name: string;
-  /** UUID of the user who owns this credential. */
-  user_id?: string;
-  /** Credential type (e.g. token, basic, AWS). */
-  type: string;
-  /** Key-value pairs containing the sensitive credential data. */
-  secret?: object;
-  /** Timestamp when the resource was created. */
-  created_at?: string;
-  /** Timestamp when the resource was updated. */
-  updated_at?: string;
-  /** Timestamp when the credential was soft-deleted. */
-  deleted_at?: string;
-};
-export type UpdateUserCredentialApiArg = {
-  body: {
-    /** Unique identifier for the credential. */
-    id?: string;
-    /** Human-readable name for the credential. */
-    name: string;
-    /** UUID of the user who owns this credential. */
-    user_id?: string;
-    /** Credential type (e.g. token, basic, AWS). */
-    type: string;
-    /** Key-value pairs containing the sensitive credential data. */
-    secret?: object;
-    /** Timestamp when the resource was created. */
-    created_at?: string;
-    /** Timestamp when the resource was updated. */
-    updated_at?: string;
-    /** Timestamp when the credential was soft-deleted. */
-    deleted_at?: string;
-  };
-};
-export type DeleteUserCredentialApiResponse = unknown;
-export type DeleteUserCredentialApiArg = {
-  /** Credential ID */
-  credentialId: string;
-};
-export type GetCredentialByIdApiResponse = /** status 200 Credential response */ {
-  /** Unique identifier for the credential. */
-  id?: string;
-  /** Human-readable name for the credential. */
-  name: string;
-  /** UUID of the user who owns this credential. */
-  user_id?: string;
-  /** Credential type (e.g. token, basic, AWS). */
-  type: string;
-  /** Key-value pairs containing the sensitive credential data. */
-  secret?: object;
-  /** Timestamp when the resource was created. */
-  created_at?: string;
-  /** Timestamp when the resource was updated. */
-  updated_at?: string;
-  /** Timestamp when the credential was soft-deleted. */
-  deleted_at?: string;
-};
-export type GetCredentialByIdApiArg = {
-  /** Credential ID */
-  id: string;
 };
 export type CreateEnvironmentApiResponse = /** status 201 Created environment */ {
   /** ID */
@@ -6090,13 +5950,987 @@ export type RemoveConnectionFromEnvironmentApiArg = {
   /** Connection ID */
   connectionId: string;
 };
-export type GetPatternsApiResponse = /** status 200 Designs response */ {
+export type GetUserCredentialsApiResponse = /** status 200 Credentials response */ {
+  /** The credentials returned on the current page. */
+  credentials: {
+    /** Unique identifier for the credential. */
+    id: string;
+    /** Human-readable name for the credential. */
+    name: string;
+    /** UUID of the user who owns this credential. */
+    userId: string;
+    /** Credential type (e.g. token, basic, AWS). */
+    type: string;
+    /** Key-value pairs containing the sensitive credential data. */
+    secret?: object;
+    /** Timestamp when the credential was created. */
+    createdAt: string;
+    /** Timestamp when the credential was last updated. */
+    updatedAt: string;
+    /** Timestamp when the credential was soft-deleted. */
+    deletedAt?: string;
+  }[];
+  /** Total number of credentials across all pages. */
+  total_count: number;
+  /** Current page number (zero-based). */
+  page: number;
+  /** Number of credentials per page. */
+  page_size: number;
+};
+export type GetUserCredentialsApiArg = {
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+};
+export type SaveUserCredentialApiResponse = /** status 201 Credential saved */ {
+  /** Unique identifier for the credential. */
+  id: string;
+  /** Human-readable name for the credential. */
+  name: string;
+  /** UUID of the user who owns this credential. */
+  userId: string;
+  /** Credential type (e.g. token, basic, AWS). */
+  type: string;
+  /** Key-value pairs containing the sensitive credential data. */
+  secret?: object;
+  /** Timestamp when the credential was created. */
+  createdAt: string;
+  /** Timestamp when the credential was last updated. */
+  updatedAt: string;
+  /** Timestamp when the credential was soft-deleted. */
+  deletedAt?: string;
+};
+export type SaveUserCredentialApiArg = {
+  body: {
+    /** Existing credential ID for updates; omit on create. */
+    id?: string;
+    /** Human-readable name for the credential. */
+    name: string;
+    /** UUID of the user who owns this credential. */
+    userId?: string;
+    /** Credential type (e.g. token, basic, AWS). */
+    type: string;
+    /** Key-value pairs containing the sensitive credential data. */
+    secret?: object;
+  };
+};
+export type UpdateUserCredentialApiResponse = /** status 200 Credential updated */ {
+  /** Unique identifier for the credential. */
+  id: string;
+  /** Human-readable name for the credential. */
+  name: string;
+  /** UUID of the user who owns this credential. */
+  userId: string;
+  /** Credential type (e.g. token, basic, AWS). */
+  type: string;
+  /** Key-value pairs containing the sensitive credential data. */
+  secret?: object;
+  /** Timestamp when the credential was created. */
+  createdAt: string;
+  /** Timestamp when the credential was last updated. */
+  updatedAt: string;
+  /** Timestamp when the credential was soft-deleted. */
+  deletedAt?: string;
+};
+export type UpdateUserCredentialApiArg = {
+  body: {
+    /** Existing credential ID for updates; omit on create. */
+    id?: string;
+    /** Human-readable name for the credential. */
+    name: string;
+    /** UUID of the user who owns this credential. */
+    userId?: string;
+    /** Credential type (e.g. token, basic, AWS). */
+    type: string;
+    /** Key-value pairs containing the sensitive credential data. */
+    secret?: object;
+  };
+};
+export type DeleteUserCredentialApiResponse = unknown;
+export type DeleteUserCredentialApiArg = {
+  /** Credential ID */
+  credentialId: string;
+};
+export type GetCredentialByIdApiResponse = /** status 200 Credential response */ {
+  /** Unique identifier for the credential. */
+  id: string;
+  /** Human-readable name for the credential. */
+  name: string;
+  /** UUID of the user who owns this credential. */
+  userId: string;
+  /** Credential type (e.g. token, basic, AWS). */
+  type: string;
+  /** Key-value pairs containing the sensitive credential data. */
+  secret?: object;
+  /** Timestamp when the credential was created. */
+  createdAt: string;
+  /** Timestamp when the credential was last updated. */
+  updatedAt: string;
+  /** Timestamp when the credential was soft-deleted. */
+  deletedAt?: string;
+};
+export type GetCredentialByIdApiArg = {
+  /** Credential ID */
+  credentialId: string;
+};
+export type DeleteEventsByIdApiResponse = unknown;
+export type DeleteEventsByIdApiArg = {
+  /** ID of the event to delete */
+  id: string;
+};
+export type PostEventsApiResponse = unknown;
+export type PostEventsApiArg = {
+  body: object;
+};
+export type PostEventsDeleteApiResponse = /** status 200 event deleted */ {
+  deleted?: string[];
+};
+export type PostEventsDeleteApiArg = {
+  body: {
+    /** The ids of the bulkdeleterequest. */
+    ids: string[];
+  };
+};
+export type PutEventsStatusApiResponse = /** status 200 Events updated */ {
+  updated?: string[];
+};
+export type PutEventsStatusApiArg = {
+  body: {
+    /** The ids of the bulkupdatestatusrequest. */
+    ids: string[];
+    /** Current status of the resource. */
+    status: string;
+  };
+};
+export type PutEventsByIdStatusApiResponse = /** status 200 Event status updated */ {
+  message?: string;
+  event_id?: string;
+  status?: string;
+};
+export type PutEventsByIdStatusApiArg = {
+  /** ID of the event */
+  id: string;
+  body: {
+    /** Current status of the resource. */
+    status: string;
+  };
+};
+export type GetEventsOfWorkspaceApiResponse = /** status 200 Workspace events */ {
+  page?: number;
+  page_size?: number;
+  total_count?: number;
+  /** The data of the eventspage. */
+  data?: {
+    user_id: string;
+    system_id?: string;
+    /** The category of the event. */
+    category: string;
+    /** The action of the event. */
+    action: string;
+    /** Description of the event. */
+    description?: string;
+    /** The first name of the event. */
+    firstName?: string;
+    /** The last name of the event. */
+    lastName?: string;
+    /** email */
+    email?: string;
+    /** One of (x-oapi-codegen-extra-tags-cloud, github, google) */
+    provider?: string;
+    /** Timestamp when the resource was created. */
+    created_at?: string;
+  }[];
+};
+export type GetEventsOfWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+};
+export type GetEventsAggregateApiResponse = /** status 200 Events aggregate */ {
+  /** The audit of the eventsaggregate. */
+  audit?: number;
+  [key: string]: any;
+};
+export type GetEventsAggregateApiArg = {
+  cumulative?: boolean;
+};
+export type GetEventsApiResponse = /** status 200 Events page */ {
+  page?: number;
+  page_size?: number;
+  total_count?: number;
+  /** The data of the eventspage. */
+  data?: {
+    user_id: string;
+    system_id?: string;
+    /** The category of the event. */
+    category: string;
+    /** The action of the event. */
+    action: string;
+    /** Description of the event. */
+    description?: string;
+    /** The first name of the event. */
+    firstName?: string;
+    /** The last name of the event. */
+    lastName?: string;
+    /** email */
+    email?: string;
+    /** One of (x-oapi-codegen-extra-tags-cloud, github, google) */
+    provider?: string;
+    /** Timestamp when the resource was created. */
+    created_at?: string;
+  }[];
+};
+export type GetEventsApiArg = {
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get filtered reponses */
+  filter?: string;
+};
+export type GetEventSummaryByUserApiResponse = /** status 200 Event summary page */ {
   /** Current page number of the result set. */
   page?: number;
   /** Number of items per page. */
   page_size?: number;
-  /** The patterns of the mesherypatternpage. */
+  /** Total number of items available. */
+  total_count?: number;
+  /** The data of the eventsummarypage. */
+  data?: {
+    [key: string]: any;
+  }[];
+};
+export type GetEventSummaryByUserApiArg = {
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get filtered reponses */
+  filter?: string;
+};
+export type GetEventTypesApiResponse = /** status 200 Event types */ {
+  /** The category of the eventtype. */
+  category?: string;
+  /** The action of the eventtype. */
+  action?: string;
+}[];
+export type GetEventTypesApiArg = {
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+};
+export type GetInvitationApiResponse = /** status 200 undefined */ {
+  /** Unique identifier for the invitation , is also used as the invitation code */
+  id: string;
+  /** ID of the user who created the invitation, this is used to track who created the invitation and can be used for auditing purposes */
+  owner_id: string;
+  /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
+  is_default?: boolean;
+  /** Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
+  name: string;
+  /** Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
+  description: string;
+  /** The emails of the invitation. */
+  emails: string[];
+  /** ID of the organization to which the user is invited */
+  org_id: string;
+  /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
+  expires_at?: string;
+  /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
+  quota?: number;
+  /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
+  accepted_by: string[];
+  /** The roles of the invitation. */
+  roles: string[];
+  /** The teams of the invitation. */
+  teams: string[];
+  /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
+  status: "enabled" | "disabled";
+  /** Timestamp when the invitation was created */
+  created_at: string;
+  /** Timestamp when the invitation was last updated */
+  updated_at: string;
+  /** Timestamp when the invitation was deleted, if applicable */
+  deleted_at: string;
+};
+export type GetInvitationApiArg = {
+  /** The ID of the invitation */
+  invitationId: string;
+};
+export type DeleteInvitationApiResponse = unknown;
+export type DeleteInvitationApiArg = {
+  /** The ID of the invitation */
+  invitationId: string;
+};
+export type UpdateInvitationApiResponse = /** status 200 undefined */ {
+  /** Unique identifier for the invitation , is also used as the invitation code */
+  id: string;
+  /** ID of the user who created the invitation, this is used to track who created the invitation and can be used for auditing purposes */
+  owner_id: string;
+  /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
+  is_default?: boolean;
+  /** Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
+  name: string;
+  /** Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
+  description: string;
+  /** The emails of the invitation. */
+  emails: string[];
+  /** ID of the organization to which the user is invited */
+  org_id: string;
+  /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
+  expires_at?: string;
+  /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
+  quota?: number;
+  /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
+  accepted_by: string[];
+  /** The roles of the invitation. */
+  roles: string[];
+  /** The teams of the invitation. */
+  teams: string[];
+  /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
+  status: "enabled" | "disabled";
+  /** Timestamp when the invitation was created */
+  created_at: string;
+  /** Timestamp when the invitation was last updated */
+  updated_at: string;
+  /** Timestamp when the invitation was deleted, if applicable */
+  deleted_at: string;
+};
+export type UpdateInvitationApiArg = {
+  /** The ID of the invitation */
+  invitationId: string;
+  body: {
+    /** Existing invitation ID for updates; omit on create. */
+    id?: string;
+    /** ID of the user who created the invitation. */
+    owner_id?: string;
+    /** Indicates whether the invitation is a default invitation (open invite). */
+    is_default?: boolean;
+    /** Name of the invitation. */
+    name: string;
+    /** Description of the invitation. */
+    description: string;
+    /** The emails of the invitation. */
+    emails: string[];
+    /** ID of the organization to which the user is invited. */
+    org_id: string;
+    /** Timestamp when the invitation expires, if applicable. */
+    expires_at?: string;
+    /** Quota for the invitation. */
+    quota?: number;
+    /** The roles of the invitation. */
+    roles: string[];
+    /** The teams of the invitation. */
+    teams: string[];
+    /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
+    status: "enabled" | "disabled";
+  };
+};
+export type GetInvitationsApiResponse = /** status 200 undefined */ {
+  /** List of invitations */
+  data: {
+    /** Unique identifier for the invitation , is also used as the invitation code */
+    id: string;
+    /** ID of the user who created the invitation, this is used to track who created the invitation and can be used for auditing purposes */
+    owner_id: string;
+    /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
+    is_default?: boolean;
+    /** Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
+    name: string;
+    /** Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
+    description: string;
+    /** The emails of the invitation. */
+    emails: string[];
+    /** ID of the organization to which the user is invited */
+    org_id: string;
+    /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
+    expires_at?: string;
+    /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
+    quota?: number;
+    /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
+    accepted_by: string[];
+    /** The roles of the invitation. */
+    roles: string[];
+    /** The teams of the invitation. */
+    teams: string[];
+    /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
+    status: "enabled" | "disabled";
+    /** Timestamp when the invitation was created */
+    created_at: string;
+    /** Timestamp when the invitation was last updated */
+    updated_at: string;
+    /** Timestamp when the invitation was deleted, if applicable */
+    deleted_at: string;
+  }[];
+  /** Total number of invitations available */
+  total: number;
+};
+export type GetInvitationsApiArg = void;
+export type CreateInvitationApiResponse = /** status 201 undefined */ {
+  /** Unique identifier for the invitation , is also used as the invitation code */
+  id: string;
+  /** ID of the user who created the invitation, this is used to track who created the invitation and can be used for auditing purposes */
+  owner_id: string;
+  /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
+  is_default?: boolean;
+  /** Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
+  name: string;
+  /** Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
+  description: string;
+  /** The emails of the invitation. */
+  emails: string[];
+  /** ID of the organization to which the user is invited */
+  org_id: string;
+  /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
+  expires_at?: string;
+  /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
+  quota?: number;
+  /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
+  accepted_by: string[];
+  /** The roles of the invitation. */
+  roles: string[];
+  /** The teams of the invitation. */
+  teams: string[];
+  /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
+  status: "enabled" | "disabled";
+  /** Timestamp when the invitation was created */
+  created_at: string;
+  /** Timestamp when the invitation was last updated */
+  updated_at: string;
+  /** Timestamp when the invitation was deleted, if applicable */
+  deleted_at: string;
+};
+export type CreateInvitationApiArg = {
+  body: {
+    /** Existing invitation ID for updates; omit on create. */
+    id?: string;
+    /** ID of the user who created the invitation. */
+    owner_id?: string;
+    /** Indicates whether the invitation is a default invitation (open invite). */
+    is_default?: boolean;
+    /** Name of the invitation. */
+    name: string;
+    /** Description of the invitation. */
+    description: string;
+    /** The emails of the invitation. */
+    emails: string[];
+    /** ID of the organization to which the user is invited. */
+    org_id: string;
+    /** Timestamp when the invitation expires, if applicable. */
+    expires_at?: string;
+    /** Quota for the invitation. */
+    quota?: number;
+    /** The roles of the invitation. */
+    roles: string[];
+    /** The teams of the invitation. */
+    teams: string[];
+    /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
+    status: "enabled" | "disabled";
+  };
+};
+export type AcceptInvitationApiResponse = /** status 200 undefined */ {
+  /** Unique identifier for the invitation , is also used as the invitation code */
+  id: string;
+  /** ID of the user who created the invitation, this is used to track who created the invitation and can be used for auditing purposes */
+  owner_id: string;
+  /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
+  is_default?: boolean;
+  /** Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
+  name: string;
+  /** Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
+  description: string;
+  /** The emails of the invitation. */
+  emails: string[];
+  /** ID of the organization to which the user is invited */
+  org_id: string;
+  /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
+  expires_at?: string;
+  /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
+  quota?: number;
+  /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
+  accepted_by: string[];
+  /** The roles of the invitation. */
+  roles: string[];
+  /** The teams of the invitation. */
+  teams: string[];
+  /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
+  status: "enabled" | "disabled";
+  /** Timestamp when the invitation was created */
+  created_at: string;
+  /** Timestamp when the invitation was last updated */
+  updated_at: string;
+  /** Timestamp when the invitation was deleted, if applicable */
+  deleted_at: string;
+};
+export type AcceptInvitationApiArg = {
+  /** The ID of the invitation */
+  invitationId: string;
+};
+export type HandleUserInviteApiResponse = /** status 200 Invitation request accepted */ {
+  [key: string]: any;
+};
+export type HandleUserInviteApiArg = {
+  /** The ID of the organization */
+  orgId: string;
+  body: {
+    [key: string]: any;
+  };
+};
+export type SignupRequestApiResponse = /** status 201 Signup request created */ {
+  [key: string]: any;
+};
+export type SignupRequestApiArg = {
+  body: {
+    [key: string]: any;
+  };
+};
+export type GetSignupRequestsApiResponse = /** status 200 Signup requests page */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  page_size?: number;
+  /** Total number of items available. */
+  total_count?: number;
+  /** The data of the signuprequestspage. */
+  data?: {
+    [key: string]: any;
+  }[];
+};
+export type GetSignupRequestsApiArg = {
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get filtered reponses */
+  filter?: string;
+};
+export type ApproveSignupRequestApiResponse = /** status 200 Signup request approved */ {
+  [key: string]: any;
+};
+export type ApproveSignupRequestApiArg = void;
+export type DenySignupRequestApiResponse = /** status 200 Signup request denied */ {
+  [key: string]: any;
+};
+export type DenySignupRequestApiArg = void;
+export type GetSignupRequestNotificationApiResponse = /** status 200 Signup request notification payload */ {
+  [key: string]: any;
+};
+export type GetSignupRequestNotificationApiArg = void;
+export type GetPlansApiResponse = /** status 200 Plans response */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** Name of the plan */
+  name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+  cadence: "none" | "monthly" | "annually";
+  unit: "user" | "free";
+  /** Minimum number of units required for the plan */
+  minimum_units: number;
+  /** Price per unit of the plan */
+  price_per_unit: number;
+  currency: "usd";
+}[];
+export type GetPlansApiArg = {
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+};
+export type GetSubscriptionsApiResponse = /** status 200 Get subscription response */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  page_size: number;
+  /** Total number of items available. */
+  total_count: number;
+  /** Subscriptions returned in the current page of results. */
+  subscriptions: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    org_id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    plan_id: string;
+    /** Plan entity schema. */
+    plan?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** Name of the plan */
+      name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+      cadence: "none" | "monthly" | "annually";
+      unit: "user" | "free";
+      /** Minimum number of units required for the plan */
+      minimum_units: number;
+      /** Price per unit of the plan */
+      price_per_unit: number;
+      currency: "usd";
+    };
+    /** number of units subscribed (eg number of users) */
+    quantity: number;
+    start_date?: string;
+    end_date?: string;
+    /** Possible statuses of a Stripe subscription. */
+    status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid";
+    created_at?: string;
+    updated_at?: string;
+    deleted_at?: string;
+    /** Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe */
+    billing_id: string;
+  }[];
+};
+export type GetSubscriptionsApiArg = {
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Filter subscriptions by status */
+  status?: string[];
+};
+export type CancelSubscriptionApiResponse = /** status 200 undefined */ {
+  /** Current page number of the result set. */
+  page: number;
+  /** Number of items per page. */
+  page_size: number;
+  /** Total number of items available. */
+  total_count: number;
+  /** Subscriptions returned in the current page of results. */
+  subscriptions: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    org_id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    plan_id: string;
+    /** Plan entity schema. */
+    plan?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** Name of the plan */
+      name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+      cadence: "none" | "monthly" | "annually";
+      unit: "user" | "free";
+      /** Minimum number of units required for the plan */
+      minimum_units: number;
+      /** Price per unit of the plan */
+      price_per_unit: number;
+      currency: "usd";
+    };
+    /** number of units subscribed (eg number of users) */
+    quantity: number;
+    start_date?: string;
+    end_date?: string;
+    /** Possible statuses of a Stripe subscription. */
+    status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid";
+    created_at?: string;
+    updated_at?: string;
+    deleted_at?: string;
+    /** Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe */
+    billing_id: string;
+  }[];
+};
+export type CancelSubscriptionApiArg = {
+  /** Subscription ID */
+  subscriptionId: string;
+};
+export type CreateSubscriptionApiResponse = /** status 201 A new subscription has been created */ {
+  /** ID of the associated subscription. */
+  subscriptionId?: string;
+  /** Client secret returned by the payment processor for the subscription checkout flow. */
+  clientSecret?: string;
+};
+export type CreateSubscriptionApiArg = {
+  body: {
+    /** Organization ID */
+    orgId?: string;
+    /** Price ID from the payment processor */
+    planId?: string;
+    /** Coupon ID to apply */
+    couponId?: string;
+    /** Number of users in the organization */
+    userCount?: number;
+    /** Email of the customer */
+    email?: string;
+    /** Supported payment processors */
+    paymentProcessor?: "stripe" | "paypal" | "braintree";
+  };
+};
+export type UpgradeSubscriptionApiResponse = /** status 200 undefined */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  org_id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  plan_id: string;
+  /** Plan entity schema. */
+  plan?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** Name of the plan */
+    name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+    cadence: "none" | "monthly" | "annually";
+    unit: "user" | "free";
+    /** Minimum number of units required for the plan */
+    minimum_units: number;
+    /** Price per unit of the plan */
+    price_per_unit: number;
+    currency: "usd";
+  };
+  /** number of units subscribed (eg number of users) */
+  quantity: number;
+  start_date?: string;
+  end_date?: string;
+  /** Possible statuses of a Stripe subscription. */
+  status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid";
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string;
+  /** Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe */
+  billing_id: string;
+};
+export type UpgradeSubscriptionApiArg = {
+  /** Subscription ID */
+  subscriptionId: string;
+  body: {
+    /** Old Plan id that is being changed */
+    oldPlanId?: string;
+    /** New Plan id that is being changed to */
+    newPlanId?: string;
+  };
+};
+export type PreviewSubscriptionUpgradeApiResponse =
+  /** status 200 Preview of the upgraded subscription invoice */ object;
+export type PreviewSubscriptionUpgradeApiArg = {
+  /** Subscription ID */
+  subscriptionId: string;
+  body: {
+    /** Old Plan id that is being changed */
+    oldPlanId?: string;
+    /** New Plan id that is being changed to */
+    newPlanId?: string;
+  };
+};
+export type HandleSubscriptionWebhookApiResponse = unknown;
+export type HandleSubscriptionWebhookApiArg = {
+  body: object;
+};
+export type GetUserTokensApiResponse = /** status 200 Tokens response */ {
+  /** The tokens of the tokenpage. */
+  tokens: {
+    /** Unique identifier for the token. */
+    id: string;
+    /** UUID of the user who owns the token. */
+    user_id: string;
+    /** Authentication provider associated with the token. */
+    provider: string;
+    /** Access token value. */
+    access_token?: string;
+    /** Refresh token value when applicable. */
+    refresh_token?: string;
+    /** Human-readable token name. */
+    name?: string;
+    /** Purpose for which the token was created. */
+    purpose?: string;
+    /** Whether this entry represents an OAuth session. */
+    is_oauth?: boolean;
+    /** Timestamp when the resource was created. */
+    created_at?: string;
+    /** Timestamp when the resource was updated. */
+    updated_at?: string;
+  }[];
+  /** Total number of tokens across all pages. */
+  total_count: number;
+  /** Current page number (zero-based). */
+  page: number;
+  /** Number of tokens per page. */
+  page_size: number;
+};
+export type GetUserTokensApiArg = {
+  /** Whether to retrieve OAuth-backed sessions instead of API tokens. */
+  isOAuth?: boolean;
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+};
+export type GenerateTokenApiResponse = /** status 200 Token generated */ {
+  /** The tokens of the tokenpage. */
+  tokens: {
+    /** Unique identifier for the token. */
+    id: string;
+    /** UUID of the user who owns the token. */
+    user_id: string;
+    /** Authentication provider associated with the token. */
+    provider: string;
+    /** Access token value. */
+    access_token?: string;
+    /** Refresh token value when applicable. */
+    refresh_token?: string;
+    /** Human-readable token name. */
+    name?: string;
+    /** Purpose for which the token was created. */
+    purpose?: string;
+    /** Whether this entry represents an OAuth session. */
+    is_oauth?: boolean;
+    /** Timestamp when the resource was created. */
+    created_at?: string;
+    /** Timestamp when the resource was updated. */
+    updated_at?: string;
+  }[];
+  /** Total number of tokens across all pages. */
+  total_count: number;
+  /** Current page number (zero-based). */
+  page: number;
+  /** Number of tokens per page. */
+  page_size: number;
+};
+export type GenerateTokenApiArg = {
+  /** Name of the token. */
+  name: string;
+  /** Purpose for which the token is generated. */
+  purpose?: string;
+};
+export type DeleteUserTokenApiResponse = /** status 200 Token deleted */ {
+  /** The tokens of the tokenpage. */
+  tokens: {
+    /** Unique identifier for the token. */
+    id: string;
+    /** UUID of the user who owns the token. */
+    user_id: string;
+    /** Authentication provider associated with the token. */
+    provider: string;
+    /** Access token value. */
+    access_token?: string;
+    /** Refresh token value when applicable. */
+    refresh_token?: string;
+    /** Human-readable token name. */
+    name?: string;
+    /** Purpose for which the token was created. */
+    purpose?: string;
+    /** Whether this entry represents an OAuth session. */
+    is_oauth?: boolean;
+    /** Timestamp when the resource was created. */
+    created_at?: string;
+    /** Timestamp when the resource was updated. */
+    updated_at?: string;
+  }[];
+  /** Total number of tokens across all pages. */
+  total_count: number;
+  /** Current page number (zero-based). */
+  page: number;
+  /** Number of tokens per page. */
+  page_size: number;
+};
+export type DeleteUserTokenApiArg = {
+  /** ID of the token. */
+  tokenId: string;
+};
+export type GetUserTokensByIdApiResponse = /** status 200 Token response */ {
+  /** Unique identifier for the token. */
+  id: string;
+  /** UUID of the user who owns the token. */
+  user_id: string;
+  /** Authentication provider associated with the token. */
+  provider: string;
+  /** Access token value. */
+  access_token?: string;
+  /** Refresh token value when applicable. */
+  refresh_token?: string;
+  /** Human-readable token name. */
+  name?: string;
+  /** Purpose for which the token was created. */
+  purpose?: string;
+  /** Whether this entry represents an OAuth session. */
+  is_oauth?: boolean;
+  /** Timestamp when the resource was created. */
+  created_at?: string;
+  /** Timestamp when the resource was updated. */
+  updated_at?: string;
+};
+export type GetUserTokensByIdApiArg = {
+  /** Token ID */
+  id: string;
+};
+export type IssueIndefiniteLifetimeTokenApiResponse = /** status 200 Token generated */ {
+  /** The tokens of the tokenpage. */
+  tokens: {
+    /** Unique identifier for the token. */
+    id: string;
+    /** UUID of the user who owns the token. */
+    user_id: string;
+    /** Authentication provider associated with the token. */
+    provider: string;
+    /** Access token value. */
+    access_token?: string;
+    /** Refresh token value when applicable. */
+    refresh_token?: string;
+    /** Human-readable token name. */
+    name?: string;
+    /** Purpose for which the token was created. */
+    purpose?: string;
+    /** Whether this entry represents an OAuth session. */
+    is_oauth?: boolean;
+    /** Timestamp when the resource was created. */
+    created_at?: string;
+    /** Timestamp when the resource was updated. */
+    updated_at?: string;
+  }[];
+  /** Total number of tokens across all pages. */
+  total_count: number;
+  /** Current page number (zero-based). */
+  page: number;
+  /** Number of tokens per page. */
+  page_size: number;
+};
+export type IssueIndefiniteLifetimeTokenApiArg = {
+  /** UUID of the user. */
+  userId: string;
+  /** Remote provider. */
+  provider: string;
+};
+export type GetPatternsApiResponse = /** status 200 Designs response */ {
+  /** Current page number of the result set. */
+  page?: number;
+  /** Number of items per page. */
+  pageSize?: number;
+  /** Total number of items available. */
+  totalCount?: number;
+  /** Designs included on this page of results. */
   patterns?: {
+    /** Server-generated design ID. */
+    id?: string;
+    /** Human-readable design name. */
+    name?: string;
+    /** Catalog metadata attached to the design when published. */
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
@@ -6121,13 +6955,13 @@ export type GetPatternsApiResponse = /** status 200 Designs response */ {
       /** Contains reference to the dark and light mode snapshots of the design. */
       snapshotURL?: string[];
     };
-    created_at?: string;
-    user_id?: string;
+    /** Owning user ID. */
+    userId?: string;
+    /** Optional structured location metadata (branch, host, path, ...). */
     location?: {
       [key: string]: string;
     };
-    name?: string;
-    /** Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes. */
+    /** Parsed design document body. */
     patternFile?: {
       /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
       id: string;
@@ -7125,36 +7959,46 @@ export type GetPatternsApiResponse = /** status 200 Designs response */ {
         }[];
       }[];
     };
-    updated_at?: string;
-    id?: string;
+    /** Visibility scope (private, public, published). */
     visibility?: string;
+    /** Timestamp of design creation. */
+    createdAt?: string;
+    /** Timestamp of last design modification. */
+    updatedAt?: string;
   }[];
-  /** The result type of the mesherypatternpage. */
+  /** Optional discriminator describing which collection the page represents. */
   resultType?: string;
-  /** Total number of items available. */
-  total_count?: number;
 };
 export type GetPatternsApiArg = {
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
-  pagesize?: string;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
   order?: string;
+  /** User's organization ID */
+  orgId?: string;
   /** Filter by visibility (public, private, published) */
   visibility?: string;
   /** UUID of User. Pass userId for fetching public and published designs. */
   userId?: string;
-  /** User's organization ID. */
-  orgId?: string;
+  /** Whether to include usage metrics in the response. */
   metrics?: boolean;
+  /** Filter designs by workspace ID. */
   workspaceId?: string;
+  /** Populate additional nested fields in the response. */
   populate?: boolean;
+  /** Include designs shared with the caller. */
   shared?: boolean;
 };
 export type UpsertPatternApiResponse = /** status 200 Design saved */ {
+  /** Server-generated design ID. */
+  id?: string;
+  /** Human-readable design name. */
+  name?: string;
+  /** Catalog metadata attached to the design when published. */
   catalogData?: {
     /** Tracks the specific content version that has been made available in the Catalog. */
     publishedVersion?: string;
@@ -7179,13 +8023,13 @@ export type UpsertPatternApiResponse = /** status 200 Design saved */ {
     /** Contains reference to the dark and light mode snapshots of the design. */
     snapshotURL?: string[];
   };
-  created_at?: string;
-  user_id?: string;
+  /** Owning user ID. */
+  userId?: string;
+  /** Optional structured location metadata (branch, host, path, ...). */
   location?: {
     [key: string]: string;
   };
-  name?: string;
-  /** Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes. */
+  /** Parsed design document body. */
   patternFile?: {
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id: string;
@@ -8183,14 +9027,24 @@ export type UpsertPatternApiResponse = /** status 200 Design saved */ {
       }[];
     }[];
   };
-  updated_at?: string;
-  id?: string;
+  /** Visibility scope (private, public, published). */
   visibility?: string;
+  /** Timestamp of design creation. */
+  createdAt?: string;
+  /** Timestamp of last design modification. */
+  updatedAt?: string;
 };
 export type UpsertPatternApiArg = {
   body: {
+    /** Optional source path the design was loaded from. */
     path?: string;
+    /** Design body to persist. */
     patternData?: {
+      /** Server-generated design ID. */
+      id?: string;
+      /** Human-readable design name. */
+      name?: string;
+      /** Catalog metadata attached to the design when published. */
       catalogData?: {
         /** Tracks the specific content version that has been made available in the Catalog. */
         publishedVersion?: string;
@@ -8215,13 +9069,13 @@ export type UpsertPatternApiArg = {
         /** Contains reference to the dark and light mode snapshots of the design. */
         snapshotURL?: string[];
       };
-      created_at?: string;
-      user_id?: string;
+      /** Owning user ID. */
+      userId?: string;
+      /** Optional structured location metadata (branch, host, path, ...). */
       location?: {
         [key: string]: string;
       };
-      name?: string;
-      /** Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes. */
+      /** Parsed design document body. */
       patternFile?: {
         /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
         id: string;
@@ -9219,24 +10073,29 @@ export type UpsertPatternApiArg = {
           }[];
         }[];
       };
-      updated_at?: string;
-      id?: string;
+      /** Visibility scope (private, public, published). */
       visibility?: string;
+      /** Timestamp of design creation. */
+      createdAt?: string;
+      /** Timestamp of last design modification. */
+      updatedAt?: string;
     };
-    /** The save of the mesherypatternrequestbody. */
+    /** When true, persist the design in addition to parsing it. */
     save?: boolean;
-    /** endpoint */
+    /** Optional source URL the design was fetched from. */
     url?: string;
-    /** Name of the mesherypatternrequestbody. */
+    /** Human-readable design name. */
     name?: string;
   };
 };
 export type DeletePatternsApiResponse = unknown;
 export type DeletePatternsApiArg = {
   body: {
-    /** The patterns of the mesherypatterndeleterequestbody. */
+    /** Designs targeted for deletion. */
     patterns?: {
+      /** Design ID targeted for deletion. */
       id?: string;
+      /** Human-readable design name (informational only; server matches on id). */
       name?: string;
     }[];
   };
@@ -9245,8 +10104,8 @@ export type GetPatternResourcesApiResponse = unknown;
 export type GetPatternResourcesApiArg = {
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
-  pagesize?: string;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -9257,14 +10116,19 @@ export type UpsertPatternResourceApiArg = void;
 export type GetPatternResourceApiResponse = unknown;
 export type GetPatternResourceApiArg = {
   /** Design (Pattern) ID */
-  id: string;
+  designId: string;
 };
 export type DeletePatternResourceApiResponse = unknown;
 export type DeletePatternResourceApiArg = {
   /** Design (Pattern) ID */
-  id: string;
+  designId: string;
 };
 export type GetPatternApiResponse = /** status 200 Design response */ {
+  /** Server-generated design ID. */
+  id?: string;
+  /** Human-readable design name. */
+  name?: string;
+  /** Catalog metadata attached to the design when published. */
   catalogData?: {
     /** Tracks the specific content version that has been made available in the Catalog. */
     publishedVersion?: string;
@@ -9289,13 +10153,13 @@ export type GetPatternApiResponse = /** status 200 Design response */ {
     /** Contains reference to the dark and light mode snapshots of the design. */
     snapshotURL?: string[];
   };
-  created_at?: string;
-  user_id?: string;
+  /** Owning user ID. */
+  userId?: string;
+  /** Optional structured location metadata (branch, host, path, ...). */
   location?: {
     [key: string]: string;
   };
-  name?: string;
-  /** Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes. */
+  /** Parsed design document body. */
   patternFile?: {
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id: string;
@@ -10293,20 +11157,28 @@ export type GetPatternApiResponse = /** status 200 Design response */ {
       }[];
     }[];
   };
-  updated_at?: string;
-  id?: string;
+  /** Visibility scope (private, public, published). */
   visibility?: string;
+  /** Timestamp of design creation. */
+  createdAt?: string;
+  /** Timestamp of last design modification. */
+  updatedAt?: string;
 };
 export type GetPatternApiArg = {
   /** Design (Pattern) ID */
-  id: string;
+  designId: string;
 };
 export type DeletePatternApiResponse = unknown;
 export type DeletePatternApiArg = {
   /** Design (Pattern) ID */
-  id: string;
+  designId: string;
 };
 export type ClonePatternApiResponse = /** status 200 Design cloned */ {
+  /** Server-generated design ID. */
+  id?: string;
+  /** Human-readable design name. */
+  name?: string;
+  /** Catalog metadata attached to the design when published. */
   catalogData?: {
     /** Tracks the specific content version that has been made available in the Catalog. */
     publishedVersion?: string;
@@ -10331,13 +11203,13 @@ export type ClonePatternApiResponse = /** status 200 Design cloned */ {
     /** Contains reference to the dark and light mode snapshots of the design. */
     snapshotURL?: string[];
   };
-  created_at?: string;
-  user_id?: string;
+  /** Owning user ID. */
+  userId?: string;
+  /** Optional structured location metadata (branch, host, path, ...). */
   location?: {
     [key: string]: string;
   };
-  name?: string;
-  /** Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes. */
+  /** Parsed design document body. */
   patternFile?: {
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id: string;
@@ -11335,23 +12207,26 @@ export type ClonePatternApiResponse = /** status 200 Design cloned */ {
       }[];
     }[];
   };
-  updated_at?: string;
-  id?: string;
+  /** Visibility scope (private, public, published). */
   visibility?: string;
+  /** Timestamp of design creation. */
+  createdAt?: string;
+  /** Timestamp of last design modification. */
+  updatedAt?: string;
 };
 export type ClonePatternApiArg = {
   /** Design (Pattern) ID */
-  id: string;
+  designId: string;
 };
 export type GetDesignPatternFileApiResponse = unknown;
 export type GetDesignPatternFileApiArg = {
   /** Design (Pattern) ID */
-  id: string;
+  designId: string;
 };
 export type UpsertPatternSourceContentApiResponse = unknown;
 export type UpsertPatternSourceContentApiArg = {
   /** Design (Pattern) ID */
-  id: string;
+  designId: string;
   body: Blob;
 };
 export type ImportDesignApiResponse = /** status 200 Successful Import */ {
@@ -11363,7 +12238,7 @@ export type ImportDesignApiArg = {
         /** Base64-encoded file bytes. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details. */
         file: string;
         /** The name of the pattern file being imported. Include the extension (e.g. `design.yaml`), as the server uses it to identify the file type. */
-        file_name: string;
+        fileName: string;
         /** Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it. */
         name?: string;
       }
@@ -11378,11 +12253,16 @@ export type GetCatalogContentApiResponse = /** status 200 Catalog content page *
   /** Current page number of the result set. */
   page?: number;
   /** Number of items per page. */
-  page_size?: number;
+  pageSize?: number;
   /** Total number of items available. */
-  total_count?: number;
-  /** The patterns of the catalogcontentpage. */
+  totalCount?: number;
+  /** Published designs included on this page. */
   patterns?: {
+    /** Server-generated design ID. */
+    id?: string;
+    /** Human-readable design name. */
+    name?: string;
+    /** Catalog metadata attached to the design when published. */
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
       publishedVersion?: string;
@@ -11407,13 +12287,13 @@ export type GetCatalogContentApiResponse = /** status 200 Catalog content page *
       /** Contains reference to the dark and light mode snapshots of the design. */
       snapshotURL?: string[];
     };
-    created_at?: string;
-    user_id?: string;
+    /** Owning user ID. */
+    userId?: string;
+    /** Optional structured location metadata (branch, host, path, ...). */
     location?: {
       [key: string]: string;
     };
-    name?: string;
-    /** Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes. */
+    /** Parsed design document body. */
     patternFile?: {
       /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
       id: string;
@@ -12411,19 +13291,22 @@ export type GetCatalogContentApiResponse = /** status 200 Catalog content page *
         }[];
       }[];
     };
-    updated_at?: string;
-    id?: string;
+    /** Visibility scope (private, public, published). */
     visibility?: string;
+    /** Timestamp of design creation. */
+    createdAt?: string;
+    /** Timestamp of last design modification. */
+    updatedAt?: string;
   }[];
-  /** The filters of the catalogcontentpage. */
+  /** Published filters included on this page. */
   filters?: {
     [key: string]: any;
   }[];
-  /** The models count of the catalogcontentpage. */
+  /** Model-by-count aggregates for the catalog page. */
   modelsCount?: {
     [key: string]: any;
   }[];
-  /** The category count of the catalogcontentpage. */
+  /** Category-by-count aggregates for the catalog page. */
   categoryCount?: {
     [key: string]: any;
   }[];
@@ -12432,8 +13315,8 @@ export type GetCatalogContentApiArg = {
   pathType: string;
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
-  pagesize?: string;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
@@ -12476,8 +13359,8 @@ export type GetCatalogContentClassesApiResponse = /** status 200 Catalog content
 export type GetCatalogContentClassesApiArg = {
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
-  pagesize?: string;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
 };
 export type ApproveCatalogRequestApiResponse = /** status 200 Request approved */ {
   [key: string]: any;
@@ -12499,15 +13382,15 @@ export type GetFilterApiResponse = /** status 200 Filter */ {
   [key: string]: any;
 };
 export type GetFilterApiArg = {
-  /** Design (Pattern) ID */
-  id: string;
+  /** Filter ID */
+  filterId: string;
 };
 export type CloneFilterApiResponse = /** status 200 Cloned filter */ {
   [key: string]: any;
 };
 export type CloneFilterApiArg = {
-  /** Design (Pattern) ID */
-  id: string;
+  /** Filter ID */
+  filterId: string;
   body: {
     [key: string]: any;
   };
@@ -12538,12 +13421,12 @@ export type ShareDesignApiArg = {
   /** Body for sharing a design, filter, or view with recipients by email. */
   body: {
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    content_id: string;
+    contentId: string;
     /** The kind of content being shared. Must match the entity the handler
         expects — `pattern` and `filter` are valid on the design share
         endpoint; `view` is valid on the view share endpoint.
          */
-    content_type: "pattern" | "filter" | "view";
+    contentType: "pattern" | "filter" | "view";
     /** Email addresses of the recipients to share this content with. */
     emails: string[];
     /** When true, flip visibility to public and send invitation emails to
@@ -12556,10 +13439,10 @@ export type GetCatalogRequestApiResponse = /** status 200 Catalog requests page 
   /** Current page number of the result set. */
   page?: number;
   /** Number of items per page. */
-  page_size?: number;
+  pageSize?: number;
   /** Total number of items available. */
-  total_count?: number;
-  /** The catalog requests of the catalogrequestspage. */
+  totalCount?: number;
+  /** Catalog requests included on this page. */
   catalogRequests?: {
     [key: string]: any;
   }[];
@@ -12567,852 +13450,13 @@ export type GetCatalogRequestApiResponse = /** status 200 Catalog requests page 
 export type GetCatalogRequestApiArg = {
   /** Get responses by page */
   page?: string;
-  /** Get responses by pagesize */
-  pagesize?: string;
+  /** Number of items per page (canonical camelCase form). */
+  pageSize?: number;
   /** Get responses that match search param value */
   search?: string;
   /** Get ordered responses */
   order?: string;
   filter?: string;
-};
-export type DeleteEventsByIdApiResponse = unknown;
-export type DeleteEventsByIdApiArg = {
-  /** ID of the event to delete */
-  id: string;
-};
-export type PostEventsApiResponse = unknown;
-export type PostEventsApiArg = {
-  body: object;
-};
-export type PostEventsDeleteApiResponse = /** status 200 event deleted */ {
-  deleted?: string[];
-};
-export type PostEventsDeleteApiArg = {
-  body: {
-    /** The ids of the bulkdeleterequest. */
-    ids: string[];
-  };
-};
-export type PutEventsStatusApiResponse = /** status 200 Events updated */ {
-  updated?: string[];
-};
-export type PutEventsStatusApiArg = {
-  body: {
-    /** The ids of the bulkupdatestatusrequest. */
-    ids: string[];
-    /** Current status of the resource. */
-    status: string;
-  };
-};
-export type PutEventsByIdStatusApiResponse = /** status 200 Event status updated */ {
-  message?: string;
-  event_id?: string;
-  status?: string;
-};
-export type PutEventsByIdStatusApiArg = {
-  /** ID of the event */
-  id: string;
-  body: {
-    /** Current status of the resource. */
-    status: string;
-  };
-};
-export type GetEventsOfWorkspaceApiResponse = /** status 200 Workspace events */ {
-  page?: number;
-  page_size?: number;
-  total_count?: number;
-  /** The data of the eventspage. */
-  data?: {
-    user_id: string;
-    system_id?: string;
-    /** The category of the event. */
-    category: string;
-    /** The action of the event. */
-    action: string;
-    /** Description of the event. */
-    description?: string;
-    /** The first name of the event. */
-    firstName?: string;
-    /** The last name of the event. */
-    lastName?: string;
-    /** email */
-    email?: string;
-    /** One of (x-oapi-codegen-extra-tags-cloud, github, google) */
-    provider?: string;
-    /** Timestamp when the resource was created. */
-    created_at?: string;
-  }[];
-};
-export type GetEventsOfWorkspaceApiArg = {
-  /** Workspace ID */
-  workspaceId: string;
-  /** Get responses by page */
-  page?: string;
-  /** Get responses by pagesize */
-  pagesize?: string;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-};
-export type GetEventsAggregateApiResponse = /** status 200 Events aggregate */ {
-  /** The audit of the eventsaggregate. */
-  audit?: number;
-  [key: string]: any;
-};
-export type GetEventsAggregateApiArg = {
-  cumulative?: boolean;
-};
-export type GetEventsApiResponse = /** status 200 Events page */ {
-  page?: number;
-  page_size?: number;
-  total_count?: number;
-  /** The data of the eventspage. */
-  data?: {
-    user_id: string;
-    system_id?: string;
-    /** The category of the event. */
-    category: string;
-    /** The action of the event. */
-    action: string;
-    /** Description of the event. */
-    description?: string;
-    /** The first name of the event. */
-    firstName?: string;
-    /** The last name of the event. */
-    lastName?: string;
-    /** email */
-    email?: string;
-    /** One of (x-oapi-codegen-extra-tags-cloud, github, google) */
-    provider?: string;
-    /** Timestamp when the resource was created. */
-    created_at?: string;
-  }[];
-};
-export type GetEventsApiArg = {
-  /** Get responses by page */
-  page?: string;
-  /** Get responses by pagesize */
-  pagesize?: string;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Get filtered reponses */
-  filter?: string;
-};
-export type GetEventSummaryByUserApiResponse = /** status 200 Event summary page */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  page_size?: number;
-  /** Total number of items available. */
-  total_count?: number;
-  /** The data of the eventsummarypage. */
-  data?: {
-    [key: string]: any;
-  }[];
-};
-export type GetEventSummaryByUserApiArg = {
-  /** Get responses by page */
-  page?: string;
-  /** Get responses by pagesize */
-  pagesize?: string;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Get filtered reponses */
-  filter?: string;
-};
-export type GetEventTypesApiResponse = /** status 200 Event types */ {
-  /** The category of the eventtype. */
-  category?: string;
-  /** The action of the eventtype. */
-  action?: string;
-}[];
-export type GetEventTypesApiArg = {
-  /** Get responses by page */
-  page?: string;
-  /** Get responses by pagesize */
-  pagesize?: string;
-};
-export type GetInvitationApiResponse = /** status 200 undefined */ {
-  /** Unique identifier for the invitation , is also used as the invitation code */
-  id: string;
-  /** ID of the user who created the invitation, this is used to track who created the invitation and can be used for auditing purposes */
-  owner_id: string;
-  /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
-  is_default?: boolean;
-  /** Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
-  name: string;
-  /** Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
-  description: string;
-  /** The emails of the invitation. */
-  emails: string[];
-  /** ID of the organization to which the user is invited */
-  org_id: string;
-  /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
-  expires_at?: string;
-  /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
-  quota?: number;
-  /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
-  accepted_by: string[];
-  /** The roles of the invitation. */
-  roles: string[];
-  /** The teams of the invitation. */
-  teams: string[];
-  /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
-  status: "enabled" | "disabled";
-  /** Timestamp when the invitation was created */
-  created_at: string;
-  /** Timestamp when the invitation was last updated */
-  updated_at: string;
-  /** Timestamp when the invitation was deleted, if applicable */
-  deleted_at: string;
-};
-export type GetInvitationApiArg = {
-  /** The ID of the invitation */
-  invitationId: string;
-};
-export type DeleteInvitationApiResponse = unknown;
-export type DeleteInvitationApiArg = {
-  /** The ID of the invitation */
-  invitationId: string;
-};
-export type UpdateInvitationApiResponse = /** status 200 undefined */ {
-  /** Unique identifier for the invitation , is also used as the invitation code */
-  id: string;
-  /** ID of the user who created the invitation, this is used to track who created the invitation and can be used for auditing purposes */
-  owner_id: string;
-  /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
-  is_default?: boolean;
-  /** Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
-  name: string;
-  /** Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
-  description: string;
-  /** The emails of the invitation. */
-  emails: string[];
-  /** ID of the organization to which the user is invited */
-  org_id: string;
-  /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
-  expires_at?: string;
-  /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
-  quota?: number;
-  /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
-  accepted_by: string[];
-  /** The roles of the invitation. */
-  roles: string[];
-  /** The teams of the invitation. */
-  teams: string[];
-  /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
-  status: "enabled" | "disabled";
-  /** Timestamp when the invitation was created */
-  created_at: string;
-  /** Timestamp when the invitation was last updated */
-  updated_at: string;
-  /** Timestamp when the invitation was deleted, if applicable */
-  deleted_at: string;
-};
-export type UpdateInvitationApiArg = {
-  /** The ID of the invitation */
-  invitationId: string;
-  body: {
-    /** Existing invitation ID for updates; omit on create. */
-    id?: string;
-    /** ID of the user who created the invitation. */
-    owner_id?: string;
-    /** Indicates whether the invitation is a default invitation (open invite). */
-    is_default?: boolean;
-    /** Name of the invitation. */
-    name: string;
-    /** Description of the invitation. */
-    description: string;
-    /** The emails of the invitation. */
-    emails: string[];
-    /** ID of the organization to which the user is invited. */
-    org_id: string;
-    /** Timestamp when the invitation expires, if applicable. */
-    expires_at?: string;
-    /** Quota for the invitation. */
-    quota?: number;
-    /** The roles of the invitation. */
-    roles: string[];
-    /** The teams of the invitation. */
-    teams: string[];
-    /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
-    status: "enabled" | "disabled";
-  };
-};
-export type GetInvitationsApiResponse = /** status 200 undefined */ {
-  /** List of invitations */
-  data: {
-    /** Unique identifier for the invitation , is also used as the invitation code */
-    id: string;
-    /** ID of the user who created the invitation, this is used to track who created the invitation and can be used for auditing purposes */
-    owner_id: string;
-    /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
-    is_default?: boolean;
-    /** Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
-    name: string;
-    /** Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
-    description: string;
-    /** The emails of the invitation. */
-    emails: string[];
-    /** ID of the organization to which the user is invited */
-    org_id: string;
-    /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
-    expires_at?: string;
-    /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
-    quota?: number;
-    /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
-    accepted_by: string[];
-    /** The roles of the invitation. */
-    roles: string[];
-    /** The teams of the invitation. */
-    teams: string[];
-    /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
-    status: "enabled" | "disabled";
-    /** Timestamp when the invitation was created */
-    created_at: string;
-    /** Timestamp when the invitation was last updated */
-    updated_at: string;
-    /** Timestamp when the invitation was deleted, if applicable */
-    deleted_at: string;
-  }[];
-  /** Total number of invitations available */
-  total: number;
-};
-export type GetInvitationsApiArg = void;
-export type CreateInvitationApiResponse = /** status 201 undefined */ {
-  /** Unique identifier for the invitation , is also used as the invitation code */
-  id: string;
-  /** ID of the user who created the invitation, this is used to track who created the invitation and can be used for auditing purposes */
-  owner_id: string;
-  /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
-  is_default?: boolean;
-  /** Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
-  name: string;
-  /** Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
-  description: string;
-  /** The emails of the invitation. */
-  emails: string[];
-  /** ID of the organization to which the user is invited */
-  org_id: string;
-  /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
-  expires_at?: string;
-  /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
-  quota?: number;
-  /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
-  accepted_by: string[];
-  /** The roles of the invitation. */
-  roles: string[];
-  /** The teams of the invitation. */
-  teams: string[];
-  /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
-  status: "enabled" | "disabled";
-  /** Timestamp when the invitation was created */
-  created_at: string;
-  /** Timestamp when the invitation was last updated */
-  updated_at: string;
-  /** Timestamp when the invitation was deleted, if applicable */
-  deleted_at: string;
-};
-export type CreateInvitationApiArg = {
-  body: {
-    /** Existing invitation ID for updates; omit on create. */
-    id?: string;
-    /** ID of the user who created the invitation. */
-    owner_id?: string;
-    /** Indicates whether the invitation is a default invitation (open invite). */
-    is_default?: boolean;
-    /** Name of the invitation. */
-    name: string;
-    /** Description of the invitation. */
-    description: string;
-    /** The emails of the invitation. */
-    emails: string[];
-    /** ID of the organization to which the user is invited. */
-    org_id: string;
-    /** Timestamp when the invitation expires, if applicable. */
-    expires_at?: string;
-    /** Quota for the invitation. */
-    quota?: number;
-    /** The roles of the invitation. */
-    roles: string[];
-    /** The teams of the invitation. */
-    teams: string[];
-    /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
-    status: "enabled" | "disabled";
-  };
-};
-export type AcceptInvitationApiResponse = /** status 200 undefined */ {
-  /** Unique identifier for the invitation , is also used as the invitation code */
-  id: string;
-  /** ID of the user who created the invitation, this is used to track who created the invitation and can be used for auditing purposes */
-  owner_id: string;
-  /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
-  is_default?: boolean;
-  /** Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
-  name: string;
-  /** Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
-  description: string;
-  /** The emails of the invitation. */
-  emails: string[];
-  /** ID of the organization to which the user is invited */
-  org_id: string;
-  /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
-  expires_at?: string;
-  /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
-  quota?: number;
-  /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
-  accepted_by: string[];
-  /** The roles of the invitation. */
-  roles: string[];
-  /** The teams of the invitation. */
-  teams: string[];
-  /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
-  status: "enabled" | "disabled";
-  /** Timestamp when the invitation was created */
-  created_at: string;
-  /** Timestamp when the invitation was last updated */
-  updated_at: string;
-  /** Timestamp when the invitation was deleted, if applicable */
-  deleted_at: string;
-};
-export type AcceptInvitationApiArg = {
-  /** The ID of the invitation */
-  invitationId: string;
-};
-export type HandleUserInviteApiResponse = /** status 200 Invitation request accepted */ {
-  [key: string]: any;
-};
-export type HandleUserInviteApiArg = {
-  /** The ID of the organization */
-  orgId: string;
-  body: {
-    [key: string]: any;
-  };
-};
-export type SignupRequestApiResponse = /** status 201 Signup request created */ {
-  [key: string]: any;
-};
-export type SignupRequestApiArg = {
-  body: {
-    [key: string]: any;
-  };
-};
-export type GetSignupRequestsApiResponse = /** status 200 Signup requests page */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  page_size?: number;
-  /** Total number of items available. */
-  total_count?: number;
-  /** The data of the signuprequestspage. */
-  data?: {
-    [key: string]: any;
-  }[];
-};
-export type GetSignupRequestsApiArg = {
-  /** Get responses by page */
-  page?: string;
-  /** Get responses by pagesize */
-  pagesize?: string;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Get filtered reponses */
-  filter?: string;
-};
-export type ApproveSignupRequestApiResponse = /** status 200 Signup request approved */ {
-  [key: string]: any;
-};
-export type ApproveSignupRequestApiArg = void;
-export type DenySignupRequestApiResponse = /** status 200 Signup request denied */ {
-  [key: string]: any;
-};
-export type DenySignupRequestApiArg = void;
-export type GetSignupRequestNotificationApiResponse = /** status 200 Signup request notification payload */ {
-  [key: string]: any;
-};
-export type GetSignupRequestNotificationApiArg = void;
-export type GetPlansApiResponse = /** status 200 Plans response */ {
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  id: string;
-  /** Name of the plan */
-  name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-  cadence: "none" | "monthly" | "annually";
-  unit: "user" | "free";
-  /** Minimum number of units required for the plan */
-  minimum_units: number;
-  /** Price per unit of the plan */
-  price_per_unit: number;
-  currency: "usd";
-}[];
-export type GetPlansApiArg = {
-  /** Get responses by page */
-  page?: string;
-  /** Get responses by pagesize */
-  pagesize?: string;
-};
-export type GetSubscriptionsApiResponse = /** status 200 Get subscription response */ {
-  /** Current page number of the result set. */
-  page: number;
-  /** Number of items per page. */
-  page_size: number;
-  /** Total number of items available. */
-  total_count: number;
-  /** Subscriptions returned in the current page of results. */
-  subscriptions: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    id: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    org_id: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    plan_id: string;
-    /** Plan entity schema. */
-    plan?: {
-      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-      id: string;
-      /** Name of the plan */
-      name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-      cadence: "none" | "monthly" | "annually";
-      unit: "user" | "free";
-      /** Minimum number of units required for the plan */
-      minimum_units: number;
-      /** Price per unit of the plan */
-      price_per_unit: number;
-      currency: "usd";
-    };
-    /** number of units subscribed (eg number of users) */
-    quantity: number;
-    start_date?: string;
-    end_date?: string;
-    /** Possible statuses of a Stripe subscription. */
-    status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid";
-    created_at?: string;
-    updated_at?: string;
-    deleted_at?: string;
-    /** Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe */
-    billing_id: string;
-  }[];
-};
-export type GetSubscriptionsApiArg = {
-  /** Get responses by page */
-  page?: string;
-  /** Get responses by pagesize */
-  pagesize?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Filter subscriptions by status */
-  status?: string[];
-};
-export type CancelSubscriptionApiResponse = /** status 200 undefined */ {
-  /** Current page number of the result set. */
-  page: number;
-  /** Number of items per page. */
-  page_size: number;
-  /** Total number of items available. */
-  total_count: number;
-  /** Subscriptions returned in the current page of results. */
-  subscriptions: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    id: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    org_id: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    plan_id: string;
-    /** Plan entity schema. */
-    plan?: {
-      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-      id: string;
-      /** Name of the plan */
-      name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-      cadence: "none" | "monthly" | "annually";
-      unit: "user" | "free";
-      /** Minimum number of units required for the plan */
-      minimum_units: number;
-      /** Price per unit of the plan */
-      price_per_unit: number;
-      currency: "usd";
-    };
-    /** number of units subscribed (eg number of users) */
-    quantity: number;
-    start_date?: string;
-    end_date?: string;
-    /** Possible statuses of a Stripe subscription. */
-    status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid";
-    created_at?: string;
-    updated_at?: string;
-    deleted_at?: string;
-    /** Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe */
-    billing_id: string;
-  }[];
-};
-export type CancelSubscriptionApiArg = {
-  /** Subscription ID */
-  subscriptionId: string;
-};
-export type CreateSubscriptionApiResponse = /** status 201 A new subscription has been created */ {
-  /** ID of the associated subscription. */
-  subscriptionId?: string;
-  /** Client secret returned by the payment processor for the subscription checkout flow. */
-  clientSecret?: string;
-};
-export type CreateSubscriptionApiArg = {
-  body: {
-    /** Organization ID */
-    orgId?: string;
-    /** Price ID from the payment processor */
-    planId?: string;
-    /** Coupon ID to apply */
-    couponId?: string;
-    /** Number of users in the organization */
-    userCount?: number;
-    /** Email of the customer */
-    email?: string;
-    /** Supported payment processors */
-    paymentProcessor?: "stripe" | "paypal" | "braintree";
-  };
-};
-export type UpgradeSubscriptionApiResponse = /** status 200 undefined */ {
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  id: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  org_id: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  plan_id: string;
-  /** Plan entity schema. */
-  plan?: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    id: string;
-    /** Name of the plan */
-    name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-    cadence: "none" | "monthly" | "annually";
-    unit: "user" | "free";
-    /** Minimum number of units required for the plan */
-    minimum_units: number;
-    /** Price per unit of the plan */
-    price_per_unit: number;
-    currency: "usd";
-  };
-  /** number of units subscribed (eg number of users) */
-  quantity: number;
-  start_date?: string;
-  end_date?: string;
-  /** Possible statuses of a Stripe subscription. */
-  status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid";
-  created_at?: string;
-  updated_at?: string;
-  deleted_at?: string;
-  /** Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe */
-  billing_id: string;
-};
-export type UpgradeSubscriptionApiArg = {
-  /** Subscription ID */
-  subscriptionId: string;
-  body: {
-    /** Old Plan id that is being changed */
-    oldPlanId?: string;
-    /** New Plan id that is being changed to */
-    newPlanId?: string;
-  };
-};
-export type PreviewSubscriptionUpgradeApiResponse =
-  /** status 200 Preview of the upgraded subscription invoice */ object;
-export type PreviewSubscriptionUpgradeApiArg = {
-  /** Subscription ID */
-  subscriptionId: string;
-  body: {
-    /** Old Plan id that is being changed */
-    oldPlanId?: string;
-    /** New Plan id that is being changed to */
-    newPlanId?: string;
-  };
-};
-export type HandleSubscriptionWebhookApiResponse = unknown;
-export type HandleSubscriptionWebhookApiArg = {
-  body: object;
-};
-export type GetUserTokensApiResponse = /** status 200 Tokens response */ {
-  /** The tokens of the tokenpage. */
-  tokens: {
-    /** Unique identifier for the token. */
-    id: string;
-    /** UUID of the user who owns the token. */
-    user_id: string;
-    /** Authentication provider associated with the token. */
-    provider: string;
-    /** Access token value. */
-    access_token?: string;
-    /** Refresh token value when applicable. */
-    refresh_token?: string;
-    /** Human-readable token name. */
-    name?: string;
-    /** Purpose for which the token was created. */
-    purpose?: string;
-    /** Whether this entry represents an OAuth session. */
-    is_oauth?: boolean;
-    /** Timestamp when the resource was created. */
-    created_at?: string;
-    /** Timestamp when the resource was updated. */
-    updated_at?: string;
-  }[];
-  /** Total number of tokens across all pages. */
-  total_count: number;
-  /** Current page number (zero-based). */
-  page: number;
-  /** Number of tokens per page. */
-  page_size: number;
-};
-export type GetUserTokensApiArg = {
-  /** Whether to retrieve OAuth-backed sessions instead of API tokens. */
-  isOAuth?: boolean;
-  /** Get responses by page */
-  page?: string;
-  /** Get responses by pagesize */
-  pagesize?: string;
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-};
-export type GenerateTokenApiResponse = /** status 200 Token generated */ {
-  /** The tokens of the tokenpage. */
-  tokens: {
-    /** Unique identifier for the token. */
-    id: string;
-    /** UUID of the user who owns the token. */
-    user_id: string;
-    /** Authentication provider associated with the token. */
-    provider: string;
-    /** Access token value. */
-    access_token?: string;
-    /** Refresh token value when applicable. */
-    refresh_token?: string;
-    /** Human-readable token name. */
-    name?: string;
-    /** Purpose for which the token was created. */
-    purpose?: string;
-    /** Whether this entry represents an OAuth session. */
-    is_oauth?: boolean;
-    /** Timestamp when the resource was created. */
-    created_at?: string;
-    /** Timestamp when the resource was updated. */
-    updated_at?: string;
-  }[];
-  /** Total number of tokens across all pages. */
-  total_count: number;
-  /** Current page number (zero-based). */
-  page: number;
-  /** Number of tokens per page. */
-  page_size: number;
-};
-export type GenerateTokenApiArg = {
-  /** Name of the token. */
-  name: string;
-  /** Purpose for which the token is generated. */
-  purpose?: string;
-};
-export type DeleteUserTokenApiResponse = /** status 200 Token deleted */ {
-  /** The tokens of the tokenpage. */
-  tokens: {
-    /** Unique identifier for the token. */
-    id: string;
-    /** UUID of the user who owns the token. */
-    user_id: string;
-    /** Authentication provider associated with the token. */
-    provider: string;
-    /** Access token value. */
-    access_token?: string;
-    /** Refresh token value when applicable. */
-    refresh_token?: string;
-    /** Human-readable token name. */
-    name?: string;
-    /** Purpose for which the token was created. */
-    purpose?: string;
-    /** Whether this entry represents an OAuth session. */
-    is_oauth?: boolean;
-    /** Timestamp when the resource was created. */
-    created_at?: string;
-    /** Timestamp when the resource was updated. */
-    updated_at?: string;
-  }[];
-  /** Total number of tokens across all pages. */
-  total_count: number;
-  /** Current page number (zero-based). */
-  page: number;
-  /** Number of tokens per page. */
-  page_size: number;
-};
-export type DeleteUserTokenApiArg = {
-  /** ID of the token. */
-  tokenId: string;
-};
-export type GetUserTokensByIdApiResponse = /** status 200 Token response */ {
-  /** Unique identifier for the token. */
-  id: string;
-  /** UUID of the user who owns the token. */
-  user_id: string;
-  /** Authentication provider associated with the token. */
-  provider: string;
-  /** Access token value. */
-  access_token?: string;
-  /** Refresh token value when applicable. */
-  refresh_token?: string;
-  /** Human-readable token name. */
-  name?: string;
-  /** Purpose for which the token was created. */
-  purpose?: string;
-  /** Whether this entry represents an OAuth session. */
-  is_oauth?: boolean;
-  /** Timestamp when the resource was created. */
-  created_at?: string;
-  /** Timestamp when the resource was updated. */
-  updated_at?: string;
-};
-export type GetUserTokensByIdApiArg = {
-  /** Token ID */
-  id: string;
-};
-export type IssueIndefiniteLifetimeTokenApiResponse = /** status 200 Token generated */ {
-  /** The tokens of the tokenpage. */
-  tokens: {
-    /** Unique identifier for the token. */
-    id: string;
-    /** UUID of the user who owns the token. */
-    user_id: string;
-    /** Authentication provider associated with the token. */
-    provider: string;
-    /** Access token value. */
-    access_token?: string;
-    /** Refresh token value when applicable. */
-    refresh_token?: string;
-    /** Human-readable token name. */
-    name?: string;
-    /** Purpose for which the token was created. */
-    purpose?: string;
-    /** Whether this entry represents an OAuth session. */
-    is_oauth?: boolean;
-    /** Timestamp when the resource was created. */
-    created_at?: string;
-    /** Timestamp when the resource was updated. */
-    updated_at?: string;
-  }[];
-  /** Total number of tokens across all pages. */
-  total_count: number;
-  /** Current page number (zero-based). */
-  page: number;
-  /** Number of tokens per page. */
-  page_size: number;
-};
-export type IssueIndefiniteLifetimeTokenApiArg = {
-  /** UUID of the user. */
-  userId: string;
-  /** Remote provider. */
-  provider: string;
 };
 export type GetWorkspacesApiResponse = /** status 200 Workspaces */ {
   /** Zero-based page index returned in this response. */
@@ -14862,11 +14906,6 @@ export const {
   useCreateOrUpdateBadgeMutation,
   useGetAvailableBadgesQuery,
   useAssignBadgesMutation,
-  useGetUserCredentialsQuery,
-  useSaveUserCredentialMutation,
-  useUpdateUserCredentialMutation,
-  useDeleteUserCredentialMutation,
-  useGetCredentialByIdQuery,
   useCreateEnvironmentMutation,
   useGetEnvironmentsQuery,
   useGetEnvironmentByIdQuery,
@@ -14959,31 +14998,11 @@ export const {
   useGetKubernetesContextQuery,
   useAddConnectionToEnvironmentMutation,
   useRemoveConnectionFromEnvironmentMutation,
-  useGetPatternsQuery,
-  useUpsertPatternMutation,
-  useDeletePatternsMutation,
-  useGetPatternResourcesQuery,
-  useUpsertPatternResourceMutation,
-  useGetPatternResourceQuery,
-  useDeletePatternResourceMutation,
-  useGetPatternQuery,
-  useDeletePatternMutation,
-  useClonePatternMutation,
-  useGetDesignPatternFileQuery,
-  useUpsertPatternSourceContentMutation,
-  useImportDesignMutation,
-  useGetCatalogContentQuery,
-  usePublishCatalogContentMutation,
-  useUnPublishCatalogContentMutation,
-  useGetCatalogContentClassesQuery,
-  useApproveCatalogRequestMutation,
-  useDenyCatalogRequestMutation,
-  useGetFilterQuery,
-  useCloneFilterMutation,
-  useHandleResourceShareMutation,
-  useGetResourceAccessActorsByTypeQuery,
-  useShareDesignMutation,
-  useGetCatalogRequestQuery,
+  useGetUserCredentialsQuery,
+  useSaveUserCredentialMutation,
+  useUpdateUserCredentialMutation,
+  useDeleteUserCredentialMutation,
+  useGetCredentialByIdQuery,
   useDeleteEventsByIdMutation,
   usePostEventsMutation,
   usePostEventsDeleteMutation,
@@ -15018,6 +15037,31 @@ export const {
   useDeleteUserTokenMutation,
   useGetUserTokensByIdQuery,
   useIssueIndefiniteLifetimeTokenQuery,
+  useGetPatternsQuery,
+  useUpsertPatternMutation,
+  useDeletePatternsMutation,
+  useGetPatternResourcesQuery,
+  useUpsertPatternResourceMutation,
+  useGetPatternResourceQuery,
+  useDeletePatternResourceMutation,
+  useGetPatternQuery,
+  useDeletePatternMutation,
+  useClonePatternMutation,
+  useGetDesignPatternFileQuery,
+  useUpsertPatternSourceContentMutation,
+  useImportDesignMutation,
+  useGetCatalogContentQuery,
+  usePublishCatalogContentMutation,
+  useUnPublishCatalogContentMutation,
+  useGetCatalogContentClassesQuery,
+  useApproveCatalogRequestMutation,
+  useDenyCatalogRequestMutation,
+  useGetFilterQuery,
+  useCloneFilterMutation,
+  useHandleResourceShareMutation,
+  useGetResourceAccessActorsByTypeQuery,
+  useShareDesignMutation,
+  useGetCatalogRequestQuery,
   useGetWorkspacesQuery,
   useCreateWorkspaceMutation,
   useGetWorkspaceByIdQuery,
