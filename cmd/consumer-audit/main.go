@@ -137,8 +137,9 @@ func printAuditReport(out io.Writer, result *validation.ConsumerAuditResult) {
 	t.AddRow("x-Annotated (Cloud only)", s.AnnotatedCloud, "-", "-")
 	t.AddRow("x-Annotated (Both)", s.AnnotatedBoth, "-", "-")
 	t.AddRow("Schema Completeness (TRUE)", s.SchemaCompletenessTrue, "-", "-")
-	t.AddRow("Schema Only (Not Implemented)",
-		s.SchemaOnly,
+	t.AddRow("Schema Only", s.SchemaOnly, "-", "-")
+	t.AddRow("Unimplemented With Schema",
+		"-",
 		cell(s.SchemaOnlyMeshery, s.MesheryEndpoints > 0),
 		cell(s.SchemaOnlyCloud, s.CloudEndpoints > 0))
 	t.AddRow("Consumer Only", "-", s.ConsumerOnlyMeshery, s.ConsumerOnlyCloud)

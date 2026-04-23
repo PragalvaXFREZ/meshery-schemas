@@ -29,9 +29,9 @@ type ConsumerAuditOptions struct {
 	// consumer auditor. MesheryRepoUI defaults to MesheryRepo when unset
 	// because meshery/meshery keeps Go and TS consumers in the same
 	// checkout; CloudRepoUI likewise defaults to CloudRepo.
-	MesheryRepoUI   string
-	CloudRepoUI     string
-	ExtensionsRepo  string
+	MesheryRepoUI  string
+	CloudRepoUI    string
+	ExtensionsRepo string
 
 	// Google Sheets update. Empty = no sheet interaction (dry run).
 	SheetID           string
@@ -823,17 +823,15 @@ func computeSummary(
 		ConsumerOnlyMeshery: len(filterConsumersByRepo(match.ConsumerOnly, "meshery")),
 		ConsumerOnlyCloud:   len(filterConsumersByRepo(match.ConsumerOnly, "meshery-cloud")),
 	}
-	for _, ep := range match.SchemaOnly {
-		if xInternalAllows(ep.XInternal, "meshery") {
-			s.SchemaOnlyMeshery++
-		}
-		if xInternalAllows(ep.XInternal, "cloud") {
-			s.SchemaOnlyCloud++
-		}
-	}
 	for _, row := range rows {
 		if row.XAnnotated == XAnnotatedNoSchema {
 			continue
+		}
+		if unimplementedWithSchemaInConsumer(row, "meshery") {
+			s.SchemaOnlyMeshery++
+		}
+		if unimplementedWithSchemaInConsumer(row, "cloud") {
+			s.SchemaOnlyCloud++
 		}
 		switch row.XAnnotated {
 		case XAnnotatedMesheryOnly:
