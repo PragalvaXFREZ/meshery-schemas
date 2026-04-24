@@ -191,8 +191,24 @@ components:
 
     TeamMember:
       type: object
-      description: A user who is a prospective or existing team member.
+      description: >
+        A user who is a prospective or existing team member. Returned by the
+        "list users in team" endpoint. `joinedAt` is the first canonicalised
+        projection field — other user fields (`id`, `firstName`, `lastName`,
+        `email`, `avatarUrl`) continue to flow through `additionalProperties`
+        pending migration of the user schema to the canonical-casing
+        contract. See meshery/schemas#832 for the per-field roadmap.
       additionalProperties: true
+      properties:
+        joinedAt:
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/nullTime
+          description: >
+            Timestamp when the user joined the team. Server-computed from the
+            earliest matching row in `users_teams_mapping` for this
+            (team, user) pair. Server-managed; clients cannot set this.
+          x-oapi-codegen-extra-tags:
+            db: joined_at
+            json: joinedAt
 
     TeamMembersPage:
       type: object

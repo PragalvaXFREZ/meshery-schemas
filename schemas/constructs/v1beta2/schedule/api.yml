@@ -200,17 +200,37 @@ components:
             db: "cron_expression"
             json: cronExpression
           maxLength: 500
+        lastRun:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/nullTime"
+          description: >
+            Server-computed timestamp of the schedule's most recent execution.
+            Null until the first run completes. Server-managed; clients must
+            not set this on create/update.
+          x-order: 5
+          x-oapi-codegen-extra-tags:
+            db: "last_run"
+            json: lastRun
+        nextRun:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/nullTime"
+          description: >
+            Server-computed timestamp of the schedule's next planned execution,
+            derived from the cron expression. Server-managed; clients must not
+            set this on create/update.
+          x-order: 6
+          x-oapi-codegen-extra-tags:
+            db: "next_run"
+            json: nextRun
         createdAt:
           $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
           description: Timestamp when the schedule was created.
-          x-order: 5
+          x-order: 7
           x-oapi-codegen-extra-tags:
             db: "created_at"
             json: createdAt
         updatedAt:
           $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
           description: Timestamp when the schedule was last updated.
-          x-order: 6
+          x-order: 8
           x-oapi-codegen-extra-tags:
             db: "updated_at"
             json: updatedAt
