@@ -265,7 +265,7 @@ const injectedRtkApi = api
             filter: queryArg?.filter,
             kind: queryArg?.kind,
             status: queryArg?.status,
-            type: queryArg["type"],
+            type: queryArg?.["type"],
             name: queryArg?.name,
           },
         }),

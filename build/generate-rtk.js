@@ -109,12 +109,15 @@ function checkPrerequisites() {
  * function `queryArg === undefined` and `queryArg.orgId` throws
  * synchronously with `TypeError: Cannot read properties of undefined`.
  *
- * The fix is to emit `queryArg?.<name>` inside `params: { ... }` blocks.
- * `fetchBaseQuery` already filters `undefined` param values from the
- * URL, so wire behaviour for a no-arg call is unchanged. Path- and
- * body-parameter accesses are left untouched because those are required
- * by the endpoint contract and a `TypeError` there signals a real caller
- * bug that must not be silently swallowed.
+ * The fix is to emit `queryArg?.<name>` (or `queryArg?.["<name>"]`
+ * for bracket-notation accesses, which the codegen uses when the
+ * property name is a JS reserved word such as `type` or `class`)
+ * inside `params: { ... }` blocks. `fetchBaseQuery` already filters
+ * `undefined` param values from the URL, so wire behaviour for a
+ * no-arg call is unchanged. Path- and body-parameter accesses are
+ * left untouched because those are required by the endpoint contract
+ * and a `TypeError` there signals a real caller bug that must not be
+ * silently swallowed.
  *
  * Cross-reference:
  *   - Upstream issue: https://github.com/reduxjs/redux-toolkit/issues/5018
@@ -122,7 +125,7 @@ function checkPrerequisites() {
  *     https://github.com/layer5io/meshery-cloud/pull/5102
  *
  * @param {string} filePath - Absolute path to the generated TS file
- * @returns {number} count of `queryArg.X` → `queryArg?.X` rewrites applied
+ * @returns {number} count of `queryArg.X` / `queryArg["X"]` rewrites applied
  */
 function guardOptionalQueryParams(filePath) {
   if (!paths.fileExists(filePath)) {
@@ -133,15 +136,20 @@ function guardOptionalQueryParams(filePath) {
 
   // Match every `params: { ... }` block emitted by the RTK codegen
   // inside a `query: (queryArg) => ({ ... })` arrow. Within each block,
-  // rewrite `queryArg.<id>` to `queryArg?.<id>` so an `undefined`
+  // rewrite both access forms the codegen emits so an `undefined`
   // queryArg produces an `undefined` param value (filtered by
-  // fetchBaseQuery) rather than throwing.
+  // fetchBaseQuery) rather than throwing:
   //
-  // Important: this regex intentionally only looks inside
-  // `params: { ... }` blocks. It must NOT rewrite:
-  //   - path-parameter template literals (`${queryArg.X}`), because
-  //     `${undefined}` stringifies to "undefined" and silently corrupts
-  //     the URL rather than surfacing the caller bug;
+  //   queryArg.<id>       → queryArg?.<id>
+  //   queryArg["<id>"]    → queryArg?.["<id>"]        (reserved-word keys)
+  //   queryArg['<id>']    → queryArg?.['<id>']
+  //
+  // Important: this only runs on text inside `params: { ... }` blocks.
+  // It must NOT rewrite:
+  //   - path-parameter template literals (`${queryArg.X}` or
+  //     `${queryArg["X"]}`), because `${undefined}` stringifies to
+  //     "undefined" and silently corrupts the URL rather than
+  //     surfacing the caller bug;
   //   - `body: queryArg.X` assignments, because a missing body is a
   //     real caller error for mutations that require one.
   //
@@ -149,25 +157,37 @@ function guardOptionalQueryParams(filePath) {
   // nested objects), so a non-greedy match up to the closing `}` is
   // safe. The codegen does not (currently) enable `encodeQueryParams`
   // in either cloud or meshery configs, so the values inside are plain
-  // `queryArg.<id>` property accesses.
+  // property/element accesses off `queryArg`.
   let totalRewrites = 0;
   const paramsBlockRe = /(params:\s*\{)([\s\S]*?)(\n\s*\},)/g;
   const patched = content.replace(paramsBlockRe, (match, open, body, close) => {
     let localRewrites = 0;
-    const rewrittenBody = body.replace(
-      /\bqueryArg\.([A-Za-z_$][A-Za-z0-9_$]*)/g,
-      (_hit, prop) => {
-        localRewrites += 1;
-        return `queryArg?.${prop}`;
-      }
-    );
+    const rewrittenBody = body
+      // Dot access: queryArg.foo → queryArg?.foo
+      .replace(
+        /\bqueryArg\.([A-Za-z_$][A-Za-z0-9_$]*)/g,
+        (_hit, prop) => {
+          localRewrites += 1;
+          return `queryArg?.${prop}`;
+        }
+      )
+      // Bracket access (reserved-word keys): queryArg["foo"] → queryArg?.["foo"].
+      // The regex requires `[` immediately after `queryArg` so an already-
+      // optional `queryArg?.[...]` is not re-matched.
+      .replace(
+        /\bqueryArg(\[(['"])[^'"\]]+\2\])/g,
+        (_hit, bracket) => {
+          localRewrites += 1;
+          return `queryArg?.${bracket}`;
+        }
+      );
     totalRewrites += localRewrites;
     return `${open}${rewrittenBody}${close}`;
   });
 
   if (totalRewrites === 0) {
     logger.warn(
-      `Post-process note: no \`params: { queryArg.X }\` accesses found in ${filePath}; ` +
+      `Post-process note: no guardable queryArg accesses found in \`params: { ... }\` blocks of ${filePath}; ` +
         "either the schema exposes no query params or the codegen output shape has changed."
     );
     return 0;
