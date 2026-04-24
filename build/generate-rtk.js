@@ -90,6 +90,45 @@ function checkPrerequisites() {
 }
 
 /**
+ * Find any unguarded `queryArg` property or element accesses that remain
+ * inside generated `params: { ... }` blocks.
+ *
+ * This is the fail-loud regression guard for upstream RTK codegen shape
+ * drift: if the rewrite pass misses a new access form, the generated file
+ * must fail here instead of silently shipping a synchronous runtime throw.
+ *
+ * @param {string} content - Generated RTK file contents
+ * @returns {Array<{block: number, access: string}>} remaining bare accesses
+ */
+function findUnguardedQueryParamAccesses(content) {
+  const paramsBlockRe = /(params:\s*\{)([\s\S]*?)(\n\s*\},)/g;
+  const bareAccessPatterns = [
+    /\bqueryArg(?!\s*\?\s*\.)\s*\.\s*[A-Za-z_$][A-Za-z0-9_$]*/g,
+    /\bqueryArg(?!\s*\?\s*\.)\s*\[\s*(['"])[^'"\]]+\1\s*\]/g,
+  ];
+  const matches = [];
+  let block = 0;
+  let paramsMatch;
+
+  while ((paramsMatch = paramsBlockRe.exec(content)) !== null) {
+    block += 1;
+    const body = paramsMatch[2];
+
+    for (const pattern of bareAccessPatterns) {
+      let accessMatch;
+      while ((accessMatch = pattern.exec(body)) !== null) {
+        matches.push({
+          block,
+          access: accessMatch[0].replace(/\s+/g, " ").trim(),
+        });
+      }
+    }
+  }
+
+  return matches;
+}
+
+/**
  * Post-process a generated RTK file to guard optional query-param accesses
  * against an `undefined` queryArg.
  *
@@ -185,10 +224,19 @@ function guardOptionalQueryParams(filePath) {
     return `${open}${rewrittenBody}${close}`;
   });
 
+  const unguardedAccesses = findUnguardedQueryParamAccesses(patched);
+  if (unguardedAccesses.length > 0) {
+    throw new Error(
+      `Post-process failed: unguarded queryArg access(es) remain in \`params: { ... }\` blocks of ${filePath}: ` +
+        unguardedAccesses
+          .map(({ block, access }) => `block ${block} -> ${access}`)
+          .join(", ")
+    );
+  }
+
   if (totalRewrites === 0) {
-    logger.warn(
-      `Post-process note: no guardable queryArg accesses found in \`params: { ... }\` blocks of ${filePath}; ` +
-        "either the schema exposes no query params or the codegen output shape has changed."
+    logger.info(
+      `Post-process note: no optional query-param rewrites were needed in ${filePath}.`
     );
     return 0;
   }
@@ -284,4 +332,15 @@ async function main() {
   }
 }
 
-main();
+module.exports = {
+  addInjectedRtkApiExport,
+  checkPrerequisites,
+  findUnguardedQueryParamAccesses,
+  generateRtkClient,
+  guardOptionalQueryParams,
+  main,
+};
+
+if (require.main === module) {
+  main();
+}
