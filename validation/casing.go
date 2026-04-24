@@ -16,23 +16,25 @@ import (
 // carrying `info.x-deprecated: true`. The audit walker
 // (validation/audit.go::walkValidatedConstructSpecs) skips deprecated
 // specs and only processes the latest non-deprecated API version per
-// construct, so the historical lowercase-suffix names enumerated below
-// (`userid`, `orgid`, `workspaceid`, `pageurl`, `avatarurl`, …) can no
-// longer reach the audit on any live resource: the only occurrences that
-// remain in the source tree are inside deprecated legacy directories.
+// construct, so the historical lowercase-suffix names enumerated by the
+// old allowlist (`userid`, `orgid`, `workspaceid`, `pageurl`,
+// `avatarurl`, …) can no longer reach the audit on any live resource:
+// the only occurrences that remain in the source tree are inside
+// deprecated legacy directories.
 //
-// Per Agent 4.D's charter the allowlist is retired. The map is left empty
-// so `HasLowercaseSuffix` keeps its public signature and `GetCamelCaseIssues`
-// keeps its caller contract, but the check is a no-op. The
-// `screamingIDRE` detector (retained, never retired) continues to catch
-// `orgID` / `workspaceID`-shaped regressions, which is the forward-looking
-// guardrail that matters going forward — a brand-new all-lowercase
-// compound like `teamid` would instead be caught by Rule 4's
-// `IsBadPathParam` check on path/query parameters and, for schema
-// properties, by whatever stricter lint we grow in a future phase. We
-// intentionally do not retain a pattern-based lowercase-suffix detector
-// here because it would regress on legitimate all-lowercase identifiers
-// like `id` and `url` standing alone.
+// Per Agent 4.D's charter the allowlist is retired. The map is left
+// empty so `HasLowercaseSuffix` keeps its public signature and
+// `GetCamelCaseIssues` keeps its caller contract, but the check is a
+// no-op. The `screamingIDRE` detector (retained, never retired)
+// continues to catch `orgID` / `workspaceID`-shaped regressions, which
+// is the forward-looking guardrail that matters going forward — a
+// brand-new all-lowercase compound like `teamid` would instead be
+// caught by Rule 4's `IsBadPathParam` check on path/query parameters
+// and, for schema properties, by whatever stricter lint we grow in a
+// future phase. We intentionally do not retain a pattern-based
+// lowercase-suffix detector here because it would regress on
+// legitimate all-lowercase identifiers like `id` and `url` standing
+// alone.
 
 var (
 	camelCaseRE  = regexp.MustCompile(`^[a-z][a-zA-Z0-9]*$`)
@@ -55,13 +57,13 @@ var (
 )
 
 // knownLowercaseSuffixViolations was an allowlist of historical compound
-// property names that ended in an all-lowercase suffix (`userid`, `orgid`,
-// `pageurl`, …). Phase 4.D retired it: every entry referred to a property
-// that only survived in a deprecated legacy directory, and those
-// directories are skipped by the audit walker (see file-level doc above).
-// The empty map is retained so `HasLowercaseSuffix` keeps its public
-// signature — callers inside `GetCamelCaseIssues` still type-check and
-// simply never append a lowercase-suffix issue. See
+// property names that ended in an all-lowercase suffix (`userid`,
+// `orgid`, `pageurl`, …). Phase 4.D retired it: every entry referred to
+// a property that only survived in a deprecated legacy directory, and
+// those directories are skipped by the audit walker (see file-level doc
+// above). The empty map is retained so `HasLowercaseSuffix` keeps its
+// public signature — callers inside `GetCamelCaseIssues` still
+// type-check and simply never append a lowercase-suffix issue. See
 // docs/identifier-naming-migration.md §10 Agent 4.D.
 var knownLowercaseSuffixViolations = map[string]bool{}
 
