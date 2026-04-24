@@ -31,6 +31,7 @@ The table below mirrors the structure of [`identifier-naming-migration.md §15.1
 | Validator rules total (encoded) | ~20 | 45 discrete rule numbers in use (1–46, Rule 32 retired) | +25 | Phase 1.B–1.F complete |
 | Rules added in Phase 1 | — | Rule 45 (partial-casing-migrations), Rule 46 (sibling-endpoint parity), Rule 4 extended to query params, consumer_ts.go (advisory) | +4 | Phase 1.D–1.F complete |
 | Rules retired in Phase 1 | — | Rule 32 (DB-backed property names must match db tags) retired to stub | −1 | Phase 1.B complete |
+| Sub-rule allowlists retired in Phase 4.D | — | `knownLowercaseSuffixViolations` emptied in `validation/casing.go`; `lowercaseSuffixPattern` regex removed; `GetCamelCaseIssues` lowercase-suffix branch no-op | −1 allowlist | Phase 4.D complete |
 | Rule 6 semantics | conditional: DB-backed fields exempt from camelCase | unconditional: camelCase required regardless of DB backing | Inverted | Phase 1.B complete |
 | CI gates on schema conventions | 2 (blocking-validation, advisory-audit) | 3 (blocking-validation, advisory-audit, **consumer-audit blocking**) | +1 | Phase 4.B complete |
 | `consumer-audit` CI status | did not exist | **blocking** | added + promoted | Phase 1.H + 4.B complete |
@@ -60,6 +61,7 @@ Rules 1–46 are in active use, minus retired Rule 32 ⇒ **45 discrete rules**.
 | 1.H | `consumer-audit` CI job wired into `schema-audit.yml` (advisory) |
 | 1.I | `@meshery/schemas` version bumped (v1.1.0) |
 | 4.B | `consumer-audit` CI job promoted to blocking; PR-comment step moved to `if: always()` |
+| 4.D | `knownLowercaseSuffixViolations` allowlist and `lowercaseSuffixPattern` regex retired in `validation/casing.go`; `GetCamelCaseIssues` lowercase-suffix branch left as a documented no-op. The `screamingIDRE` detector, Rule 4 (URL parameters), Rule 6 (schema property names), Rule 45 (partial-casing migrations), and Rule 46 (sibling-endpoint parity) are retained permanently as forward-looking guardrails. Rule 32 remains the sole retired rule number; no additional rule number was retired — only a sub-rule allowlist inside Rule 6's casing helper — so the "45 discrete rules" count above is unchanged. |
 
 ### 2.2 Per-version snake-tag distribution (current)
 
@@ -131,9 +133,18 @@ Changes described in §2.1 above. Net effect: `make validate-schemas` (blocking)
 
 - `@meshery/schemas` version bumped to `v1.1.0`, signalling the new validator surface and giving downstream repos a stable pin point to coordinate Phase 2 and Phase 3 consumer PRs against.
 
-### 4.5 Validator rule pruning (Phase 4.D — deferred)
+### 4.5 Validator rule pruning (Phase 4.D — complete)
 
-Phase 4.D's pruning of `knownLowercaseSuffixViolations` in `validation/casing.go` is explicitly deferred. Individual entries in that map become dead weight only once the last resource that still carries the named property has been Phase 3-migrated **and** its legacy version sunset by Phase 4.A. Because Phase 3 is in flight, a defensive documentation comment has been added to `casing.go` (this PR) recording the deferral and the per-entry prune cadence; no entries are removed. `dbMirroredFields` was re-verified — its docstring (updated in Phase 1.B) still accurately reflects the post-inversion semantics.
+Phase 3 landed all 22 per-resource canonical-casing version bumps and Phase 4.A administratively closed with every legacy directory carrying `info.x-deprecated: true`. The audit walker (`validation/audit.go::walkValidatedConstructSpecs`) already skips deprecated specs and only processes the latest non-deprecated version per construct, so the historical lowercase-suffix identifiers (`userid`, `orgid`, `pageurl`, …) enumerated by `knownLowercaseSuffixViolations` could no longer reach any live resource. The allowlist is therefore retired:
+
+- `knownLowercaseSuffixViolations` in `validation/casing.go` — replaced with an empty map + retirement comment; `HasLowercaseSuffix`/`GetCamelCaseIssues` public signatures preserved so external callers type-check unchanged.
+- `lowercaseSuffixPattern` regex in `validation/casing.go` — removed (was defined but never referenced; dead weight).
+- `GetCamelCaseIssues` — lowercase-suffix branch kept with an inline comment explaining it is a Phase 4.D-retired no-op; the issue-construction plumbing stays intact so a future pattern-based detector can slot in without restructuring the function.
+- Test `TestGetCamelCaseIssues` — row `{"userid", 1}` updated to `{"userid", 0}` with a comment redirecting readers to `screamingIDRE` and `IsBadPathParam`, which remain the live guardrails against the regression shape.
+
+The rules explicitly kept as permanent forward-looking guardrails are `screamingIDRE` (SCREAMING-case `ID` detection), Rule 4 (URL parameter casing incl. `IsBadPathParam`), Rule 6 (unconditional schema-property camelCase), Rule 45 (partial-casing-migrations forbidden), and Rule 46 (sibling-endpoint parameter parity). Rule 32 remains the only retired rule number. The `dbMirroredFields` set was re-verified — its post-Phase-1.B docstring (wire is camelCase regardless of DB backing; the set exists solely for `matcher.go`'s consumer-type diff) still accurately reflects current semantics.
+
+The advisory baseline (`build/validate-schemas.advisory-baseline.txt`, 1827 entries) did not need to shrink: the retired allowlist was contributing zero baselined violations because every property it covered lived in a deprecated directory the audit walker was already skipping. `make audit-schemas-full` still reports 530 advisory issues on `master`, unchanged by this PR.
 
 ## 5. Narrative impact
 
@@ -170,6 +181,7 @@ Per [`identifier-naming-migration.md §10 Agent 4.E`](identifier-naming-migratio
 | 2026-04-23 | Phase 4.B / 4.D / 4.E | Initial interim report. Phase 1 complete, Phase 4.B (consumer-audit blocking) landed this PR, Phase 4.D deferred per per-entry pruning cadence, Phases 2 and 3 in flight. |
 | 2026-04-23 | Phase 3 complete | All 22 resources from §9.1 version-bumped to canonical camelCase wire form: workspace (#800), relationship (#801), design (#802), credential (#803), user (#804), organization (#805), connection (#806), component (#807), team (#808), event (#809), view (#810), key (#811), model (#812), role (#813), keychain (#814), environment (#815), invitation (#816), schedule (#817), plan (#818), subscription (#819), token (#820), badge (#821). Progress tracker flipped to 22/22; §2 metrics updated; §5 narrative revised to reflect completion. Phase 4.A sunset and Phase 2 downstream drift-masking retirement remain open as noted. |
 | 2026-04-23 | Phase 4.A administrative close | One-release-cycle safety window overridden by maintainer decision; **Phase 4.A closed without physical deletion.** Deprecated `schemas/constructs/v1beta1/` (25 resources) and `schemas/constructs/v1beta2/` (7 resources) directories retained on `master` under `info.x-deprecated: true` + `info.x-superseded-by:` markers for external-consumer compatibility. Status banner updated; §2 status column flipped from "Phase 4.A deferred" to "administratively closed, directories retained"; §5 narrative revised; new §8 retained-legacy-directories index added. Any future physical deletion is a separate maintainer decision, not scheduled. |
+| 2026-04-23 | Phase 4.D complete | `knownLowercaseSuffixViolations` retired in `validation/casing.go`; unused `lowercaseSuffixPattern` regex removed; `GetCamelCaseIssues` lowercase-suffix branch is now a documented no-op; `TestGetCamelCaseIssues` expectation for `userid` updated from 1 → 0. Kept permanently: `screamingIDRE`, Rule 4 (URL parameters), Rule 6 (schema property names), Rule 45 (partial-casing migrations), Rule 46 (sibling-endpoint parity) — these are the forward-looking guardrails. Rule 32 remains the sole retired rule number; the "45 discrete rules" count in §2 is unchanged. The advisory baseline did not need to shrink (the retired allowlist was contributing zero entries, because every offender lived in a deprecated directory the audit walker was already skipping). §2, §2.1, §4.5 updated. This unblocks the Phase 4.E final impact-report refresh. |
 
 ## 8. Retained legacy directories
 

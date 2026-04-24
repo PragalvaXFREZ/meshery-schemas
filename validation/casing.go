@@ -8,37 +8,33 @@ import (
 
 // Casing validation helpers — ported from build/validate-schemas.js lines 238–381.
 //
-// Phase 4.D — deferred pruning of `knownLowercaseSuffixViolations`.
+// Phase 4.D — `knownLowercaseSuffixViolations` retired.
 //
-// Per Agent 4.D of docs/identifier-naming-migration.md, once every resource
-// is migrated to the canonical camelCase-on-the-wire contract, individual
-// entries in the `knownLowercaseSuffixViolations` map below become dead
-// code — their listed property names no longer exist on any published
-// schema. Phase 3 is still in flight (per-resource versioned migrations),
-// so each of these entries may still occur in a legacy construct that has
-// not yet been version-bumped. Accordingly, this file intentionally
-// retains the full map rather than pruning on a best-effort basis.
+// Phase 3 migrated all 22 resources in the §9.1 inventory of
+// docs/identifier-naming-migration.md to canonical camelCase wire form,
+// and Phase 4.A administratively closed with every legacy directory
+// carrying `info.x-deprecated: true`. The audit walker
+// (validation/audit.go::walkValidatedConstructSpecs) skips deprecated
+// specs and only processes the latest non-deprecated API version per
+// construct, so the historical lowercase-suffix names enumerated by the
+// old allowlist (`userid`, `orgid`, `workspaceid`, `pageurl`,
+// `avatarurl`, …) can no longer reach the audit on any live resource:
+// the only occurrences that remain in the source tree are inside
+// deprecated legacy directories.
 //
-// The pruning rule: when the last per-resource offender for a given entry
-// is removed (i.e., after the matching Phase 3.<Resource> migration lands
-// and its legacy construct is deleted by Phase 4.A), the corresponding
-// entry in the map can be deleted in a follow-up PR. Until then, each
-// entry documents a real drift class still reachable through at least one
-// legacy resource — removing it prematurely would silently disable the
-// Rule 6 camelCase-suffix diagnostic for that class and allow a reviewer
-// to land a regression.
-//
-// This is the "noted and deferred" resolution of Phase 4.D: the rule
-// surface is left untouched; the follow-up prune tracks Phase 3 completion
-// on a per-entry cadence rather than in a single sweep.
-//
-// Concretely, as of this commit only `userid` is still referenced by
-// live schema YAML (v1alpha1/core/api.yml and v1beta1/core/api.yml
-// define a shared `userid` query parameter); the remaining entries
-// cover resources whose Phase 3 migrations are either pending or whose
-// legacy-version sunset (Phase 4.A) has not yet removed the offending
-// file. Do not read the "zero live occurrences" state as permission to
-// delete the entry — Phase 4.A is the sole authorised removal path.
+// Per Agent 4.D's charter the allowlist is retired. The map is left
+// empty so `HasLowercaseSuffix` keeps its public signature and
+// `GetCamelCaseIssues` keeps its caller contract, but the check is a
+// no-op. The `screamingIDRE` detector (retained, never retired)
+// continues to catch `orgID` / `workspaceID`-shaped regressions, which
+// is the forward-looking guardrail that matters going forward — a
+// brand-new all-lowercase compound like `teamid` would instead be
+// caught by Rule 4's `IsBadPathParam` check on path/query parameters
+// and, for schema properties, by whatever stricter lint we grow in a
+// future phase. We intentionally do not retain a pattern-based
+// lowercase-suffix detector here because it would regress on
+// legitimate all-lowercase identifiers like `id` and `url` standing
+// alone.
 
 var (
 	camelCaseRE  = regexp.MustCompile(`^[a-z][a-zA-Z0-9]*$`)
@@ -58,24 +54,18 @@ var (
 
 	// pathParamRE extracts path parameter names from route paths.
 	pathParamRE = regexp.MustCompile(`\{([^}]+)\}`)
-
-	// lowercaseSuffixPattern matches compound words with all-lowercase known
-	// suffixes that should be capitalized (e.g., "userid" → "userId").
-	lowercaseSuffixPattern = regexp.MustCompile(`[a-z](id|ids|url|uri)$`)
 )
 
-// knownLowercaseSuffixViolations lists compound property names that end in
-// a known suffix ("id", "url", "uri") but are incorrectly all-lowercase.
-var knownLowercaseSuffixViolations = map[string]bool{
-	"userid": true, "orgid": true, "teamid": true, "workspaceid": true,
-	"modelid": true, "designid": true, "connectionid": true,
-	"environmentid": true, "credentialid": true, "subscriptionid": true,
-	"invitationid": true, "tokenid": true, "eventid": true, "keyid": true,
-	"roleid": true, "badgeid": true, "planid": true, "schemaid": true,
-	"registrantid": true, "componentid": true, "categoryid": true,
-	"pageurl": true, "avatarurl": true, "snapshoturl": true,
-	"callbackurl": true, "redirecturl": true,
-}
+// knownLowercaseSuffixViolations was an allowlist of historical compound
+// property names that ended in an all-lowercase suffix (`userid`,
+// `orgid`, `pageurl`, …). Phase 4.D retired it: every entry referred to
+// a property that only survived in a deprecated legacy directory, and
+// those directories are skipped by the audit walker (see file-level doc
+// above). The empty map is retained so `HasLowercaseSuffix` keeps its
+// public signature — callers inside `GetCamelCaseIssues` still
+// type-check and simply never append a lowercase-suffix issue. See
+// docs/identifier-naming-migration.md §10 Agent 4.D.
+var knownLowercaseSuffixViolations = map[string]bool{}
 
 // dbMirroredFields enumerates known snake_case property names that originated
 // as DB column mirrors in pre-canonical-contract schemas.
@@ -229,6 +219,11 @@ func GetCamelCaseIssues(name string) []CasingIssue {
 			Description: `uses "ID" token (must be "Id")`,
 		})
 	}
+	// HasLowercaseSuffix is a no-op after Phase 4.D retired the
+	// `knownLowercaseSuffixViolations` allowlist (see file-level doc
+	// above). The block is retained so that if a future phase re-adds
+	// a pattern-based detector the issue-construction plumbing is
+	// already in place; until then it never fires.
 	if HasLowercaseSuffix(name) {
 		lc := strings.ToLower(name)
 		for _, suffix := range []string{"ids", "id", "url", "uri"} {

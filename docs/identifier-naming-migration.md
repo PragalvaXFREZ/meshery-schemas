@@ -720,13 +720,21 @@ The remaining 21 agents follow the template in §9.2 with per-resource file path
 **Acceptance:** All four repos merged with matching boilerplate; any future contributor (human or AI) reading the doc sees the same rule set.
 
 ### Agent 4.D — Final validator rule pruning
+**Status:** Complete (2026-04-23) — `knownLowercaseSuffixViolations` retired in `validation/casing.go`; unused `lowercaseSuffixPattern` regex removed; `GetCamelCaseIssues` now no-ops the lowercase-suffix branch. The `screamingIDRE` detector, Rule 4 (URL parameters), Rule 6 (schema property names), Rule 45 (partial-casing migrations), and Rule 46 (sibling-endpoint parity) are retained permanently as forward-looking guardrails. No rule enum was removed (Rule 32 remains the sole retired rule number from Phase 1.B). Test `TestGetCamelCaseIssues` expectation for `userid` updated from 1 issue → 0, with an in-test comment pointing at the new guardrails (`screamingIDRE`, `IsBadPathParam`) that still catch the regression shape.
+
 **Charter:** After Phase 3 completes, several validator rules become dead weight (every resource is compliant; the rule has nothing to flag). Retire: `knownLowercaseSuffixViolations` legacy checks on now-compliant resources. Keep `screamingIDRE` and Rule 45 (partial-casing-migrations) permanently — they're forward-looking guardrails.
 
-**Files:** `meshery/schemas/validation/casing.go`, `rules_naming.go`.
+**Files changed:** `validation/casing.go` (allowlist emptied, unused regex removed, file-level + inline retirement comments added), `validation/casing_test.go` (table row updated).
 
-**Testing:** `make validate-schemas` green; `make audit-schemas-full` green; no regressions in existing test fixtures.
+**Rationale:** The audit walker (`validation/audit.go::walkValidatedConstructSpecs`) skips any api.yml marked `info.x-deprecated: true` and processes only the latest non-deprecated version per construct. After Phase 4.A administratively closed with every legacy directory carrying the deprecation marker, none of the historical lowercase-suffix identifiers (`userid`, `orgid`, `workspaceid`, `pageurl`, `avatarurl`, …) can reach the audit on any live resource — the only occurrences are inside the retained-but-bundler-gated legacy trees. The allowlist is therefore a no-op map at runtime; carrying it forward would just be latent maintenance surface. A brand-new `teamid`-shaped path/query parameter introduced in a canonical-casing version is still caught by Rule 4's `IsBadPathParam`, and the common SCREAMING-case regression (`orgID`) is caught by `screamingIDRE`; we deliberately do not retain a pattern-based lowercase-suffix detector because it would misfire on legitimate single-word identifiers like `id` and `url` standing alone.
 
-**Acceptance:** Validator has the minimum rule set that enforces the canonical contract going forward.
+**Testing (all green locally before PR):**
+- `make validate-schemas` — no blocking violations.
+- `make audit-schemas-full` — 530 advisory issues (unchanged from master baseline); no new findings introduced or masked.
+- `make audit-schemas` (baseline-aware) — 255 issues unaffected; advisory baseline file (`build/validate-schemas.advisory-baseline.txt`, 1827 entries) did not need to shrink because the retired allowlist was not contributing any entries.
+- `go test ./validation/...` — all pre-existing passing tests still pass; pre-existing `TestConsumerTS_IntegrationAgainstMesheryExtensions` failure on `master` is unchanged (it depends on a sibling repo fixture unrelated to this PR).
+
+**Acceptance:** Validator has the minimum rule set that enforces the canonical contract going forward; the retirement stub pattern established for Rule 32 in Phase 1.B is mirrored here (public signatures preserved, empty map + in-file rationale), and 4.E's impact-report refresh can record the rule-surface reduction.
 
 ### Agent 4.E — Before/after impact report publication
 **Charter:** Re-run the baseline agents (0.A–0.D) to produce "after" numbers. Publish the before/after report per §15 of this plan; commit to `meshery/schemas/docs/` as the governance artifact.

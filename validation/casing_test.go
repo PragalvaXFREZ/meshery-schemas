@@ -140,9 +140,16 @@ func TestGetCamelCaseIssues(t *testing.T) {
 		{"custom_field", 1},
 
 		// Other violations.
-		{"OrgName", 1},  // Starts with uppercase
-		{"orgID", 1},    // SCREAMING ID token
-		{"userid", 1},   // known lowercase suffix
+		{"OrgName", 1}, // Starts with uppercase
+		{"orgID", 1},   // SCREAMING ID token
+
+		// Formerly flagged via `knownLowercaseSuffixViolations`; Phase 4.D
+		// retired that allowlist because every historical offender lives
+		// in a deprecated directory that the audit walker skips. The
+		// identifier is all-lowercase letters so it passes `IsCamelCase`;
+		// a regression would instead surface through `screamingIDRE`
+		// (e.g., `userID`) or Rule 4's path-param `IsBadPathParam`.
+		{"userid", 0},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
