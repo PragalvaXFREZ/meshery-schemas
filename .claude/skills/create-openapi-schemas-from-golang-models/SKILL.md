@@ -5,6 +5,8 @@ description: 'Create OpenAPI schemas from Golang models in Layer5 Cloud, generat
 
 # Create OpenAPI Schemas from Golang Models
 
+> Canonical naming contract — see `docs/identifier-naming-contributor-guide.md` in `meshery/schemas` (<https://github.com/meshery/schemas/blob/master/docs/identifier-naming-contributor-guide.md>) for the full directory (26-row naming table with before/after and do/don't examples). The inline rules below remain the skill's authority for its workflow scope; the guide is the reader-friendly cross-repo reference.
+
 ## Overview
 
 This skill guides you through creating OpenAPI schemas from existing Golang models in Layer5 Cloud (layer5io/meshery-cloud), with the generated schemas stored in Meshery Schemas (meshery/schemas). This cross-repository workflow ensures consistent API contracts between the two projects.

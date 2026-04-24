@@ -1,24 +1,22 @@
-# Identifier Naming — Contributor Guide & Migration Summary
+# Identifier Naming — Contributor Guide
 
-> An announcement-grade summary for **all Meshery contributors** — community and staff — explaining the identifier-naming migration (code-named "Option B") that shipped between **2026-04-22 and 2026-04-24** across every repository in the Layer5 / Meshery ecosystem.
+> The canonical, evergreen reference for identifier naming across every Layer5 / Meshery repository — Go, TypeScript, OpenAPI, SQL, URLs, file names, error codes. If you're contributing code or reviewing a PR in any Layer5 / Meshery repo, this document tells you the right form for every element type.
 >
-> **Audience:** anyone who writes Go, TypeScript, OpenAPI, or SQL in a Layer5 / Meshery repo.
-> **Prerequisite knowledge:** none — the document is self-contained.
+> For a one-time announcement summarizing the migration that produced this convention (PR counts, releases cut, contributors, timeline), see [`identifier-naming-announcement-2026-04-24.md`](identifier-naming-announcement-2026-04-24.md).
 
 ---
 
-## TL;DR
+## The contract, in one sentence
 
-- We standardized **one** naming convention across every software element in every repo. The wire is **camelCase everywhere**; the database is **snake_case**; Go fields follow **Go idiom**; the ORM is the **only translation layer**.
-- **91 pull requests** landed across **6 repositories** in three days. **7 npm packages** were published (4 of `@meshery/schemas`, 3 of `@sistent/sistent`). Both packages are live on npm at `v1.2.0` and `v0.20.0` respectively.
-- The schemas validator now enforces the contract at three CI gates: **blocking schema validation**, advisory schema audit, and **blocking consumer-audit** that scans `meshery`, `meshery-cloud`, and `meshery-extensions` on every PR.
-- If you're writing new code, the single most important thing to know is in the **[Canonical Naming Directory](#canonical-naming-directory)** below — the headline table of this document.
+Wire is **camelCase** everywhere; the database is **snake_case**; Go fields follow **Go idiom** (`PascalCase` with initialisms like `ID`, `URL`, `API`); the ORM layer is the **only** translation boundary.
+
+That sentence resolves almost every naming question. The table below resolves the rest.
 
 ---
 
 ## Canonical Naming Directory
 
-This is the authoritative, per-element, per-layer naming convention. Use this table as your reference any time you introduce a new schema property, Go struct, TypeScript type, URL, query parameter, operation ID, file name, enum value, or error code.
+This is the authoritative, per-element, per-layer naming convention. Use this table whenever you introduce a new schema property, Go struct, TypeScript type, URL, query parameter, operation ID, file name, enum value, or error code.
 
 ### Code elements
 
@@ -101,54 +99,36 @@ The field `page` is already a single-word identifier and stays `page` in both le
 
 ---
 
-## Overlap-window guarantee (dual-accept)
+## Dual-accept policy
 
-While this migration was landing, server-side handlers on resources that touched the wire added **`UnmarshalJSON` dual-accept shims** or **`utils.QueryParam` dual-read helpers** so that requests carrying the old snake_case wire form continue to work for one deprecation cycle. If you are writing a server handler that consumes a field we just migrated, this means you can trust that **both** `viewCount` and `view_count` parse to the same Go field for the duration of the overlap. The snake path will be retired per-resource at each resource's next canonical-casing version bump.
+During the migration, several server-side handlers were fitted with mechanisms that accept **both** the canonical camelCase wire form **and** the legacy snake_case form for the same field, converging to the canonical form internally. As of the current `master` tree, these mechanisms are still in place.
 
-New handlers on newly authored versions do **not** carry dual-accept shims — they accept only the canonical camelCase form.
+### What exists today
 
----
+| Mechanism | Where | Effect |
+|---|---|---|
+| `server/utils.CamelToSnake` via `sanitizeOrderInput` | `layer5io/meshery-cloud` `server/dao/sql-utils.go` | `?order=viewCount desc` and `?order=view_count desc` both emit the same SQL `ORDER BY view_count desc`. |
+| `server/utils.CamelToSnake` via `normalizeOrderClause` | `layer5io/meshery-cloud` `server/handlers/context_helpers.go` | Same, for table-qualified + `_raw`-suffixed sort clauses. |
+| `utils.QueryParam(q, "camelName", "snake_name")` | `layer5io/meshery-cloud` `server/handlers/users.go` and other Phase 2-touched handlers | Either query key resolves to the same value. Camel wins when both present. |
+| `*PayloadWire` `UnmarshalJSON` shims | `meshery/meshery` `server/handlers/workspace_handlers.go`, `environments_handlers.go`, `server_events_configuration_handler.go`, `k8sconfig_handler.go` | Either JSON body key parses into the same Go struct field. Camel wins when both present. |
 
-## By the numbers
+### Is it permanent?
 
-### Pull requests merged
+No — it was framed as "one deprecation cycle." There is currently no calendar-scheduled removal. Phase 4.A (legacy-version sunset) closed administratively without physical deletion of `v1beta1/` and `v1beta2/` directories; by extension, the dual-accept shims behave as **retained compatibility**, not transitional scaffolding waiting to be deleted.
 
-**91 merged PRs** across 6 repositories in the 2026-04-22 — 2026-04-24 window:
+Practically: they will remain until a future maintainer decision schedules their retirement. Do not plan around them disappearing next release.
 
-| Repository | Merged PRs |
-|---|---:|
-| `meshery/schemas` | **51** |
-| `meshery/meshery` | **13** |
-| `layer5io/meshery-cloud` | **13** |
-| `layer5labs/meshery-extensions` | **8** |
-| `layer5io/sistent` | **5** |
-| `meshery/meshkit` | **1** |
-| **Total** | **91** |
+### Policy for **new** code
 
-### Releases cut
+- **Do not add new dual-accept shims** on new canonical-version endpoints. New endpoints accept only the canonical camelCase form. The wire contract for a newly authored API version is single-cased — any legacy-form ambiguity has no justification when the endpoint is new.
+- **Do not copy the existing `*PayloadWire` pattern** as a template for unrelated endpoints. Its design point was one-time: it lets previously-snake_case clients keep calling a canonical endpoint during the migration overlap. A fresh endpoint has no such clients.
+- **Do reference the existing shims as historical examples** when asked how we handled the migration (e.g., in ADRs, architectural overviews).
 
-**15 release tags** published across the 6 repositories; **7 of them are npm packages** consumed across every Layer5 / Meshery UI and server:
+### Policy for **existing** shims
 
-| Repository | Releases (in window) |
-|---|---|
-| `@meshery/schemas` (npm) | v1.1.0, v1.1.1, v1.1.2, **v1.2.0** (current) |
-| `@sistent/sistent` (npm) | v0.19.0, v0.19.1, **v0.20.0** (current) |
-| `meshery/meshkit` (Go module) | v1.0.5 |
-| `meshery/meshery` (server / CLI) | v1.0.10, v1.0.11 |
-| `layer5io/meshery-cloud` (server / UI) | v1.0.18, v1.0.19, v1.0.20 |
-| `layer5labs/meshery-extensions` | v1.0.10-1, v1.0.11-1 |
-
----
-
-## Contributors
-
-| Contributor | PRs | Primary contributions |
-|---|---:|---|
-| **[@leecalcote](https://github.com/leecalcote)** — Lee Calcote | **58** | Authored and merged all 22 Phase 3 per-resource canonical-casing schema version bumps (workspace, environment, organization, user, design, connection, team, role, credential, event, view, key, keychain, invitation, plan, subscription, token, badge, schedule, model, component, relationship). Drove every downstream Phase 3 consumer repoint across meshery, meshery-cloud, and meshery-extensions. Authored the Phase 4.A administrative-close decision to retain legacy directories instead of deleting them. Authored the `identifier-naming mandate` doc adoption in all four repo `AGENTS.md` files (Phase 4.C). |
-| **[@jamieplu](https://github.com/jamieplu)** | **16** | Authored the entire Phase 0 (baseline artifacts) and Phase 1 (governance + validator hardening) block on `meshery/schemas`: the identifier-naming migration plan (`docs/identifier-naming-migration.md`), the `AGENTS.md` contract amendment, Rule 6 inversion, Rule 32 retirement, Rule 45 (partial casing forbidden), Rule 46 (sibling-endpoint parity), Rule 4 extension to query parameters, the TypeScript consumer auditor (`validation/consumer_ts.go`), the advisory baseline, the consumer-audit CI job, and the `@meshery/schemas` v1.1.0 release bump. |
-| **[@miacycle](https://github.com/miacycle)** — Mia Grenell | **13** | Authored Phase 2 tail (final handler dual-accept + UI flips on meshery and meshery-cloud), Phase 2.K Sistent library alignment (re-exports repointed v1beta1 → canonical v1beta3/v1beta2; ~150 wire-key flips across CustomCard, CatalogCard, MetricsDisplay, PerformersSection, CatalogDesignTable, Workspaces, UsersTable; Sistent v0.17.0 → v0.19.1), the Phase 4.D validator pruning PR, the Phase 4.E impact report rewrites, the `mesheryctl-1231` master-CI unblocker, and the Sistent release workflow hygiene PRs (commit-back + npm-version idempotence + SSR hotfix). |
-| **[@l5io](https://github.com/l5io)** (automated) | **3** | Automated cross-repo `@sistent/sistent` version-bump PRs across meshery, meshery-cloud, and meshery-extensions. Fired by Sistent's `notify-dependents.yml` workflow after each Sistent npm publish. |
-| **[@PragalvaXFREZ](https://github.com/PragalvaXFREZ)** | **1** | Authored consumer-audit tooling improvements that shipped as Phase 0 input (better schema-driven logic, delta-from-previous-run summaries, new-schema-version detection in the audit sheet update). |
+- Leave them in place.
+- Don't "clean them up" in routine PRs. Their removal is a coordinated act that needs to happen when (a) the telemetry shows no callers are using the snake form for that resource, AND (b) a maintainer signs off on dropping compatibility. Neither condition is tested in CI today.
+- If the shim interacts with your PR (e.g., you're renaming a field it bridges), preserve it.
 
 ---
 
@@ -169,12 +149,13 @@ New handlers on newly authored versions do **not** carry dual-accept shims — t
 - Don't copy an existing legacy schema as a starting template if you can help it — prefer canonical-version files (anything under `v1beta3/` or the canonical-target `v1beta2/` directories named in `docs/identifier-naming-migration.md §9.1`).
 - Don't add a `DELETE` endpoint with a request body for bulk operations. REST clients and proxies silently strip `DELETE` bodies. Use `POST /api/{resources}/delete` (HTTP method cell #21 in the directory).
 - Don't return HTTP `200` from a `POST` that exclusively creates a new resource — use `201 Created`.
+- Don't add new dual-accept shims on new endpoints (see the [Dual-accept policy](#dual-accept-policy) above).
 - Don't allocate a `mesheryctl-NNNN` error code without confirming the number is free. The `MeshKit Error Codes Utility Runner` CI check will catch the collision, but it's cleaner to check `mesheryctl/internal/cli/.../error.go` files yourself first.
 
 ### If you find a violation
 
 - Fix it in the same PR that touches the code if possible.
-- If the violation predates this migration and living in retained-legacy code, it's **expected debt** — the `v1beta1/` and `v1beta2/` directories retain their historical wire form under `info.x-deprecated: true`. External consumers pinning legacy versions depend on those markers being stable.
+- If the violation predates this migration and is living in retained-legacy code, it's **expected debt** — the `v1beta1/` and `v1beta2/` directories retain their historical wire form under `info.x-deprecated: true`. External consumers pinning legacy versions depend on those markers being stable.
 
 ---
 
@@ -182,12 +163,13 @@ New handlers on newly authored versions do **not** carry dual-accept shims — t
 
 | Document | Purpose |
 |---|---|
-| [`docs/identifier-naming-migration.md`](identifier-naming-migration.md) | The canonical migration plan (authored Phase 0; current state field: **Complete**) |
-| [`docs/identifier-naming-impact-report.md`](identifier-naming-impact-report.md) | Measurements-focused before/after impact report (governance artifact for Agent 4.E) |
-| [`CLAUDE.md`](../CLAUDE.md) | Repo-specific conventions reference; Naming-conventions + Casing-rules-at-a-glance sections mirror this document |
-| [`validation/`](../validation) | Rule implementations and advisory baseline |
-| [`validation/baseline/`](../validation/baseline/) | Phase 0 baseline artifacts that anchored the migration |
+| [`docs/identifier-naming-announcement-2026-04-24.md`](identifier-naming-announcement-2026-04-24.md) | One-time announcement of the migration (PR counts, releases, contributors, timeline). |
+| [`docs/identifier-naming-migration.md`](identifier-naming-migration.md) | The canonical migration plan (authored Phase 0; current status: Complete). |
+| [`docs/identifier-naming-impact-report.md`](identifier-naming-impact-report.md) | Measurements-focused before/after impact report (governance artifact for Agent 4.E). |
+| [`CLAUDE.md`](../CLAUDE.md) | Repo-specific conventions reference; Naming-conventions + Casing-rules-at-a-glance sections mirror this document. |
+| [`validation/`](../validation) | Validator rule implementations and advisory baseline. |
+| [`validation/baseline/`](../validation/baseline/) | Phase 0 baseline artifacts that anchored the migration. |
 
 ---
 
-*Document version: 2026-04-24. Source of truth for the naming contract is `AGENTS.md` / `CLAUDE.md` in `meshery/schemas`. If this document falls out of sync with the enforced contract, the enforced contract wins and this document should be corrected.*
+*Evergreen reference. The source of truth for the naming contract is `AGENTS.md` / `CLAUDE.md` in `meshery/schemas`. If this document falls out of sync with the enforced contract, the enforced contract wins and this document should be corrected.*
