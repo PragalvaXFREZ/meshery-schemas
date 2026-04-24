@@ -182,9 +182,33 @@ const ScheduleSchema: Record<string, unknown> = {
                             },
                             "maxLength": 500
                           },
+                          "lastRun": {
+                            "description": "Server-computed timestamp of the schedule's most recent execution. Null until the first run completes. Server-managed; clients must not set this on create/update.\n",
+                            "x-order": 5,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "last_run",
+                              "json": "lastRun"
+                            },
+                            "x-go-type": "NullTime",
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "nextRun": {
+                            "description": "Server-computed timestamp of the schedule's next planned execution, derived from the cron expression. Server-managed; clients must not set this on create/update.\n",
+                            "x-order": 6,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "next_run",
+                              "json": "nextRun"
+                            },
+                            "x-go-type": "NullTime",
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
                           "createdAt": {
                             "description": "Timestamp when the schedule was created.",
-                            "x-order": 5,
+                            "x-order": 7,
                             "x-oapi-codegen-extra-tags": {
                               "db": "created_at",
                               "json": "createdAt"
@@ -195,7 +219,7 @@ const ScheduleSchema: Record<string, unknown> = {
                           },
                           "updatedAt": {
                             "description": "Timestamp when the schedule was last updated.",
-                            "x-order": 6,
+                            "x-order": 8,
                             "x-oapi-codegen-extra-tags": {
                               "db": "updated_at",
                               "json": "updatedAt"
@@ -364,9 +388,33 @@ const ScheduleSchema: Record<string, unknown> = {
                       },
                       "maxLength": 500
                     },
+                    "lastRun": {
+                      "description": "Server-computed timestamp of the schedule's most recent execution. Null until the first run completes. Server-managed; clients must not set this on create/update.\n",
+                      "x-order": 5,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "last_run",
+                        "json": "lastRun"
+                      },
+                      "x-go-type": "NullTime",
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "nextRun": {
+                      "description": "Server-computed timestamp of the schedule's next planned execution, derived from the cron expression. Server-managed; clients must not set this on create/update.\n",
+                      "x-order": 6,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "next_run",
+                        "json": "nextRun"
+                      },
+                      "x-go-type": "NullTime",
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
                     "createdAt": {
                       "description": "Timestamp when the schedule was created.",
-                      "x-order": 5,
+                      "x-order": 7,
                       "x-oapi-codegen-extra-tags": {
                         "db": "created_at",
                         "json": "createdAt"
@@ -377,7 +425,7 @@ const ScheduleSchema: Record<string, unknown> = {
                     },
                     "updatedAt": {
                       "description": "Timestamp when the schedule was last updated.",
-                      "x-order": 6,
+                      "x-order": 8,
                       "x-oapi-codegen-extra-tags": {
                         "db": "updated_at",
                         "json": "updatedAt"
@@ -514,9 +562,33 @@ const ScheduleSchema: Record<string, unknown> = {
                       },
                       "maxLength": 500
                     },
+                    "lastRun": {
+                      "description": "Server-computed timestamp of the schedule's most recent execution. Null until the first run completes. Server-managed; clients must not set this on create/update.\n",
+                      "x-order": 5,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "last_run",
+                        "json": "lastRun"
+                      },
+                      "x-go-type": "NullTime",
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "nextRun": {
+                      "description": "Server-computed timestamp of the schedule's next planned execution, derived from the cron expression. Server-managed; clients must not set this on create/update.\n",
+                      "x-order": 6,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "next_run",
+                        "json": "nextRun"
+                      },
+                      "x-go-type": "NullTime",
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
                     "createdAt": {
                       "description": "Timestamp when the schedule was created.",
-                      "x-order": 5,
+                      "x-order": 7,
                       "x-oapi-codegen-extra-tags": {
                         "db": "created_at",
                         "json": "createdAt"
@@ -527,7 +599,7 @@ const ScheduleSchema: Record<string, unknown> = {
                     },
                     "updatedAt": {
                       "description": "Timestamp when the schedule was last updated.",
-                      "x-order": 6,
+                      "x-order": 8,
                       "x-oapi-codegen-extra-tags": {
                         "db": "updated_at",
                         "json": "updatedAt"
@@ -795,9 +867,33 @@ const ScheduleSchema: Record<string, unknown> = {
             },
             "maxLength": 500
           },
+          "lastRun": {
+            "description": "Server-computed timestamp of the schedule's most recent execution. Null until the first run completes. Server-managed; clients must not set this on create/update.\n",
+            "x-order": 5,
+            "x-oapi-codegen-extra-tags": {
+              "db": "last_run",
+              "json": "lastRun"
+            },
+            "x-go-type": "NullTime",
+            "type": "string",
+            "format": "date-time",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "nextRun": {
+            "description": "Server-computed timestamp of the schedule's next planned execution, derived from the cron expression. Server-managed; clients must not set this on create/update.\n",
+            "x-order": 6,
+            "x-oapi-codegen-extra-tags": {
+              "db": "next_run",
+              "json": "nextRun"
+            },
+            "x-go-type": "NullTime",
+            "type": "string",
+            "format": "date-time",
+            "x-go-type-skip-optional-pointer": true
+          },
           "createdAt": {
             "description": "Timestamp when the schedule was created.",
-            "x-order": 5,
+            "x-order": 7,
             "x-oapi-codegen-extra-tags": {
               "db": "created_at",
               "json": "createdAt"
@@ -808,7 +904,7 @@ const ScheduleSchema: Record<string, unknown> = {
           },
           "updatedAt": {
             "description": "Timestamp when the schedule was last updated.",
-            "x-order": 6,
+            "x-order": 8,
             "x-oapi-codegen-extra-tags": {
               "db": "updated_at",
               "json": "updatedAt"
@@ -955,9 +1051,33 @@ const ScheduleSchema: Record<string, unknown> = {
                   },
                   "maxLength": 500
                 },
+                "lastRun": {
+                  "description": "Server-computed timestamp of the schedule's most recent execution. Null until the first run completes. Server-managed; clients must not set this on create/update.\n",
+                  "x-order": 5,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "last_run",
+                    "json": "lastRun"
+                  },
+                  "x-go-type": "NullTime",
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "nextRun": {
+                  "description": "Server-computed timestamp of the schedule's next planned execution, derived from the cron expression. Server-managed; clients must not set this on create/update.\n",
+                  "x-order": 6,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "next_run",
+                    "json": "nextRun"
+                  },
+                  "x-go-type": "NullTime",
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
                 "createdAt": {
                   "description": "Timestamp when the schedule was created.",
-                  "x-order": 5,
+                  "x-order": 7,
                   "x-oapi-codegen-extra-tags": {
                     "db": "created_at",
                     "json": "createdAt"
@@ -968,7 +1088,7 @@ const ScheduleSchema: Record<string, unknown> = {
                 },
                 "updatedAt": {
                   "description": "Timestamp when the schedule was last updated.",
-                  "x-order": 6,
+                  "x-order": 8,
                   "x-oapi-codegen-extra-tags": {
                     "db": "updated_at",
                     "json": "updatedAt"

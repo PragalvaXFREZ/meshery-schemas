@@ -4671,6 +4671,12 @@ export type GetSchedulesApiResponse = /** status 200 Schedules response */ {
     /** Cron expression defining the schedule's recurrence (e.g. "0 0 * * *" for daily at midnight).
      */
     cronExpression: string;
+    /** Server-computed timestamp of the schedule's most recent execution. Null until the first run completes. Server-managed; clients must not set this on create/update.
+     */
+    lastRun?: string;
+    /** Server-computed timestamp of the schedule's next planned execution, derived from the cron expression. Server-managed; clients must not set this on create/update.
+     */
+    nextRun?: string;
     /** Timestamp when the schedule was created. */
     createdAt?: string;
     /** Timestamp when the schedule was last updated. */
@@ -4697,6 +4703,12 @@ export type UpsertScheduleApiResponse = /** status 200 Schedule upserted */ {
   /** Cron expression defining the schedule's recurrence (e.g. "0 0 * * *" for daily at midnight).
    */
   cronExpression: string;
+  /** Server-computed timestamp of the schedule's most recent execution. Null until the first run completes. Server-managed; clients must not set this on create/update.
+   */
+  lastRun?: string;
+  /** Server-computed timestamp of the schedule's next planned execution, derived from the cron expression. Server-managed; clients must not set this on create/update.
+   */
+  nextRun?: string;
   /** Timestamp when the schedule was created. */
   createdAt?: string;
   /** Timestamp when the schedule was last updated. */
@@ -4725,6 +4737,12 @@ export type GetScheduleApiResponse = /** status 200 Schedule response */ {
   /** Cron expression defining the schedule's recurrence (e.g. "0 0 * * *" for daily at midnight).
    */
   cronExpression: string;
+  /** Server-computed timestamp of the schedule's most recent execution. Null until the first run completes. Server-managed; clients must not set this on create/update.
+   */
+  lastRun?: string;
+  /** Server-computed timestamp of the schedule's next planned execution, derived from the cron expression. Server-managed; clients must not set this on create/update.
+   */
+  nextRun?: string;
   /** Timestamp when the schedule was created. */
   createdAt?: string;
   /** Timestamp when the schedule was last updated. */
@@ -4880,6 +4898,9 @@ export type ListUsersNotInTeamApiResponse = /** status 200 Users not currently i
   total_count?: number;
   /** The data of the teammemberspage. */
   data?: {
+    /** Timestamp when the user joined the team. Server-computed from the earliest matching row in `users_teams_mapping` for this (team, user) pair. Server-managed; clients cannot set this.
+     */
+    joinedAt?: string;
     [key: string]: any;
   }[];
 };
@@ -7078,6 +7099,24 @@ export type GetPatternsApiResponse = /** status 200 Designs response */ {
     };
     /** Visibility scope (private, public, published). */
     visibility?: string;
+    /** Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+     */
+    designType?: "Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest";
+    /** Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+     */
+    viewCount?: number;
+    /** Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+     */
+    downloadCount?: number;
+    /** Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+     */
+    cloneCount?: number;
+    /** Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+     */
+    deploymentCount?: number;
+    /** Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+     */
+    shareCount?: number;
     /** Timestamp of design creation. */
     createdAt?: string;
     /** Timestamp of last design modification. */
@@ -8146,6 +8185,24 @@ export type UpsertPatternApiResponse = /** status 200 Design saved */ {
   };
   /** Visibility scope (private, public, published). */
   visibility?: string;
+  /** Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+   */
+  designType?: "Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest";
+  /** Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+   */
+  viewCount?: number;
+  /** Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+   */
+  downloadCount?: number;
+  /** Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+   */
+  cloneCount?: number;
+  /** Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+   */
+  deploymentCount?: number;
+  /** Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+   */
+  shareCount?: number;
   /** Timestamp of design creation. */
   createdAt?: string;
   /** Timestamp of last design modification. */
@@ -9192,6 +9249,24 @@ export type UpsertPatternApiArg = {
       };
       /** Visibility scope (private, public, published). */
       visibility?: string;
+      /** Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+       */
+      designType?: "Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest";
+      /** Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+       */
+      viewCount?: number;
+      /** Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+       */
+      downloadCount?: number;
+      /** Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+       */
+      cloneCount?: number;
+      /** Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+       */
+      deploymentCount?: number;
+      /** Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+       */
+      shareCount?: number;
       /** Timestamp of design creation. */
       createdAt?: string;
       /** Timestamp of last design modification. */
@@ -10276,6 +10351,24 @@ export type GetPatternApiResponse = /** status 200 Design response */ {
   };
   /** Visibility scope (private, public, published). */
   visibility?: string;
+  /** Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+   */
+  designType?: "Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest";
+  /** Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+   */
+  viewCount?: number;
+  /** Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+   */
+  downloadCount?: number;
+  /** Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+   */
+  cloneCount?: number;
+  /** Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+   */
+  deploymentCount?: number;
+  /** Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+   */
+  shareCount?: number;
   /** Timestamp of design creation. */
   createdAt?: string;
   /** Timestamp of last design modification. */
@@ -11326,6 +11419,24 @@ export type ClonePatternApiResponse = /** status 200 Design cloned */ {
   };
   /** Visibility scope (private, public, published). */
   visibility?: string;
+  /** Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+   */
+  designType?: "Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest";
+  /** Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+   */
+  viewCount?: number;
+  /** Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+   */
+  downloadCount?: number;
+  /** Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+   */
+  cloneCount?: number;
+  /** Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+   */
+  deploymentCount?: number;
+  /** Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+   */
+  shareCount?: number;
   /** Timestamp of design creation. */
   createdAt?: string;
   /** Timestamp of last design modification. */
@@ -12410,6 +12521,24 @@ export type GetCatalogContentApiResponse = /** status 200 Catalog content page *
     };
     /** Visibility scope (private, public, published). */
     visibility?: string;
+    /** Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+     */
+    designType?: "Design" | "Helm Chart" | "Docker Compose" | "Kubernetes Manifest";
+    /** Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+     */
+    viewCount?: number;
+    /** Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+     */
+    downloadCount?: number;
+    /** Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+     */
+    cloneCount?: number;
+    /** Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+     */
+    deploymentCount?: number;
+    /** Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+     */
+    shareCount?: number;
     /** Timestamp of design creation. */
     createdAt?: string;
     /** Timestamp of last design modification. */

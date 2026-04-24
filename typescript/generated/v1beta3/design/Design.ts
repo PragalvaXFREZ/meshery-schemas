@@ -3273,6 +3273,46 @@ export interface components {
       /** @description Visibility scope (private, public, published). */
       visibility?: string;
       /**
+       * @description Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+       *
+       * @enum {string}
+       */
+      designType?:
+        | "Design"
+        | "Helm Chart"
+        | "Docker Compose"
+        | "Kubernetes Manifest";
+      /**
+       * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+       *
+       * @default 0
+       */
+      viewCount?: number;
+      /**
+       * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+       *
+       * @default 0
+       */
+      downloadCount?: number;
+      /**
+       * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+       *
+       * @default 0
+       */
+      cloneCount?: number;
+      /**
+       * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+       *
+       * @default 0
+       */
+      deploymentCount?: number;
+      /**
+       * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+       *
+       * @default 0
+       */
+      shareCount?: number;
+      /**
        * Format: date-time
        * @description Timestamp of design creation.
        */
@@ -4901,6 +4941,46 @@ export interface components {
         };
         /** @description Visibility scope (private, public, published). */
         visibility?: string;
+        /**
+         * @description Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+         *
+         * @enum {string}
+         */
+        designType?:
+          | "Design"
+          | "Helm Chart"
+          | "Docker Compose"
+          | "Kubernetes Manifest";
+        /**
+         * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+         *
+         * @default 0
+         */
+        viewCount?: number;
+        /**
+         * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+         *
+         * @default 0
+         */
+        downloadCount?: number;
+        /**
+         * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+         *
+         * @default 0
+         */
+        cloneCount?: number;
+        /**
+         * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+         *
+         * @default 0
+         */
+        deploymentCount?: number;
+        /**
+         * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+         *
+         * @default 0
+         */
+        shareCount?: number;
         /**
          * Format: date-time
          * @description Timestamp of design creation.
@@ -6542,6 +6622,46 @@ export interface components {
         };
         /** @description Visibility scope (private, public, published). */
         visibility?: string;
+        /**
+         * @description Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+         *
+         * @enum {string}
+         */
+        designType?:
+          | "Design"
+          | "Helm Chart"
+          | "Docker Compose"
+          | "Kubernetes Manifest";
+        /**
+         * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+         *
+         * @default 0
+         */
+        viewCount?: number;
+        /**
+         * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+         *
+         * @default 0
+         */
+        downloadCount?: number;
+        /**
+         * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+         *
+         * @default 0
+         */
+        cloneCount?: number;
+        /**
+         * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+         *
+         * @default 0
+         */
+        deploymentCount?: number;
+        /**
+         * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+         *
+         * @default 0
+         */
+        shareCount?: number;
         /**
          * Format: date-time
          * @description Timestamp of design creation.
@@ -8249,6 +8369,46 @@ export interface components {
         };
         /** @description Visibility scope (private, public, published). */
         visibility?: string;
+        /**
+         * @description Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+         *
+         * @enum {string}
+         */
+        designType?:
+          | "Design"
+          | "Helm Chart"
+          | "Docker Compose"
+          | "Kubernetes Manifest";
+        /**
+         * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+         *
+         * @default 0
+         */
+        viewCount?: number;
+        /**
+         * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+         *
+         * @default 0
+         */
+        downloadCount?: number;
+        /**
+         * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+         *
+         * @default 0
+         */
+        cloneCount?: number;
+        /**
+         * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+         *
+         * @default 0
+         */
+        deploymentCount?: number;
+        /**
+         * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+         *
+         * @default 0
+         */
+        shareCount?: number;
         /**
          * Format: date-time
          * @description Timestamp of design creation.
@@ -10064,6 +10224,46 @@ export interface operations {
               /** @description Visibility scope (private, public, published). */
               visibility?: string;
               /**
+               * @description Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+               *
+               * @enum {string}
+               */
+              designType?:
+                | "Design"
+                | "Helm Chart"
+                | "Docker Compose"
+                | "Kubernetes Manifest";
+              /**
+               * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+               *
+               * @default 0
+               */
+              viewCount?: number;
+              /**
+               * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+               *
+               * @default 0
+               */
+              downloadCount?: number;
+              /**
+               * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+               *
+               * @default 0
+               */
+              cloneCount?: number;
+              /**
+               * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+               *
+               * @default 0
+               */
+              deploymentCount?: number;
+              /**
+               * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+               *
+               * @default 0
+               */
+              shareCount?: number;
+              /**
                * Format: date-time
                * @description Timestamp of design creation.
                */
@@ -11718,6 +11918,46 @@ export interface operations {
             };
             /** @description Visibility scope (private, public, published). */
             visibility?: string;
+            /**
+             * @description Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+             *
+             * @enum {string}
+             */
+            designType?:
+              | "Design"
+              | "Helm Chart"
+              | "Docker Compose"
+              | "Kubernetes Manifest";
+            /**
+             * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+             *
+             * @default 0
+             */
+            viewCount?: number;
+            /**
+             * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+             *
+             * @default 0
+             */
+            downloadCount?: number;
+            /**
+             * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+             *
+             * @default 0
+             */
+            cloneCount?: number;
+            /**
+             * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+             *
+             * @default 0
+             */
+            deploymentCount?: number;
+            /**
+             * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+             *
+             * @default 0
+             */
+            shareCount?: number;
             /**
              * Format: date-time
              * @description Timestamp of design creation.
@@ -13375,6 +13615,46 @@ export interface operations {
             };
             /** @description Visibility scope (private, public, published). */
             visibility?: string;
+            /**
+             * @description Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+             *
+             * @enum {string}
+             */
+            designType?:
+              | "Design"
+              | "Helm Chart"
+              | "Docker Compose"
+              | "Kubernetes Manifest";
+            /**
+             * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+             *
+             * @default 0
+             */
+            viewCount?: number;
+            /**
+             * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+             *
+             * @default 0
+             */
+            downloadCount?: number;
+            /**
+             * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+             *
+             * @default 0
+             */
+            cloneCount?: number;
+            /**
+             * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+             *
+             * @default 0
+             */
+            deploymentCount?: number;
+            /**
+             * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+             *
+             * @default 0
+             */
+            shareCount?: number;
             /**
              * Format: date-time
              * @description Timestamp of design creation.
@@ -15187,6 +15467,46 @@ export interface operations {
             /** @description Visibility scope (private, public, published). */
             visibility?: string;
             /**
+             * @description Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+             *
+             * @enum {string}
+             */
+            designType?:
+              | "Design"
+              | "Helm Chart"
+              | "Docker Compose"
+              | "Kubernetes Manifest";
+            /**
+             * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+             *
+             * @default 0
+             */
+            viewCount?: number;
+            /**
+             * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+             *
+             * @default 0
+             */
+            downloadCount?: number;
+            /**
+             * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+             *
+             * @default 0
+             */
+            cloneCount?: number;
+            /**
+             * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+             *
+             * @default 0
+             */
+            deploymentCount?: number;
+            /**
+             * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+             *
+             * @default 0
+             */
+            shareCount?: number;
+            /**
              * Format: date-time
              * @description Timestamp of design creation.
              */
@@ -16880,6 +17200,46 @@ export interface operations {
             };
             /** @description Visibility scope (private, public, published). */
             visibility?: string;
+            /**
+             * @description Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+             *
+             * @enum {string}
+             */
+            designType?:
+              | "Design"
+              | "Helm Chart"
+              | "Docker Compose"
+              | "Kubernetes Manifest";
+            /**
+             * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+             *
+             * @default 0
+             */
+            viewCount?: number;
+            /**
+             * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+             *
+             * @default 0
+             */
+            downloadCount?: number;
+            /**
+             * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+             *
+             * @default 0
+             */
+            cloneCount?: number;
+            /**
+             * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+             *
+             * @default 0
+             */
+            deploymentCount?: number;
+            /**
+             * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+             *
+             * @default 0
+             */
+            shareCount?: number;
             /**
              * Format: date-time
              * @description Timestamp of design creation.
@@ -18716,6 +19076,46 @@ export interface operations {
               };
               /** @description Visibility scope (private, public, published). */
               visibility?: string;
+              /**
+               * @description Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+               *
+               * @enum {string}
+               */
+              designType?:
+                | "Design"
+                | "Helm Chart"
+                | "Docker Compose"
+                | "Kubernetes Manifest";
+              /**
+               * @description Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+               *
+               * @default 0
+               */
+              viewCount?: number;
+              /**
+               * @description Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+               *
+               * @default 0
+               */
+              downloadCount?: number;
+              /**
+               * @description Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+               *
+               * @default 0
+               */
+              cloneCount?: number;
+              /**
+               * @description Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+               *
+               * @default 0
+               */
+              deploymentCount?: number;
+              /**
+               * @description Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+               *
+               * @default 0
+               */
+              shareCount?: number;
               /**
                * Format: date-time
                * @description Timestamp of design creation.

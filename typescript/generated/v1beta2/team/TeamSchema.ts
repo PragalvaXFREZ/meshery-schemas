@@ -647,8 +647,21 @@ const TeamSchema: Record<string, unknown> = {
       },
       "TeamMember": {
         "type": "object",
-        "description": "A user who is a prospective or existing team member.",
-        "additionalProperties": true
+        "description": "A user who is a prospective or existing team member. Returned by the \"list users in team\" endpoint. `joinedAt` is the first canonicalised projection field — other user fields (`id`, `firstName`, `lastName`, `email`, `avatarUrl`) continue to flow through `additionalProperties` pending migration of the user schema to the canonical-casing contract. See meshery/schemas#832 for the per-field roadmap.\n",
+        "additionalProperties": true,
+        "properties": {
+          "joinedAt": {
+            "description": "Timestamp when the user joined the team. Server-computed from the earliest matching row in `users_teams_mapping` for this (team, user) pair. Server-managed; clients cannot set this.\n",
+            "x-oapi-codegen-extra-tags": {
+              "db": "joined_at",
+              "json": "joinedAt"
+            },
+            "x-go-type": "NullTime",
+            "type": "string",
+            "format": "date-time",
+            "x-go-type-skip-optional-pointer": true
+          }
+        }
       },
       "TeamMembersPage": {
         "type": "object",
@@ -673,8 +686,21 @@ const TeamSchema: Record<string, unknown> = {
             "type": "array",
             "items": {
               "type": "object",
-              "description": "A user who is a prospective or existing team member.",
-              "additionalProperties": true
+              "description": "A user who is a prospective or existing team member. Returned by the \"list users in team\" endpoint. `joinedAt` is the first canonicalised projection field — other user fields (`id`, `firstName`, `lastName`, `email`, `avatarUrl`) continue to flow through `additionalProperties` pending migration of the user schema to the canonical-casing contract. See meshery/schemas#832 for the per-field roadmap.\n",
+              "additionalProperties": true,
+              "properties": {
+                "joinedAt": {
+                  "description": "Timestamp when the user joined the team. Server-computed from the earliest matching row in `users_teams_mapping` for this (team, user) pair. Server-managed; clients cannot set this.\n",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "joined_at",
+                    "json": "joinedAt"
+                  },
+                  "x-go-type": "NullTime",
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                }
+              }
             },
             "description": "The data of the teammemberspage."
           }
@@ -2370,8 +2396,21 @@ const TeamSchema: Record<string, unknown> = {
                       "type": "array",
                       "items": {
                         "type": "object",
-                        "description": "A user who is a prospective or existing team member.",
-                        "additionalProperties": true
+                        "description": "A user who is a prospective or existing team member. Returned by the \"list users in team\" endpoint. `joinedAt` is the first canonicalised projection field — other user fields (`id`, `firstName`, `lastName`, `email`, `avatarUrl`) continue to flow through `additionalProperties` pending migration of the user schema to the canonical-casing contract. See meshery/schemas#832 for the per-field roadmap.\n",
+                        "additionalProperties": true,
+                        "properties": {
+                          "joinedAt": {
+                            "description": "Timestamp when the user joined the team. Server-computed from the earliest matching row in `users_teams_mapping` for this (team, user) pair. Server-managed; clients cannot set this.\n",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "joined_at",
+                              "json": "joinedAt"
+                            },
+                            "x-go-type": "NullTime",
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          }
+                        }
                       },
                       "description": "The data of the teammemberspage."
                     }

@@ -4962,6 +4962,68 @@ const DesignSchema: Record<string, unknown> = {
                             "type": "string",
                             "x-go-type-skip-optional-pointer": true
                           },
+                          "designType": {
+                            "type": "string",
+                            "description": "Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.\n",
+                            "x-enum-casing-exempt": true,
+                            "enum": [
+                              "Design",
+                              "Helm Chart",
+                              "Docker Compose",
+                              "Kubernetes Manifest"
+                            ],
+                            "maxLength": 64
+                          },
+                          "viewCount": {
+                            "type": "integer",
+                            "description": "Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.\n",
+                            "minimum": 0,
+                            "default": 0,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "view_count",
+                              "json": "viewCount,omitempty"
+                            }
+                          },
+                          "downloadCount": {
+                            "type": "integer",
+                            "description": "Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.\n",
+                            "minimum": 0,
+                            "default": 0,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "download_count",
+                              "json": "downloadCount,omitempty"
+                            }
+                          },
+                          "cloneCount": {
+                            "type": "integer",
+                            "description": "Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.\n",
+                            "minimum": 0,
+                            "default": 0,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "clone_count",
+                              "json": "cloneCount,omitempty"
+                            }
+                          },
+                          "deploymentCount": {
+                            "type": "integer",
+                            "description": "Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.\n",
+                            "minimum": 0,
+                            "default": 0,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deployment_count",
+                              "json": "deploymentCount,omitempty"
+                            }
+                          },
+                          "shareCount": {
+                            "type": "integer",
+                            "description": "Server-aggregated count of share events for this design. Server-managed and ignored on writes.\n",
+                            "minimum": 0,
+                            "default": 0,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "share_count",
+                              "json": "shareCount,omitempty"
+                            }
+                          },
                           "createdAt": {
                             "description": "Timestamp of design creation.",
                             "x-oapi-codegen-extra-tags": {
@@ -9834,6 +9896,68 @@ const DesignSchema: Record<string, unknown> = {
                         "type": "string",
                         "x-go-type-skip-optional-pointer": true
                       },
+                      "designType": {
+                        "type": "string",
+                        "description": "Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.\n",
+                        "x-enum-casing-exempt": true,
+                        "enum": [
+                          "Design",
+                          "Helm Chart",
+                          "Docker Compose",
+                          "Kubernetes Manifest"
+                        ],
+                        "maxLength": 64
+                      },
+                      "viewCount": {
+                        "type": "integer",
+                        "description": "Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.\n",
+                        "minimum": 0,
+                        "default": 0,
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "view_count",
+                          "json": "viewCount,omitempty"
+                        }
+                      },
+                      "downloadCount": {
+                        "type": "integer",
+                        "description": "Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.\n",
+                        "minimum": 0,
+                        "default": 0,
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "download_count",
+                          "json": "downloadCount,omitempty"
+                        }
+                      },
+                      "cloneCount": {
+                        "type": "integer",
+                        "description": "Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.\n",
+                        "minimum": 0,
+                        "default": 0,
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "clone_count",
+                          "json": "cloneCount,omitempty"
+                        }
+                      },
+                      "deploymentCount": {
+                        "type": "integer",
+                        "description": "Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.\n",
+                        "minimum": 0,
+                        "default": 0,
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "deployment_count",
+                          "json": "deploymentCount,omitempty"
+                        }
+                      },
+                      "shareCount": {
+                        "type": "integer",
+                        "description": "Server-aggregated count of share events for this design. Server-managed and ignored on writes.\n",
+                        "minimum": 0,
+                        "default": 0,
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "share_count",
+                          "json": "shareCount,omitempty"
+                        }
+                      },
                       "createdAt": {
                         "description": "Timestamp of design creation.",
                         "x-oapi-codegen-extra-tags": {
@@ -14674,6 +14798,68 @@ const DesignSchema: Record<string, unknown> = {
                       "description": "Visibility scope (private, public, published).",
                       "type": "string",
                       "x-go-type-skip-optional-pointer": true
+                    },
+                    "designType": {
+                      "type": "string",
+                      "description": "Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.\n",
+                      "x-enum-casing-exempt": true,
+                      "enum": [
+                        "Design",
+                        "Helm Chart",
+                        "Docker Compose",
+                        "Kubernetes Manifest"
+                      ],
+                      "maxLength": 64
+                    },
+                    "viewCount": {
+                      "type": "integer",
+                      "description": "Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.\n",
+                      "minimum": 0,
+                      "default": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "view_count",
+                        "json": "viewCount,omitempty"
+                      }
+                    },
+                    "downloadCount": {
+                      "type": "integer",
+                      "description": "Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.\n",
+                      "minimum": 0,
+                      "default": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "download_count",
+                        "json": "downloadCount,omitempty"
+                      }
+                    },
+                    "cloneCount": {
+                      "type": "integer",
+                      "description": "Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.\n",
+                      "minimum": 0,
+                      "default": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "clone_count",
+                        "json": "cloneCount,omitempty"
+                      }
+                    },
+                    "deploymentCount": {
+                      "type": "integer",
+                      "description": "Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.\n",
+                      "minimum": 0,
+                      "default": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deployment_count",
+                        "json": "deploymentCount,omitempty"
+                      }
+                    },
+                    "shareCount": {
+                      "type": "integer",
+                      "description": "Server-aggregated count of share events for this design. Server-managed and ignored on writes.\n",
+                      "minimum": 0,
+                      "default": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "share_count",
+                        "json": "shareCount,omitempty"
+                      }
                     },
                     "createdAt": {
                       "description": "Timestamp of design creation.",
@@ -19889,6 +20075,68 @@ const DesignSchema: Record<string, unknown> = {
                       "type": "string",
                       "x-go-type-skip-optional-pointer": true
                     },
+                    "designType": {
+                      "type": "string",
+                      "description": "Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.\n",
+                      "x-enum-casing-exempt": true,
+                      "enum": [
+                        "Design",
+                        "Helm Chart",
+                        "Docker Compose",
+                        "Kubernetes Manifest"
+                      ],
+                      "maxLength": 64
+                    },
+                    "viewCount": {
+                      "type": "integer",
+                      "description": "Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.\n",
+                      "minimum": 0,
+                      "default": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "view_count",
+                        "json": "viewCount,omitempty"
+                      }
+                    },
+                    "downloadCount": {
+                      "type": "integer",
+                      "description": "Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.\n",
+                      "minimum": 0,
+                      "default": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "download_count",
+                        "json": "downloadCount,omitempty"
+                      }
+                    },
+                    "cloneCount": {
+                      "type": "integer",
+                      "description": "Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.\n",
+                      "minimum": 0,
+                      "default": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "clone_count",
+                        "json": "cloneCount,omitempty"
+                      }
+                    },
+                    "deploymentCount": {
+                      "type": "integer",
+                      "description": "Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.\n",
+                      "minimum": 0,
+                      "default": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deployment_count",
+                        "json": "deploymentCount,omitempty"
+                      }
+                    },
+                    "shareCount": {
+                      "type": "integer",
+                      "description": "Server-aggregated count of share events for this design. Server-managed and ignored on writes.\n",
+                      "minimum": 0,
+                      "default": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "share_count",
+                        "json": "shareCount,omitempty"
+                      }
+                    },
                     "createdAt": {
                       "description": "Timestamp of design creation.",
                       "x-oapi-codegen-extra-tags": {
@@ -24833,6 +25081,68 @@ const DesignSchema: Record<string, unknown> = {
                       "description": "Visibility scope (private, public, published).",
                       "type": "string",
                       "x-go-type-skip-optional-pointer": true
+                    },
+                    "designType": {
+                      "type": "string",
+                      "description": "Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.\n",
+                      "x-enum-casing-exempt": true,
+                      "enum": [
+                        "Design",
+                        "Helm Chart",
+                        "Docker Compose",
+                        "Kubernetes Manifest"
+                      ],
+                      "maxLength": 64
+                    },
+                    "viewCount": {
+                      "type": "integer",
+                      "description": "Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.\n",
+                      "minimum": 0,
+                      "default": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "view_count",
+                        "json": "viewCount,omitempty"
+                      }
+                    },
+                    "downloadCount": {
+                      "type": "integer",
+                      "description": "Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.\n",
+                      "minimum": 0,
+                      "default": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "download_count",
+                        "json": "downloadCount,omitempty"
+                      }
+                    },
+                    "cloneCount": {
+                      "type": "integer",
+                      "description": "Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.\n",
+                      "minimum": 0,
+                      "default": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "clone_count",
+                        "json": "cloneCount,omitempty"
+                      }
+                    },
+                    "deploymentCount": {
+                      "type": "integer",
+                      "description": "Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.\n",
+                      "minimum": 0,
+                      "default": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deployment_count",
+                        "json": "deploymentCount,omitempty"
+                      }
+                    },
+                    "shareCount": {
+                      "type": "integer",
+                      "description": "Server-aggregated count of share events for this design. Server-managed and ignored on writes.\n",
+                      "minimum": 0,
+                      "default": 0,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "share_count",
+                        "json": "shareCount,omitempty"
+                      }
                     },
                     "createdAt": {
                       "description": "Timestamp of design creation.",
@@ -30112,6 +30422,68 @@ const DesignSchema: Record<string, unknown> = {
                             "description": "Visibility scope (private, public, published).",
                             "type": "string",
                             "x-go-type-skip-optional-pointer": true
+                          },
+                          "designType": {
+                            "type": "string",
+                            "description": "Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.\n",
+                            "x-enum-casing-exempt": true,
+                            "enum": [
+                              "Design",
+                              "Helm Chart",
+                              "Docker Compose",
+                              "Kubernetes Manifest"
+                            ],
+                            "maxLength": 64
+                          },
+                          "viewCount": {
+                            "type": "integer",
+                            "description": "Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.\n",
+                            "minimum": 0,
+                            "default": 0,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "view_count",
+                              "json": "viewCount,omitempty"
+                            }
+                          },
+                          "downloadCount": {
+                            "type": "integer",
+                            "description": "Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.\n",
+                            "minimum": 0,
+                            "default": 0,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "download_count",
+                              "json": "downloadCount,omitempty"
+                            }
+                          },
+                          "cloneCount": {
+                            "type": "integer",
+                            "description": "Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.\n",
+                            "minimum": 0,
+                            "default": 0,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "clone_count",
+                              "json": "cloneCount,omitempty"
+                            }
+                          },
+                          "deploymentCount": {
+                            "type": "integer",
+                            "description": "Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.\n",
+                            "minimum": 0,
+                            "default": 0,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deployment_count",
+                              "json": "deploymentCount,omitempty"
+                            }
+                          },
+                          "shareCount": {
+                            "type": "integer",
+                            "description": "Server-aggregated count of share events for this design. Server-managed and ignored on writes.\n",
+                            "minimum": 0,
+                            "default": 0,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "share_count",
+                              "json": "shareCount,omitempty"
+                            }
                           },
                           "createdAt": {
                             "description": "Timestamp of design creation.",
@@ -40756,6 +41128,68 @@ const DesignSchema: Record<string, unknown> = {
             "type": "string",
             "x-go-type-skip-optional-pointer": true
           },
+          "designType": {
+            "type": "string",
+            "description": "Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.\n",
+            "x-enum-casing-exempt": true,
+            "enum": [
+              "Design",
+              "Helm Chart",
+              "Docker Compose",
+              "Kubernetes Manifest"
+            ],
+            "maxLength": 64
+          },
+          "viewCount": {
+            "type": "integer",
+            "description": "Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.\n",
+            "minimum": 0,
+            "default": 0,
+            "x-oapi-codegen-extra-tags": {
+              "db": "view_count",
+              "json": "viewCount,omitempty"
+            }
+          },
+          "downloadCount": {
+            "type": "integer",
+            "description": "Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.\n",
+            "minimum": 0,
+            "default": 0,
+            "x-oapi-codegen-extra-tags": {
+              "db": "download_count",
+              "json": "downloadCount,omitempty"
+            }
+          },
+          "cloneCount": {
+            "type": "integer",
+            "description": "Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.\n",
+            "minimum": 0,
+            "default": 0,
+            "x-oapi-codegen-extra-tags": {
+              "db": "clone_count",
+              "json": "cloneCount,omitempty"
+            }
+          },
+          "deploymentCount": {
+            "type": "integer",
+            "description": "Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.\n",
+            "minimum": 0,
+            "default": 0,
+            "x-oapi-codegen-extra-tags": {
+              "db": "deployment_count",
+              "json": "deploymentCount,omitempty"
+            }
+          },
+          "shareCount": {
+            "type": "integer",
+            "description": "Server-aggregated count of share events for this design. Server-managed and ignored on writes.\n",
+            "minimum": 0,
+            "default": 0,
+            "x-oapi-codegen-extra-tags": {
+              "db": "share_count",
+              "json": "shareCount,omitempty"
+            }
+          },
           "createdAt": {
             "description": "Timestamp of design creation.",
             "x-oapi-codegen-extra-tags": {
@@ -45591,6 +46025,68 @@ const DesignSchema: Record<string, unknown> = {
                   "description": "Visibility scope (private, public, published).",
                   "type": "string",
                   "x-go-type-skip-optional-pointer": true
+                },
+                "designType": {
+                  "type": "string",
+                  "description": "Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.\n",
+                  "x-enum-casing-exempt": true,
+                  "enum": [
+                    "Design",
+                    "Helm Chart",
+                    "Docker Compose",
+                    "Kubernetes Manifest"
+                  ],
+                  "maxLength": 64
+                },
+                "viewCount": {
+                  "type": "integer",
+                  "description": "Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.\n",
+                  "minimum": 0,
+                  "default": 0,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "view_count",
+                    "json": "viewCount,omitempty"
+                  }
+                },
+                "downloadCount": {
+                  "type": "integer",
+                  "description": "Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.\n",
+                  "minimum": 0,
+                  "default": 0,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "download_count",
+                    "json": "downloadCount,omitempty"
+                  }
+                },
+                "cloneCount": {
+                  "type": "integer",
+                  "description": "Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.\n",
+                  "minimum": 0,
+                  "default": 0,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "clone_count",
+                    "json": "cloneCount,omitempty"
+                  }
+                },
+                "deploymentCount": {
+                  "type": "integer",
+                  "description": "Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.\n",
+                  "minimum": 0,
+                  "default": 0,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "deployment_count",
+                    "json": "deploymentCount,omitempty"
+                  }
+                },
+                "shareCount": {
+                  "type": "integer",
+                  "description": "Server-aggregated count of share events for this design. Server-managed and ignored on writes.\n",
+                  "minimum": 0,
+                  "default": 0,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "share_count",
+                    "json": "shareCount,omitempty"
+                  }
                 },
                 "createdAt": {
                   "description": "Timestamp of design creation.",
@@ -50456,6 +50952,68 @@ const DesignSchema: Record<string, unknown> = {
                 "description": "Visibility scope (private, public, published).",
                 "type": "string",
                 "x-go-type-skip-optional-pointer": true
+              },
+              "designType": {
+                "type": "string",
+                "description": "Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.\n",
+                "x-enum-casing-exempt": true,
+                "enum": [
+                  "Design",
+                  "Helm Chart",
+                  "Docker Compose",
+                  "Kubernetes Manifest"
+                ],
+                "maxLength": 64
+              },
+              "viewCount": {
+                "type": "integer",
+                "description": "Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.\n",
+                "minimum": 0,
+                "default": 0,
+                "x-oapi-codegen-extra-tags": {
+                  "db": "view_count",
+                  "json": "viewCount,omitempty"
+                }
+              },
+              "downloadCount": {
+                "type": "integer",
+                "description": "Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.\n",
+                "minimum": 0,
+                "default": 0,
+                "x-oapi-codegen-extra-tags": {
+                  "db": "download_count",
+                  "json": "downloadCount,omitempty"
+                }
+              },
+              "cloneCount": {
+                "type": "integer",
+                "description": "Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.\n",
+                "minimum": 0,
+                "default": 0,
+                "x-oapi-codegen-extra-tags": {
+                  "db": "clone_count",
+                  "json": "cloneCount,omitempty"
+                }
+              },
+              "deploymentCount": {
+                "type": "integer",
+                "description": "Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.\n",
+                "minimum": 0,
+                "default": 0,
+                "x-oapi-codegen-extra-tags": {
+                  "db": "deployment_count",
+                  "json": "deploymentCount,omitempty"
+                }
+              },
+              "shareCount": {
+                "type": "integer",
+                "description": "Server-aggregated count of share events for this design. Server-managed and ignored on writes.\n",
+                "minimum": 0,
+                "default": 0,
+                "x-oapi-codegen-extra-tags": {
+                  "db": "share_count",
+                  "json": "shareCount,omitempty"
+                }
               },
               "createdAt": {
                 "description": "Timestamp of design creation.",
@@ -55433,6 +55991,68 @@ const DesignSchema: Record<string, unknown> = {
                   "description": "Visibility scope (private, public, published).",
                   "type": "string",
                   "x-go-type-skip-optional-pointer": true
+                },
+                "designType": {
+                  "type": "string",
+                  "description": "Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.\n",
+                  "x-enum-casing-exempt": true,
+                  "enum": [
+                    "Design",
+                    "Helm Chart",
+                    "Docker Compose",
+                    "Kubernetes Manifest"
+                  ],
+                  "maxLength": 64
+                },
+                "viewCount": {
+                  "type": "integer",
+                  "description": "Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.\n",
+                  "minimum": 0,
+                  "default": 0,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "view_count",
+                    "json": "viewCount,omitempty"
+                  }
+                },
+                "downloadCount": {
+                  "type": "integer",
+                  "description": "Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.\n",
+                  "minimum": 0,
+                  "default": 0,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "download_count",
+                    "json": "downloadCount,omitempty"
+                  }
+                },
+                "cloneCount": {
+                  "type": "integer",
+                  "description": "Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.\n",
+                  "minimum": 0,
+                  "default": 0,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "clone_count",
+                    "json": "cloneCount,omitempty"
+                  }
+                },
+                "deploymentCount": {
+                  "type": "integer",
+                  "description": "Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.\n",
+                  "minimum": 0,
+                  "default": 0,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "deployment_count",
+                    "json": "deploymentCount,omitempty"
+                  }
+                },
+                "shareCount": {
+                  "type": "integer",
+                  "description": "Server-aggregated count of share events for this design. Server-managed and ignored on writes.\n",
+                  "minimum": 0,
+                  "default": 0,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "share_count",
+                    "json": "shareCount,omitempty"
+                  }
                 },
                 "createdAt": {
                   "description": "Timestamp of design creation.",

@@ -195,8 +195,14 @@ export interface components {
         deletedAt?: string;
       }[];
     };
-    /** @description A user who is a prospective or existing team member. */
-    TeamMember: { [key: string]: unknown };
+    /** @description A user who is a prospective or existing team member. Returned by the "list users in team" endpoint. `joinedAt` is the first canonicalised projection field — other user fields (`id`, `firstName`, `lastName`, `email`, `avatarUrl`) continue to flow through `additionalProperties` pending migration of the user schema to the canonical-casing contract. See meshery/schemas#832 for the per-field roadmap. */
+    TeamMember: {
+      /**
+       * Format: date-time
+       * @description Timestamp when the user joined the team. Server-computed from the earliest matching row in `users_teams_mapping` for this (team, user) pair. Server-managed; clients cannot set this.
+       */
+      joinedAt?: string;
+    } & { [key: string]: unknown };
     /** @description Paginated list of team members. */
     TeamMembersPage: {
       /** @description Current page number of the result set. */
@@ -206,7 +212,13 @@ export interface components {
       /** @description Total number of items available. */
       total_count?: number;
       /** @description The data of the teammemberspage. */
-      data?: { [key: string]: unknown }[];
+      data?: ({
+        /**
+         * Format: date-time
+         * @description Timestamp when the user joined the team. Server-computed from the earliest matching row in `users_teams_mapping` for this (team, user) pair. Server-managed; clients cannot set this.
+         */
+        joinedAt?: string;
+      } & { [key: string]: unknown })[];
     };
   };
   responses: {
@@ -887,7 +899,13 @@ export interface operations {
             /** @description Total number of items available. */
             total_count?: number;
             /** @description The data of the teammemberspage. */
-            data?: { [key: string]: unknown }[];
+            data?: ({
+              /**
+               * Format: date-time
+               * @description Timestamp when the user joined the team. Server-computed from the earliest matching row in `users_teams_mapping` for this (team, user) pair. Server-managed; clients cannot set this.
+               */
+              joinedAt?: string;
+            } & { [key: string]: unknown })[];
           };
         };
       };

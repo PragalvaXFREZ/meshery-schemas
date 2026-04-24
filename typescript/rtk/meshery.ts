@@ -3585,6 +3585,9 @@ export type ListUsersNotInTeamApiResponse = /** status 200 Users not currently i
   total_count?: number;
   /** The data of the teammemberspage. */
   data?: {
+    /** Timestamp when the user joined the team. Server-computed from the earliest matching row in `users_teams_mapping` for this (team, user) pair. Server-managed; clients cannot set this.
+     */
+    joinedAt?: string;
     [key: string]: any;
   }[];
 };

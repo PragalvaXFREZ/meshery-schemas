@@ -22,6 +22,14 @@ const (
 	View    ContentSharePayloadContentType = "view"
 )
 
+// Defines values for MesheryPatternDesignType.
+const (
+	Design             MesheryPatternDesignType = "Design"
+	DockerCompose      MesheryPatternDesignType = "Docker Compose"
+	HelmChart          MesheryPatternDesignType = "Helm Chart"
+	KubernetesManifest MesheryPatternDesignType = "Kubernetes Manifest"
+)
+
 // DesignPreferences Design-level preferences
 type DesignPreferences struct {
 	// Layers Map of available layers, where keys are layer names.
@@ -121,17 +129,38 @@ type MesheryFilter map[string]interface{}
 // MesheryPattern Server-returned design (pattern) resource as persisted by meshery-cloud.
 type MesheryPattern struct {
 	CatalogData *catalogv1alpha2.CatalogData `json:"catalogData,omitempty" yaml:"catalogData,omitempty"`
-	CreatedAt   core.Time         `db:"created_at" json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
-	ID          core.Id           `json:"id,omitempty" yaml:"id,omitempty"`
-	Location    core.MapObject    `json:"location,omitempty" yaml:"location,omitempty"`
-	Name        core.Text         `json:"name,omitempty" yaml:"name,omitempty"`
+
+	// CloneCount Server-aggregated count of times this design has been cloned from the catalog. Server-managed and ignored on writes.
+	CloneCount *int              `db:"clone_count" json:"cloneCount,omitempty" yaml:"cloneCount,omitempty"`
+	CreatedAt  core.Time `db:"created_at" json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
+
+	// DeploymentCount Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
+	DeploymentCount *int `db:"deployment_count" json:"deploymentCount,omitempty" yaml:"deploymentCount,omitempty"`
+
+	// DesignType Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+	DesignType *MesheryPatternDesignType `json:"designType,omitempty" yaml:"designType,omitempty"`
+
+	// DownloadCount Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
+	DownloadCount *int                   `db:"download_count" json:"downloadCount,omitempty" yaml:"downloadCount,omitempty"`
+	ID            core.Id        `json:"id,omitempty" yaml:"id,omitempty"`
+	Location      core.MapObject `json:"location,omitempty" yaml:"location,omitempty"`
+	Name          core.Text      `json:"name,omitempty" yaml:"name,omitempty"`
 
 	// PatternFile Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.
-	PatternFile *PatternFile      `db:"pattern_file" json:"patternFile,omitempty" yaml:"patternFile,omitempty"`
-	UpdatedAt   core.Time `db:"updated_at" json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
-	UserId      core.Id   `db:"user_id" json:"userId,omitempty" yaml:"userId,omitempty"`
-	Visibility  core.Text `json:"visibility,omitempty" yaml:"visibility,omitempty"`
+	PatternFile *PatternFile `db:"pattern_file" json:"patternFile,omitempty" yaml:"patternFile,omitempty"`
+
+	// ShareCount Server-aggregated count of share events for this design. Server-managed and ignored on writes.
+	ShareCount *int              `db:"share_count" json:"shareCount,omitempty" yaml:"shareCount,omitempty"`
+	UpdatedAt  core.Time `db:"updated_at" json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
+	UserId     core.Id   `db:"user_id" json:"userId,omitempty" yaml:"userId,omitempty"`
+
+	// ViewCount Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
+	ViewCount  *int              `db:"view_count" json:"viewCount,omitempty" yaml:"viewCount,omitempty"`
+	Visibility core.Text `json:"visibility,omitempty" yaml:"visibility,omitempty"`
 }
+
+// MesheryPatternDesignType Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+type MesheryPatternDesignType string
 
 // MesheryPatternDeleteRequestBody Payload for bulk deleting designs by ID.
 type MesheryPatternDeleteRequestBody struct {

@@ -19,9 +19,15 @@ type Schedule struct {
 	UserId core.Uuid `db:"user_id" json:"userId" yaml:"userId"`
 
 	// CronExpression Cron expression defining the schedule's recurrence (e.g. "0 0 * * *" for daily at midnight).
-	CronExpression string            `db:"cron_expression" json:"cronExpression" yaml:"cronExpression"`
-	CreatedAt      core.Time `db:"created_at" json:"createdAt" yaml:"createdAt,omitempty"`
-	UpdatedAt      core.Time `db:"updated_at" json:"updatedAt" yaml:"updatedAt,omitempty"`
+	CronExpression string `db:"cron_expression" json:"cronExpression" yaml:"cronExpression"`
+
+	// LastRun SQL null Timestamp to handle null values of time.
+	LastRun core.NullTime `db:"last_run" json:"lastRun" yaml:"lastRun,omitempty"`
+
+	// NextRun SQL null Timestamp to handle null values of time.
+	NextRun   core.NullTime `db:"next_run" json:"nextRun" yaml:"nextRun,omitempty"`
+	CreatedAt core.Time     `db:"created_at" json:"createdAt" yaml:"createdAt,omitempty"`
+	UpdatedAt core.Time     `db:"updated_at" json:"updatedAt" yaml:"updatedAt,omitempty"`
 }
 
 // SchedulePage A paginated list of schedules.

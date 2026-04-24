@@ -38,6 +38,16 @@ export interface components {
       cronExpression: string;
       /**
        * Format: date-time
+       * @description Server-computed timestamp of the schedule's most recent execution. Null until the first run completes. Server-managed; clients must not set this on create/update.
+       */
+      lastRun?: string;
+      /**
+       * Format: date-time
+       * @description Server-computed timestamp of the schedule's next planned execution, derived from the cron expression. Server-managed; clients must not set this on create/update.
+       */
+      nextRun?: string;
+      /**
+       * Format: date-time
        * @description Timestamp when the schedule was created.
        */
       createdAt?: string;
@@ -88,6 +98,16 @@ export interface components {
         userId: string;
         /** @description Cron expression defining the schedule's recurrence (e.g. "0 0 * * *" for daily at midnight). */
         cronExpression: string;
+        /**
+         * Format: date-time
+         * @description Server-computed timestamp of the schedule's most recent execution. Null until the first run completes. Server-managed; clients must not set this on create/update.
+         */
+        lastRun?: string;
+        /**
+         * Format: date-time
+         * @description Server-computed timestamp of the schedule's next planned execution, derived from the cron expression. Server-managed; clients must not set this on create/update.
+         */
+        nextRun?: string;
         /**
          * Format: date-time
          * @description Timestamp when the schedule was created.
@@ -185,6 +205,16 @@ export interface operations {
               cronExpression: string;
               /**
                * Format: date-time
+               * @description Server-computed timestamp of the schedule's most recent execution. Null until the first run completes. Server-managed; clients must not set this on create/update.
+               */
+              lastRun?: string;
+              /**
+               * Format: date-time
+               * @description Server-computed timestamp of the schedule's next planned execution, derived from the cron expression. Server-managed; clients must not set this on create/update.
+               */
+              nextRun?: string;
+              /**
+               * Format: date-time
                * @description Timestamp when the schedule was created.
                */
               createdAt?: string;
@@ -232,6 +262,16 @@ export interface operations {
             userId: string;
             /** @description Cron expression defining the schedule's recurrence (e.g. "0 0 * * *" for daily at midnight). */
             cronExpression: string;
+            /**
+             * Format: date-time
+             * @description Server-computed timestamp of the schedule's most recent execution. Null until the first run completes. Server-managed; clients must not set this on create/update.
+             */
+            lastRun?: string;
+            /**
+             * Format: date-time
+             * @description Server-computed timestamp of the schedule's next planned execution, derived from the cron expression. Server-managed; clients must not set this on create/update.
+             */
+            nextRun?: string;
             /**
              * Format: date-time
              * @description Timestamp when the schedule was created.
@@ -312,6 +352,16 @@ export interface operations {
             userId: string;
             /** @description Cron expression defining the schedule's recurrence (e.g. "0 0 * * *" for daily at midnight). */
             cronExpression: string;
+            /**
+             * Format: date-time
+             * @description Server-computed timestamp of the schedule's most recent execution. Null until the first run completes. Server-managed; clients must not set this on create/update.
+             */
+            lastRun?: string;
+            /**
+             * Format: date-time
+             * @description Server-computed timestamp of the schedule's next planned execution, derived from the cron expression. Server-managed; clients must not set this on create/update.
+             */
+            nextRun?: string;
             /**
              * Format: date-time
              * @description Timestamp when the schedule was created.

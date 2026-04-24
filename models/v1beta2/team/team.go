@@ -4,6 +4,9 @@
 package team
 
 import (
+	"encoding/json"
+	"fmt"
+
 	"github.com/meshery/schemas/models/core"
 )
 
@@ -30,8 +33,12 @@ type Team struct {
 	DeletedAt core.NullTime `db:"deleted_at" json:"deletedAt" yaml:"deletedAt,omitempty"`
 }
 
-// TeamMember A user who is a prospective or existing team member.
-type TeamMember map[string]interface{}
+// TeamMember A user who is a prospective or existing team member. Returned by the "list users in team" endpoint. `joinedAt` is the first canonicalised projection field — other user fields (`id`, `firstName`, `lastName`, `email`, `avatarUrl`) continue to flow through `additionalProperties` pending migration of the user schema to the canonical-casing contract. See meshery/schemas#832 for the per-field roadmap.
+type TeamMember struct {
+	// JoinedAt SQL null Timestamp to handle null values of time.
+	JoinedAt             core.NullTime  `db:"joined_at" json:"joinedAt" yaml:"joinedAt,omitempty"`
+	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
+}
 
 // TeamMembersPage Paginated list of team members.
 type TeamMembersPage struct {
@@ -126,3 +133,69 @@ type TeamId = core.TeamId
 
 // UserId user's email or username
 type UserId = core.UserId
+
+// Getter for additional properties for TeamMember. Returns the specified
+// element and whether it was found
+func (a TeamMember) Get(fieldName string) (value interface{}, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
+}
+
+// Setter for additional properties for TeamMember
+func (a *TeamMember) Set(fieldName string, value interface{}) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]interface{})
+	}
+	a.AdditionalProperties[fieldName] = value
+}
+
+// Override default JSON handling for TeamMember to handle AdditionalProperties
+func (a *TeamMember) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["joinedAt"]; found {
+		err = json.Unmarshal(raw, &a.JoinedAt)
+		if err != nil {
+			return fmt.Errorf("error reading 'joinedAt': %w", err)
+		}
+		delete(object, "joinedAt")
+	}
+
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]interface{})
+		for fieldName, fieldBuf := range object {
+			var fieldVal interface{}
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
+}
+
+// Override default JSON handling for TeamMember to handle AdditionalProperties
+func (a TeamMember) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
+
+	object["joinedAt"], err = json.Marshal(a.JoinedAt)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'joinedAt': %w", err)
+	}
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
+		}
+	}
+	return json.Marshal(object)
+}
