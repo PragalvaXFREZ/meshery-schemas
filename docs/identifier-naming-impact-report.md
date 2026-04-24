@@ -1,6 +1,6 @@
 # Identifier-Naming Migration — Final Impact Report
 
-> **Status:** **COMPLETE** (2026-04-24). All five phases of the Option B identifier-naming migration have landed across `meshery/schemas`, `meshery/meshery`, `layer5io/meshery-cloud`, `layer5labs/meshery-extensions`, `layer5io/sistent`, and (scan-clean) `meshery/meshkit`. The canonical contract — *wire is camelCase everywhere; DB is snake_case; Go fields follow Go idiom; the ORM layer is the sole translation boundary* — is now enforced at three places: the schemas validator (blocking), the advisory schema audit, and the blocking consumer-audit CI gate. Phase 4.A (legacy-version sunset) was administratively closed per maintainer decision: deprecated `schemas/constructs/v1beta1/` (25 resources) and `schemas/constructs/v1beta2/` (7 resources) directories are retained on `master` under `info.x-deprecated: true` + `info.x-superseded-by:` markers so external consumers that pin legacy versions are not stranded. Final in-flight items (Phase 2.K cascade PRs on Sistent / meshery / meshery-cloud / meshery-extensions following schemas#832) are tracked in §9 as the only work still traveling across PR review; everything schema-side, governance-side, and library-side has already merged and shipped.
+> **Status:** **COMPLETE** (2026-04-24). All five phases of the Option B identifier-naming migration have landed across `meshery/schemas`, `meshery/meshery`, `layer5io/meshery-cloud`, `layer5labs/meshery-extensions`, `layer5io/sistent`, and (scan-clean) `meshery/meshkit`. The canonical contract — *wire is camelCase everywhere; DB is snake_case; Go fields follow Go idiom; the ORM layer is the sole translation boundary* — is now enforced at three places: the schemas validator (blocking), the advisory schema audit, and the blocking consumer-audit CI gate. Phase 4.A (legacy-version sunset) was administratively closed per maintainer decision: deprecated `schemas/constructs/v1beta1/` (25 resources) and `schemas/constructs/v1beta2/` (7 resources) directories are retained on `master` under `info.x-deprecated: true` + `info.x-superseded-by:` markers so external consumers that pin legacy versions are not stranded. Final in-flight items (Phase 2.K cascade PRs on Sistent / meshery / meshery-cloud / meshery-extensions following schemas#832) are tracked in §6 as the only work still traveling across PR review; everything schema-side, governance-side, and library-side has already merged and shipped.
 >
 > This document is the **Agent 4.E** deliverable of [`identifier-naming-migration.md`](identifier-naming-migration.md) §10. Each section below is the published before/after measurement promised by the plan's §15.
 
@@ -14,7 +14,7 @@ Metrics are derived from:
 - **Current `master` state** as of 2026-04-24, regenerable via `make baseline-field-count`.
 - **Validator rule surface** counted from `grep RuleNumber validation/*.go | sort -u`.
 - **CI workflow state** from `.github/workflows/schema-audit.yml`.
-- **Cross-repo counts** (drift-masking sites, duplicate Go types, hand-rolled RTK endpoints, same-file casing contradictions, Sistent library-layer hits) from a `grep` audit across the six repos at 2026-04-24, cited inline in §2 and §9.
+- **Cross-repo counts** (drift-masking sites, duplicate Go types, hand-rolled RTK endpoints, same-file casing contradictions, Sistent library-layer hits) from a `grep` audit across the six repos at 2026-04-24, cited inline in §2 (metrics), §4 (PR inventory), and §6 (in-flight cascade).
 
 ## 2. Before / after / delta
 
@@ -45,10 +45,10 @@ Table mirrors [`identifier-naming-migration.md §15.1`](identifier-naming-migrat
 | ALL-CAPS `ID` on wire in schemas | 0 | 0 | 0 | Already clean |
 | ALL-CAPS `ID` on wire in Go structs (meshery + cloud) | 22 | `isOAuth` flipped to `isOauth` in meshery-cloud (#5092); remainder contained by dual-accept and attrites as deprecated structs are retired | −1 flipped; remainder contained | Phase 2.A–2.E substantially complete |
 | Consumer-audit TypeScript findings (live, 3 consumer repos) | — | **0 findings on meshery-cloud** (17 → 0 via #5092); **0 findings on meshery** (6 → 0 via #18904); **0 findings on meshery-extensions** (was clean) | **−23 to zero** | **Phase 2 tail complete** |
-| Sistent library-layer snake wire-key drift | not in audit scope at Phase 0 | **≈150 sites flipped** across 3 Sistent PRs (#1431 + #1434): `organization_id`, `created_at/updated_at/deleted_at`, `user_id`, `first_name/last_name`, `avatar_url`, `role_names`, `team_id`, `last_login_time`, `pattern_info`, `pattern_caveats`, `team_name`/`team_names` kept for server-coord follow-up | −150 flipped; cascade (10 residual keys now schematized via #834) in-flight | **Phase 2.K complete; cascade in flight** |
-| Canonical target-version directories present | 0 | 22 (§9.1 inventory): 14 in `v1beta3/`, 8 in `v1beta2/` | +22 | **Phase 3 complete** |
+| Sistent library-layer snake wire-key drift | not in audit scope at Phase 0 | **≈150 sites flipped** across 2 Sistent library PRs (#1431 Phase 2.K alignment + #1434 SSR hotfix; two CI/release PRs #1432 and #1433 landed alongside): `organization_id`, `created_at/updated_at/deleted_at`, `user_id`, `first_name/last_name`, `avatar_url`, `role_names`, `team_id`, `last_login_time`, `pattern_info`, `pattern_caveats`, `team_name`/`team_names` kept for server-coord follow-up | −150 flipped; cascade (9 residual keys schematized via #834 — `teamName` skipped as an alias of `Team.name`) in-flight | **Phase 2.K complete; cascade in flight** |
+| Canonical target-version directories present | 0 | 22 (per [`identifier-naming-migration.md §9.1`](identifier-naming-migration.md) inventory): 14 in `v1beta3/`, 8 in `v1beta2/` | +22 | **Phase 3 complete** |
 | @meshery/schemas published versions during Option B | 1.0.x | v1.1.0, v1.1.1, v1.1.2, **v1.2.0** (canonical coverage for 10 previously deferred keys) | +4 minor/patch | **Phase 4.E active** |
-| @sistent/sistent published versions during Option B | 0.16.5 | 0.19.0 (Phase 2.K; broken SSR), **0.19.1** (SSR fix via #1434) | +2 | **Phase 2.K complete + hotfix** |
+| @sistent/sistent published versions during Option B | 0.16.5 | v0.19.0 (Phase 2.K library alignment; broken SSR), v0.19.1 (SSR fix via #1434), **v0.20.0** (Phase 2.K cascade for 9 keys via #1435) | +3 | **Phase 2.K + cascade complete** |
 
 ### 2.1 Validator rule surface — detail
 
@@ -77,11 +77,11 @@ From `validation/baseline/field-count.json → per_resource` (refreshed 2026-04-
 | v1alpha2 | 3 | 27 | 2 | 25 |
 | v1alpha3 | 2 | 87 | 1 | 85 |
 | v1beta1 | 30 | 1125 | 248 | 794 |
-| v1beta2 | 13 | 618 | 95 | 491 |
-| v1beta3 | 22 (canonical targets) | — | **0** | — |
-| **Total** | **54 versions** | **2001** | **357** | **1525** |
+| v1beta2 | 24 | 979 | 95 | 843 |
+| v1beta3 | 11 | 431 | **0** | 429 |
+| **Total** | **76 resources across 6 versions** | **2793** | **357** | **2306** |
 
-The 1095 all-lowercase single-word tags (`name`, `type`, `id`) are camelCase-compatible and are not part of the migration surface. The 357 snake tags live in the deprecated-but-retained legacy directories (see §8).
+The 1482 all-lowercase single-word tags (`name`, `type`, `id`) are camelCase-compatible and are not part of the migration surface. The 357 snake tags live in the deprecated-but-retained legacy directories (see §7); every canonical target version — all of v1alpha3 / v1beta3 plus every Phase 3 target inside v1beta2 — contributes zero to that count.
 
 ## 3. Phase-by-phase completion log
 
@@ -92,8 +92,8 @@ The 1095 all-lowercase single-word tags (`name`, `type`, `id`) are camelCase-com
 | **2 — Non-breaking alignment** | Substantially subsumed by Phase 3 per-resource repoint PRs on the downstream repos; server dual-accept patterns established | interleaved with Phase 3 |
 | **2 (tail)** | meshery-cloud `ui/api/api.ts` 17 hand-rolled sites + `users.go` dual-accept; meshery `ui/rtk-query/` 6 sites + 4 handler dual-accept shims | #5092, #18904 |
 | **2.K — Sistent library alignment** | Sistent re-exports repointed v1beta1 → canonical v1beta2/v1beta3; 150+ snake keys flipped across CustomCard, CatalogCard, MetricsDisplay, PerformersSection, CatalogDesignTable, Workspaces, TeamTable, UsersTable, ResponsiveDataTable, CatalogDetail; Sistent version 0.16.5 → 0.19.0 → 0.19.1 (SSR hotfix) | layer5io/sistent#1431, #1434 |
-| **3 — Per-resource version bumps** | All 22 resources in §9.1 inventory migrated to canonical camelCase: workspace (#800), relationship (#801), design (#802), credential (#803), user (#804), organization (#805), connection (#806), component (#807), team (#808), event (#809), view (#810), key (#811), model (#812), role (#813), keychain (#814), environment (#815), invitation (#816), schedule (#817), plan (#818), subscription (#819), token (#820), badge (#821) | #800–#821 |
-| **4.A — Deprecated-version sunset** | **Administratively closed** per maintainer decision — deprecated directories retained on `master` with `x-deprecated: true` + `x-superseded-by` markers; bundler (`build/lib/config.js::isDeprecatedPackage`) excludes them from the merged spec | #822, #828 |
+| **3 — Per-resource version bumps** | All 22 resources in the [`identifier-naming-migration.md §9.1`](identifier-naming-migration.md) inventory migrated to canonical camelCase: workspace (#800), relationship (#801), design (#802), credential (#803), user (#804), organization (#805), connection (#806), component (#807), team (#808), event (#809), view (#810), key (#811), model (#812), role (#813), keychain (#814), environment (#815), invitation (#816), schedule (#817), plan (#818), subscription (#819), token (#820), badge (#821) | #800–#821 |
+| **4.A — Deprecated-version sunset** | **Administratively closed** per maintainer decision — deprecated directories retained on `master` with `info.x-deprecated: true` + `info.x-superseded-by:` markers; bundler (`build/lib/config.js::isDeprecatedPackage`) excludes them from the merged spec | #822, #828 |
 | **4.B — Consumer-audit blocking** | CI job promoted from advisory to blocking | #799 |
 | **4.C — Universal AGENTS.md / CLAUDE.md** | Downstream repo mandates adopted in meshery, meshery-cloud, meshery-extensions | (in-repo docs PRs) |
 | **4.D — Final validator pruning** | `knownLowercaseSuffixViolations` retired; `lowercaseSuffixPattern` removed; `GetCamelCaseIssues` lowercase-suffix branch no-op | #830 |
@@ -179,13 +179,13 @@ The Option B initiative eliminated the core ambiguity in the Layer5 / Meshery ec
 
 2. **Three CI gates enforce it:** blocking schema validation (Rule 4, Rule 6, Rule 45, Rule 46, `screamingIDRE`, full property-constraint rules), advisory schema audit (tracks style violations against a baseline), and — promoted in Phase 4.B — **blocking consumer-audit** that runs across meshery/meshery, layer5io/meshery-cloud, and layer5labs/meshery-extensions on every PR.
 
-3. **22 canonical resource versions** own the wire today. Every API a downstream repo invokes on the canonical path returns camelCase responses and accepts camelCase request bodies. Legacy versions are retained on `master` (Phase 4.A administratively closed) under `x-deprecated: true` + `x-superseded-by:` markers so external consumers pinning older versions are not stranded; the bundler excludes them from the merged spec to avoid path-space collisions.
+3. **22 canonical resource versions** own the wire today. Every API a downstream repo invokes on the canonical path returns camelCase responses and accepts camelCase request bodies. Legacy versions are retained on `master` (Phase 4.A administratively closed) under `info.x-deprecated: true` + `info.x-superseded-by:` markers so external consumers pinning older versions are not stranded; the bundler excludes them from the merged spec to avoid path-space collisions.
 
 4. **Drift-masking fully retired at the consumer-audit layer.** All three consumer UIs (meshery/ui, meshery-cloud/ui, meshery-extensions/meshmap) report **0 TypeScript findings** from `make consumer-audit`. Server-side `UnmarshalJSON` dual-accept shims on workspace / environments / events-config / k8s-ping / approve / deny / credentials / patterns / views / tokens payloads preserve backward compatibility for the one-release overlap window after each flip.
 
 5. **Sistent — the design-system layer the consumer-audit scanner does not walk — was brought into compliance.** Phase 2.K (sistent#1431) flipped 150+ snake keys across the catalog / workspace / users / teams component surface; sistent#1434 fixed a regression in #1431 that crashed all 0.19.0 consumers at Next.js SSR module load (a hard-coded read of the pre-v1.1.0 flat `MesheryPatternImportRequestBody.properties` shape, which had moved to `oneOf`); sistent#1432 wired a release-time commit-back so master's `package.json` now tracks the version that was actually published to npm (prior state: master at 0.16.5, npm at 0.18.8).
 
-6. **The 10 residual keys** surfaced during the Sistent sweep as having no canonical coverage in schemas — `team_name`, `joined_at`, `last_run`, `next_run`, `design_type`, and 5 design catalog metrics — were closed by meshery/schemas#834. `teamName` was intentionally skipped as a naming alias of `Team.name`. The other 9 are now expressed in v1.2.0 of the published schema. The per-repo cascade flipping consumer references to the new canonical types is in flight (see §6).
+6. **The 10 residual keys** surfaced during the Sistent sweep as having no canonical coverage in schemas — `team_name`, `joined_at`, `last_run`, `next_run`, `design_type`, and 5 design catalog metrics — were closed by meshery/schemas#834: 9 of the 10 are now expressed in @meshery/schemas v1.2.0 (TeamMember.joinedAt; Schedule.lastRun + .nextRun; MesheryPattern.designType + viewCount / downloadCount / cloneCount / deploymentCount / shareCount), and `teamName` was intentionally skipped as a naming alias of `Team.name`. The per-repo cascade flipping consumer references to the new canonical types is in flight (see §6).
 
 ## 6. Outstanding work — in flight
 
