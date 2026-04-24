@@ -4,7 +4,7 @@
 
 | Field | Value |
 |---|---|
-| Status | Administratively complete (2026-04-23); legacy directories retained on master |
+| Status | **Complete (2026-04-23)** — Phases 0–4 landed; consumer-audit TypeScript findings at 0 across all three downstream trees post-merge of Phase 2 tail PRs (meshery/meshery#18904, layer5io/meshery-cloud#5092); legacy directories retained on master (§10 Agent 4.A administrative close) |
 | Authority | `meshery/schemas/AGENTS.md` after Phase 1.A |
 | Scope | `meshery/schemas`, `meshery/meshery`, `layer5io/meshery-cloud`, `layer5labs/meshery-extensions` |
 | Contract | camelCase on wire, snake_case only at the DB/ORM boundary |
@@ -737,6 +737,8 @@ The remaining 21 agents follow the template in §9.2 with per-resource file path
 **Acceptance:** Validator has the minimum rule set that enforces the canonical contract going forward; the retirement stub pattern established for Rule 32 in Phase 1.B is mirrored here (public signatures preserved, empty map + in-file rationale), and 4.E's impact-report refresh can record the rule-surface reduction.
 
 ### Agent 4.E — Before/after impact report publication
+**Status:** Complete (2026-04-23) — final refresh landed on top of Phase 4.D with the Phase 2 tail PRs accounted for. Consumer-audit TypeScript findings: meshery-cloud 17 → 0 (PR #5092), meshery 6 → 0 (PR #18904), meshery-extensions already 0; total 23 → 0 across the three downstream trees post-merge. `docs/identifier-naming-impact-report.md` §2 rows for drift-masking sites, locally-declared Go duplicates, cloud UI `api.ts` hand-rolled endpoints, same-file casing contradictions, SCREAMING `ID` on wire were refreshed; a new §2 row was added to track live consumer-audit TypeScript findings; §5 "what remains" was updated to zero scheduled Phase 2 sweep work; the revision history gained one final entry. The top-level `Status` field of this plan is now `Complete (2026-04-23)`.
+
 **Charter:** Re-run the baseline agents (0.A–0.D) to produce "after" numbers. Publish the before/after report per §15 of this plan; commit to `meshery/schemas/docs/` as the governance artifact.
 
 **Files:** `meshery/schemas/docs/identifier-naming-impact-report.md`.
