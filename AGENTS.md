@@ -136,6 +136,8 @@ Before opening a PR, verify:
 
 ## Naming conventions
 
+> Canonical naming contract — see [`docs/identifier-naming-contributor-guide.md`](docs/identifier-naming-contributor-guide.md) for the full directory (26-row table with before/after and do/don't examples). The rules below remain the inline authority; the guide is the reader-friendly cross-repo reference.
+
 - Property names: for **newly authored API versions**, use **camelCase on the wire, uniformly.** New schema properties and their JSON tags use `camelCase`. For DB-backed fields, the `x-oapi-codegen-extra-tags.db` tag carries the snake_case DB column name separately from the wire identifier — the ORM layer is the sole translation boundary. For an already-published API version that publishes `snake_case` on the wire, additions to that same version must preserve the version's published wire casing until the resource is version-bumped; do not perform partial casing migrations within a version (see §Casing rules at a glance and the [identifier-naming migration plan](docs/identifier-naming-migration.md)).
 - ID-suffix fields: `lowerCamelCase` + `Id` (`modelId`, `registrantId`)
 - New enum values: lowercase words (`enabled`, `ignored`, `duplicate`); preserve published enum literals as-is within the same API version
@@ -147,6 +149,8 @@ Before opening a PR, verify:
 - `operationId`: lower camelCase verbNoun (`createKeychain`, `updateEnvironment` — NOT `CreateKeychain`, NOT `UpdateEnvironment`)
 
 ## Casing rules at a glance
+
+> This section is the inline authority; for the reader-friendly directory, see [`docs/identifier-naming-contributor-guide.md`](docs/identifier-naming-contributor-guide.md).
 
 Within a given API version / resource version, every element has exactly one correct casing. The table below is the single authoritative reference for **newly authored (canonical-casing) API versions.** Already-published legacy API versions retain their published wire casing until the resource receives its next canonical-casing version bump — do not recase their fields in-place.
 
