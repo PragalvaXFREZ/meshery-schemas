@@ -76,9 +76,9 @@ interface MeshkitErrorBody {
  * with full IntelliSense. Non-MeshKit error bodies pass through untouched
  * (just typed under the wider error type with `meshkit` left undefined).
  */
-function withMeshkitErrorTransform<Args, Result>(
-  inner: BaseQueryFn<Args, Result, FetchBaseQueryError>,
-): BaseQueryFn<Args, Result, MeshkitFetchBaseQueryError> {
+function withMeshkitErrorTransform<Args, Result, DefinitionExtraOptions, Meta>(
+  inner: BaseQueryFn<Args, Result, FetchBaseQueryError, DefinitionExtraOptions, Meta>,
+): BaseQueryFn<Args, Result, MeshkitFetchBaseQueryError, DefinitionExtraOptions, Meta> {
   return async (args, api, extraOptions) => {
     const result = await inner(args, api, extraOptions);
     if (result.error) {
