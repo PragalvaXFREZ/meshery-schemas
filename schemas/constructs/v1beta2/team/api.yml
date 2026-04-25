@@ -127,9 +127,13 @@ components:
             $ref: "#/components/schemas/Team"
           description: The teams of the teampage.
 
-    TeamsUsersMapping:
+    UsersTeamsMapping:
       type: object
-      description: Mapping between teams and users
+      description: >
+        Join row between users and teams. The schema name is `UsersTeamsMapping`
+        (rather than `TeamsUsersMapping`) so that pop's tableize default produces
+        the live DB table name `users_teams_mappings`, eliminating the need for
+        an explicit `TableName()` helper on the generated Go struct.
       properties:
         id:
           $ref: ../../v1alpha1/core/api.yml#/components/schemas/general_id
@@ -146,6 +150,16 @@ components:
           x-oapi-codegen-extra-tags:
             db: user_id
             json: userId
+        roleId:
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+          description: >
+            Optional role assigned to this team membership. Nullable because a
+            membership may exist without an explicit role (e.g., team-admin
+            assignments are stamped on insert; non-owner adds may leave
+            `role_id` null until a role is assigned). References `roles.id`.
+          x-oapi-codegen-extra-tags:
+            db: role_id
+            json: roleId,omitempty
         createdAt:
           $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
           description: Timestamp when the mapping was created.
@@ -165,9 +179,9 @@ components:
             db: deleted_at
             json: deletedAt
 
-    TeamsUsersMappingPage:
+    UsersTeamsMappingPage:
       type: object
-      description: Paginated list of team-user mappings
+      description: Paginated list of user-team mappings
       properties:
         page:
           type: integer
@@ -181,13 +195,13 @@ components:
           type: integer
           description: Total number of items available.
           minimum: 0
-        teamsUsersMapping:
+        usersTeamsMapping:
           type: array
           x-go-type-skip-optional-pointer: true
           items:
-            x-go-type: TeamsUsersMapping
-            $ref: "#/components/schemas/TeamsUsersMapping"
-          description: The teams users mapping of the teamsusersmappingpage.
+            x-go-type: UsersTeamsMapping
+            $ref: "#/components/schemas/UsersTeamsMapping"
+          description: The user-team mappings on the current page.
 
     TeamMember:
       type: object
@@ -398,7 +412,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TeamsUsersMappingPage"
+                $ref: "#/components/schemas/UsersTeamsMappingPage"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -426,7 +440,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TeamsUsersMapping"
+                $ref: "#/components/schemas/UsersTeamsMapping"
         "400":
           $ref: "#/components/responses/400"
         "401":
