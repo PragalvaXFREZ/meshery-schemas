@@ -11,6 +11,7 @@ import (
 	catalogv1alpha2 "github.com/meshery/schemas/models/v1alpha2/catalog"
 	component "github.com/meshery/schemas/models/v1beta2/component"
 	relationship "github.com/meshery/schemas/models/v1beta2/relationship"
+	userV1beta "github.com/meshery/schemas/models/v1beta2/user"
 	filterv1beta3 "github.com/meshery/schemas/models/v1beta3/filter"
 	"github.com/oapi-codegen/runtime"
 	openapi_types "github.com/oapi-codegen/runtime/types"
@@ -25,10 +26,32 @@ const (
 
 // Defines values for MesheryPatternDesignType.
 const (
-	Design             MesheryPatternDesignType = "Design"
-	DockerCompose      MesheryPatternDesignType = "Docker Compose"
-	HelmChart          MesheryPatternDesignType = "Helm Chart"
-	KubernetesManifest MesheryPatternDesignType = "Kubernetes Manifest"
+	MesheryPatternDesignTypeDesign             MesheryPatternDesignType = "Design"
+	MesheryPatternDesignTypeDockerCompose      MesheryPatternDesignType = "Docker Compose"
+	MesheryPatternDesignTypeHelmChart          MesheryPatternDesignType = "Helm Chart"
+	MesheryPatternDesignTypeKubernetesManifest MesheryPatternDesignType = "Kubernetes Manifest"
+)
+
+// Defines values for MesheryPatternVisibility.
+const (
+	MesheryPatternVisibilityPrivate   MesheryPatternVisibility = "private"
+	MesheryPatternVisibilityPublic    MesheryPatternVisibility = "public"
+	MesheryPatternVisibilityPublished MesheryPatternVisibility = "published"
+)
+
+// Defines values for MesheryPatternPayloadDesignType.
+const (
+	MesheryPatternPayloadDesignTypeDesign             MesheryPatternPayloadDesignType = "Design"
+	MesheryPatternPayloadDesignTypeDockerCompose      MesheryPatternPayloadDesignType = "Docker Compose"
+	MesheryPatternPayloadDesignTypeHelmChart          MesheryPatternPayloadDesignType = "Helm Chart"
+	MesheryPatternPayloadDesignTypeKubernetesManifest MesheryPatternPayloadDesignType = "Kubernetes Manifest"
+)
+
+// Defines values for MesheryPatternPayloadVisibility.
+const (
+	MesheryPatternPayloadVisibilityPrivate   MesheryPatternPayloadVisibility = "private"
+	MesheryPatternPayloadVisibilityPublic    MesheryPatternPayloadVisibility = "public"
+	MesheryPatternPayloadVisibilityPublished MesheryPatternPayloadVisibility = "published"
 )
 
 // DesignPreferences Design-level preferences
@@ -135,8 +158,8 @@ type MesheryPattern struct {
 	// DeploymentCount Server-aggregated count of deployments originated from this design. Server-managed and ignored on writes.
 	DeploymentCount *int `db:"deployment_count" json:"deploymentCount,omitempty" yaml:"deploymentCount,omitempty"`
 
-	// DesignType Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
-	DesignType *MesheryPatternDesignType `json:"designType,omitempty" yaml:"designType,omitempty"`
+	// DesignType Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+	DesignType *MesheryPatternDesignType `db:"source_type" json:"designType" yaml:"designType"`
 
 	// DownloadCount Server-aggregated count of downloads of this design from the catalog. Server-managed and ignored on writes.
 	DownloadCount *int                   `db:"download_count" json:"downloadCount,omitempty" yaml:"downloadCount,omitempty"`
@@ -144,21 +167,32 @@ type MesheryPattern struct {
 	Location      core.MapObject `json:"location,omitempty" yaml:"location,omitempty"`
 	Name          core.Text      `json:"name,omitempty" yaml:"name,omitempty"`
 
-	// PatternFile Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.
-	PatternFile *PatternFile `db:"pattern_file" json:"patternFile,omitempty" yaml:"patternFile,omitempty"`
+	// PatternFile Raw design body as it is persisted in the meshery_patterns table's `pattern_file` column. The wire form is the YAML/JSON string the server stores verbatim; consumers that need the structured form transcode at the boundary by parsing the string into a PatternFile (see #/components/schemas/PatternFile) and marshalling it back when they write. Keeping the wire shape as a string mirrors the column's actual representation and avoids forcing every consumer through the structured-vs- string union that the previous *PatternFile typing implied.
+	PatternFile *string `db:"pattern_file" json:"patternFile,omitempty" yaml:"patternFile,omitempty"`
 
 	// ShareCount Server-aggregated count of share events for this design. Server-managed and ignored on writes.
-	ShareCount *int              `db:"share_count" json:"shareCount,omitempty" yaml:"shareCount,omitempty"`
-	UpdatedAt  core.Time `db:"updated_at" json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
-	UserId     core.Id   `db:"user_id" json:"userId,omitempty" yaml:"userId,omitempty"`
+	ShareCount *int `db:"share_count" json:"shareCount,omitempty" yaml:"shareCount,omitempty"`
+
+	// SourceContent Raw bytes of the imported source artifact (Helm chart tarball, Kubernetes manifest, Docker Compose file, etc.) preserved in the meshery_patterns table's `source_content` column for non-Meshery-Design imports. Empty / null for native Meshery designs. Server-managed: populated by the import and upload handlers and scrubbed to null on most read responses, so clients should treat this as opaque base64-encoded bytes when it does appear on the wire.
+	SourceContent *[]byte           `db:"source_content" json:"sourceContent,omitempty" yaml:"sourceContent,omitempty"`
+	UpdatedAt     core.Time `db:"updated_at" json:"updatedAt,omitempty" yaml:"updatedAt,omitempty"`
+
+	// User Represents a user in Layer5 Cloud (Meshery)
+	User   *userV1beta.User `db:"-" json:"user,omitempty" yaml:"user,omitempty"`
+	UserId core.Id    `db:"user_id" json:"userId,omitempty" yaml:"userId,omitempty"`
 
 	// ViewCount Server-aggregated count of views on this design in the catalog. Present on list/catalog responses; server-managed and ignored on writes.
-	ViewCount  *int              `db:"view_count" json:"viewCount,omitempty" yaml:"viewCount,omitempty"`
-	Visibility core.Text `json:"visibility,omitempty" yaml:"visibility,omitempty"`
+	ViewCount *int `db:"view_count" json:"viewCount,omitempty" yaml:"viewCount,omitempty"`
+
+	// Visibility Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
+	Visibility *MesheryPatternVisibility `db:"visibility" json:"visibility,omitempty" yaml:"visibility,omitempty"`
 }
 
-// MesheryPatternDesignType Discriminator identifying the source format of the design body. Projected server-side (not stored in a column of its own); for catalog listings the server derives it from the attached catalog metadata, for user-owned designs the server derives it from the import source. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
+// MesheryPatternDesignType Discriminator identifying the source format of the design body, persisted in the meshery_patterns table's `source_type` column (nullable; null for legacy rows imported before the column was introduced). For catalog listings the server may also project this field from the attached catalog metadata. Use this field to branch rendering between native Meshery designs and imported Helm charts, Kubernetes manifests, and Docker Compose files.
 type MesheryPatternDesignType string
+
+// MesheryPatternVisibility Visibility scope of the design — controls whether non-owners may read or list it. `private` is owner-only, `public` is readable by anyone in the org, and `published` is visible in the catalog.
+type MesheryPatternVisibility string
 
 // MesheryPatternDeleteRequestBody Payload for bulk deleting designs by ID.
 type MesheryPatternDeleteRequestBody struct {
@@ -210,14 +244,40 @@ type MesheryPatternPage struct {
 	TotalCount *int `json:"totalCount,omitempty" yaml:"totalCount,omitempty"`
 }
 
+// MesheryPatternPayload Client-settable subset of the design (pattern) entity used as the body of the inner `patternData` envelope on POST /api/content/patterns. Server-generated fields (createdAt, updatedAt, viewCount, downloadCount, cloneCount, deploymentCount, shareCount, the joined `user` object, and the imported-source `sourceContent` blob) are deliberately excluded — the server ignores them on writes and re-projects them on the response.
+type MesheryPatternPayload struct {
+	CatalogData *catalogv1alpha2.CatalogData `json:"catalogData,omitempty" yaml:"catalogData,omitempty"`
+
+	// DesignType Discriminator identifying the source format of the design body, stored in the `source_type` column. Optional on create (the server defaults missing values to `Design`).
+	DesignType *MesheryPatternPayloadDesignType `json:"designType" yaml:"designType"`
+	ID         core.Id                  `json:"id,omitempty" yaml:"id,omitempty"`
+	Location   core.MapObject           `json:"location,omitempty" yaml:"location,omitempty"`
+
+	// Name Human-readable design name.
+	Name *string `json:"name,omitempty" yaml:"name,omitempty"`
+
+	// PatternFile Raw design body to persist into the `pattern_file` column. See MesheryPattern.patternFile for the transcode boundary note that applies on both writes and reads.
+	PatternFile *string         `json:"patternFile,omitempty" yaml:"patternFile,omitempty"`
+	UserId      core.Id `json:"userId,omitempty" yaml:"userId,omitempty"`
+
+	// Visibility Visibility scope of the design.
+	Visibility *MesheryPatternPayloadVisibility `json:"visibility,omitempty" yaml:"visibility,omitempty"`
+}
+
+// MesheryPatternPayloadDesignType Discriminator identifying the source format of the design body, stored in the `source_type` column. Optional on create (the server defaults missing values to `Design`).
+type MesheryPatternPayloadDesignType string
+
+// MesheryPatternPayloadVisibility Visibility scope of the design.
+type MesheryPatternPayloadVisibility string
+
 // MesheryPatternRequestBody Payload for upserting a design via POST /api/content/patterns.
 type MesheryPatternRequestBody struct {
 	// Name Human-readable design name.
 	Name *string           `json:"name,omitempty" yaml:"name,omitempty"`
 	Path core.Text `json:"path,omitempty" yaml:"path,omitempty"`
 
-	// PatternData Server-returned design (pattern) resource as persisted by meshery-cloud.
-	PatternData *MesheryPattern `json:"patternData,omitempty" yaml:"patternData,omitempty"`
+	// PatternData Client-settable subset of the design (pattern) entity used as the body of the inner `patternData` envelope on POST /api/content/patterns. Server-generated fields (createdAt, updatedAt, viewCount, downloadCount, cloneCount, deploymentCount, shareCount, the joined `user` object, and the imported-source `sourceContent` blob) are deliberately excluded — the server ignores them on writes and re-projects them on the response.
+	PatternData *MesheryPatternPayload `json:"patternData,omitempty" yaml:"patternData,omitempty"`
 
 	// Save When true, persist the design in addition to parsing it.
 	Save *bool                 `json:"save,omitempty" yaml:"save,omitempty"`
