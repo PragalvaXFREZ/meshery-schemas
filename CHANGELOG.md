@@ -2,6 +2,10 @@
 
 See https://docs.meshery.io/project/releases
 
+## Unreleased
+
+- **RTK Query**: error responses from Meshery Server (and any backend emitting MeshKit JSON errors) now surface structured fields on `error.meshkit` — `code`, `severity`, `message`, `probableCause`, `suggestedRemediation`, `longDescription`. Both `cloudBaseApi` and `mesheryBaseApi` wrap their `fetchBaseQuery` with a transform that maps the snake_case wire envelope (`error`, `code`, `severity`, `probable_cause`, `suggested_remediation`, `long_description`) to camelCase JS-side fields, leaving `error.data` (the raw body) untouched for backward compatibility. New exported types: `MeshkitError`, `MeshkitFetchBaseQueryError`. Pairs with the `meshery/meshery` server migration that promotes every non-2xx response from `text/plain` to `application/json`. See `docs/superpowers/plans/2026-04-24-plaintext-response-migration.md` in the meshery/meshery repo for full context.
+
 ## v1.1.0 — Phase 1 of the identifier-naming migration
 
 Marks the completion of Phase 1 of the [identifier-naming migration](docs/identifier-naming-migration.md).
