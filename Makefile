@@ -29,7 +29,7 @@ site:
 #-----------------------------------------------------------------------------
 # OpenAPI spec
 #-----------------------------------------------------------------------------
-.PHONY: setup generate-ts publish-ts bundle-openapi generate-golang generate-rtk golangci validate-schemas validate-schemas-strict audit-schemas audit-schemas-full audit-schemas-style-full audit-schemas-debt-full
+.PHONY: setup generate-ts publish-ts bundle-openapi generate-golang generate-rtk test-rtk golangci validate-schemas validate-schemas-strict audit-schemas audit-schemas-full audit-schemas-style-full audit-schemas-debt-full
 
 ## (Re)Initialize Golang (go.mod) and Node (package.json) manifests
 setup:
@@ -59,6 +59,11 @@ generate-golang: bundle-openapi
 ## Generate RTK Query clients (requires bundle-openapi)
 generate-rtk: bundle-openapi
 	node build/generate-rtk.js
+	$(MAKE) --no-print-directory test-rtk
+
+## Run RTK Query generation regression tests
+test-rtk:
+	node --test tests/generate-rtk.test.js
 
 ## Generate Golang Models (legacy alias for generate-golang)
 golang-generate: generate-golang
