@@ -577,63 +577,6 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  /api/content/filters/{filterId}:
-    get:
-      x-internal: ["cloud"]
-      tags:
-        - designs
-      summary: Get filter by ID
-      operationId: getFilter
-      parameters:
-        - $ref: "#/components/parameters/filterId"
-      responses:
-        "200":
-          description: Filter
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MesheryFilter"
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "404":
-          $ref: "#/components/responses/404"
-        "500":
-          $ref: "#/components/responses/500"
-
-  /api/content/filters/clone/{filterId}:
-    post:
-      x-internal: ["cloud"]
-      tags:
-        - designs
-      summary: Clone filter
-      operationId: cloneFilter
-      parameters:
-        - $ref: "#/components/parameters/filterId"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              additionalProperties: true
-      responses:
-        "200":
-          description: Cloned filter
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MesheryFilter"
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "404":
-          $ref: "#/components/responses/404"
-        "500":
-          $ref: "#/components/responses/500"
-
   /api/resource/{resourceType}/share/{resourceId}:
     post:
       x-internal: ["cloud"]
@@ -809,13 +752,6 @@ components:
       schema:
         type: string
         format: uuid
-    filterId:
-      name: filterId
-      in: path
-      description: Filter ID
-      required: true
-      schema:
-        $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
 
   schemas:
     DeletePatternModel:
@@ -1089,7 +1025,11 @@ components:
         filters:
           type: array
           items:
-            $ref: "#/components/schemas/MesheryFilter"
+            $ref: "../filter/api.yml#/components/schemas/MesheryFilter"
+            x-go-type: filterv1beta3.MesheryFilter
+            x-go-type-import:
+              path: github.com/meshery/schemas/models/v1beta3/filter
+              name: filterv1beta3
           description: Published filters included on this page.
         modelsCount:
           type: array
@@ -1141,10 +1081,6 @@ components:
           type: string
           description: Description of the catalogcontentclass.
           maxLength: 5000
-      additionalProperties: true
-
-    MesheryFilter:
-      type: object
       additionalProperties: true
 
     ResourceAccessMapping:

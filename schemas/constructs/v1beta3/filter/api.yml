@@ -1,0 +1,475 @@
+openapi: 3.0.0
+info:
+  title: Filter
+  description: |
+    OpenAPI schema for managing Meshery filters. Filters carry an
+    opaque body (`filterFile`) plus catalog and visibility metadata,
+    persisted by `meshery-cloud` in the `meshery_filters` table and
+    consumed locally by `meshery/server/models.MesheryFilter`.
+
+    The endpoint surface mirrors the live `meshery-cloud` Echo handlers
+    (`POST/GET /api/content/filters`,
+    `GET/DELETE /api/content/filters/{filterId}`,
+    `POST /api/content/filters/clone/{filterId}`,
+    `GET /api/content/filters/download/{filterId}`) plus the bulk-delete
+    sub-resource and the cross-construct content-share endpoint owned by
+    the design package.
+  version: v1beta3
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+security:
+  - jwt: []
+tags:
+  - name: filters
+    description: Operations related to Meshery filters.
+
+paths:
+  /api/content/filters:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - filters
+      summary: Get filters
+      operationId: getFilters
+      description: Returns a paginated list of filters accessible to the user.
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/orgIdQuery"
+        - name: visibility
+          in: query
+          required: false
+          description: Filter by visibility (public, private, published). May be repeated.
+          schema:
+            type: array
+            items:
+              type: string
+        - name: userId
+          in: query
+          required: false
+          description: |
+            UUID of the owning user. Pass when fetching public/published
+            filters for a specific user (public-profile lookups).
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Filters response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MesheryFilterPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - filters
+      summary: Save filter
+      operationId: upsertFilter
+      description: Creates or updates a Meshery filter.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MesheryFilterRequestBody"
+      responses:
+        "200":
+          description: Filter saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MesheryFilter"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/content/filters/delete:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - filters
+      summary: Bulk delete filters
+      operationId: deleteFilters
+      description: |
+        Deletes multiple filters by ID. Modeled as a `POST .../delete`
+        sub-resource because REST clients and proxies may strip request
+        bodies on `DELETE`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MesheryFilterDeleteRequestBody"
+      responses:
+        "200":
+          description: Filters deleted
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/content/filters/{filterId}:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - filters
+      summary: Get filter by ID
+      operationId: getFilter
+      parameters:
+        - $ref: "#/components/parameters/filterId"
+      responses:
+        "200":
+          description: Filter response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MesheryFilter"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      x-internal: ["cloud"]
+      tags:
+        - filters
+      summary: Update filter by ID
+      operationId: updateFilter
+      description: |
+        Updates the filter at the supplied ID with the provided payload.
+        Provided as a canonical-CRUD complement to the upsert `POST
+        /api/content/filters` form so consumers that prefer explicit
+        update semantics can address the resource directly.
+      parameters:
+        - $ref: "#/components/parameters/filterId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MesheryFilterPayload"
+      responses:
+        "200":
+          description: Filter updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MesheryFilter"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - filters
+      summary: Delete filter by ID
+      operationId: deleteFilter
+      parameters:
+        - $ref: "#/components/parameters/filterId"
+      responses:
+        "204":
+          description: Filter deleted
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/content/filters/clone/{filterId}:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - filters
+      summary: Clone filter
+      operationId: cloneFilter
+      description: Creates a copy of an existing filter.
+      parameters:
+        - $ref: "#/components/parameters/filterId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MesheryFilterCloneRequestBody"
+      responses:
+        "200":
+          description: Filter cloned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MesheryFilter"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/content/filters/download/{filterId}:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - filters
+      summary: Download filter file
+      operationId: getFilterFile
+      description: |
+        Downloads the raw filter body associated with the supplied
+        filter ID. The server streams the bytes verbatim with
+        `Content-Type: application/wasm` and a
+        `Content-Disposition: attachment` header naming the filter.
+      parameters:
+        - $ref: "#/components/parameters/filterId"
+      responses:
+        "200":
+          description: Filter file content
+          content:
+            application/wasm:
+              schema:
+                type: string
+                format: binary
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    400:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/400"
+    401:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/401"
+    404:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/404"
+    500:
+      $ref: "../../v1beta2/core/api.yml#/components/responses/500"
+
+  parameters:
+    filterId:
+      name: filterId
+      in: path
+      description: Filter ID
+      required: true
+      schema:
+        $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+    page:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/page"
+    pageSize:
+      name: pageSize
+      in: query
+      description: Number of items per page (canonical camelCase form).
+      schema:
+        type: integer
+        minimum: 1
+    search:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/search"
+    order:
+      $ref: "../../v1beta2/core/api.yml#/components/parameters/order"
+    orgIdQuery:
+      name: orgId
+      in: query
+      description: User's organization ID
+      schema:
+        type: string
+        format: uuid
+
+  schemas:
+    MesheryFilter:
+      $ref: "./filter.yaml"
+
+    MesheryFilterPayload:
+      type: object
+      description: |
+        Payload for creating or updating a filter via
+        `POST /api/content/filters` or
+        `PUT /api/content/filters/{filterId}`. Contains only
+        client-settable fields; server-generated `createdAt` /
+        `updatedAt` and the owning `userId` (which the server derives
+        from the authenticated session) are intentionally excluded.
+      required:
+        - name
+      properties:
+        id:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Uuid"
+          description: |
+            Existing filter ID for updates; omit on create. Wrapped in
+            an `allOf` so we can attach the `json:"id,omitempty"` tag
+            for upsert ergonomics without recursing into the underlying
+            UUID definition.
+          x-oapi-codegen-extra-tags:
+            json: "id,omitempty"
+        name:
+          type: string
+          description: Human-readable filter name.
+          minLength: 1
+          maxLength: 255
+        filterFile:
+          type: string
+          format: byte
+          description: |
+            Raw filter source as base64-encoded bytes (`format: byte`).
+            Optional on update — the server preserves the existing body
+            when omitted.
+          maxLength: 10485760
+        filterResource:
+          type: string
+          description: |
+            Filter resource discriminator describing the body's source
+            format (e.g. WASM module identifier or external resource
+            path).
+          maxLength: 5000
+        location:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/MapObject
+          description: Optional structured location metadata.
+        visibility:
+          $ref: ../../v1beta2/core/api.yml#/components/schemas/Visibility
+          description: |
+            Requested visibility scope. The server may downgrade a
+            requested `published` value to `private` for callers that
+            do not own the filter.
+        catalogData:
+          $ref: ../../v1beta2/catalog/api.yml#/components/schemas/CatalogData
+          description: Catalog metadata to attach when publishing.
+          x-go-type: catalogv1alpha2.CatalogData
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/v1alpha2/catalog
+            name: catalogv1alpha2
+
+    MesheryFilterPage:
+      type: object
+      description: Paginated collection of filters.
+      properties:
+        page:
+          type: integer
+          description: Current page number of the result set.
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Number of items per page.
+          minimum: 1
+        totalCount:
+          type: integer
+          description: Total number of items available.
+          minimum: 0
+        filters:
+          type: array
+          items:
+            $ref: "#/components/schemas/MesheryFilter"
+            x-go-type: MesheryFilter
+          description: Filters included on this page of results.
+
+    DeleteFilterModel:
+      type: object
+      description: Reference to a filter for bulk deletion by ID.
+      properties:
+        id:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Id"
+          description: Filter ID targeted for deletion.
+        name:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Text"
+          description: |
+            Human-readable filter name (informational only; the server
+            matches on `id`).
+
+    MesheryFilterDeleteRequestBody:
+      type: object
+      description: Payload for bulk deleting filters by ID.
+      required:
+        - filters
+      properties:
+        filters:
+          type: array
+          items:
+            $ref: "#/components/schemas/DeleteFilterModel"
+            x-go-type: DeleteFilterModel
+          description: Filters targeted for deletion.
+
+    MesheryFilterCloneRequestBody:
+      type: object
+      description: |
+        Payload for `POST /api/content/filters/clone/{filterId}`. The
+        only client-settable field is the optional name applied to the
+        cloned filter; the server derives ownership and visibility from
+        the request context.
+      properties:
+        name:
+          type: string
+          description: |
+            Optional name to apply to the cloned filter. Defaults to a
+            server-generated derivative of the source filter's name.
+          minLength: 1
+          maxLength: 255
+
+    MesheryFilterRequestBody:
+      type: object
+      description: |
+        Payload for upserting a filter via `POST /api/content/filters`.
+        Mirrors meshery-cloud's `MesheryFilterRequestBody` and
+        meshery's `MesheryFilterRequestBody` — the wrapper carries an
+        optional source URL/path plus a `save` toggle and an embedded
+        `filterData` payload. Wire form for the embedded payload field
+        is canonical camelCase (`filterData`); legacy snake_case
+        (`filter_data`) is accepted by the existing handlers for the
+        deprecation window but new clients MUST emit `filterData`.
+      properties:
+        url:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Endpoint"
+          description: Optional source URL the filter was fetched from.
+        path:
+          $ref: "../../v1beta2/core/api.yml#/components/schemas/Text"
+          description: Optional source path the filter was loaded from.
+        save:
+          type: boolean
+          description: |
+            When true, persist the filter in addition to parsing it.
+            When false, the server returns the parsed payload without
+            committing it to the database.
+        filterData:
+          $ref: "#/components/schemas/MesheryFilterPayload"
+          description: Filter body to persist.
+          x-go-type: MesheryFilterPayload
+        config:
+          type: string
+          description: |
+            Optional opaque configuration string passed through to the
+            underlying filter runtime. Persisted only on the local
+            meshery `MesheryFilterPayload` shape; meshery-cloud
+            currently ignores the field, but it is documented here so
+            the canonical contract is single-sourced.
+          maxLength: 65536

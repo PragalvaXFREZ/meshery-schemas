@@ -1,0 +1,84 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Filter Schema
+description: |
+  Server-returned Meshery filter resource as persisted by meshery-cloud
+  (`meshery_filters` table) and consumed by meshery's
+  `models.MesheryFilter`. Filters carry an opaque body (`filterFile`) plus
+  catalog and visibility metadata, and follow the same content-resource
+  shape as designs minus the catalog engagement counters (the
+  `meshery_filters` table has no `view_count` / `download_count` columns).
+type: object
+additionalProperties: false
+required:
+  - id
+  - name
+  - userId
+  - createdAt
+  - updatedAt
+properties:
+  id:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Server-generated filter ID.
+    x-order: 1
+  name:
+    type: string
+    description: Human-readable filter name; required, used for catalog listings.
+    minLength: 1
+    maxLength: 255
+    x-order: 2
+  userId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Owning user ID.
+    x-oapi-codegen-extra-tags:
+      db: user_id
+    x-order: 3
+  filterFile:
+    type: string
+    format: byte
+    description: |
+      Raw filter source persisted as a byte array (`bytea` column
+      `filter_file`). Wire form is base64 per OpenAPI `format: byte`.
+    maxLength: 10485760
+    x-oapi-codegen-extra-tags:
+      db: filter_file
+    x-order: 4
+  filterResource:
+    type: string
+    description: |
+      Filter resource discriminator describing the filter body's source
+      format (e.g. WASM module identifier or external resource path).
+      Stored in the `filter_resource` text column.
+    maxLength: 5000
+    x-oapi-codegen-extra-tags:
+      db: filter_resource
+    x-order: 5
+  location:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/MapObject
+    description: Optional structured location metadata (branch, host, path, ...).
+    x-order: 6
+  visibility:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Visibility
+    description: Visibility scope (private, public, published).
+    x-order: 7
+  catalogData:
+    $ref: ../../v1beta2/catalog/api.yml#/components/schemas/CatalogData
+    description: Catalog metadata attached to the filter when published.
+    x-go-type: catalogv1alpha2.CatalogData
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/v1alpha2/catalog
+      name: catalogv1alpha2
+    x-oapi-codegen-extra-tags:
+      db: catalog_data
+    x-order: 8
+  createdAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of filter creation.
+    x-oapi-codegen-extra-tags:
+      db: created_at
+    x-order: 9
+  updatedAt:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Time
+    description: Timestamp of last filter modification.
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+    x-order: 10
