@@ -1,8 +1,12 @@
 name: Publish NPM Package
 
 on:
-  release:
-    types: [published]
+  workflow_call:
+    inputs:
+      release_version:
+        description: "Release Version"
+        required: true
+        type: string
   workflow_dispatch:
     inputs:
       release_version:
@@ -56,9 +60,15 @@ jobs:
 
       - name: Update Release Version
         env:
-          RELEASE_VERSION: ${{ inputs.release_version || github.event.release.tag_name }}
+          RELEASE_VERSION: ${{ inputs.release_version }}
         run: |
           set -e
+
+          if [ -z "$RELEASE_VERSION" ]; then
+            echo "release_version input is empty; expected a non-empty value from workflow_call or workflow_dispatch." >&2
+            exit 1
+          fi
+
           OLD_VERSION=$(node -e "console.log(require('./package.json').version)")
           npm version "${RELEASE_VERSION}" --no-git-tag-version --allow-same-version
           NEW_VERSION=$(node -e "console.log(require('./package.json').version)")
