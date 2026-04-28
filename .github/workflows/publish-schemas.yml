@@ -18,16 +18,14 @@ jobs:
           ref: master
           token: ${{ secrets.MESHERY_CI }}
 
+      - name: Pull changes from remote
+        run: git pull origin master
+
       - name: Update schema versions
         env:
           RELEASE_VERSION: ${{ github.event.release.tag_name }}
         run: |
           set -eo pipefail
-
-          if [ -z "$RELEASE_VERSION" ]; then
-            echo "Release version could not be determined." >&2
-            exit 1
-          fi
 
           python <<'PY'
           import os
@@ -49,9 +47,6 @@ jobs:
                   raise SystemExit(f"Could not update version in {relative_path}")
               path.write_text(updated_content)
           PY
-
-      - name: Pull changes from remote
-        run: git pull origin master
 
       - name: Commit schema version updates
         uses: stefanzweifel/git-auto-commit-action@v7

@@ -10,7 +10,7 @@ function readWorkflow(name) {
 }
 
 function getTriggers(workflow) {
-  return workflow.on ?? workflow.true;
+  return workflow.on ?? {};
 }
 
 function hasTrigger(triggers, name) {
