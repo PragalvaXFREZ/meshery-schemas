@@ -258,14 +258,20 @@ async function mergeSchemas() {
  * @param {string} outputFile - Output filename
  * @returns {Promise<void>}
  */
-async function filterByTag(tag, outputFile) {
+async function filterByTag(tag, outputFile, baseSpec) {
   const inputPath = paths.fromRoot(config.paths.mergedOpenapi);
   const outputPath = paths.fromRoot(outputFile);
+  const baseSpecPath = baseSpec ? paths.fromRoot(baseSpec) : undefined;
 
   // Use the existing filterOpenapiByTag.js script
   const filterScript = paths.fromRoot("build/filterOpenapiByTag.js");
 
-  execSync(`node "${filterScript}" "${inputPath}" "${outputPath}" ${tag}`, {
+  const args = ['"' + filterScript + '"', '"' + inputPath + '"', '"' + outputPath + '"', '"' + tag + '"'];
+  if (baseSpecPath) {
+    args.push(`"${baseSpecPath}"`);
+  }
+
+  execSync(`node ${args.join(" ")}`, {
     stdio: "inherit",
   });
 }
@@ -302,10 +308,10 @@ async function main() {
     // Filter by tags
     logger.header("🔍 Filtering OpenAPI by x-internal tags...");
 
-    await filterByTag("cloud", config.paths.cloudOpenapi);
+    await filterByTag("cloud", config.paths.cloudOpenapi, config.paths.baseCloudSpec);
     logger.success(`Created: ${config.paths.cloudOpenapi}`);
 
-    await filterByTag("meshery", config.paths.mesheryOpenapi);
+    await filterByTag("meshery", config.paths.mesheryOpenapi, config.paths.baseMesherySpec);
     logger.success(`Created: ${config.paths.mesheryOpenapi}`);
 
     // Summary

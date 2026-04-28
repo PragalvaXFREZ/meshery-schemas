@@ -4,6 +4,7 @@ const path = require("node:path");
 
 const config = require("../build/lib/config");
 const { dereferenceOpenapiSpec, mergeOpenapiSpec } = require("../build/bundle-openapi");
+const { filterOpenapiByTag } = require("../build/filterOpenapiByTag");
 
 test("mergeOpenapiSpec prefixes tags, components, refs, and security requirements", () => {
   const baseSpec = {
@@ -168,4 +169,44 @@ test("dereferenceOpenapiSpec resolves a construct api.yml in-process", async () 
   assert.equal(document.info.title, "Key");
   assert.equal(document.paths["/api/auth/keys"].get.tags[0], "Key");
   assert.ok(document.components.schemas.KeyPage);
+});
+
+test("filterOpenapiByTag applies consumer-specific base metadata", () => {
+  const doc = {
+    openapi: "3.0.0",
+    info: { title: "Merged", version: "v0.0.0" },
+    servers: [{ url: "https://merged.meshery.io", description: "Merged" }],
+    paths: {
+      "/api/cloud": {
+        get: {
+          "x-internal": ["cloud"],
+          responses: { "200": { description: "Cloud response" } },
+        },
+      },
+      "/api/meshery": {
+        get: {
+          "x-internal": ["meshery"],
+          responses: { "200": { description: "Meshery response" } },
+        },
+      },
+    },
+  };
+
+  const filteredDoc = filterOpenapiByTag(doc, "meshery", {
+    openapi: "3.0.0",
+    info: { title: "Meshery Server", version: "v1.2.2" },
+    servers: [{ url: "https://playground.meshery.io", description: "Meshery Playground server URL" }],
+  });
+
+  assert.deepEqual(filteredDoc.info, {
+    title: "Meshery Server",
+    version: "v1.2.2",
+  });
+  assert.deepEqual(filteredDoc.servers, [
+    {
+      url: "https://playground.meshery.io",
+      description: "Meshery Playground server URL",
+    },
+  ]);
+  assert.deepEqual(Object.keys(filteredDoc.paths), ["/api/meshery"]);
 });
