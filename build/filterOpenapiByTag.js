@@ -133,8 +133,11 @@ function main() {
     process.exit(1);
   }
 
-  const doc = loadYaml(inputFile);
-  const baseDoc = baseFile ? loadYaml(baseFile) : undefined;
+  try {
+    const doc = loadYaml(inputFile);
+    const baseDoc = baseFile ? loadYaml(baseFile) : undefined;
+
+    const filteredDoc = filterOpenapiByTag(doc, tagToInclude, baseDoc);
 
   try {
     const filteredDoc = filterOpenapiByTag(doc, tagToInclude, baseDoc);
