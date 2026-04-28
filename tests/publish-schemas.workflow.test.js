@@ -38,6 +38,7 @@ test("publish-schemas workflow updates schema versions before dispatching downst
   assert.equal(workflow.jobs["publish-npm-package"].uses, "./.github/workflows/publish-npm-package.yml");
   assert.equal(workflow.jobs["notify-dependents"].uses, "./.github/workflows/notify-dependents.yml");
   assert.equal(workflow.jobs["publish-openapi-docs"].uses, "./.github/workflows/publish-openapi-docs.yml");
+  assert.equal(workflow.jobs["publish-openapi-docs"].secrets, "inherit");
   assert.equal(workflow.jobs["publish-npm-package"].with.release_version, "${{ github.event.release.tag_name }}");
   assert.equal(workflow.jobs["notify-dependents"].with.release_version, "${{ github.event.release.tag_name }}");
 });
