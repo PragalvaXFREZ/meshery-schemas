@@ -33,6 +33,10 @@ jobs:
           import re
 
           release_version = os.environ["RELEASE_VERSION"]
+          if not re.fullmatch(r"v?[0-9]+\.[0-9]+\.[0-9]+", release_version):
+              raise SystemExit(
+                  f"Release tag must match v<major>.<minor>.<patch>; got {release_version!r}"
+              )
           for relative_path in ("schemas/base_cloud.yml", "schemas/base_meshery.yml"):
               path = pathlib.Path(relative_path)
               content = path.read_text()

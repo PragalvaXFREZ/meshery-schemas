@@ -35,7 +35,7 @@ jobs:
           release_version="${release_version#v}"
 
           if [ -z "$release_version" ]; then
-            echo "Required release_version input was not provided." >&2
+            echo "release_version input is empty; expected a non-empty tag or manual dispatch value." >&2
             exit 1
           fi
 
