@@ -65,7 +65,7 @@ jobs:
           set -e
 
           if [ -z "$RELEASE_VERSION" ]; then
-            echo "Release version could not be determined." >&2
+            echo "Required release_version input was not provided." >&2
             exit 1
           fi
 

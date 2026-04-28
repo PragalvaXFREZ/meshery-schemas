@@ -35,7 +35,7 @@ jobs:
           release_version="${release_version#v}"
 
           if [ -z "$release_version" ]; then
-            echo "Release version could not be determined." >&2
+            echo "Required release_version input was not provided." >&2
             exit 1
           fi
 
