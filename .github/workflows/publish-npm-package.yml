@@ -65,7 +65,7 @@ jobs:
           set -e
 
           if [ -z "$RELEASE_VERSION" ]; then
-            echo "release_version input is empty; expected a non-empty tag or manual dispatch value." >&2
+            echo "release_version input is empty; expected a non-empty value from workflow_call or workflow_dispatch." >&2
             exit 1
           fi
 
