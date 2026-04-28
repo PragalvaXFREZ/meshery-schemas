@@ -63,6 +63,12 @@ jobs:
           RELEASE_VERSION: ${{ inputs.release_version }}
         run: |
           set -e
+
+          if [ -z "$RELEASE_VERSION" ]; then
+            echo "Release version could not be determined." >&2
+            exit 1
+          fi
+
           OLD_VERSION=$(node -e "console.log(require('./package.json').version)")
           npm version "${RELEASE_VERSION}" --no-git-tag-version --allow-same-version
           NEW_VERSION=$(node -e "console.log(require('./package.json').version)")

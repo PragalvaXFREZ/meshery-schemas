@@ -44,7 +44,9 @@ jobs:
                   flags=re.MULTILINE,
               )
               if count != 1:
-                  raise SystemExit(f"Could not update version in {relative_path}")
+                  raise SystemExit(
+                      f"Expected exactly one version field in {relative_path}, found {count}"
+                  )
               path.write_text(updated_content)
           PY
 
