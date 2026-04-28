@@ -266,7 +266,7 @@ async function filterByTag(tag, outputFile, baseSpec) {
   // Use the existing filterOpenapiByTag.js script
   const filterScript = paths.fromRoot("build/filterOpenapiByTag.js");
 
-  const args = [`"${filterScript}"`, `"${inputPath}"`, `"${outputPath}"`, tag];
+  const args = ['"' + filterScript + '"', '"' + inputPath + '"', '"' + outputPath + '"', '"' + tag + '"'];
   if (baseSpecPath) {
     args.push(`"${baseSpecPath}"`);
   }
