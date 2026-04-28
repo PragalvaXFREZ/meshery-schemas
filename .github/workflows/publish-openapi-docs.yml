@@ -53,7 +53,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: openapi-build
-          path: _openapi_build/merged_openapi.yml
+          path: |
+            _openapi_build/cloud_openapi.yml
+            _openapi_build/meshery_openapi.yml
 
   publish-openapi-docs:
     needs: build-openapi
@@ -77,8 +79,8 @@ jobs:
       - name: Copy OpenAPI specification to meshery repo
         run: |
           mkdir -p meshery/docs/data
-          cp merged_openapi.yml meshery/docs/data/openapi.yml
-          echo "Copied merged_openapi.yml to meshery/docs/data/openapi.yml"
+          cp meshery_openapi.yml meshery/docs/data/openapi.yml
+          echo "Copied meshery_openapi.yml to meshery/docs/data/openapi.yml"
 
       - name: Pull changes from remote
         working-directory: meshery
@@ -120,8 +122,8 @@ jobs:
       - name: Copy OpenAPI specification to repo
         run: |
           mkdir -p cloud-docs/data
-          cp merged_openapi.yml cloud-docs/data/openapi.yml
-          echo "Copied openapi.yml to cloud-docs/data/openapi.yml"
+          cp cloud_openapi.yml cloud-docs/data/openapi.yml
+          echo "Copied cloud_openapi.yml to cloud-docs/data/openapi.yml"
 
       - name: Pull changes from remote
         working-directory: cloud-docs
