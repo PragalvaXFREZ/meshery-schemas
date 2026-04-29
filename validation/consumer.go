@@ -28,6 +28,11 @@ type consumerEndpoint struct {
 	WritesRawResponse  bool        // handler calls Write/io.Copy/Blob/Stream/etc. (raw output, no typed schema)
 	SuccessStatusCodes []int       // explicit 2xx success codes found in the handler body
 	Notes              []string    // parser-side notes (e.g. "anonymous handler")
+	AnonymousAccess    *bool       // route registration permits unauthenticated/anonymous access
+}
+
+func boolPtr(v bool) *bool {
+	return &v
 }
 
 type goTypeOrigin string

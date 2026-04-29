@@ -51,6 +51,14 @@ var echoGroupPrefixes = map[string]string{
 	"e":                       "",
 }
 
+var echoAuthenticatedReceivers = map[string]bool{
+	"authedAPI":               true,
+	"authByPasskeyAPI":        true,
+	"authedORSpecialTokenAPI": true,
+	"authedGroup":             true,
+	"authedApiGroup":          true,
+}
+
 // echoParamRE matches Echo's `:paramName` placeholders. The character class
 // includes `-` because the cloud router uses kebab-cased param names like
 // `:meshery-version` (see meshery-cloud/server/router/router.go:578).
@@ -155,11 +163,12 @@ func extractEchoEndpoints(file *ast.File, fset *token.FileSet, routerFile string
 		}
 
 		ep := consumerEndpoint{
-			Method:      verb,
-			Path:        path,
-			HandlerName: handlerName,
-			RouterFile:  routerFile,
-			Notes:       notes,
+			Method:          verb,
+			Path:            path,
+			HandlerName:     handlerName,
+			RouterFile:      routerFile,
+			Notes:           notes,
+			AnonymousAccess: boolPtr(echoRouteAllowsAnonymous(recv, call.Args[2:])),
 		}
 		if call.Pos().IsValid() && fset != nil {
 			ep.RouterLine = fset.Position(call.Pos()).Line
@@ -170,6 +179,44 @@ func extractEchoEndpoints(file *ast.File, fset *token.FileSet, routerFile string
 	})
 
 	return endpoints, nil
+}
+
+func echoRouteAllowsAnonymous(receiver string, middlewareArgs []ast.Expr) bool {
+	if echoAuthenticatedReceivers[receiver] {
+		return false
+	}
+	for _, arg := range middlewareArgs {
+		if exprMentionsAuthMiddleware(arg) {
+			return false
+		}
+	}
+	return true
+}
+
+func exprMentionsAuthMiddleware(expr ast.Expr) bool {
+	found := false
+	ast.Inspect(expr, func(n ast.Node) bool {
+		switch x := n.(type) {
+		case *ast.Ident:
+			if isAuthMiddlewareName(x.Name) {
+				found = true
+				return false
+			}
+		case *ast.SelectorExpr:
+			if x.Sel != nil && isAuthMiddlewareName(x.Sel.Name) {
+				found = true
+				return false
+			}
+		}
+		return true
+	})
+	return found
+}
+
+func isAuthMiddlewareName(name string) bool {
+	return strings.Contains(name, "Auth") ||
+		strings.Contains(name, "Authorization") ||
+		strings.Contains(name, "PreventAnonymous")
 }
 
 // receiverString turns a receiver expression into a flat dotted identifier
