@@ -28,12 +28,20 @@ type constructSpec struct {
 	LoadErr      error
 }
 
-// walkValidatedConstructSpecs is the single, canonical walker for the
-// schemas/constructs tree. It visits every non-deprecated construct spec in
-// deterministic sorted order and invokes fn for each one. Both the schema
-// validator (Audit) and the consumer-audit endpoint indexer use this function
-// so the walk logic, filtering, and load behaviour stay in sync.
+// walkValidatedConstructSpecs is the canonical walker for current endpoint
+// consumers. It visits the latest construct spec in deterministic sorted order
+// and invokes fn for each one.
 func walkValidatedConstructSpecs(rootDir string, fn func(constructSpec) error) error {
+	return walkConstructSpecs(rootDir, false, fn)
+}
+
+// walkValidatedAndDeprecatedConstructSpecs visits the latest construct specs
+// plus deprecated versions retained for compatibility.
+func walkValidatedAndDeprecatedConstructSpecs(rootDir string, fn func(constructSpec) error) error {
+	return walkConstructSpecs(rootDir, true, fn)
+}
+
+func walkConstructSpecs(rootDir string, includeDeprecated bool, fn func(constructSpec) error) error {
 	constructsDir := filepath.Join(rootDir, "schemas", "constructs")
 
 	info, err := os.Stat(constructsDir)
@@ -50,6 +58,7 @@ func walkValidatedConstructSpecs(rootDir string, fn func(constructSpec) error) e
 	})
 
 	latestByConstruct := make(map[string]constructSpec)
+	deprecatedSpecs := []constructSpec{}
 	for _, vEntry := range versionEntries {
 		if !vEntry.IsDir() {
 			continue
@@ -100,6 +109,9 @@ func walkValidatedConstructSpecs(rootDir string, fn func(constructSpec) error) e
 				LoadErr:      loadErr,
 			}
 
+			if includeDeprecated && spec.IsDeprecated {
+				deprecatedSpecs = append(deprecatedSpecs, spec)
+			}
 			prev, ok := latestByConstruct[spec.Construct]
 			if !ok || compareAPIVersions(spec.Version, prev.Version) > 0 {
 				latestByConstruct[spec.Construct] = spec
@@ -107,8 +119,16 @@ func walkValidatedConstructSpecs(rootDir string, fn func(constructSpec) error) e
 		}
 	}
 
-	specs := make([]constructSpec, 0, len(latestByConstruct))
+	specs := make([]constructSpec, 0, len(latestByConstruct)+len(deprecatedSpecs))
+	seen := make(map[string]bool)
 	for _, spec := range latestByConstruct {
+		specs = append(specs, spec)
+		seen[spec.ConstructDir] = true
+	}
+	for _, spec := range deprecatedSpecs {
+		if seen[spec.ConstructDir] {
+			continue
+		}
 		specs = append(specs, spec)
 	}
 	sort.Slice(specs, func(i, j int) bool {
@@ -154,7 +174,7 @@ func Audit(opts AuditOptions) AuditResult {
 	// Walk validated construct specs. Errors are intentionally ignored:
 	// Audit returns AuditResult, not error, and individual load failures
 	// are reported as blocking violations inside auditAPISpec.
-	_ = walkValidatedConstructSpecs(opts.RootDir, func(spec constructSpec) error {
+	_ = walkValidatedAndDeprecatedConstructSpecs(opts.RootDir, func(spec constructSpec) error {
 		// Validate entity schemas (*.yaml, not api.yml).
 		auditEntitySchemas(spec.ConstructDir, opts, baseline, &result, spec.IsDeprecated)
 
@@ -304,7 +324,6 @@ func auditEntitySchemas(constructDir string, opts AuditOptions,
 			addConstructViolation(result, v, baseline, deprecated)
 		}
 
-
 		// Rule 35: entity property x-go-type / x-go-type-import consistency.
 		for _, v := range checkRule35ForEntity(relPath, entity, opts) {
 			addConstructViolation(result, v, baseline, deprecated)
@@ -388,7 +407,6 @@ func auditAPISpec(apiYmlPath, constructDir string, opts AuditOptions,
 		addConstructViolation(result, v, baseline, deprecated)
 	}
 
-
 	// Rule 33: pagination envelope fields.
 	for _, v := range checkRule33(relPath, doc, opts) {
 		addConstructViolation(result, v, baseline, deprecated)
@@ -447,13 +465,46 @@ func auditHelperFiles(modelsDir string, opts AuditOptions,
 	}
 }
 
-// addConstructViolation adds a violation to the result, skipping advisory
-// violations if the construct is deprecated.
+var deprecatedConstructBlockingRules = map[int]bool{
+	1:  true,
+	2:  true,
+	5:  true,
+	11: true,
+	12: true,
+	13: true,
+	14: true,
+	15: true,
+	16: true,
+	17: true,
+	20: true,
+	22: true,
+	27: true,
+	32: true,
+}
+
+// addConstructViolation adds a violation to the result. Deprecated constructs
+// retain only the small rule surface that catches codegen-breaking regressions;
+// legacy template and style debt remains quiet.
 func addConstructViolation(result *AuditResult, v Violation, baseline map[string]bool, deprecated bool) {
-	if deprecated && v.Severity == SeverityAdvisory {
+	if deprecated && !isDeprecatedConstructBlockingViolation(v) {
 		return
 	}
 	addViolation(result, v, baseline)
+}
+
+func isDeprecatedConstructBlockingViolation(v Violation) bool {
+	if !deprecatedConstructBlockingRules[v.RuleNumber] || v.Severity != SeverityBlocking {
+		return false
+	}
+
+	// Rule 27 mixes codegen-breaking tag errors with design advisories. In
+	// strict mode the advisory branch is promoted to blocking, but deprecated
+	// constructs should still suppress that legacy style debt.
+	if v.RuleNumber == 27 && strings.Contains(v.Message, "manual `yaml:` tag") {
+		return false
+	}
+
+	return true
 }
 
 // addViolation adds a violation to the result, applying baseline filtering
