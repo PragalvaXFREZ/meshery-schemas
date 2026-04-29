@@ -186,37 +186,26 @@ func echoRouteAllowsAnonymous(receiver string, middlewareArgs []ast.Expr) bool {
 		return false
 	}
 	for _, arg := range middlewareArgs {
-		if exprMentionsAuthMiddleware(arg) {
+		if exprMentionsName(arg, isAuthMiddlewareName) {
 			return false
 		}
 	}
 	return true
 }
 
-func exprMentionsAuthMiddleware(expr ast.Expr) bool {
-	found := false
-	ast.Inspect(expr, func(n ast.Node) bool {
-		switch x := n.(type) {
-		case *ast.Ident:
-			if isAuthMiddlewareName(x.Name) {
-				found = true
-				return false
-			}
-		case *ast.SelectorExpr:
-			if x.Sel != nil && isAuthMiddlewareName(x.Sel.Name) {
-				found = true
-				return false
-			}
-		}
-		return true
-	})
-	return found
-}
-
 func isAuthMiddlewareName(name string) bool {
-	return strings.Contains(name, "Auth") ||
-		strings.Contains(name, "Authorization") ||
-		strings.Contains(name, "PreventAnonymous")
+	switch name {
+	case "Authorization", "PreventAnonymous":
+		return true
+	}
+	return hasCamelSuffix(name, "Auth") ||
+		hasCamelSuffix(name, "AuthMiddleware") ||
+		hasCamelSuffix(name, "Authorization") ||
+		hasCamelSuffix(name, "AuthorizationMiddleware") ||
+		hasCamelSuffix(name, "PreventAnonymous") ||
+		hasCamelPrefix(name, "AuthMiddleware") ||
+		hasCamelPrefix(name, "AuthorizationMiddleware") ||
+		hasCamelPrefix(name, "PreventAnonymous")
 }
 
 // receiverString turns a receiver expression into a flat dotted identifier

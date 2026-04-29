@@ -218,33 +218,13 @@ func gorillaHandlerAllowsAnonymous(handlerExpr ast.Expr) bool {
 	if handlerExpr == nil {
 		return true
 	}
-	if exprMentionsSelector(handlerExpr, "NoAuth") {
+	if exprMentionsName(handlerExpr, func(name string) bool { return name == "NoAuth" }) {
 		return true
 	}
-	if exprMentionsSelector(handlerExpr, "ProviderAuth") || exprMentionsSelector(handlerExpr, "AuthMiddleware") {
+	if exprMentionsName(handlerExpr, func(name string) bool { return name == "ProviderAuth" || name == "AuthMiddleware" }) {
 		return false
 	}
 	return true
-}
-
-func exprMentionsSelector(expr ast.Expr, name string) bool {
-	found := false
-	ast.Inspect(expr, func(n ast.Node) bool {
-		switch x := n.(type) {
-		case *ast.Ident:
-			if x.Name == name {
-				found = true
-				return false
-			}
-		case *ast.SelectorExpr:
-			if x.Sel != nil && x.Sel.Name == name {
-				found = true
-				return false
-			}
-		}
-		return true
-	})
-	return found
 }
 
 // walkChain walks an AST chain head-first, invoking visit on every CallExpr
