@@ -434,6 +434,8 @@ These patterns are deliberate. Do not suggest changes during code review:
 
 ## Identifier-naming migration (complete; v1beta1 retained for back-compat)
 
+> **Identifier-naming overhaul status (2026-04-28):** Complete across `meshery/schemas` (`v1.2.6`), `meshery/meshery` (`v1.0.14`), `meshery/meshkit` (`v1.0.7`), `layer5io/sistent` (`v0.20.1`), and `layer5io/meshery-cloud` (master HEAD, rolling). **`layer5labs/meshery-extensions` is deferred** pending lift of the layer5labs billing block — see [`docs/identifier-naming-migration.md` §21](docs/identifier-naming-migration.md#21-status-as-of-2026-04-28) for the post-completion landed-PR + tagged-release inventory and the re-engagement trigger for the deferred work.
+
 The uniform **camelCase-on-the-wire** identifier-naming migration has landed. Every resource in the §9.1 inventory of [`docs/identifier-naming-migration.md`](docs/identifier-naming-migration.md) now has a canonical-casing target-version directory; Phase 4.A was administratively closed on 2026-04-23 **without physical deletion of the deprecated directories.** The authoritative execution plan remains operative reading for historical context, and §8 of [`docs/identifier-naming-impact-report.md`](docs/identifier-naming-impact-report.md) is the canonical index of the retained legacy directories that external consumers may still pin.
 
 **The contract in one sentence:** *Wire is camelCase everywhere; DB is snake_case; Go fields follow Go idiom; the ORM layer is the sole translation boundary.*

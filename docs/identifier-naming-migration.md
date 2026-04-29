@@ -4,7 +4,7 @@
 
 | Field | Value |
 |---|---|
-| Status | **Complete (2026-04-23)** — Phases 0–4 landed; consumer-audit TypeScript findings at 0 across all three downstream trees post-merge of Phase 2 tail PRs (meshery/meshery#18904, layer5io/meshery-cloud#5092); legacy directories retained on master (§10 Agent 4.A administrative close) |
+| Status | **Complete (2026-04-23)** — Phases 0–4 landed across `meshery/schemas`, `meshery/meshery`, `layer5io/meshery-cloud`, `meshery/meshkit`, and `layer5io/sistent`; `layer5labs/meshery-extensions` deferred (billing-blocked); see [§21 Status as of 2026-04-28](#21-status-as-of-2026-04-28) for the post-completion landed-PR + tagged-release inventory; legacy directories retained on master (§10 Agent 4.A administrative close) |
 | Authority | `meshery/schemas/AGENTS.md` after Phase 1.A |
 | Scope | `meshery/schemas`, `meshery/meshery`, `layer5io/meshery-cloud`, `layer5labs/meshery-extensions` |
 | Contract | camelCase on wire, snake_case only at the DB/ORM boundary |
@@ -1096,5 +1096,43 @@ ACCEPTANCE
 |---|---|---|---|
 | 1.0 | 2026-04-22 | Lee Calcote (via orchestrator) | Initial authoring. camelCase-on-wire decision recorded. Phases 0–4 defined. Agent templates inlined. |
 | 1.1 | 2026-04-23 | Lee Calcote (via Phase 4.A administrative-close agent) | Phase 4.A administratively closed. One-release-cycle safety window overridden by maintainer decision; physical deletion of deprecated `schemas/constructs/v1beta1/` and `schemas/constructs/v1beta2/` directories is **not slated**. Deprecated directories remain on `master` indefinitely behind `x-deprecated: true` / `x-superseded-by:` markers so external consumers that pin legacy versions are not stranded. Status banner (§0), Phase Structure table (§4), Agent 4.A charter (§10), and DAG dependency rules (§11) updated to reflect the non-deletion policy. See [`identifier-naming-impact-report.md`](identifier-naming-impact-report.md) §8 for the canonical index of retained legacy directories. Any future physical deletion is a separate maintainer decision, not scheduled. |
+| 1.2 | 2026-04-28 | Lee Calcote (via Phase 4-7 documentation-sweep agent) | Added [§21 Status as of 2026-04-28](#21-status-as-of-2026-04-28) recording the canonical-naming overhaul as **complete across the in-scope cluster** (`meshery/schemas`, `meshery/meshery`, `layer5io/meshery-cloud`, `meshery/meshkit`, `layer5io/sistent`) with tagged releases (`schemas v1.2.6`, `meshery v1.0.14`, `meshkit v1.0.7`, `sistent v0.20.1`) and **`layer5labs/meshery-extensions` formally deferred** pending lift of the layer5labs billing block. Status header (§0) updated to point at §21 for the post-completion landed-PR and tagged-release inventory. No changes to the contract, the agent charters, or §10 Agent 4.A's non-deletion policy. |
+
+---
+
+## 21. Status as of 2026-04-28
+
+The canonical-naming overhaul has **landed in production** across every in-scope repo except `layer5labs/meshery-extensions`. This section is the authoritative inventory of what shipped and what remains deferred. It supplements §0 (the status banner) and §20 (revision history); it does **not** modify any agent charter, validator rule, or non-deletion policy.
+
+### Landed releases
+
+| Repo | Release tag | Notes |
+|---|---|---|
+| `meshery/schemas` | `v1.2.6` | Validator rules, advisory baseline, and consumer-audit gates active per §16 (Validator rules) and §18 (CI). All deprecated v1beta1 directories retained per §10 Agent 4.A. |
+| `meshery/meshery` | `v1.0.14` | Server, UI, and `mesheryctl` aligned to camelCase wire; dual-accept shims retained per `identifier-naming-contributor-guide.md § Dual-accept policy`. |
+| `meshery/meshkit` | `v1.0.7` | Canonical wire applied to shared event/error/logging surfaces; `docs/event-streaming.md` updated alongside the canonical flip. |
+| `layer5io/meshery-cloud` | (master HEAD; rolling) | Phase-4 tail wire flips for Credential / Organization / Team / MesheryFilter siblings landed; consumer-audit at zero TS findings. No tagged release because `meshery-cloud` ships from `master` continuously. |
+| `layer5io/sistent` | `v0.20.1` | Component prop names aligned to canonical camelCase; identifier-naming impact was small (UI surface, not wire). |
+
+### Deferred
+
+| Repo | Status | Reason | Re-engagement trigger |
+|---|---|---|---|
+| `layer5labs/meshery-extensions` | **Deferred** | layer5labs billing block — the org's GitHub Actions / repo write access is administratively suspended; PR landings are blocked until billing is restored. | Billing reinstated → re-run §10 Agent 3 charter for the deferred resources (Kanvas RTK catalog/designs case-flip removal; `SaveDesign` wrapper alignment `pattern_data` → `patternData`; `mesherySdk` event-type casing; `collab/config` user-ID duality). |
+
+### What this means in practice
+
+- **For new code in any in-scope repo:** the canonical contract at §1 applies in full. Validator Rule 6 / 45 / 46 in `meshery/schemas` block re-introduction of snake_case wire on canonical-version constructs.
+- **For new code in `meshery-extensions`:** until the billing block lifts, the repo continues to ship pre-canonical wire forms for any field the deferred Phase-3 work would have flipped. Coordinated changes that cross `meshery-extensions` and another in-scope repo must align on the **canonical** form on the meshery-side and accept the temporary case-flip on the extensions-side; do **not** re-introduce snake_case in the in-scope repo to "match" extensions.
+- **For external consumers pinning a v1beta1 / v1beta2 version:** §10 Agent 4.A guarantees those directories remain on `master` indefinitely under `info.x-deprecated: true` + `info.x-superseded-by:` markers. No physical deletion is scheduled.
+
+### Documentation refreshed in this status pass
+
+- `meshery/schemas` — this section (§21) plus header status update (§0).
+- `meshery/meshery` — `docs/content/en/reference/graphql-apis.md` Rakefile reference replaced with the schemas-bundle source-of-truth pointer; `docs/content/en/project/contributing/build-and-release.md` Jekyll versioning steps rewritten for Hugo; `docs/content/en/reference/extensibility/providers/index.md` capability example wire form updated to match `server/models/providers.go` canonical JSON tags.
+- `meshery/meshkit` — verified `docs/event-streaming.md` reflects canonical wire (no further changes; PR #999 already aligned this in Phase 6a).
+- `layer5io/meshery-cloud` — `docs/USER_MODEL_COMPARISON.md` and `docs/USER_SCHEMA_INTEGRATION.md` wire-format snippets updated to camelCase to match `server/models/users.go` post-canonical state.
+- `layer5io/docs` (public docs site) — verified no wire-format references stale (only a v0.8.228 release-note historical reference to `orgID`, which is an immutable historical artifact).
+- Per-repo `AGENTS.md` / `CLAUDE.md` — short status note added pointing to this section.
 
 End of plan.
