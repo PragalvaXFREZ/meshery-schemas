@@ -29,7 +29,7 @@ site:
 #-----------------------------------------------------------------------------
 # OpenAPI spec
 #-----------------------------------------------------------------------------
-.PHONY: setup generate-ts publish-ts bundle-openapi generate-golang generate-rtk golangci validate-schemas validate-schemas-strict audit-schemas audit-schemas-full audit-schemas-style-full audit-schemas-debt-full
+.PHONY: setup generate-ts publish-ts bundle-openapi generate-golang generate-rtk test-rtk golangci validate-schemas validate-schemas-strict audit-schemas audit-schemas-full audit-schemas-style-full audit-schemas-debt-full
 
 ## (Re)Initialize Golang (go.mod) and Node (package.json) manifests
 setup:
@@ -59,6 +59,11 @@ generate-golang: bundle-openapi
 ## Generate RTK Query clients (requires bundle-openapi)
 generate-rtk: bundle-openapi
 	node build/generate-rtk.js
+	$(MAKE) --no-print-directory test-rtk
+
+## Run RTK Query generation regression tests
+test-rtk:
+	node --test tests/generate-rtk.test.js
 
 ## Generate Golang Models (legacy alias for generate-golang)
 golang-generate: generate-golang
@@ -111,6 +116,95 @@ audit-schemas-style-full:
 ## Report the full advisory backlog including legacy style and contract debt without failing the build
 audit-schemas-debt-full:
 	go run ./cmd/validate-schemas --warn --no-baseline --style-debt --contract-debt
+
+## Regenerate the Phase 0 field-count baseline artifact
+.PHONY: baseline-field-count
+baseline-field-count:
+	go run ./cmd/phase0-field-count
+
+## Regenerate the Phase 0 tag-divergence baseline artifact
+## (scans json/db struct tags in $(MESHERY_REPO) and $(CLOUD_REPO))
+.PHONY: baseline-tag-divergence
+baseline-tag-divergence:
+	@go run ./cmd/phase0-tag-divergence \
+		$(if $(MESHERY_REPO),--meshery-repo=$(MESHERY_REPO)) \
+		$(if $(CLOUD_REPO),--cloud-repo=$(CLOUD_REPO))
+
+## Regenerate the Phase 0 consumer-audit verbatim baseline
+## (captures verbose make consumer-audit output against local sibling repos)
+.PHONY: baseline-consumer-audit
+baseline-consumer-audit:
+	@output_dir=validation/baseline; \
+	output_file=$$output_dir/consumer-audit.txt; \
+	mkdir -p "$$output_dir"; \
+	tmp_file=$$(mktemp "$$output_dir/consumer-audit.txt.XXXXXX"); \
+	if $(MAKE) --no-print-directory consumer-audit \
+		MESHERY_REPO="$(if $(MESHERY_REPO),$(MESHERY_REPO),../meshery)" \
+		CLOUD_REPO="$(if $(CLOUD_REPO),$(CLOUD_REPO),../meshery-cloud)" \
+		VERBOSE=1 > "$$tmp_file"; then \
+		mv "$$tmp_file" "$$output_file"; \
+		echo "phase0-consumer-audit: captured $$(wc -l < $$output_file) lines -> $$output_file"; \
+	else \
+		status=$$?; \
+		rm -f "$$tmp_file"; \
+		echo "phase0-consumer-audit: consumer-audit failed (exit $$status); baseline unchanged" >&2; \
+		exit $$status; \
+	fi
+
+## Regenerate the Phase 0 consumer-dependency graph
+## (Go + TS imports of schemas across all three downstream repos)
+.PHONY: baseline-consumer-graph
+baseline-consumer-graph:
+	@go run ./cmd/phase0-consumer-graph \
+		$(if $(MESHERY_REPO),--meshery-repo="$(MESHERY_REPO)") \
+		$(if $(CLOUD_REPO),--cloud-repo="$(CLOUD_REPO)") \
+		$(if $(EXTENSIONS_REPO),--extensions-repo="$(EXTENSIONS_REPO)")
+
+#-----------------------------------------------------------------------------
+# Consumer audit (schemas vs. consumer repos)
+#-----------------------------------------------------------------------------
+.PHONY: consumer-audit consumer-audit-update
+
+# Override via:
+#   make consumer-audit MESHERY_REPO=../meshery CLOUD_REPO=../meshery-cloud \
+#                       EXTENSIONS_REPO=../meshery-extensions
+# Each *_REPO variable is optional; the audit iterates every registered
+# consumer (Go Gorilla, Go Echo, TypeScript RTK Query) and skips trees that
+# were not provided. MESHERY_REPO_UI / CLOUD_REPO_UI override the TS scan
+# path independently of the Go path (rarely needed — only when the UI lives
+# in a separate checkout).
+MESHERY_REPO     ?=
+CLOUD_REPO       ?=
+EXTENSIONS_REPO  ?=
+MESHERY_REPO_UI  ?=
+CLOUD_REPO_UI    ?=
+SHEET_ID         ?=
+CREDENTIALS      ?=
+
+## Dry-run the consumer audit without reconciling or updating Google Sheets.
+consumer-audit:
+	@go run ./cmd/consumer-audit \
+		$(if $(MESHERY_REPO),--meshery-repo=$(MESHERY_REPO)) \
+		$(if $(CLOUD_REPO),--cloud-repo=$(CLOUD_REPO)) \
+		$(if $(EXTENSIONS_REPO),--extensions-repo=$(EXTENSIONS_REPO)) \
+		$(if $(MESHERY_REPO_UI),--meshery-repo-ui=$(MESHERY_REPO_UI)) \
+		$(if $(CLOUD_REPO_UI),--cloud-repo-ui=$(CLOUD_REPO_UI)) \
+		$(if $(VERBOSE),--verbose)
+
+## Reconcile the consumer audit against the canonical Google Sheet and update it.
+consumer-audit-update:
+	@if [ -z "$(SHEET_ID)" ] || [ -z "$(CREDENTIALS)" ]; then \
+		echo "consumer-audit-update: SHEET_ID and CREDENTIALS are required"; exit 1; \
+	fi
+	@go run ./cmd/consumer-audit \
+		$(if $(MESHERY_REPO),--meshery-repo=$(MESHERY_REPO)) \
+		$(if $(CLOUD_REPO),--cloud-repo=$(CLOUD_REPO)) \
+		$(if $(EXTENSIONS_REPO),--extensions-repo=$(EXTENSIONS_REPO)) \
+		$(if $(MESHERY_REPO_UI),--meshery-repo-ui=$(MESHERY_REPO_UI)) \
+		$(if $(CLOUD_REPO_UI),--cloud-repo-ui=$(CLOUD_REPO_UI)) \
+		$(if $(VERBOSE),--verbose) \
+		--sheet-id=$(SHEET_ID) \
+		--credentials=$(CREDENTIALS)
 
 #-----------------------------------------------------------------------------
 # Schema information

@@ -1,0 +1,67 @@
+type: object
+additionalProperties: false
+description: Plan entity schema.
+required:
+- id
+- name
+- cadence
+- unit
+- pricePerUnit
+- minimumUnits
+- currency
+properties:
+  id:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Unique identifier for the plan.
+    x-oapi-codegen-extra-tags:
+      db: id
+      json: id
+      csv: id
+  name:
+    $ref: './api.yml#/components/schemas/PlanName'
+    description: Display name of the plan.
+    x-go-type: PlanName
+    x-oapi-codegen-extra-tags:
+      db: name
+      json: name
+      csv: name
+  cadence:
+    $ref: './api.yml#/components/schemas/PlanCadence'
+    description: Billing cadence for the plan (monthly, annually, or none).
+    x-go-type: PlanCadence
+    x-oapi-codegen-extra-tags:
+      db: cadence
+      json: cadence
+      csv: cadence
+  unit:
+    $ref: './api.yml#/components/schemas/PlanUnit'
+    description: Unit of consumption this plan charges against (e.g. user).
+    x-go-type: PlanUnit
+    x-oapi-codegen-extra-tags:
+      db: unit
+      json: unit
+      csv: unit
+  minimumUnits:
+    type: integer
+    description: Minimum number of units required for the plan.
+    x-oapi-codegen-extra-tags:
+      db: minimum_units
+      json: minimumUnits
+      csv: minimum_units
+    minimum: 0
+  pricePerUnit:
+    type: number
+    description: Price per unit of the plan.
+    x-oapi-codegen-extra-tags:
+      db: price_per_unit
+      json: pricePerUnit
+      csv: price_per_unit
+    minimum: 0
+  currency:
+    $ref: './api.yml#/components/schemas/Currency'
+    description: Currency in which the plan is priced.
+    x-go-type: Currency
+    x-oapi-codegen-extra-tags:
+      db: currency
+      json: currency
+      csv: currency

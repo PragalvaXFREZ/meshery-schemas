@@ -1,0 +1,649 @@
+{
+  "generated_at": "2026-04-22T23:21:48Z",
+  "generated_by": "cmd/phase0-consumer-graph",
+  "scope": "Imports of github.com/meshery/schemas/models/... (Go) and @meshery/schemas (TS) across sibling repos",
+  "complexity_heuristic": "complexity_score = count of distinct consuming files that import that resource's Go package. TS imports are tallied separately (bundled_ts_consumers) because most TS consumers pull in the full bundled client rather than a single resource.",
+  "resource_aliases": {
+    "pattern": "design"
+  },
+  "repos": [
+    {
+      "repo": "meshery/meshery",
+      "path": "../meshery",
+      "go_files_processed": 380,
+      "ts_files_processed": 811,
+      "bundled_ts_consumers": [
+        "ui/components/RelationshipBuilder/RelationshipFormStepper.tsx",
+        "ui/components/Settings/Registry/Stepper/CSVStepper.tsx",
+        "ui/components/Settings/Registry/Stepper/UrlStepper.tsx",
+        "ui/rtk-query/connection.ts",
+        "ui/rtk-query/environments.ts",
+        "ui/rtk-query/index.ts",
+        "ui/rtk-query/organization.ts",
+        "ui/rtk-query/user.ts",
+        "ui/rtk-query/userKeys.ts",
+        "ui/rtk-query/workspace.ts"
+      ]
+    },
+    {
+      "repo": "layer5io/meshery-cloud",
+      "path": "../meshery-cloud",
+      "go_files_processed": 212,
+      "ts_files_processed": 965,
+      "bundled_ts_consumers": [
+        "ui/__tests__/typetests/api-types.typetest.ts",
+        "ui/api/user-keys.js",
+        "ui/components/academy/CreateAcademyContent/CreateAcademyContent.tsx",
+        "ui/components/academy/CurriculaOverview/OverviewTab.tsx",
+        "ui/components/academy/InstructorConsole/curricula.tsx",
+        "ui/components/academy/certificate.tsx",
+        "ui/components/academy/contentList.js",
+        "ui/components/academy/context.tsx",
+        "ui/components/academy/progressTracker.ts",
+        "ui/components/academy/userList.tsx",
+        "ui/components/account/plans/checkout.tsx",
+        "ui/components/account/plans/index.js",
+        "ui/components/account/plans/upgrade.tsx",
+        "ui/components/account/preferences/index.js",
+        "ui/components/account/profile/index.js",
+        "ui/components/account/subscriptions/index.js",
+        "ui/components/catalog/catalog/charts.js",
+        "ui/components/catalog/catalog/details/index.js",
+        "ui/components/catalog/catalog/index.js",
+        "ui/components/catalog/designs/details/index.js",
+        "ui/components/catalog/designs/index.js",
+        "ui/components/catalog/filter-component/index.js",
+        "ui/components/catalog/filter-component/owner-section.js",
+        "ui/components/catalog/filters/details/index.js",
+        "ui/components/catalog/filters/index.js",
+        "ui/components/catalog/general/InfoModal/index.js",
+        "ui/components/catalog/general/catalog-card.js",
+        "ui/components/catalog/general/details/index.js",
+        "ui/components/catalog/general/shareModal/index.js",
+        "ui/components/catalog/general/useCatalogOperations.js",
+        "ui/components/catalog/leaderboard/details/index.js",
+        "ui/components/catalog/leaderboard/index.js",
+        "ui/components/catalog/requests/content-info.js",
+        "ui/components/catalog/requests/index.js",
+        "ui/components/catalog/views/details/index.js",
+        "ui/components/catalog/views/index.js",
+        "ui/components/connect/index.js",
+        "ui/components/connect/stepper/stepper-content.js",
+        "ui/components/dashboard/badges/index.js",
+        "ui/components/dashboard/getting-started/index.js",
+        "ui/components/dashboard/getting-started/welcome/index.js",
+        "ui/components/dashboard/index.js",
+        "ui/components/dashboard/invite-user-card/index.js",
+        "ui/components/dashboard/meshery-instances/index.js",
+        "ui/components/dashboard/meshery-instances/k8s-table.js",
+        "ui/components/dashboard/my-designs/index.js",
+        "ui/components/dashboard/playground/index.js",
+        "ui/components/dashboard/recent-activities-table.js",
+        "ui/components/dashboard/summaryCards.jsx",
+        "ui/components/events/events-table.js",
+        "ui/components/events/overview.js",
+        "ui/components/events/summary-table.js",
+        "ui/components/general/RegisterOrgActivity.tsx",
+        "ui/components/general/Tables.tsx",
+        "ui/components/general/UserAvatar.tsx",
+        "ui/components/general/error-404/CurrentSession.js",
+        "ui/components/general/error-404/OrgSwitcher.tsx",
+        "ui/components/general/navbar/index.js",
+        "ui/components/general/navbar/org-switch/index.js",
+        "ui/components/general/org-search-field.js",
+        "ui/components/general/rjsf/widgets.tsx",
+        "ui/components/general/tab-menu/index.js",
+        "ui/components/general/use-sistent/index.js",
+        "ui/components/identity/invitations/index.tsx",
+        "ui/components/identity/org-management/badge-management-modal.js",
+        "ui/components/identity/org-management/edit-org-modal.tsx",
+        "ui/components/identity/org-management/index.js",
+        "ui/components/identity/org-management/teams-table.js",
+        "ui/components/identity/org-management/view-users-in-org-modal.js",
+        "ui/components/identity/overview.js",
+        "ui/components/identity/role-management/create-custom-roles.js",
+        "ui/components/identity/role-management/index.js",
+        "ui/components/identity/role-management/keychain-table.js",
+        "ui/components/identity/role-management/view-role.js",
+        "ui/components/identity/signup-requests.js",
+        "ui/components/identity/team-management/add-team-members-modal.js",
+        "ui/components/identity/team-management/index.js",
+        "ui/components/identity/team-management/view-users-in-team-modal.js",
+        "ui/components/identity/user-management/grid/card.js",
+        "ui/components/identity/user-management/index.js",
+        "ui/components/identity/user-management/view-user.js",
+        "ui/components/modals/help-and-support-modal.js",
+        "ui/components/public-profile/badges-tab.js",
+        "ui/components/public-profile/designs-tab.js",
+        "ui/components/public-profile/index.js",
+        "ui/components/public-profile/profile-stats.js",
+        "ui/components/public-profile/user-details.js",
+        "ui/components/public-profile/users.js",
+        "ui/components/public-profile/views-tab.js",
+        "ui/components/security/credentials/index.js",
+        "ui/components/security/keychains/create-keychain.js",
+        "ui/components/security/keychains/index.js",
+        "ui/components/security/keychains/keys-table.js",
+        "ui/components/security/keychains/update-keychain.js",
+        "ui/components/security/keys/create-key.js",
+        "ui/components/security/keys/index.js",
+        "ui/components/security/keys/update-key.js",
+        "ui/components/security/overview.js",
+        "ui/components/security/tokens/index.js",
+        "ui/components/setup/get-started.js",
+        "ui/components/welcome/organization.js",
+        "ui/components/welcome/workspace.js",
+        "ui/components/workspaces/environments/index.js",
+        "ui/components/workspaces/integrations/connection-card.js",
+        "ui/components/workspaces/integrations/connectionsTable.js",
+        "ui/components/workspaces/integrations/index.js",
+        "ui/components/workspaces/overview.js",
+        "ui/components/workspaces/workspaces/index.js",
+        "ui/components/workspaces/workspaces/workspace-content-data-table.js",
+        "ui/pages/_app.js",
+        "ui/pages/academy/[orgId]/[contentType]/[slug].tsx",
+        "ui/pages/academy/[orgId]/[contentType]/[slug]/test.tsx",
+        "ui/pages/academy/certificates/[id].tsx",
+        "ui/pages/academy/index.tsx",
+        "ui/pages/academy/my-academy.tsx",
+        "ui/pages/invitations/[id]/accept.tsx",
+        "ui/store/index.js",
+        "ui/store/slices/organization.ts",
+        "ui/subscriptions/index.ts",
+        "ui/types/user.ts",
+        "ui/utility/helpers.js"
+      ]
+    },
+    {
+      "repo": "layer5labs/meshery-extensions",
+      "path": "../meshery-extensions",
+      "go_files_processed": 0,
+      "ts_files_processed": 719,
+      "bundled_ts_consumers": [
+        "meshmap/src/components/api/rtk-query.ts",
+        "meshmap/src/domain/capabilities.ts",
+        "meshmap/src/domain/relationships.ts",
+        "meshmap/src/domain/styles.ts",
+        "meshmap/src/domain/types.ts",
+        "meshmap/src/modules/editor/collab/colabActor.ts",
+        "meshmap/src/modules/editor/modes/designer/designActor.ts",
+        "meshmap/src/modules/editor/modes/designer/model.ts",
+        "meshmap/src/modules/editor/styles.ts",
+        "meshmap/src/modules/meshmodel/index.ts",
+        "meshmap/src/redux/store.ts",
+        "meshmap/src/rtk-query/designs.ts",
+        "meshmap/src/rtk-query/user.ts",
+        "meshmap/src/rtk-query/views.ts",
+        "meshmap/src/sections/MesheryDesignerComponent/CatalogModal/types.ts",
+        "meshmap/src/utils/base64.ts"
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "resource": "credential",
+      "versions": [
+        "v1beta1"
+      ],
+      "consuming_files": [
+        "meshery/meshery|server/models/credentials.go"
+      ],
+      "complexity_score": 1
+    },
+    {
+      "resource": "event",
+      "versions": [
+        "v1beta1"
+      ],
+      "consuming_files": [
+        "layer5io/meshery-cloud|server/handlers/events_tracker.go"
+      ],
+      "complexity_score": 1
+    },
+    {
+      "resource": "keychain",
+      "versions": [
+        "v1beta1"
+      ],
+      "consuming_files": [
+        "layer5io/meshery-cloud|server/models/model_aliases.go"
+      ],
+      "complexity_score": 1
+    },
+    {
+      "resource": "schedule",
+      "versions": [
+        "v1beta1"
+      ],
+      "consuming_files": [
+        "meshery/meshery|server/models/schedule.go"
+      ],
+      "complexity_score": 1
+    },
+    {
+      "resource": "view",
+      "versions": [
+        "v1beta1"
+      ],
+      "consuming_files": [
+        "meshery/meshery|server/models/workspace_persister.go"
+      ],
+      "complexity_score": 1
+    },
+    {
+      "resource": "category",
+      "versions": [
+        "v1beta1"
+      ],
+      "consuming_files": [
+        "layer5io/meshery-cloud|server/dao/meshmodels_dao.go",
+        "meshery/meshery|server/models/meshmodel/core/register.go"
+      ],
+      "complexity_score": 2
+    },
+    {
+      "resource": "design",
+      "versions": [
+        "v1beta2"
+      ],
+      "consuming_files": [
+        "layer5io/meshery-cloud|server/handlers/smtp.go",
+        "layer5io/meshery-cloud|server/handlers/users.go"
+      ],
+      "complexity_score": 2
+    },
+    {
+      "resource": "key",
+      "versions": [
+        "v1beta1"
+      ],
+      "consuming_files": [
+        "layer5io/meshery-cloud|server/models/model_aliases.go",
+        "meshery/meshery|server/models/key.go"
+      ],
+      "complexity_score": 2
+    },
+    {
+      "resource": "v1alpha2.meta",
+      "versions": [
+        "v1alpha2"
+      ],
+      "consuming_files": [
+        "layer5io/meshery-cloud|server/handlers/meshery_patterns.go",
+        "meshery/meshery|server/handlers/meshery_pattern_handler.go"
+      ],
+      "complexity_score": 2
+    },
+    {
+      "resource": "capability",
+      "versions": [
+        "v1beta1"
+      ],
+      "consuming_files": [
+        "meshery/meshery|server/handlers/policy_relationship_handler.go",
+        "meshery/meshery|server/models/k8s_components_registration.go",
+        "meshery/meshery|server/models/pattern/core/pattern.go"
+      ],
+      "complexity_score": 3
+    },
+    {
+      "resource": "organization",
+      "versions": [
+        "v1beta1"
+      ],
+      "consuming_files": [
+        "meshery/meshery|server/cmd/main.go",
+        "meshery/meshery|server/models/default_local_provider.go",
+        "meshery/meshery|server/models/organization.go",
+        "meshery/meshery|server/models/organization_persistor.go"
+      ],
+      "complexity_score": 4
+    },
+    {
+      "resource": "badge",
+      "versions": [
+        "v1beta1"
+      ],
+      "consuming_files": [
+        "layer5io/meshery-cloud|server/handlers/academy/achievements.go",
+        "layer5io/meshery-cloud|server/handlers/badges/dao.go",
+        "layer5io/meshery-cloud|server/handlers/badges/handler.go",
+        "layer5io/meshery-cloud|server/handlers/badges/service.go",
+        "layer5io/meshery-cloud|server/models/users.go"
+      ],
+      "complexity_score": 5
+    },
+    {
+      "resource": "feature",
+      "versions": [
+        "v1beta1"
+      ],
+      "consuming_files": [
+        "layer5io/meshery-cloud|server/dao/subscriptions.go",
+        "layer5io/meshery-cloud|server/handlers/meshery_patterns.go",
+        "layer5io/meshery-cloud|server/handlers/middlewares_authz_entitlement.go",
+        "layer5io/meshery-cloud|server/models/dao_interface.go",
+        "layer5io/meshery-cloud|server/models/handlers.go"
+      ],
+      "complexity_score": 5
+    },
+    {
+      "resource": "invitation",
+      "versions": [
+        "v1beta1"
+      ],
+      "consuming_files": [
+        "layer5io/meshery-cloud|server/handlers/academy/crud.go",
+        "layer5io/meshery-cloud|server/handlers/invitations/dao.go",
+        "layer5io/meshery-cloud|server/handlers/invitations/handlers.go",
+        "layer5io/meshery-cloud|server/handlers/invitations/service.go",
+        "layer5io/meshery-cloud|server/models/handlers.go"
+      ],
+      "complexity_score": 5
+    },
+    {
+      "resource": "subscription",
+      "versions": [
+        "v1beta1"
+      ],
+      "consuming_files": [
+        "layer5io/meshery-cloud|server/dao/subscriptions.go",
+        "layer5io/meshery-cloud|server/handlers/subscriptions.go",
+        "layer5io/meshery-cloud|server/models/dao_interface.go",
+        "layer5io/meshery-cloud|server/payment_processor/processor.go",
+        "layer5io/meshery-cloud|server/payment_processor/renconciller.go",
+        "layer5io/meshery-cloud|server/payment_processor/stripe.go"
+      ],
+      "complexity_score": 6
+    },
+    {
+      "resource": "user",
+      "versions": [
+        "v1beta1"
+      ],
+      "consuming_files": [
+        "layer5io/meshery-cloud|server/handlers/badge_helpers.go",
+        "layer5io/meshery-cloud|server/handlers/middlewares_authz_scope.go",
+        "layer5io/meshery-cloud|server/handlers/middlewares_context.go",
+        "layer5io/meshery-cloud|server/handlers/users.go",
+        "layer5io/meshery-cloud|server/models/users.go",
+        "layer5io/meshery-cloud|server/utils/utils.go",
+        "meshery/meshery|server/models/user.go"
+      ],
+      "complexity_score": 7
+    },
+    {
+      "resource": "v1beta1.meta",
+      "versions": [
+        "v1beta1"
+      ],
+      "consuming_files": [
+        "layer5io/meshery-cloud|server/handlers/meshery_patterns.go",
+        "meshery/meshery|mesheryctl/internal/cli/root/model/import.go",
+        "meshery/meshery|server/handlers/component_handler.go",
+        "meshery/meshery|server/handlers/meshery_filter_handler.go",
+        "meshery/meshery|server/models/meshmodel/core/register.go",
+        "meshery/meshery|server/models/pattern/core/pattern.go",
+        "meshery/meshery|server/models/pattern/utils/utils.go"
+      ],
+      "complexity_score": 7
+    },
+    {
+      "resource": "academy",
+      "versions": [
+        "v1beta1"
+      ],
+      "consuming_files": [
+        "layer5io/meshery-cloud|server/handlers/academy/achievements.go",
+        "layer5io/meshery-cloud|server/handlers/academy/crud.go",
+        "layer5io/meshery-cloud|server/handlers/academy/dao.go",
+        "layer5io/meshery-cloud|server/handlers/academy/instructor-console.go",
+        "layer5io/meshery-cloud|server/handlers/academy/load_cirricula.go",
+        "layer5io/meshery-cloud|server/handlers/academy/progress_tracker.go",
+        "layer5io/meshery-cloud|server/handlers/academy/quiz.go",
+        "layer5io/meshery-cloud|server/handlers/academy/utils.go"
+      ],
+      "complexity_score": 8
+    },
+    {
+      "resource": "plan",
+      "versions": [
+        "v1beta1"
+      ],
+      "consuming_files": [
+        "layer5io/meshery-cloud|server/dao/plan.go",
+        "layer5io/meshery-cloud|server/dao/subscriptions.go",
+        "layer5io/meshery-cloud|server/handlers/api_plans.go",
+        "layer5io/meshery-cloud|server/handlers/middlewares_authz_entitlement.go",
+        "layer5io/meshery-cloud|server/models/dao_interface.go",
+        "layer5io/meshery-cloud|server/models/handlers.go",
+        "layer5io/meshery-cloud|server/payment_processor/processor.go",
+        "layer5io/meshery-cloud|server/payment_processor/stripe.go"
+      ],
+      "complexity_score": 8
+    },
+    {
+      "resource": "workspace",
+      "versions": [
+        "v1beta1"
+      ],
+      "consuming_files": [
+        "layer5io/meshery-cloud|server/models/model_workspace.go",
+        "meshery/meshery|mesheryctl/internal/cli/root/workspaces/create.go",
+        "meshery/meshery|mesheryctl/internal/cli/root/workspaces/list.go",
+        "meshery/meshery|mesheryctl/internal/cli/root/workspaces/view.go",
+        "meshery/meshery|server/cmd/main.go",
+        "meshery/meshery|server/handlers/doc.go",
+        "meshery/meshery|server/handlers/workspace_handlers.go",
+        "meshery/meshery|server/models/default_local_provider.go",
+        "meshery/meshery|server/models/providers.go",
+        "meshery/meshery|server/models/remote_provider.go",
+        "meshery/meshery|server/models/workspace_persister.go"
+      ],
+      "complexity_score": 11
+    },
+    {
+      "resource": "model",
+      "versions": [
+        "v1beta1"
+      ],
+      "consuming_files": [
+        "layer5io/meshery-cloud|server/dao/meshmodels_dao.go",
+        "layer5io/meshery-cloud|server/meshmodels/helper.go",
+        "layer5io/meshery-cloud|server/models/dao_interface.go",
+        "layer5io/meshery-cloud|server/models/meshmodels.go",
+        "meshery/meshery|mesheryctl/internal/cli/root/model/common.go",
+        "meshery/meshery|mesheryctl/internal/cli/root/model/view.go",
+        "meshery/meshery|mesheryctl/internal/cli/root/registry/publish.go",
+        "meshery/meshery|server/handlers/component_generator_helper.go",
+        "meshery/meshery|server/handlers/component_handler.go",
+        "meshery/meshery|server/handlers/meshery_filter_handler.go",
+        "meshery/meshery|server/helpers/utils/utils.go",
+        "meshery/meshery|server/models/meshery_meshmodels_api_response.go",
+        "meshery/meshery|server/models/meshmodel/core/register.go"
+      ],
+      "complexity_score": 13
+    },
+    {
+      "resource": "environment",
+      "versions": [
+        "v1beta1"
+      ],
+      "consuming_files": [
+        "layer5io/meshery-cloud|server/models/model_available_environment.go",
+        "layer5io/meshery-cloud|server/models/model_environment.go",
+        "layer5io/meshery-cloud|server/models/model_environment_page.go",
+        "meshery/meshery|mesheryctl/internal/cli/root/environments/create.go",
+        "meshery/meshery|mesheryctl/internal/cli/root/environments/environment.go",
+        "meshery/meshery|mesheryctl/internal/cli/root/environments/list.go",
+        "meshery/meshery|mesheryctl/internal/cli/root/environments/view.go",
+        "meshery/meshery|server/cmd/main.go",
+        "meshery/meshery|server/handlers/environments_handlers.go",
+        "meshery/meshery|server/models/default_local_provider.go",
+        "meshery/meshery|server/models/environment_persister.go",
+        "meshery/meshery|server/models/environments/environment.go",
+        "meshery/meshery|server/models/providers.go",
+        "meshery/meshery|server/models/remote_provider.go",
+        "meshery/meshery|server/models/workspace_persister.go"
+      ],
+      "complexity_score": 15
+    },
+    {
+      "resource": "relationship",
+      "versions": [
+        "v1alpha3",
+        "v1beta2"
+      ],
+      "consuming_files": [
+        "meshery/meshery|mesheryctl/internal/cli/root/relationships/relationship.go",
+        "meshery/meshery|mesheryctl/internal/cli/root/relationships/view.go",
+        "meshery/meshery|server/handlers/component_generator_helper.go",
+        "meshery/meshery|server/handlers/component_handler.go",
+        "meshery/meshery|server/handlers/meshsync_handler.go",
+        "meshery/meshery|server/handlers/policy_relationship_handler.go",
+        "meshery/meshery|server/handlers/relationship_handlers.go",
+        "meshery/meshery|server/helpers/common_registry_logs.go",
+        "meshery/meshery|server/internal/graphql/resolver/meshmodel.go",
+        "meshery/meshery|server/policies/actions.go",
+        "meshery/meshery|server/policies/engine.go",
+        "meshery/meshery|server/policies/eval_rules.go",
+        "meshery/meshery|server/policies/feasibility.go",
+        "meshery/meshery|server/policies/policy.go",
+        "meshery/meshery|server/policies/policy_alias.go",
+        "meshery/meshery|server/policies/policy_binding.go",
+        "meshery/meshery|server/policies/policy_edge_network.go",
+        "meshery/meshery|server/policies/policy_hierarchical.go",
+        "meshery/meshery|server/policies/policy_matchlabels.go",
+        "meshery/meshery|server/policies/policy_wallet.go",
+        "meshery/meshery|server/policies/utils.go"
+      ],
+      "complexity_score": 21
+    },
+    {
+      "resource": "connection",
+      "versions": [
+        "v1beta1"
+      ],
+      "consuming_files": [
+        "layer5io/meshery-cloud|server/dao/connections.go",
+        "layer5io/meshery-cloud|server/handlers/connections.go",
+        "layer5io/meshery-cloud|server/handlers/github.go",
+        "layer5io/meshery-cloud|server/handlers/users.go",
+        "layer5io/meshery-cloud|server/models/connections.go",
+        "layer5io/meshery-cloud|server/models/dao_interface.go",
+        "layer5io/meshery-cloud|server/utils/utils.go",
+        "meshery/meshery|mesheryctl/internal/cli/root/connections/connection.go",
+        "meshery/meshery|mesheryctl/internal/cli/root/connections/list.go",
+        "meshery/meshery|mesheryctl/internal/cli/root/connections/view.go",
+        "meshery/meshery|server/cmd/main.go",
+        "meshery/meshery|server/handlers/component_generation.go",
+        "meshery/meshery|server/handlers/component_handler.go",
+        "meshery/meshery|server/handlers/connections_handlers.go",
+        "meshery/meshery|server/handlers/handler_instance.go",
+        "meshery/meshery|server/handlers/k8sconfig_handler.go",
+        "meshery/meshery|server/handlers/meshery_pattern_handler.go",
+        "meshery/meshery|server/helpers/common_registry_logs.go",
+        "meshery/meshery|server/machines/kubernetes/connect.go",
+        "meshery/meshery|server/models/connection_persister.go",
+        "meshery/meshery|server/models/connections/connections.go",
+        "meshery/meshery|server/models/default_local_provider.go",
+        "meshery/meshery|server/models/meshery_controllers.go",
+        "meshery/meshery|server/models/meshmodel/core/register.go",
+        "meshery/meshery|server/models/pattern/patterns/patterns.go",
+        "meshery/meshery|server/models/pattern/stages/provision.go",
+        "meshery/meshery|server/models/remote_provider.go"
+      ],
+      "complexity_score": 27
+    },
+    {
+      "resource": "pattern",
+      "versions": [
+        "v1beta1"
+      ],
+      "consuming_files": [
+        "layer5io/meshery-cloud|server/handlers/meshery_patterns.go",
+        "layer5io/meshery-cloud|server/models/meshery_patterns.go",
+        "meshery/meshery|mesheryctl/internal/cli/root/design/deploy.go",
+        "meshery/meshery|mesheryctl/internal/cli/root/design/import.go",
+        "meshery/meshery|server/handlers/design_engine_handler.go",
+        "meshery/meshery|server/handlers/design_import.go",
+        "meshery/meshery|server/handlers/evaluation_tracker.go",
+        "meshery/meshery|server/handlers/meshery_pattern_handler.go",
+        "meshery/meshery|server/handlers/meshsync_handler.go",
+        "meshery/meshery|server/handlers/policy_relationship_handler.go",
+        "meshery/meshery|server/models/default_local_provider.go",
+        "meshery/meshery|server/models/meshsync.go",
+        "meshery/meshery|server/models/pattern/core/model.go",
+        "meshery/meshery|server/models/pattern/core/pattern.go",
+        "meshery/meshery|server/models/pattern/planner/planner.go",
+        "meshery/meshery|server/models/pattern/stages/chain.go",
+        "meshery/meshery|server/models/pattern/stages/filler.go",
+        "meshery/meshery|server/models/pattern/stages/provision.go",
+        "meshery/meshery|server/models/pattern/stages/svc_provider.go",
+        "meshery/meshery|server/models/workspace_persister.go",
+        "meshery/meshery|server/policies/actions.go",
+        "meshery/meshery|server/policies/engine.go",
+        "meshery/meshery|server/policies/eval_rules.go",
+        "meshery/meshery|server/policies/policy.go",
+        "meshery/meshery|server/policies/policy_alias.go",
+        "meshery/meshery|server/policies/policy_binding.go",
+        "meshery/meshery|server/policies/policy_edge_network.go",
+        "meshery/meshery|server/policies/policy_hierarchical.go",
+        "meshery/meshery|server/policies/policy_matchlabels.go",
+        "meshery/meshery|server/policies/policy_wallet.go",
+        "meshery/meshery|server/policies/utils.go"
+      ],
+      "complexity_score": 31
+    },
+    {
+      "resource": "component",
+      "versions": [
+        "v1beta1"
+      ],
+      "consuming_files": [
+        "meshery/meshery|mesheryctl/internal/cli/root/components/view.go",
+        "meshery/meshery|mesheryctl/internal/cli/root/registry/update.go",
+        "meshery/meshery|server/handlers/component_generation.go",
+        "meshery/meshery|server/handlers/component_generator_helper.go",
+        "meshery/meshery|server/handlers/component_handler.go",
+        "meshery/meshery|server/handlers/design_engine_handler.go",
+        "meshery/meshery|server/handlers/meshery_filter_handler.go",
+        "meshery/meshery|server/handlers/meshery_pattern_handler.go",
+        "meshery/meshery|server/handlers/meshsync_handler.go",
+        "meshery/meshery|server/handlers/policy_relationship_handler.go",
+        "meshery/meshery|server/helpers/common_registry_logs.go",
+        "meshery/meshery|server/helpers/utils/utils.go",
+        "meshery/meshery|server/internal/graphql/resolver/meshmodel.go",
+        "meshery/meshery|server/machines/helpers/auto_register.go",
+        "meshery/meshery|server/models/k8s_components_registration.go",
+        "meshery/meshery|server/models/meshery_meshmodels_api_response.go",
+        "meshery/meshery|server/models/meshmodel/core/register.go",
+        "meshery/meshery|server/models/meshsync_events.go",
+        "meshery/meshery|server/models/pattern/core/pattern.go",
+        "meshery/meshery|server/models/pattern/patterns/k8s/k8s.go",
+        "meshery/meshery|server/models/pattern/patterns/patterns.go",
+        "meshery/meshery|server/models/pattern/planner/graph.go",
+        "meshery/meshery|server/models/pattern/planner/planner.go",
+        "meshery/meshery|server/models/pattern/resource/selector/workload.go",
+        "meshery/meshery|server/models/pattern/stages/chain.go",
+        "meshery/meshery|server/models/pattern/stages/filler.go",
+        "meshery/meshery|server/models/pattern/stages/provision.go",
+        "meshery/meshery|server/models/pattern/stages/svc_provider.go",
+        "meshery/meshery|server/models/pattern/stages/validate.go",
+        "meshery/meshery|server/policies/actions.go",
+        "meshery/meshery|server/policies/eval_rules.go",
+        "meshery/meshery|server/policies/feasibility.go",
+        "meshery/meshery|server/policies/policy_alias.go",
+        "meshery/meshery|server/policies/policy_binding.go",
+        "meshery/meshery|server/policies/policy_matchlabels.go"
+      ],
+      "complexity_score": 35
+    }
+  ],
+  "missing_from_inventory": [
+    "role",
+    "team",
+    "token"
+  ],
+  "bundled_ts_total": 147
+}

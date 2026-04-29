@@ -7,6 +7,7 @@ const InvitationSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Invitation",
+    "x-deprecated": true,
     "description": "OpenAPI schema for managing invitations.",
     "version": "v1beta2",
     "contact": {

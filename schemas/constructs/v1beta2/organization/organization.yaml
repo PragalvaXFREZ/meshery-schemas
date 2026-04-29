@@ -1,0 +1,105 @@
+$id: https://schemas.meshery.io/organization.yaml
+$schema: http://json-schema.org/draft-07/schema#
+description: >-
+  An organization in Meshery Cloud. Organizations are the top-level tenancy
+  boundary and own teams, workspaces, environments, designs, and other resources.
+  Learn more at https://docs.meshery.io/concepts/logical/organizations
+type: object
+additionalProperties: false
+required:
+  - id
+  - name
+  - country
+  - region
+  - description
+  - owner
+  - metadata
+  - createdAt
+  - updatedAt
+properties:
+  id:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    description: Organization ID.
+    x-oapi-codegen-extra-tags:
+      db: id
+      json: id
+  name:
+    type: string
+    description: Name of the organization.
+    minLength: 1
+    maxLength: 255
+    x-oapi-codegen-extra-tags:
+      db: name
+      json: name
+  country:
+    type: string
+    description: Country of the organization.
+    maxLength: 500
+    x-oapi-codegen-extra-tags:
+      db: country
+      json: country
+  region:
+    type: string
+    description: Region of the organization.
+    maxLength: 500
+    x-oapi-codegen-extra-tags:
+      db: region
+      json: region
+  description:
+    type: string
+    description: Description of the organization.
+    maxLength: 5000
+    x-oapi-codegen-extra-tags:
+      db: description
+      json: description
+  owner:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    description: Owner user ID of the organization.
+    x-oapi-codegen-extra-tags:
+      db: owner
+      json: owner
+  metadata:
+    type: object
+    description: Free-form metadata associated with the organization, including preferences.
+    x-go-type: OrgMetadata
+    x-oapi-codegen-extra-tags:
+      db: metadata
+      json: metadata
+  domain:
+    type: string
+    nullable: true
+    description: Domain of the organization.
+    maxLength: 500
+    x-oapi-codegen-extra-tags:
+      db: domain
+      json: "domain,omitempty"
+  createdAt:
+    description: Timestamp when the organization was created.
+    type: string
+    format: date-time
+    x-go-type: time.Time
+    x-go-name: CreatedAt
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: created_at
+      json: createdAt
+  updatedAt:
+    description: Timestamp when the organization was last updated.
+    type: string
+    format: date-time
+    x-go-type: time.Time
+    x-go-name: UpdatedAt
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+      json: updatedAt
+  deletedAt:
+    description: Timestamp when the organization was soft-deleted. Null while the organization is active.
+    type: string
+    format: date-time
+    x-go-type: core.NullTime
+    x-go-name: DeletedAt
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: deleted_at
+      json: "deletedAt,omitempty"

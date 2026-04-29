@@ -8,6 +8,8 @@ const ConnectionSchema: Record<string, unknown> = {
   "info": {
     "title": "Connection API",
     "description": "API for managing Meshery connections - managed and unmanaged resources tracked by Meshery.",
+    "x-deprecated": true,
+    "x-superseded-by": "v1beta3",
     "version": "v1beta2",
     "contact": {
       "name": "Meshery Maintainers",
@@ -27,6 +29,10 @@ const ConnectionSchema: Record<string, unknown> = {
   "paths": {
     "/api/integrations/connections": {
       "get": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "Connections"
         ],
@@ -600,6 +606,10 @@ const ConnectionSchema: Record<string, unknown> = {
         }
       },
       "post": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "Connections"
         ],
@@ -1133,6 +1143,10 @@ const ConnectionSchema: Record<string, unknown> = {
     },
     "/api/integrations/connections/{connectionId}": {
       "get": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "Connections"
         ],
@@ -1573,6 +1587,10 @@ const ConnectionSchema: Record<string, unknown> = {
         }
       },
       "put": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "Connections"
         ],
@@ -2126,6 +2144,10 @@ const ConnectionSchema: Record<string, unknown> = {
         }
       },
       "delete": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "Connections"
         ],
@@ -2183,6 +2205,10 @@ const ConnectionSchema: Record<string, unknown> = {
     },
     "/api/integrations/connections/meshery/{mesheryServerId}": {
       "delete": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "Connections"
         ],
@@ -2240,6 +2266,10 @@ const ConnectionSchema: Record<string, unknown> = {
     },
     "/api/integrations/connections/kubernetes/{connectionId}/context": {
       "get": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "Connections"
         ],
@@ -2304,6 +2334,10 @@ const ConnectionSchema: Record<string, unknown> = {
     },
     "/api/environments/{environmentId}/connections/{connectionId}": {
       "post": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "Connections"
         ],
@@ -2379,6 +2413,10 @@ const ConnectionSchema: Record<string, unknown> = {
         }
       },
       "delete": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "Connections"
         ],

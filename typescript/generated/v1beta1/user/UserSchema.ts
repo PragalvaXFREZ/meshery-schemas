@@ -8,6 +8,8 @@ const UserSchema: Record<string, unknown> = {
   "info": {
     "title": "User",
     "description": "OpenAPI schema for user management in Meshery Cloud.",
+    "x-deprecated": true,
+    "x-superseded-by": "v1beta2",
     "version": "v1beta1",
     "contact": {
       "name": "Meshery Maintainers",
@@ -27,6 +29,10 @@ const UserSchema: Record<string, unknown> = {
   "paths": {
     "/api/identity/orgs/{orgId}/users": {
       "get": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "users"
         ],
@@ -694,6 +700,10 @@ const UserSchema: Record<string, unknown> = {
     },
     "/api/users": {
       "get": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "users"
         ],
@@ -1312,6 +1322,10 @@ const UserSchema: Record<string, unknown> = {
     },
     "/api/identity/users/profile/{id}": {
       "get": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "users"
         ],
@@ -1888,6 +1902,10 @@ const UserSchema: Record<string, unknown> = {
     },
     "/api/identity/users/profile": {
       "get": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "users"
         ],

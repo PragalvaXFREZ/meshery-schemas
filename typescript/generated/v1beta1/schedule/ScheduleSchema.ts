@@ -8,6 +8,8 @@ const ScheduleSchema: Record<string, unknown> = {
   "info": {
     "title": "schedule",
     "description": "Documentation for Meshery Cloud REST APIs for Schedules",
+    "x-deprecated": true,
+    "x-superseded-by": "v1beta2",
     "contact": {
       "name": "Meshery Maintainers",
       "email": "maintainers@meshery.io",
@@ -21,11 +23,11 @@ const ScheduleSchema: Record<string, unknown> = {
   },
   "servers": [
     {
-      "url": "https://cloud.layer5.io",
+      "url": "https://cloud.meshery.io",
       "description": "Meshery Cloud production server URL"
     },
     {
-      "url": "https://staging-cloud.layer5.io",
+      "url": "https://staging-cloud.meshery.io",
       "description": "Meshery Cloud staging server URL"
     },
     {

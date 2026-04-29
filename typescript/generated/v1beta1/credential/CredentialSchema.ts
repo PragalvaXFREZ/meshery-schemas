@@ -7,6 +7,7 @@ const CredentialSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "credential",
+    "x-deprecated": true,
     "description": "Documentation for Meshery Cloud REST APIs for Credentials",
     "contact": {
       "name": "Meshery Maintainers",
@@ -21,11 +22,11 @@ const CredentialSchema: Record<string, unknown> = {
   },
   "servers": [
     {
-      "url": "https://cloud.layer5.io",
+      "url": "https://cloud.meshery.io",
       "description": "Meshery Cloud production server URL"
     },
     {
-      "url": "https://staging-cloud.layer5.io",
+      "url": "https://staging-cloud.meshery.io",
       "description": "Meshery Cloud staging server URL"
     },
     {
@@ -48,7 +49,8 @@ const CredentialSchema: Record<string, unknown> = {
     "/api/integrations/credentials": {
       "get": {
         "x-internal": [
-          "cloud"
+          "cloud",
+          "meshery"
         ],
         "tags": [
           "credentials"
@@ -267,7 +269,8 @@ const CredentialSchema: Record<string, unknown> = {
       },
       "post": {
         "x-internal": [
-          "cloud"
+          "cloud",
+          "meshery"
         ],
         "tags": [
           "credentials"
@@ -542,7 +545,8 @@ const CredentialSchema: Record<string, unknown> = {
       },
       "put": {
         "x-internal": [
-          "cloud"
+          "cloud",
+          "meshery"
         ],
         "tags": [
           "credentials"
@@ -827,7 +831,8 @@ const CredentialSchema: Record<string, unknown> = {
       },
       "delete": {
         "x-internal": [
-          "cloud"
+          "cloud",
+          "meshery"
         ],
         "tags": [
           "credentials"
@@ -902,7 +907,8 @@ const CredentialSchema: Record<string, unknown> = {
     "/api/integrations/credentials/{id}": {
       "get": {
         "x-internal": [
-          "cloud"
+          "cloud",
+          "meshery"
         ],
         "tags": [
           "credentials"

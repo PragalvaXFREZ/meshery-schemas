@@ -1,0 +1,371 @@
+openapi: 3.0.0
+info:
+  title: Performance Profile
+  description: OpenAPI schema for performance-profile management in Meshery and Meshery Cloud.
+  version: v1beta3
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: https://cloud.meshery.io
+    description: Meshery Cloud production server URL
+  - url: https://staging-cloud.meshery.io
+    description: Meshery Cloud staging server URL
+  - url: http://localhost:9876
+    description: Meshery Cloud development server URL (controlled via PORT environment variable)
+
+security:
+  - jwt: []
+
+tags:
+  - name: performance
+    description: APIs for managing Meshery performance profiles.
+
+paths:
+  /api/performance-profiles:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - performance
+      operationId: getPerformanceProfiles
+      summary: List performance profiles
+      description: Returns the performance profiles owned by the authenticated user, with pagination, search, and ordering.
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+      responses:
+        "200":
+          description: Performance profiles
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PerformanceProfilePage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - performance
+      operationId: upsertPerformanceProfile
+      summary: Create or update a performance profile
+      description: Creates a new performance profile when the body omits id, or updates the matching existing profile when an id is provided.
+      requestBody:
+        $ref: "#/components/requestBodies/performanceProfilePayload"
+      responses:
+        "200":
+          description: Performance profile upserted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PerformanceProfile"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/performance-profiles/{performanceProfileId}:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - performance
+      operationId: getPerformanceProfile
+      summary: Get a performance profile by ID
+      description: Returns a single performance profile owned by (or visible to) the authenticated user.
+      parameters:
+        - $ref: "#/components/parameters/performanceProfileId"
+      responses:
+        "200":
+          description: Performance profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PerformanceProfile"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      x-internal: ["cloud"]
+      tags:
+        - performance
+      operationId: updatePerformanceProfile
+      summary: Update a performance profile
+      description: Updates the performance profile identified by the path parameter.
+      parameters:
+        - $ref: "#/components/parameters/performanceProfileId"
+      requestBody:
+        $ref: "#/components/requestBodies/performanceProfilePayload"
+      responses:
+        "200":
+          description: Performance profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PerformanceProfile"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - performance
+      operationId: deletePerformanceProfile
+      summary: Delete a performance profile
+      description: Deletes the performance profile identified by the path parameter and any associated performance results.
+      parameters:
+        - $ref: "#/components/parameters/performanceProfileId"
+      responses:
+        "204":
+          description: Performance profile deleted
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  responses:
+    200:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/200"
+    400:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
+    401:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
+    404:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/404"
+    500:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
+
+  parameters:
+    performanceProfileId:
+      name: performanceProfileId
+      in: path
+      description: Performance profile ID.
+      schema:
+        $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+      required: true
+    search:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/search"
+    order:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/order"
+    page:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/page"
+    pagesize:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/pagesize"
+
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    PerformanceProfile:
+      $ref: "./performance_profile.yaml"
+
+    PerformanceProfilePayload:
+      type: object
+      description: Payload for creating or updating a performance profile. Includes only client-settable fields; server-generated fields (id on create, createdAt, updatedAt, lastRun, totalResults) are populated by the server.
+      required:
+        - name
+        - loadGenerators
+        - endpoints
+        - duration
+      properties:
+        id:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          description: Existing performance-profile ID for updates; omit on create.
+          x-go-name: ID
+          x-oapi-codegen-extra-tags:
+            json: "id,omitempty"
+        name:
+          type: string
+          description: Human-readable name of the performance profile.
+          minLength: 1
+          maxLength: 255
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: name
+        userId:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          description: Owner user ID. When omitted, the server infers it from the authenticated user.
+          x-go-name: UserID
+          x-oapi-codegen-extra-tags:
+            json: "userId,omitempty"
+        schedule:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          description: Optional schedule ID associating the profile with a recurring run.
+          nullable: true
+          x-oapi-codegen-extra-tags:
+            json: "schedule,omitempty"
+        loadGenerators:
+          type: array
+          description: Load generators (e.g. fortio, wrk2, nighthawk) to drive the profile's load test.
+          minItems: 1
+          items:
+            type: string
+            description: Identifier of a single load generator.
+            minLength: 1
+            maxLength: 64
+          x-go-type: pq.StringArray
+          x-go-type-import:
+            path: github.com/lib/pq
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: loadGenerators
+        endpoints:
+          type: array
+          description: Endpoints (URLs) targeted by the performance profile's load test.
+          minItems: 1
+          items:
+            type: string
+            description: A single endpoint URL targeted by the load test.
+            minLength: 1
+            maxLength: 2048
+          x-go-type: pq.StringArray
+          x-go-type-import:
+            path: github.com/lib/pq
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: endpoints
+        serviceMesh:
+          type: string
+          description: Service mesh under test for the profile (e.g. istio, linkerd, consul). Empty string when the profile is mesh-agnostic.
+          maxLength: 100
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "serviceMesh,omitempty"
+        concurrentRequest:
+          type: integer
+          description: Number of concurrent requests issued by the load generator.
+          minimum: 1
+          maximum: 100000
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "concurrentRequest,omitempty"
+        qps:
+          type: integer
+          description: Target queries-per-second rate for the load generator. Zero indicates the generator runs unthrottled.
+          minimum: 0
+          maximum: 1000000
+          x-go-name: QPS
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "qps,omitempty"
+        duration:
+          type: string
+          description: Duration of the load test, expressed as a Go duration string (e.g. "30s", "5m", "1h").
+          minLength: 1
+          maxLength: 32
+          pattern: "^[0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h)([0-9]+(\\.[0-9]+)?(ns|us|µs|ms|s|m|h))*$"
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: duration
+        requestHeaders:
+          type: string
+          description: HTTP request headers, serialized as JSON, sent on each load-test request.
+          maxLength: 16384
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "requestHeaders,omitempty"
+        requestCookies:
+          type: string
+          description: HTTP request cookies, serialized as JSON, sent on each load-test request.
+          maxLength: 16384
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "requestCookies,omitempty"
+        requestBody:
+          type: string
+          description: HTTP request body sent on each load-test request.
+          maxLength: 1048576
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "requestBody,omitempty"
+        contentType:
+          type: string
+          description: Content-Type header value applied to each load-test request body (e.g. "application/json").
+          maxLength: 255
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "contentType,omitempty"
+        metadata:
+          type: object
+          description: Free-form metadata associated with the performance profile.
+          additionalProperties: true
+          x-go-type: core.Map
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "metadata,omitempty"
+
+    PerformanceProfilePage:
+      type: object
+      description: Paginated list of performance profiles.
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - profiles
+      properties:
+        page:
+          type: integer
+          description: Zero-based page index returned in this response.
+          minimum: 0
+          maximum: 1000000
+          x-go-type-skip-optional-pointer: true
+        pageSize:
+          type: integer
+          description: Maximum number of items returned on each page.
+          minimum: 1
+          maximum: 1000
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: pageSize
+        totalCount:
+          type: integer
+          description: Total number of performance profiles across all pages.
+          minimum: 0
+          maximum: 100000000
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: totalCount
+        profiles:
+          type: array
+          description: Performance profiles in this page.
+          x-go-type-skip-optional-pointer: true
+          items:
+            x-go-type: PerformanceProfile
+            $ref: "#/components/schemas/PerformanceProfile"
+
+  requestBodies:
+    performanceProfilePayload:
+      description: Body for creating or updating a performance profile.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PerformanceProfilePayload"

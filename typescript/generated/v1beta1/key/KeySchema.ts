@@ -7,6 +7,7 @@ const KeySchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Key",
+    "x-deprecated": true,
     "description": "OpenAPI schema for authorization key management in Meshery.",
     "version": "v1beta1",
     "contact": {
@@ -37,6 +38,10 @@ const KeySchema: Record<string, unknown> = {
   "paths": {
     "/api/identity/orgs/{orgId}/users/keys": {
       "get": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "users"
         ],

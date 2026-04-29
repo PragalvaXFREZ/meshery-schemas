@@ -2,6 +2,8 @@ openapi: 3.0.0
 info:
   title: Organization
   description: OpenAPI schema for organization management in Meshery Cloud.
+  x-deprecated: true
+  x-superseded-by: v1beta2
   version: v1beta1
   contact:
     name: Meshery Maintainers
@@ -18,6 +20,7 @@ tags:
 paths:
   /api/identity/orgs:
     get:
+      x-internal: ["cloud", "meshery"]
       tags:
         - Organizations
       security:
@@ -45,6 +48,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     post:
+      x-internal: ["cloud", "meshery"]
       tags:
         - Organizations
       security:
@@ -70,6 +74,7 @@ paths:
 
   /api/identity/orgs/by-domain:
     get:
+      x-internal: ["cloud", "meshery"]
       tags:
         - Organizations
       summary: Get organization by domain
@@ -95,6 +100,7 @@ paths:
           description: Internal server error
   /api/identity/orgs/{orgId}:
     get:
+      x-internal: ["cloud", "meshery"]
       tags:
         - Organizations
       security:
@@ -118,6 +124,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     delete:
+      x-internal: ["cloud", "meshery"]
       tags:
         - Organizations
       security:
@@ -139,6 +146,7 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     put:
+      x-internal: ["cloud", "meshery"]
       tags:
         - Organizations
       security:
@@ -167,6 +175,7 @@ paths:
           $ref: "#/components/responses/500"
   /api/identity/orgs/{orgId}/preferences:
     get:
+      x-internal: ["cloud", "meshery"]
       tags:
         - Organizations
       security:
@@ -192,6 +201,7 @@ paths:
 
   /api/identity/orgs/{orgId}/teams/{teamId}:
     post:
+      x-internal: ["cloud", "meshery"]
       tags:
         - Organizations
       security:
@@ -228,6 +238,7 @@ paths:
 
   /api/identity/orgs/{orgId}/teams/{teamId}/remove:
     post:
+      x-internal: ["cloud", "meshery"]
       tags:
         - Organizations
       security:
@@ -256,6 +267,7 @@ paths:
 
   /api/identity/orgs/{orgId}/users/{userId}:
     post:
+      x-internal: ["cloud", "meshery"]
       tags:
         - Organizations
       security:
@@ -286,6 +298,7 @@ paths:
         "500":
           description: Internal server error
     delete:
+      x-internal: ["cloud", "meshery"]
       tags:
         - Organizations
       security:

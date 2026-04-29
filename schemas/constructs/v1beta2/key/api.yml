@@ -1,0 +1,254 @@
+openapi: 3.0.0
+info:
+  title: Key
+  description: OpenAPI schema for authorization key management in Meshery.
+  version: v1beta2
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+security:
+  - jwt: []
+
+tags:
+  - name: Key
+    description: Operations related to authorization keys
+  - name: users
+    description: Operations related to users and their authorization keys
+
+paths:
+  /api/identity/orgs/{orgId}/users/keys:
+    get:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - users
+      operationId: getUserKeys
+      summary: Get User Keys
+      description: Get all keys based on roles assigned to user
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+      responses:
+        "200":
+          description: Returns user keys based on roles assigned to user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KeyPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+  /api/auth/keys:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - Key
+      summary: List key
+      operationId: getKeys
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+      responses:
+        "200":
+          description: Keys fetched
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KeyPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - Key
+      summary: Create or update a key
+      operationId: upsertKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KeyPayload"
+      responses:
+        "200":
+          description: Key upserted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Key"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/auth/key/{keyId}:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - Key
+      summary: Get key by ID
+      operationId: getKeyById
+      parameters:
+        - $ref: "#/components/parameters/keyId"
+      responses:
+        "200":
+          description: Key response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Key"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - Key
+      summary: Delete key
+      operationId: deleteKey
+      parameters:
+        - $ref: "#/components/parameters/keyId"
+      responses:
+        "204":
+          description: Key deleted
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  responses:
+    400:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
+    401:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
+    404:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/404"
+    500:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
+
+  parameters:
+    orgId:
+      name: orgId
+      in: path
+      description: Organization ID
+      required: true
+      schema:
+        $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    keyId:
+      name: keyId
+      in: path
+      description: Key ID
+      required: true
+      schema:
+        $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    page:
+      $ref: ../../v1alpha1/core/api.yml#/components/parameters/page
+    pagesize:
+      $ref: ../../v1alpha1/core/api.yml#/components/parameters/pagesize
+    order:
+      $ref: ../../v1alpha1/core/api.yml#/components/parameters/order
+    search:
+      $ref: ../../v1alpha1/core/api.yml#/components/parameters/search
+
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Key:
+      $ref: "./key.yaml"
+    KeyPayload:
+      type: object
+      description: Payload for creating or updating a key.
+      properties:
+        id:
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+          description: Existing key identifier for updates.
+          x-order: 1
+          x-oapi-codegen-extra-tags:
+            json: "id,omitempty"
+        function:
+          type: string
+          description: Operation permitted by the key.
+          x-order: 2
+          maxLength: 500
+        category:
+          type: string
+          description: Category for the key.
+          x-order: 3
+          maxLength: 500
+        subcategory:
+          type: string
+          description: Subcategory for the key.
+          x-order: 4
+          maxLength: 500
+        description:
+          type: string
+          description: Human readable description of the key.
+          x-order: 5
+          maxLength: 5000
+    KeyPage:
+      type: object
+      description: A paginated list of authorization keys.
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - keys
+      properties:
+        page:
+          type: integer
+          description: Zero-based page index returned in this response.
+          minimum: 0
+          x-go-type-skip-optional-pointer: true
+          x-order: 1
+        pageSize:
+          type: integer
+          description: Maximum number of items returned on each page.
+          minimum: 1
+          x-go-type-skip-optional-pointer: true
+          x-order: 2
+          x-oapi-codegen-extra-tags:
+            json: pageSize
+        totalCount:
+          type: integer
+          description: Total number of items across all pages.
+          minimum: 0
+          x-go-type-skip-optional-pointer: true
+          x-order: 3
+          x-oapi-codegen-extra-tags:
+            json: totalCount
+        keys:
+          type: array
+          items:
+            $ref: "#/components/schemas/Key"
+          x-order: 4
+          description: Keys returned on the current page.

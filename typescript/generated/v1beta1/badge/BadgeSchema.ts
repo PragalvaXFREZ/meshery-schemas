@@ -7,6 +7,7 @@ const BadgeSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Badge",
+    "x-deprecated": true,
     "description": "OpenAPI schema for managing badges.",
     "version": "v1beta1",
     "contact": {

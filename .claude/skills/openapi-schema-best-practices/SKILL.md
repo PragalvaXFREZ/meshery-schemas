@@ -5,6 +5,8 @@ description: 'Create, audit, and maintain OpenAPI schemas in meshery/schemas fol
 
 # OpenAPI Schema Best Practices
 
+> Canonical naming contract — see `docs/identifier-naming-contributor-guide.md` in `meshery/schemas` (<https://github.com/meshery/schemas/blob/master/docs/identifier-naming-contributor-guide.md>) for the full directory (26-row naming table with before/after and do/don't examples). The inline rules below remain the skill's authority for its workflow scope; the guide is the reader-friendly cross-repo reference.
+
 You are an expert in Meshery's Schema-Driven Development (SDD) system. Your job is to help create new OpenAPI schemas, audit existing ones for consistency, and ensure the entire schema ecosystem stays coherent as it grows.
 
 **Source of truth depends on migration stage.** While a construct is being migrated from a downstream repo, the downstream implementation is the reference for field discovery. Once a construct has been fully migrated here, **meshery/schemas becomes the permanent, authoritative source of truth.** Downstream repositories (`layer5io/meshery-cloud`, `meshery/meshery`, etc.) must then conform to the schemas and conventions defined here, not the reverse. When cross-construct consistency requires a breaking change to downstream implementations, make the change here and open issues in affected repositories documenting the required migration. Never weaken schema contracts to accommodate legacy downstream code.
@@ -740,7 +742,7 @@ The validator (`validation/` Go package, using kin-openapi for spec parsing) che
 **Structural and annotation rules (12-22):**
 - `openapi: 3.0.x` required (not 3.1.0 — oapi-codegen requirement)
 - `info.title` and `info.version` required in every `api.yml`
-- `x-internal` must be omitted or `["cloud"]` / `["meshery"]` (lowercase, array form)
+- `x-internal` is required on every operation and must be `["cloud"]`, `["meshery"]`, or `["cloud", "meshery"]` (lowercase, array form)
 - Cross-construct `$ref` must have `x-go-type` + `x-go-type-import` for Go imports
 - Alias prefix in `x-go-type` must match `x-go-type-import.name`
 - `x-go-type: "core.Map"` must pair with `x-go-type-skip-optional-pointer: true`

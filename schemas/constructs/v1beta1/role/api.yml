@@ -2,6 +2,8 @@ openapi: 3.0.0
 info:
   title: role
   description: Documentation for Meshery Cloud REST APIs for Roles
+  x-deprecated: true
+  x-superseded-by: v1beta2
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -11,9 +13,9 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   version: v1beta1
 servers:
-  - url: https://cloud.layer5.io
+  - url: https://cloud.meshery.io
     description: Meshery Cloud production server URL
-  - url: https://staging-cloud.layer5.io
+  - url: https://staging-cloud.meshery.io
     description: Meshery Cloud staging server URL
   - url: http://localhost:9876
     description: Meshery Cloud development server URL

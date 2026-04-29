@@ -10,11 +10,12 @@
  *   node build/index.js <command>
  *
  * COMMANDS:
+ *   validate    - Validate schemas with the Go validator (via make validate-schemas)
  *   bundle      - Bundle and merge OpenAPI specifications
  *   golang      - Generate Go structs from OpenAPI specs
  *   rtk         - Generate RTK Query clients
  *   types       - Generate TypeScript type definitions
- *   all         - Run full build pipeline (bundle → golang → rtk → types)
+ *   all         - Run full build pipeline (validate → bundle → golang → rtk → types)
  *   help        - Show this help message
  *
  * EXAMPLES:
@@ -33,6 +34,10 @@ const paths = require("./lib/paths");
  * Available commands and their configurations
  */
 const commands = {
+  validate: {
+    description: "Validate schemas with the Go validator (via make validate-schemas)",
+    exec: ["make", "validate-schemas"],
+  },
   bundle: {
     description: "Bundle and merge OpenAPI specifications",
     script: "bundle-openapi.js",
@@ -70,29 +75,36 @@ const commands = {
   },
   all: {
     description: "Run full build pipeline",
-    pipeline: ["bundle", "golang", "rtk", "types"],
+    pipeline: ["validate", "bundle", "golang", "rtk", "types"],
   },
 };
 
 /**
- * Run a script and return a promise
- * @param {string} scriptPath - Path to script
+ * Run a process and return a promise
+ * @param {string} command - Executable to run
  * @param {string[]} args - Arguments to pass
+ * @param {{ label?: string }} [options] - Optional label for diagnostics
  * @returns {Promise<void>}
  */
-function runScript(scriptPath, args = []) {
+function runProcess(command, args = [], { label } = {}) {
   return new Promise((resolve, reject) => {
-    const proc = spawn("node", [scriptPath, ...args], {
+    const proc = spawn(command, args, {
       cwd: paths.getProjectRoot(),
       stdio: "inherit",
     });
 
-    proc.on("close", (code) => {
+    const displayCommand = [command, ...args].join(" ");
+    const prefix = label ? `${label} (${displayCommand})` : displayCommand;
+
+    proc.on("close", (code, signal) => {
       if (code === 0) {
         resolve();
-      } else {
-        reject(new Error(`Script exited with code ${code}`));
+        return;
       }
+      const reason = signal
+        ? `terminated by signal ${signal}`
+        : `exited with code ${code}`;
+      reject(new Error(`${prefix} ${reason}`));
     });
 
     proc.on("error", reject);
@@ -130,11 +142,25 @@ async function runCommand(commandName, completed = new Set()) {
     await runCommand(command.dependsOn, completed);
   }
 
-  // Run the script
-  const scriptPath = path.join(__dirname, command.script);
-  const args = command.args || [];
-
-  await runScript(scriptPath, args);
+  // Run either a raw exec command or a node script
+  if (command.exec) {
+    if (!Array.isArray(command.exec) || command.exec.length === 0) {
+      throw new Error(
+        `Command '${commandName}' has an invalid 'exec' (expected non-empty array)`,
+      );
+    }
+    await runProcess(command.exec[0], command.exec.slice(1), {
+      label: commandName,
+    });
+  } else if (command.script) {
+    const scriptPath = path.join(__dirname, command.script);
+    const args = command.args || [];
+    await runProcess("node", [scriptPath, ...args], { label: commandName });
+  } else {
+    throw new Error(
+      `Command '${commandName}' has neither 'exec' nor 'script'`,
+    );
+  }
   completed.add(commandName);
 }
 

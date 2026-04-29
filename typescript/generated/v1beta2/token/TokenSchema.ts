@@ -7,6 +7,7 @@ const TokenSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "token",
+    "x-deprecated": true,
     "description": "Documentation for Meshery Cloud REST APIs for user tokens and sessions",
     "contact": {
       "name": "Meshery Maintainers",
@@ -21,11 +22,11 @@ const TokenSchema: Record<string, unknown> = {
   },
   "servers": [
     {
-      "url": "https://cloud.layer5.io",
+      "url": "https://cloud.meshery.io",
       "description": "Meshery Cloud production server URL"
     },
     {
-      "url": "https://staging-cloud.layer5.io",
+      "url": "https://staging-cloud.meshery.io",
       "description": "Meshery Cloud staging server URL"
     },
     {

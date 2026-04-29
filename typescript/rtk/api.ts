@@ -1,4 +1,4 @@
-import { createApi, fetchBaseQuery, BaseQueryFn, FetchArgs, FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
+import { createApi, fetchBaseQuery, BaseQueryFn, FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
 
 // RootState interface for proper typing
 interface RootState {
@@ -19,6 +19,95 @@ export const MESHERY_PROD_URL = "https://playground.meshery.io/";
 const CLOUD_BASE_URL = process.env.RTK_CLOUD_ENDPOINT_PREFIX ?? "";
 const MESHERY_BASE_URL = process.env.RTK_MESHERY_ENDPOINT_PREFIX ?? "";
 
+/**
+ * Structured MeshKit error metadata extracted from a non-2xx JSON response body.
+ *
+ * Field names are JS-side camelCase, mapped from the server's snake_case wire
+ * fields. Pairs with the meshery server migration that promotes every non-2xx
+ * response from `text/plain` to `application/json` with a MeshKit error envelope.
+ */
+export interface MeshkitError {
+  /** Human-readable short description (`error` on the wire). */
+  message: string;
+  /** Structured error code, e.g. `meshery-server-1033`. */
+  code?: string;
+  /** Severity level, e.g. `ERROR`, `WARNING`, `FATAL`. */
+  severity?: string;
+  /** Probable causes that produced the error (`probable_cause` on the wire). */
+  probableCause?: string[];
+  /** Suggested remediations to recover (`suggested_remediation` on the wire). */
+  suggestedRemediation?: string[];
+  /** Long-form description lines (`long_description` on the wire). */
+  longDescription?: string[];
+}
+
+/**
+ * Extension of {@link FetchBaseQueryError} that carries optional MeshKit
+ * metadata on `meshkit`. The raw response body is still available on `data`
+ * for backward compatibility — `meshkit` is undefined when the response was
+ * not a MeshKit JSON envelope.
+ *
+ * Defined as an intersection rather than an `interface ... extends` because
+ * `FetchBaseQueryError` is a discriminated union (HTTP status / FETCH_ERROR /
+ * PARSING_ERROR / TIMEOUT_ERROR / CUSTOM_ERROR), and TypeScript only allows
+ * extending object types with statically known members.
+ */
+export type MeshkitFetchBaseQueryError = FetchBaseQueryError & {
+  meshkit?: MeshkitError;
+};
+
+/** Wire-shape of a MeshKit error JSON body (snake_case, server-emitted). */
+interface MeshkitErrorBody {
+  error: string;
+  code?: string;
+  severity?: string;
+  probable_cause?: string[];
+  suggested_remediation?: string[];
+  long_description?: string[];
+}
+
+/**
+ * Wraps a {@link BaseQueryFn} so non-2xx responses carrying a MeshKit JSON
+ * envelope have their structured fields surfaced onto `error.meshkit`.
+ *
+ * The error type widens from {@link FetchBaseQueryError} to
+ * {@link MeshkitFetchBaseQueryError} — that propagates through `createApi`'s
+ * type inference into endpoint hooks so consumers read `error?.meshkit.*`
+ * with full IntelliSense. Non-MeshKit error bodies pass through untouched
+ * (just typed under the wider error type with `meshkit` left undefined).
+ */
+function withMeshkitErrorTransform<Args, Result, DefinitionExtraOptions, Meta>(
+  inner: BaseQueryFn<Args, Result, FetchBaseQueryError, DefinitionExtraOptions, Meta>,
+): BaseQueryFn<Args, Result, MeshkitFetchBaseQueryError, DefinitionExtraOptions, Meta> {
+  return async (args, api, extraOptions) => {
+    const result = await inner(args, api, extraOptions);
+    if (result.error) {
+      const errData = result.error.data;
+      if (typeof errData === "object" && errData !== null) {
+        const body = errData as Partial<MeshkitErrorBody>;
+        if (typeof body.error === "string") {
+          const errorWithMeshkit: MeshkitFetchBaseQueryError = {
+            ...result.error,
+            meshkit: {
+              message: body.error,
+              code: body.code,
+              severity: body.severity,
+              probableCause: body.probable_cause,
+              suggestedRemediation: body.suggested_remediation,
+              longDescription: body.long_description,
+            },
+          };
+          return { error: errorWithMeshkit, meta: result.meta };
+        }
+      }
+      // Non-MeshKit error body — widen the error type without adding `meshkit`.
+      return { error: result.error as MeshkitFetchBaseQueryError, meta: result.meta };
+    }
+    // Success case — `data` is set, `error` is undefined.
+    return { data: result.data as Result, meta: result.meta };
+  };
+}
+
 const baseQueryCloud = fetchBaseQuery({
   baseUrl: CLOUD_BASE_URL,
   credentials: "include",
@@ -33,10 +122,17 @@ const baseQueryCloud = fetchBaseQuery({
   }
 });
 
+// Wrap with MeshKit error transform so endpoint consumers can read
+// error?.meshkit.suggestedRemediation etc.
+const baseQueryCloudWithMeshkit = withMeshkitErrorTransform(baseQueryCloud);
+const baseQueryMesheryWithMeshkit = withMeshkitErrorTransform(
+  fetchBaseQuery({ baseUrl: MESHERY_BASE_URL, credentials: "include" }),
+);
+
 // API 1: Cloud Provider API
 export const cloudBaseApi = createApi({
   reducerPath: "cloudRtkSchemasApi",
-  baseQuery: baseQueryCloud as BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError>,
+  baseQuery: baseQueryCloudWithMeshkit,
   tagTypes: [],
   endpoints: () => ({}),
 });
@@ -44,7 +140,7 @@ export const cloudBaseApi = createApi({
 // API 2: Meshery API
 export const mesheryBaseApi = createApi({
   reducerPath: "mesheryRtkSchemasApi",
-  baseQuery: fetchBaseQuery({ baseUrl: MESHERY_BASE_URL, credentials: "include" }),
+  baseQuery: baseQueryMesheryWithMeshkit,
   tagTypes: [],
   endpoints: () => ({}),
 });

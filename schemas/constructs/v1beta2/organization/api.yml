@@ -1,0 +1,753 @@
+openapi: 3.0.0
+info:
+  title: Organization
+  description: OpenAPI schema for organization management in Meshery Cloud.
+  version: v1beta2
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+tags:
+  - name: Organizations
+    description: Operations related to organization management
+
+paths:
+  /api/identity/orgs:
+    get:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - Organizations
+      security:
+        - jwt: []
+      summary: Read organizations
+      description: Returns organizations for the current user.
+      operationId: getOrgs
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/all"
+      responses:
+        "200":
+          description: Organizations response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationsPage"
+        "204":
+          description: No content
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - Organizations
+      security:
+        - jwt: []
+      summary: Create an organization
+      description: Creates a new organization.
+      operationId: createOrg
+      requestBody:
+        $ref: "#/components/requestBodies/organizationPayload"
+      responses:
+        "201":
+          description: Single-organization page response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/orgs/by-domain:
+    get:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - Organizations
+      summary: Get organization by domain
+      operationId: getOrgByDomain
+      parameters:
+        - name: domain
+          in: query
+          required: true
+          description: Domain name of the organization to look up.
+          schema:
+            type: string
+            maxLength: 500
+      responses:
+        "200":
+          description: Organization response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          description: Organization not found
+        "500":
+          description: Internal server error
+  /api/identity/orgs/{orgId}:
+    get:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - Organizations
+      security:
+        - jwt: []
+      summary: Read an organization
+      description: Returns the organization in the single-item page wrapper currently emitted by meshery-cloud.
+      operationId: getOrg
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+      responses:
+        "200":
+          description: Single-organization page response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - Organizations
+      security:
+        - jwt: []
+      summary: Delete an organization
+      description: Deletes the organization.
+      operationId: deleteOrg
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+      responses:
+        "204":
+          description: Organization deleted
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - Organizations
+      security:
+        - jwt: []
+      summary: Update an organization
+      description: Updates the organization.
+      operationId: updateOrg
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+      requestBody:
+        $ref: "#/components/requestBodies/organizationPayload"
+      responses:
+        "200":
+          description: Single-organization page response for the updated organization
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+  /api/identity/orgs/{orgId}/preferences:
+    get:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - Organizations
+      security:
+        - jwt: []
+      summary: Get organization preferences
+      description: Returns preferences for the specified organization.
+      operationId: getOrgPreferences
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+      responses:
+        "200":
+          description: Organization metadata, including preferences
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrgMetadata"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/orgs/{orgId}/teams/{teamId}:
+    post:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - Organizations
+      security:
+        - jwt: []
+      summary: Add team to organization or soft delete team
+      description: Adds a team to an organization. If request body contains action=delete, tombstones a team by setting its deletedAt timestamp. The team's organization mapping remains intact.
+      operationId: addTeamToOrg
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+        - $ref: "#/components/parameters/teamId"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrgTeamActionPayload"
+      responses:
+        "201":
+          description: Team added to organization or team tombstoned
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/TeamsOrganizationsMappingPage"
+                  - $ref: "#/components/schemas/TeamsPage"
+        "400":
+          description: Bad request
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not found
+        "500":
+          description: Internal server error
+
+  /api/identity/orgs/{orgId}/teams/{teamId}/remove:
+    post:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - Organizations
+      security:
+        - jwt: []
+      summary: Remove team from organization
+      description: Removes (unassigns) a team from an organization.
+      operationId: removeTeamFromOrg
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+        - $ref: "#/components/parameters/teamId"
+      responses:
+        "200":
+          description: Team removed from organization
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeamsOrganizationsMappingPage"
+        "400":
+          description: Bad request
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not found
+        "500":
+          description: Internal server error
+
+  /api/identity/orgs/{orgId}/users/{userId}:
+    post:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - Organizations
+      security:
+        - jwt: []
+      summary: Add user to organization
+      operationId: addUserToOrg
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+        - $ref: "#/components/parameters/userId"
+      responses:
+        "201":
+          description: User added to organization
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          description: Unauthorized
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          description: Internal server error
+    delete:
+      x-internal: ["cloud", "meshery"]
+      tags:
+        - Organizations
+      security:
+        - jwt: []
+      summary: Remove user from organization
+      operationId: deleteUserFromOrg
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+        - $ref: "#/components/parameters/userId"
+      responses:
+        "204":
+          description: User removed from organization
+        "401":
+          description: Unauthorized
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          description: Internal server error
+
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    400:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
+    401:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
+    404:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/404"
+    500:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
+
+  parameters:
+    orgId:
+      name: orgId
+      in: path
+      required: true
+      description: Organization ID.
+      schema:
+        $ref: "../../v1alpha1/core/api.yml#/components/schemas/organization_id"
+
+    userId:
+      name: userId
+      in: path
+      required: true
+      description: User ID.
+      schema:
+        $ref: "../../v1alpha1/core/api.yml#/components/schemas/user_uuid"
+
+    teamId:
+      name: teamId
+      in: path
+      required: true
+      description: Team ID.
+      schema:
+        $ref: "../../v1alpha1/core/api.yml#/components/schemas/team_id"
+
+    page:
+      name: page
+      in: query
+      description: Zero-based index of the result page to return.
+      schema:
+        type: integer
+        minimum: 0
+
+    pageSize:
+      name: pageSize
+      in: query
+      description: Maximum number of items returned on each page.
+      schema:
+        type: integer
+        minimum: 1
+
+    search:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/search"
+
+    order:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/order"
+
+    all:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/all"
+
+  requestBodies:
+    organizationPayload:
+      description: Body for creating or updating an organization
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OrganizationPayload"
+
+  schemas:
+    UUID:
+      $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+
+    NullableTime:
+      $ref: "../../v1alpha1/core/api.yml#/components/schemas/SqlNullTime"
+
+    Time:
+      $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+
+    Text:
+      $ref: "../../v1alpha1/core/api.yml#/components/schemas/Text"
+
+    MapObject:
+      $ref: "../../v1alpha1/core/api.yml#/components/schemas/MapObject"
+
+    OrgTeamActionPayload:
+      type: object
+      description: Optional action payload for POST on /api/identity/orgs/{orgId}/teams/{teamId}.
+      properties:
+        action:
+          type: string
+          description: Internal action to perform on the team resource.
+          enum:
+            - delete
+
+    Location:
+      type: object
+      description: Image asset anchored to a named location within an organization theme.
+      required:
+        - svg
+        - location
+      properties:
+        svg:
+          type: string
+          description: SVG markup for the asset.
+          maxLength: 500
+        location:
+          type: string
+          description: Named location of the asset (e.g. header, footer).
+          maxLength: 500
+
+    Logo:
+      type: object
+      description: Themed logo assets used across light and dark, desktop and mobile presentations.
+      required:
+        - desktopView
+        - mobileView
+        - darkDesktopView
+        - darkMobileView
+      properties:
+        desktopView:
+          x-go-type: "Location"
+          $ref: "#/components/schemas/Location"
+        mobileView:
+          x-go-type: "Location"
+          $ref: "#/components/schemas/Location"
+        darkDesktopView:
+          x-go-type: "Location"
+          $ref: "#/components/schemas/Location"
+        darkMobileView:
+          x-go-type: "Location"
+          $ref: "#/components/schemas/Location"
+
+    Theme:
+      type: object
+      description: UI theme configured for an organization.
+      required:
+        - id
+        - logo
+      properties:
+        id:
+          type: string
+          description: Theme identifier.
+          format: uuid
+          maxLength: 36
+        logo:
+          x-go-type: "Logo"
+          $ref: "#/components/schemas/Logo"
+        vars:
+          type: object
+          additionalProperties: true
+          description: Arbitrary theme variables keyed by name.
+
+    DashboardPrefs:
+      type: object
+      description: Preferences specific to dashboard behavior.
+      additionalProperties: true
+
+    Preferences:
+      type: object
+      description: Organization-level user experience preferences.
+      required:
+        - theme
+        - dashboard
+      properties:
+        theme:
+          x-go-type: "Theme"
+          $ref: "#/components/schemas/Theme"
+        dashboard:
+          x-go-type: "DashboardPrefs"
+          $ref: "#/components/schemas/DashboardPrefs"
+
+    OrgMetadata:
+      type: object
+      description: Free-form metadata associated with an organization, including preferences.
+      required:
+        - preferences
+      properties:
+        preferences:
+          x-go-type: "Preferences"
+          $ref: "#/components/schemas/Preferences"
+
+    Organization:
+      $ref: "./organization.yaml"
+
+    AvailableOrganization:
+      type: object
+      description: Organization listing record used in list and get responses.
+      additionalProperties: false
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+          description: Organization ID.
+          x-go-name: ID
+        name:
+          $ref: "#/components/schemas/Text"
+          description: Name of the organization.
+        description:
+          $ref: "#/components/schemas/Text"
+          description: Description of the organization.
+        country:
+          $ref: "#/components/schemas/Text"
+          description: Country of the organization.
+        region:
+          $ref: "#/components/schemas/Text"
+          description: Region of the organization.
+        owner:
+          $ref: "#/components/schemas/Text"
+          description: Display name of the organization owner.
+        metadata:
+          x-go-type: "OrgMetadata"
+          $ref: "#/components/schemas/OrgMetadata"
+        createdAt:
+          $ref: "#/components/schemas/Time"
+          description: Timestamp when the organization was created.
+          x-oapi-codegen-extra-tags:
+            json: "createdAt,omitempty"
+        updatedAt:
+          $ref: "#/components/schemas/Time"
+          description: Timestamp when the organization was last updated.
+          x-oapi-codegen-extra-tags:
+            json: "updatedAt,omitempty"
+        deletedAt:
+          $ref: "#/components/schemas/NullableTime"
+          description: Timestamp when the organization was soft-deleted.
+          x-oapi-codegen-extra-tags:
+            json: "deletedAt,omitempty"
+
+    OrganizationsPage:
+      type: object
+      description: Paginated list of organizations.
+      properties:
+        page:
+          type: integer
+          description: Zero-based page index returned in this response.
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Maximum number of items returned on each page.
+          minimum: 1
+          x-oapi-codegen-extra-tags:
+            json: "pageSize,omitempty"
+        totalCount:
+          type: integer
+          description: Total number of items across all pages.
+          minimum: 0
+          x-oapi-codegen-extra-tags:
+            json: "totalCount,omitempty"
+        organizations:
+          type: array
+          description: Organizations in this page.
+          items:
+            $ref: "#/components/schemas/AvailableOrganization"
+
+    OrganizationPage:
+      type: object
+      description: Single-organization wrapper used by current meshery-cloud organization handlers.
+      properties:
+        page:
+          type: integer
+          description: Zero-based page index returned in this response.
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Maximum number of items returned on each page.
+          minimum: 1
+          x-oapi-codegen-extra-tags:
+            json: "pageSize,omitempty"
+        totalCount:
+          type: integer
+          description: Total number of items across all pages.
+          minimum: 0
+          x-oapi-codegen-extra-tags:
+            json: "totalCount,omitempty"
+        organizations:
+          type: array
+          description: Organizations returned in this single-item page wrapper.
+          maxItems: 1
+          items:
+            $ref: "#/components/schemas/AvailableOrganization"
+
+    OrganizationPayload:
+      type: object
+      description: Payload for creating or updating an organization. Contains only client-settable fields.
+      properties:
+        name:
+          $ref: "#/components/schemas/Text"
+          description: Name of the organization.
+        country:
+          $ref: "#/components/schemas/Text"
+          description: Country of the organization.
+        region:
+          $ref: "#/components/schemas/Text"
+          description: Region of the organization.
+        description:
+          $ref: "#/components/schemas/Text"
+          description: Description of the organization.
+        notifyOrgUpdate:
+          type: boolean
+          description: Indicates whether organization members should be notified of this update.
+        preferences:
+          $ref: "#/components/schemas/Preferences"
+          description: Organization-level user experience preferences.
+
+    AvailableTeam:
+      type: object
+      description: Team listing record used in team listings associated with an organization.
+      properties:
+        id:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/general_id"
+          description: Team ID.
+        name:
+          $ref: "#/components/schemas/Text"
+          description: Name of the team.
+        description:
+          $ref: "#/components/schemas/Text"
+          description: Description of the team.
+        owner:
+          $ref: "#/components/schemas/Text"
+          description: Display name of the team owner.
+        metadata:
+          $ref: "#/components/schemas/MapObject"
+          description: Free-form team metadata.
+        createdAt:
+          $ref: "#/components/schemas/Time"
+          description: Timestamp when the team was created.
+          x-oapi-codegen-extra-tags:
+            json: "createdAt,omitempty"
+        updatedAt:
+          $ref: "#/components/schemas/Time"
+          description: Timestamp when the team was last updated.
+          x-oapi-codegen-extra-tags:
+            json: "updatedAt,omitempty"
+        deletedAt:
+          $ref: "#/components/schemas/NullableTime"
+          description: Timestamp when the team was soft-deleted.
+          x-oapi-codegen-extra-tags:
+            json: "deletedAt,omitempty"
+
+    TeamsPage:
+      type: object
+      description: Paginated list of teams.
+      properties:
+        page:
+          type: integer
+          description: Zero-based page index returned in this response.
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Maximum number of items returned on each page.
+          minimum: 1
+          x-oapi-codegen-extra-tags:
+            json: "pageSize,omitempty"
+        totalCount:
+          type: integer
+          description: Total number of items across all pages.
+          minimum: 0
+          x-oapi-codegen-extra-tags:
+            json: "totalCount,omitempty"
+        teams:
+          type: array
+          description: Teams in this page.
+          items:
+            $ref: "#/components/schemas/AvailableTeam"
+
+    TeamsOrganizationsMapping:
+      type: object
+      description: Junction record linking a team to an organization.
+      properties:
+        id:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/general_id"
+          description: Mapping record ID.
+        orgId:
+          $ref: "#/components/schemas/UUID"
+          description: Organization ID for this mapping.
+          x-go-name: OrgID
+          x-oapi-codegen-extra-tags:
+            db: org_id
+            json: orgId
+        teamId:
+          $ref: "#/components/schemas/UUID"
+          description: Team ID for this mapping.
+          x-go-name: TeamID
+          x-oapi-codegen-extra-tags:
+            db: team_id
+            json: teamId
+        createdAt:
+          $ref: "#/components/schemas/Time"
+          description: Timestamp when the mapping was created.
+          x-oapi-codegen-extra-tags:
+            db: created_at
+            json: "createdAt,omitempty"
+        updatedAt:
+          $ref: "#/components/schemas/Time"
+          description: Timestamp when the mapping was last updated.
+          x-oapi-codegen-extra-tags:
+            db: updated_at
+            json: "updatedAt,omitempty"
+        deletedAt:
+          $ref: "#/components/schemas/NullableTime"
+          description: Timestamp when the mapping was soft-deleted.
+          x-oapi-codegen-extra-tags:
+            db: deleted_at
+            json: "deletedAt,omitempty"
+
+    TeamsOrganizationsMappingPage:
+      type: object
+      description: Paginated list of team-organization mappings.
+      properties:
+        page:
+          type: integer
+          description: Zero-based page index returned in this response.
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Maximum number of items returned on each page.
+          minimum: 1
+          x-oapi-codegen-extra-tags:
+            json: "pageSize,omitempty"
+        totalCount:
+          type: integer
+          description: Total number of items across all pages.
+          minimum: 0
+          x-oapi-codegen-extra-tags:
+            json: "totalCount,omitempty"
+        teamsOrganizationsMapping:
+          type: array
+          description: Team-organization mapping entries.
+          items:
+            $ref: "#/components/schemas/TeamsOrganizationsMapping"

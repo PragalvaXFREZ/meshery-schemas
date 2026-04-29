@@ -8,6 +8,8 @@ const ModelSchema: Record<string, unknown> = {
   "info": {
     "title": "Model",
     "description": "OpenAPI schema for Meshery model registration and management.",
+    "x-deprecated": true,
+    "x-superseded-by": "v1beta2",
     "version": "v1beta1",
     "contact": {
       "name": "Meshery Maintainers",
@@ -33,6 +35,10 @@ const ModelSchema: Record<string, unknown> = {
   "paths": {
     "/api/meshmodels/register": {
       "post": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "Models"
         ],
@@ -67,7 +73,6 @@ const ModelSchema: Record<string, unknown> = {
                           },
                           "modelFile": {
                             "type": "string",
-                            "format": "file",
                             "description": "Supported model file formats are: .tar, .tar.gz, and .tgz. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details"
                           }
                         }
@@ -1569,7 +1574,6 @@ const ModelSchema: Record<string, unknown> = {
                   },
                   "modelFile": {
                     "type": "string",
-                    "format": "file",
                     "description": "Supported model file formats are: .tar, .tar.gz, and .tgz. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details"
                   }
                 }
@@ -1696,7 +1700,6 @@ const ModelSchema: Record<string, unknown> = {
               },
               "modelFile": {
                 "type": "string",
-                "format": "file",
                 "description": "Supported model file formats are: .tar, .tar.gz, and .tgz. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details"
               }
             }

@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Meshery Server
   description: Documentation for Meshery Server REST APIs.
-  version: v0.8.0
+  version: v1.2.2
   contact:
     name: Meshery Maintainers
     email: maintainers@meshery.io
@@ -14,8 +14,7 @@ servers:
   - url: https://playground.meshery.io
     description: Meshery Playground server URL
   - url: https://staging-cloud.meshery.io
-    description: Meshery Cloud staging server URL
+    description: Local development server URL
   - url: http://localhost:9081
     description: >
-      Meshery Server development server URL (controlled via PORT environment
-      variable)
+      Meshery Server URL (controlled via PORT environment variable)

@@ -28,6 +28,7 @@ const paths = {
   // Build config files
   openapiConfig: "build/openapi.config.yml",
   baseCloudSpec: "schemas/base_cloud.yml",
+  baseMesherySpec: "schemas/base_meshery.yml",
 
   // Output files
   mergedOpenapi: "_openapi_build/merged_openapi.yml",

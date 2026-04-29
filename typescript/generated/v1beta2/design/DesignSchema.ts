@@ -7,8 +7,10 @@ const DesignSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Design",
-    "description": "OpenAPI schema for managing Meshery designs and infrastructure patterns.",
+    "description": "OpenAPI schema for managing Meshery designs and infrastructure patterns.\n\nDEPRECATED: superseded by schemas/constructs/v1beta3/design as part of the\nPhase 3 identifier-naming migration (camelCase-on-the-wire contract). All\nJSON tags and query/path parameters were snake_case in v1beta2; the\nreplacement v1beta3 schema publishes them as canonical camelCase. v1beta2\nremains served for one release cycle after all downstream consumers\nmigrate, then is retired per docs/identifier-naming-migration.md §9.1 row 5.\n",
     "version": "v1beta2",
+    "x-deprecated": true,
+    "x-superseded-by": "v1beta3/design",
     "contact": {
       "name": "Meshery Maintainers",
       "email": "maintainers@meshery.io",
@@ -24862,7 +24864,7 @@ const DesignSchema: Record<string, unknown> = {
         ],
         "summary": "Upload design source content",
         "operationId": "upsertPatternSourceContent",
-        "description": "Uploads or replaces the source content for a design.",
+        "description": "Replaces the raw source content blob stored alongside a design.\nThe server (meshery-cloud's UpsertPatternSourceContent handler)\nreads the entire request body as opaque bytes via io.ReadAll and\npersists them without interpretation, so the content-type is\nwhatever the uploader sent — `application/octet-stream` is the\ncanonical choice. The previous declaration reused\nMesheryPatternImportRequestBody under multipart/form-data, which\nthe handler never parses; it remained wired up solely to share\na schema ref with /api/pattern/import. See meshery/schemas#771\nfor the drift analysis.\n",
         "parameters": [
           {
             "name": "id",
@@ -24883,38 +24885,11 @@ const DesignSchema: Record<string, unknown> = {
         "requestBody": {
           "required": true,
           "content": {
-            "multipart/form-data": {
+            "application/octet-stream": {
               "schema": {
-                "type": "object",
-                "description": "Choose the method you prefer to upload your  design file. Select 'File Upload' if you have the file on your local system, or 'URL Import' if you have the file hosted online.",
-                "enum": [
-                  "file",
-                  "url"
-                ],
-                "properties": {
-                  "file": {
-                    "type": "string",
-                    "format": "file",
-                    "description": "Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details"
-                  },
-                  "fileName": {
-                    "type": "string",
-                    "description": "The name of the pattern file being imported.",
-                    "maxLength": 500
-                  },
-                  "name": {
-                    "type": "string",
-                    "default": "Untitled Design",
-                    "description": "Provide a name for your design file. This name will help you identify the file more easily. You can also change the name of your design after importing it.",
-                    "minLength": 1,
-                    "maxLength": 255
-                  },
-                  "url": {
-                    "type": "string",
-                    "format": "uri",
-                    "description": "Provide the URL of the file you want to import. This should be a direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Also, ensure that design is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details"
-                  }
-                }
+                "type": "string",
+                "format": "binary",
+                "description": "Opaque design source bytes (yaml, tarball, etc.)"
               }
             }
           }
@@ -24968,6 +24943,10 @@ const DesignSchema: Record<string, unknown> = {
     },
     "/api/pattern/import": {
       "post": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "designs"
         ],
@@ -24976,38 +24955,61 @@ const DesignSchema: Record<string, unknown> = {
         "requestBody": {
           "required": true,
           "content": {
-            "multipart/form-data": {
+            "application/json": {
               "schema": {
-                "type": "object",
-                "description": "Choose the method you prefer to upload your  design file. Select 'File Upload' if you have the file on your local system, or 'URL Import' if you have the file hosted online.",
-                "enum": [
-                  "file",
-                  "url"
-                ],
-                "properties": {
-                  "file": {
-                    "type": "string",
-                    "format": "file",
-                    "description": "Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details"
+                "description": "Body for POST /api/pattern/import. Consumed by the server as application/json. Exactly one of two variants must be supplied: a File Import carrying base64-encoded bytes plus a file name, or a URL Import naming a remote location the server will fetch. Sending both variants at once, or neither, is rejected with 400.",
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "title": "File Import",
+                    "description": "Upload a design file from the local system. Both `file` and `file_name` are required; the server uses the file name to identify the file type (Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design).",
+                    "required": [
+                      "file",
+                      "file_name"
+                    ],
+                    "properties": {
+                      "file": {
+                        "type": "string",
+                        "format": "byte",
+                        "description": "Base64-encoded file bytes. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details."
+                      },
+                      "file_name": {
+                        "type": "string",
+                        "description": "The name of the pattern file being imported. Include the extension (e.g. `design.yaml`), as the server uses it to identify the file type.",
+                        "maxLength": 500
+                      },
+                      "name": {
+                        "type": "string",
+                        "default": "Untitled Design",
+                        "description": "Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.",
+                        "minLength": 1,
+                        "maxLength": 255
+                      }
+                    }
                   },
-                  "fileName": {
-                    "type": "string",
-                    "description": "The name of the pattern file being imported.",
-                    "maxLength": 500
-                  },
-                  "name": {
-                    "type": "string",
-                    "default": "Untitled Design",
-                    "description": "Provide a name for your design file. This name will help you identify the file more easily. You can also change the name of your design after importing it.",
-                    "minLength": 1,
-                    "maxLength": 255
-                  },
-                  "url": {
-                    "type": "string",
-                    "format": "uri",
-                    "description": "Provide the URL of the file you want to import. This should be a direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Also, ensure that design is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details"
+                  {
+                    "type": "object",
+                    "title": "URL Import",
+                    "description": "Import a design by URL. The server will fetch the resource and derive the file type from the response.",
+                    "required": [
+                      "url"
+                    ],
+                    "properties": {
+                      "url": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "A direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details."
+                      },
+                      "name": {
+                        "type": "string",
+                        "default": "Untitled Design",
+                        "description": "Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.",
+                        "minLength": 1,
+                        "maxLength": 255
+                      }
+                    }
                   }
-                }
+                ]
               }
             }
           }
@@ -30771,6 +30773,117 @@ const DesignSchema: Record<string, unknown> = {
                 }
               }
             }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/content/design/share": {
+      "post": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "designs"
+        ],
+        "summary": "Share a design, view, or filter by email",
+        "operationId": "shareDesign",
+        "description": "Shares a design (pattern), view, or filter with a list of email\naddresses. When `share` is true, the content's visibility is flipped to\npublic and an invitation email is sent to each recipient. When `share`\nis false, visibility is reverted to private. Only the owner of the\ncontent may change its sharing mode.\n",
+        "requestBody": {
+          "description": "Body for sharing a design, filter, or view with recipients by email.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Payload for sharing a piece of content (design, filter, or view) with one\nor more recipients by email. This schema backs both\n`POST /api/content/design/share` and `POST /api/content/view/share`; the\nserver dispatches on `content_type` to decide which entity to mutate.\n",
+                "required": [
+                  "content_id",
+                  "content_type",
+                  "emails",
+                  "share"
+                ],
+                "properties": {
+                  "content_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                    "x-go-type": "uuid.UUID",
+                    "x-go-type-import": {
+                      "path": "github.com/gofrs/uuid"
+                    }
+                  },
+                  "content_type": {
+                    "type": "string",
+                    "description": "The kind of content being shared. Must match the entity the handler\nexpects — `pattern` and `filter` are valid on the design share\nendpoint; `view` is valid on the view share endpoint.\n",
+                    "enum": [
+                      "pattern",
+                      "filter",
+                      "view"
+                    ]
+                  },
+                  "emails": {
+                    "type": "array",
+                    "description": "Email addresses of the recipients to share this content with.",
+                    "items": {
+                      "type": "string",
+                      "format": "email"
+                    }
+                  },
+                  "share": {
+                    "type": "boolean",
+                    "description": "When true, flip visibility to public and send invitation emails to\nthe recipients. When false, revert visibility to private.\n"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Content shared."
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Caller is not the owner of the content."
           },
           "404": {
             "description": "Result not found",
@@ -50142,34 +50255,107 @@ const DesignSchema: Record<string, unknown> = {
         }
       },
       "MesheryPatternImportRequestBody": {
+        "description": "Body for POST /api/pattern/import. Consumed by the server as application/json. Exactly one of two variants must be supplied: a File Import carrying base64-encoded bytes plus a file name, or a URL Import naming a remote location the server will fetch. Sending both variants at once, or neither, is rejected with 400.",
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "File Import",
+            "description": "Upload a design file from the local system. Both `file` and `file_name` are required; the server uses the file name to identify the file type (Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design).",
+            "required": [
+              "file",
+              "file_name"
+            ],
+            "properties": {
+              "file": {
+                "type": "string",
+                "format": "byte",
+                "description": "Base64-encoded file bytes. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details."
+              },
+              "file_name": {
+                "type": "string",
+                "description": "The name of the pattern file being imported. Include the extension (e.g. `design.yaml`), as the server uses it to identify the file type.",
+                "maxLength": 500
+              },
+              "name": {
+                "type": "string",
+                "default": "Untitled Design",
+                "description": "Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.",
+                "minLength": 1,
+                "maxLength": 255
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "URL Import",
+            "description": "Import a design by URL. The server will fetch the resource and derive the file type from the response.",
+            "required": [
+              "url"
+            ],
+            "properties": {
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "description": "A direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details."
+              },
+              "name": {
+                "type": "string",
+                "default": "Untitled Design",
+                "description": "Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.",
+                "minLength": 1,
+                "maxLength": 255
+              }
+            }
+          }
+        ]
+      },
+      "MesheryPatternImportFilePayload": {
         "type": "object",
-        "description": "Choose the method you prefer to upload your  design file. Select 'File Upload' if you have the file on your local system, or 'URL Import' if you have the file hosted online.",
-        "enum": [
+        "title": "File Import",
+        "description": "Upload a design file from the local system. Both `file` and `file_name` are required; the server uses the file name to identify the file type (Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design).",
+        "required": [
           "file",
-          "url"
+          "file_name"
         ],
         "properties": {
           "file": {
             "type": "string",
-            "format": "file",
-            "description": "Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details"
+            "format": "byte",
+            "description": "Base64-encoded file bytes. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details."
           },
-          "fileName": {
+          "file_name": {
             "type": "string",
-            "description": "The name of the pattern file being imported.",
+            "description": "The name of the pattern file being imported. Include the extension (e.g. `design.yaml`), as the server uses it to identify the file type.",
             "maxLength": 500
           },
           "name": {
             "type": "string",
             "default": "Untitled Design",
-            "description": "Provide a name for your design file. This name will help you identify the file more easily. You can also change the name of your design after importing it.",
+            "description": "Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.",
             "minLength": 1,
             "maxLength": 255
-          },
+          }
+        }
+      },
+      "MesheryPatternImportURLPayload": {
+        "type": "object",
+        "title": "URL Import",
+        "description": "Import a design by URL. The server will fetch the resource and derive the file type from the response.",
+        "required": [
+          "url"
+        ],
+        "properties": {
           "url": {
             "type": "string",
             "format": "uri",
-            "description": "Provide the URL of the file you want to import. This should be a direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Also, ensure that design is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details"
+            "description": "A direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details."
+          },
+          "name": {
+            "type": "string",
+            "default": "Untitled Design",
+            "description": "Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.",
+            "minLength": 1,
+            "maxLength": 255
           }
         }
       },
@@ -55100,6 +55286,48 @@ const DesignSchema: Record<string, unknown> = {
             "description": "The users of the resourceaccessactorsresponse."
           }
         }
+      },
+      "ContentSharePayload": {
+        "type": "object",
+        "description": "Payload for sharing a piece of content (design, filter, or view) with one\nor more recipients by email. This schema backs both\n`POST /api/content/design/share` and `POST /api/content/view/share`; the\nserver dispatches on `content_type` to decide which entity to mutate.\n",
+        "required": [
+          "content_id",
+          "content_type",
+          "emails",
+          "share"
+        ],
+        "properties": {
+          "content_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "content_type": {
+            "type": "string",
+            "description": "The kind of content being shared. Must match the entity the handler\nexpects — `pattern` and `filter` are valid on the design share\nendpoint; `view` is valid on the view share endpoint.\n",
+            "enum": [
+              "pattern",
+              "filter",
+              "view"
+            ]
+          },
+          "emails": {
+            "type": "array",
+            "description": "Email addresses of the recipients to share this content with.",
+            "items": {
+              "type": "string",
+              "format": "email"
+            }
+          },
+          "share": {
+            "type": "boolean",
+            "description": "When true, flip visibility to public and send invitation emails to\nthe recipients. When false, revert visibility to private.\n"
+          }
+        }
       }
     },
     "requestBodies": {
@@ -55121,6 +55349,56 @@ const DesignSchema: Record<string, unknown> = {
             "schema": {
               "type": "object",
               "additionalProperties": true
+            }
+          }
+        }
+      },
+      "contentSharePayload": {
+        "description": "Body for sharing a design, filter, or view with recipients by email.",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "description": "Payload for sharing a piece of content (design, filter, or view) with one\nor more recipients by email. This schema backs both\n`POST /api/content/design/share` and `POST /api/content/view/share`; the\nserver dispatches on `content_type` to decide which entity to mutate.\n",
+              "required": [
+                "content_id",
+                "content_type",
+                "emails",
+                "share"
+              ],
+              "properties": {
+                "content_id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "content_type": {
+                  "type": "string",
+                  "description": "The kind of content being shared. Must match the entity the handler\nexpects — `pattern` and `filter` are valid on the design share\nendpoint; `view` is valid on the view share endpoint.\n",
+                  "enum": [
+                    "pattern",
+                    "filter",
+                    "view"
+                  ]
+                },
+                "emails": {
+                  "type": "array",
+                  "description": "Email addresses of the recipients to share this content with.",
+                  "items": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                },
+                "share": {
+                  "type": "boolean",
+                  "description": "When true, flip visibility to public and send invitation emails to\nthe recipients. When false, revert visibility to private.\n"
+                }
+              }
             }
           }
         }

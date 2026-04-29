@@ -7,6 +7,7 @@ const EventSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Events",
+    "x-deprecated": true,
     "description": "OpenAPI schema for Meshery events and system notifications.",
     "version": "v1beta2",
     "contact": {
@@ -28,6 +29,10 @@ const EventSchema: Record<string, unknown> = {
   "paths": {
     "/events/{id}": {
       "delete": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "events"
         ],
@@ -93,6 +98,10 @@ const EventSchema: Record<string, unknown> = {
     },
     "/events": {
       "post": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "events"
         ],
@@ -146,6 +155,10 @@ const EventSchema: Record<string, unknown> = {
     },
     "/events/delete": {
       "post": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "events"
         ],
@@ -233,6 +246,10 @@ const EventSchema: Record<string, unknown> = {
     },
     "/events/status": {
       "put": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "events"
         ],
@@ -327,6 +344,10 @@ const EventSchema: Record<string, unknown> = {
     },
     "/events/{id}/status": {
       "put": {
+        "x-internal": [
+          "cloud",
+          "meshery"
+        ],
         "tags": [
           "events"
         ],

@@ -4,53 +4,52 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
-// validatedVersions are the API versions that are audited.
-// v1alpha* schemas are legacy and kept for backward compatibility.
-var validatedVersions = []string{"v1beta1", "v1beta2"}
-
 // httpMethods are the HTTP methods checked in path-item operations.
 var httpMethods = []string{"get", "post", "put", "patch", "delete"}
 
-// Audit runs the full schema design validation across all constructs in the
-// repository. It returns blocking and advisory violations.
-func Audit(opts AuditOptions) AuditResult {
-	result := AuditResult{}
-	constructsDir := filepath.Join(opts.RootDir, "schemas", "constructs")
-	modelsDir := filepath.Join(opts.RootDir, "models")
-	baselinePath := filepath.Join(opts.RootDir, "build", "validate-schemas.advisory-baseline.txt")
+// constructSpec is the per-construct scratchpad passed to walkValidatedConstructSpecs
+// callbacks. It carries everything both the validator and the endpoint indexer need
+// about one <version>/<construct>/api.yml, resolved in one place.
+type constructSpec struct {
+	Version      string
+	Construct    string
+	ConstructDir string
+	APIYMLPath   string
+	RelativePath string
+	APIExists    bool
+	IsDeprecated bool
+	Doc          *openapi3.T
+	LoadErr      error
+}
 
-	// Load advisory baseline.
-	var baseline map[string]bool
-	if opts.Warn && !opts.NoBaseline {
-		baseline = loadAdvisoryBaseline(baselinePath)
-	} else {
-		baseline = make(map[string]bool)
-	}
+// walkValidatedConstructSpecs is the single, canonical walker for the
+// schemas/constructs tree. It visits every non-deprecated construct spec in
+// deterministic sorted order and invokes fn for each one. Both the schema
+// validator (Audit) and the consumer-audit endpoint indexer use this function
+// so the walk logic, filtering, and load behaviour stay in sync.
+func walkValidatedConstructSpecs(rootDir string, fn func(constructSpec) error) error {
+	constructsDir := filepath.Join(rootDir, "schemas", "constructs")
 
-	// Detect git baseline for enum comparison.
-	enumBaselineRef := detectEnumBaselineRef(opts.RootDir)
-
-	// Cross-construct fingerprints for Rule 29.
-	fingerprints := make(map[string][]schemaLocation)
-
-	// Walk validated versions.
-	if info, err := os.Stat(constructsDir); err != nil || !info.IsDir() {
-		return result
+	info, err := os.Stat(constructsDir)
+	if err != nil || !info.IsDir() {
+		return nil
 	}
 
 	versionEntries, err := os.ReadDir(constructsDir)
 	if err != nil {
-		return result
+		return err
 	}
 	sort.Slice(versionEntries, func(i, j int) bool {
 		return versionEntries[i].Name() < versionEntries[j].Name()
 	})
 
+	latestByConstruct := make(map[string]constructSpec)
 	for _, vEntry := range versionEntries {
 		if !vEntry.IsDir() {
 			continue
@@ -73,40 +72,116 @@ func Audit(opts AuditOptions) AuditResult {
 			if !cEntry.IsDir() {
 				continue
 			}
+
 			constructDir := filepath.Join(versionDir, cEntry.Name())
 			apiYmlPath := filepath.Join(constructDir, "api.yml")
-
-			// Load api.yml once and check deprecation from the same doc to
-			// avoid redundant file I/O. If the file doesn't exist or fails to
-			// load, we still run entity/template audits.
-			var apiDoc *openapi3.T
-			apiExists := false
+			var apiExists bool
+			var doc *openapi3.T
+			var loadErr error
 			isDeprecated := false
+
 			if _, err := os.Stat(apiYmlPath); err == nil {
 				apiExists = true
-				doc, loadErr := loadAPISpec(apiYmlPath)
+				doc, loadErr = loadAPISpec(apiYmlPath)
 				if loadErr == nil {
-					apiDoc = doc
 					isDeprecated = isDeprecatedDoc(doc)
 				}
 			}
 
-			// Validate entity schemas (*.yaml, not api.yml).
-			auditEntitySchemas(constructDir, opts, baseline, &result, isDeprecated)
+			spec := constructSpec{
+				Version:      version,
+				Construct:    cEntry.Name(),
+				ConstructDir: constructDir,
+				APIYMLPath:   apiYmlPath,
+				RelativePath: relativeToRoot(apiYmlPath, rootDir),
+				APIExists:    apiExists,
+				IsDeprecated: isDeprecated,
+				Doc:          doc,
+				LoadErr:      loadErr,
+			}
 
-			// Validate template files (Rule 18, 34).
-			auditTemplateFiles(constructDir, cEntry.Name(), opts, baseline, &result, isDeprecated)
-
-			// Validate api.yml if it exists.
-			if apiExists {
-				auditAPISpec(apiYmlPath, constructDir, opts, baseline, &result,
-					fingerprints, enumBaselineRef, apiDoc, isDeprecated)
+			prev, ok := latestByConstruct[spec.Construct]
+			if !ok || compareAPIVersions(spec.Version, prev.Version) > 0 {
+				latestByConstruct[spec.Construct] = spec
 			}
 		}
 	}
 
+	specs := make([]constructSpec, 0, len(latestByConstruct))
+	for _, spec := range latestByConstruct {
+		specs = append(specs, spec)
+	}
+	sort.Slice(specs, func(i, j int) bool {
+		if specs[i].Construct != specs[j].Construct {
+			return specs[i].Construct < specs[j].Construct
+		}
+		return compareAPIVersions(specs[i].Version, specs[j].Version) < 0
+	})
+
+	for _, spec := range specs {
+		if err := fn(spec); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Audit runs the full schema design validation across all constructs in the
+// repository. It returns blocking and advisory violations.
+func Audit(opts AuditOptions) AuditResult {
+	result := AuditResult{}
+	modelsDir := filepath.Join(opts.RootDir, "models")
+	baselinePath := filepath.Join(opts.RootDir, "build", "validate-schemas.advisory-baseline.txt")
+
+	// Load advisory baseline.
+	var baseline map[string]bool
+	if opts.Warn && !opts.NoBaseline {
+		baseline = loadAdvisoryBaseline(baselinePath)
+	} else {
+		baseline = make(map[string]bool)
+	}
+
+	// Detect git baseline for enum comparison.
+	enumBaselineRef := detectEnumBaselineRef(opts.RootDir)
+
+	// Cross-construct fingerprints for Rule 29.
+	fingerprints := make(map[string][]schemaLocation)
+
+	// Cross-file sibling-endpoint parameter parity accumulator for Rule 46.
+	parity := &parityAccumulator{}
+
+	// Walk validated construct specs. Errors are intentionally ignored:
+	// Audit returns AuditResult, not error, and individual load failures
+	// are reported as blocking violations inside auditAPISpec.
+	_ = walkValidatedConstructSpecs(opts.RootDir, func(spec constructSpec) error {
+		// Validate entity schemas (*.yaml, not api.yml).
+		auditEntitySchemas(spec.ConstructDir, opts, baseline, &result, spec.IsDeprecated)
+
+		// Validate template files (Rule 18, 34).
+		auditTemplateFiles(spec.ConstructDir, spec.Construct, opts, baseline, &result, spec.IsDeprecated)
+
+		// Validate api.yml if it exists. spec.Doc is nil when load failed;
+		// auditAPISpec handles nil docs by reporting a blocking violation.
+		if spec.APIExists {
+			auditAPISpec(spec.APIYMLPath, spec.ConstructDir, opts, baseline, &result,
+				fingerprints, enumBaselineRef, spec.Doc, spec.IsDeprecated)
+			// Collect Rule 46 cross-file parity candidates from this
+			// api.yml. The file's version prefix (e.g. "v1beta1") defines
+			// the comparison group.
+			relPath := relativeToRoot(spec.APIYMLPath, opts.RootDir)
+			collectParityEndpoints(relPath, spec.Version, spec.Doc, parity)
+		}
+		return nil
+	})
+
 	// Rule 29: report cross-construct duplicates.
 	for _, v := range reportDuplicateSchemas(fingerprints, opts) {
+		addViolation(&result, v, baseline)
+	}
+
+	// Rule 46: cross-file sibling-endpoint parameter parity.
+	for _, v := range reportParityViolations(parity, opts) {
 		addViolation(&result, v, baseline)
 	}
 
@@ -116,14 +191,64 @@ func Audit(opts AuditOptions) AuditResult {
 	return result
 }
 
-// shouldValidateVersion returns true if the version should be audited.
+// shouldValidateVersion returns true if the version directory participates in
+// schema discovery. Version selection happens per construct after discovery,
+// mirroring `make schemas-versions-latest`.
 func shouldValidateVersion(version string) bool {
-	for _, v := range validatedVersions {
-		if version == v || strings.HasPrefix(version, v) {
-			return true
-		}
+	return strings.HasPrefix(version, "v")
+}
+
+type apiVersionParts struct {
+	major int
+	stage int
+	minor int
+	raw   string
+}
+
+func compareAPIVersions(a, b string) int {
+	av := parseAPIVersion(a)
+	bv := parseAPIVersion(b)
+	switch {
+	case av.major != bv.major:
+		return av.major - bv.major
+	case av.stage != bv.stage:
+		return av.stage - bv.stage
+	case av.minor != bv.minor:
+		return av.minor - bv.minor
+	case av.raw < bv.raw:
+		return -1
+	case av.raw > bv.raw:
+		return 1
 	}
-	return false
+	return 0
+}
+
+func parseAPIVersion(version string) apiVersionParts {
+	parts := apiVersionParts{raw: version, stage: -1}
+	rest := strings.TrimPrefix(version, "v")
+	majorEnd := 0
+	for majorEnd < len(rest) && rest[majorEnd] >= '0' && rest[majorEnd] <= '9' {
+		majorEnd++
+	}
+	if majorEnd == 0 {
+		return parts
+	}
+	parts.major, _ = strconv.Atoi(rest[:majorEnd])
+	rest = rest[majorEnd:]
+
+	switch {
+	case strings.HasPrefix(rest, "alpha"):
+		parts.stage = 0
+		parts.minor, _ = strconv.Atoi(strings.TrimPrefix(rest, "alpha"))
+	case strings.HasPrefix(rest, "beta"):
+		parts.stage = 1
+		parts.minor, _ = strconv.Atoi(strings.TrimPrefix(rest, "beta"))
+	case rest == "":
+		parts.stage = 2
+	default:
+		parts.stage = -1
+	}
+	return parts
 }
 
 // isDeprecatedDoc checks if a loaded api.yml has x-deprecated: true in info.
@@ -173,15 +298,12 @@ func auditEntitySchemas(constructDir string, opts AuditOptions,
 			addConstructViolation(result, v, baseline, deprecated)
 		}
 
-		// Rule 6: entity property casing must match contract/DB-backed rules.
+		// Rule 6: entity property casing (unconditional camelCase; no DB
+		// exception under the canonical identifier-naming contract).
 		for _, v := range checkRule6ForEntity(relPath, entity, opts) {
 			addConstructViolation(result, v, baseline, deprecated)
 		}
 
-		// Rule 32: DB-backed fields must use the exact snake_case db column name.
-		for _, v := range checkRule32ForEntity(relPath, entity, opts) {
-			addConstructViolation(result, v, baseline, deprecated)
-		}
 
 		// Rule 35: entity property x-go-type / x-go-type-import consistency.
 		for _, v := range checkRule35ForEntity(relPath, entity, opts) {
@@ -246,6 +368,8 @@ func auditAPISpec(apiYmlPath, constructDir string, opts AuditOptions,
 		checkRule24, checkRule25, checkRule26, checkRule27,
 		checkRule28, checkRule30, checkRule31, checkRule35,
 		checkRule36,
+		checkRule42, checkRule43, checkRule44,
+		checkRule45ForAPI,
 	}
 
 	for _, check := range ruleChecks {
@@ -264,10 +388,6 @@ func auditAPISpec(apiYmlPath, constructDir string, opts AuditOptions,
 		addConstructViolation(result, v, baseline, deprecated)
 	}
 
-	// Rule 32: DB-backed property names.
-	for _, v := range checkRule32ForAPI(relPath, doc, opts) {
-		addConstructViolation(result, v, baseline, deprecated)
-	}
 
 	// Rule 33: pagination envelope fields.
 	for _, v := range checkRule33(relPath, doc, opts) {

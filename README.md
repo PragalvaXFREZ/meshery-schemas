@@ -48,6 +48,8 @@ Meshery schemas offer a powerful system designed for:
 
 For an explanation of Meshery's terminology regarding schemas, definitions, declarations, and instances, please see [Contributor's Guide to Models](https://docs.meshery.io/project/contributing/contributing-models).
 
+For identifier-naming rules (wire casing, DB tag separation, URL/path/query-param conventions, operationId form), see [`docs/identifier-naming-contributor-guide.md`](docs/identifier-naming-contributor-guide.md) — the canonical, reader-friendly directory for the camelCase-on-the-wire contract that this repository and every downstream consumer share.
+
 ## Contributing
 --> **For an explanation of the directory structure of this repository and how to contribute changes to Meshery's schemas, see [Contributor's Guide to Schema-Driven Development](https://docs.meshery.io/project/contributing/contributing-schemas).**
 
@@ -291,6 +293,8 @@ post:
 ---
 
 ## Naming Conventions
+
+> This section is the inline authority; for the reader-friendly directory (26-row naming table with before/after and do/don't examples), see [`docs/identifier-naming-contributor-guide.md`](docs/identifier-naming-contributor-guide.md).
 
 - Property names
   - Use camelCase for property fields (e.g., `schemaVersion`, `displayName`, `componentsCount`).
@@ -567,7 +571,7 @@ After running `make build`, three bundled schema files are created:
 
 ## ✍️ Annotating OpenAPI Paths
 
-To control which schema paths are included in each bundled output, use the `x-internal` annotation inside the OpenAPI operations (`get`, `post`, etc.).
+To control which schema paths are included in each bundled output, use the `x-internal` annotation inside the OpenAPI operations (`get`, `post`, etc.). The annotation is **required on every operation** — `validate-schemas` (Rule 14) and the bundler both reject operations that omit it.
 
 ### Example:
 
@@ -591,8 +595,9 @@ paths:
                   $ref: "#/components/schemas/Plan"
 ```
 
-* **With `x-internal`**: Included only in the respective client (e.g., `cloud`).
-* **Without `x-internal`**: Included in **all** clients.
+* `x-internal: ["cloud"]` — included in the cloud bundle only.
+* `x-internal: ["meshery"]` — included in the meshery bundle only.
+* `x-internal: ["cloud", "meshery"]` — included in **both** bundles.
 
 ---
 

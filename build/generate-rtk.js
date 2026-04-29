@@ -44,6 +44,7 @@ const rtkConfigs = [
     name: "cloud",
     configFile: config.paths.cloudRtkConfig,
     requiredSpec: config.paths.cloudOpenapi,
+    outputFile: "typescript/rtk/cloud.ts",
     outputDescription: "typescript/rtk/cloudApi.ts",
   },
   {
@@ -89,6 +90,165 @@ function checkPrerequisites() {
 }
 
 /**
+ * Find any unguarded `queryArg` property or element accesses that remain
+ * inside generated `params: { ... }` blocks.
+ *
+ * This is the fail-loud regression guard for upstream RTK codegen shape
+ * drift: if the rewrite pass misses a new access form, the generated file
+ * must fail here instead of silently shipping a synchronous runtime throw.
+ *
+ * @param {string} content - Generated RTK file contents
+ * @returns {Array<{block: number, access: string}>} remaining bare accesses
+ */
+function findUnguardedQueryParamAccesses(content) {
+  const paramsBlockRe = /(params:\s*\{)([\s\S]*?)(\n\s*\},)/g;
+  const bareAccessPatterns = [
+    /\bqueryArg(?!\s*\?\s*\.)\s*\.\s*[A-Za-z_$][A-Za-z0-9_$]*/g,
+    /\bqueryArg(?!\s*\?\s*\.)\s*\[\s*(['"])[^'"\]]+\1\s*\]/g,
+  ];
+  const matches = [];
+  let block = 0;
+  let paramsMatch;
+
+  while ((paramsMatch = paramsBlockRe.exec(content)) !== null) {
+    block += 1;
+    const body = paramsMatch[2];
+
+    for (const pattern of bareAccessPatterns) {
+      let accessMatch;
+      while ((accessMatch = pattern.exec(body)) !== null) {
+        matches.push({
+          block,
+          access: accessMatch[0].replace(/\s+/g, " ").trim(),
+        });
+      }
+    }
+  }
+
+  return matches;
+}
+
+/**
+ * Post-process a generated RTK file to guard optional query-param accesses
+ * against an `undefined` queryArg.
+ *
+ * Upstream `@rtk-query/codegen-openapi` (tracked in reduxjs/redux-toolkit#5018)
+ * emits query functions that dereference `queryArg.<name>` for every query
+ * parameter, e.g.:
+ *
+ *   query: (queryArg) => ({
+ *     url: `/api/identity/badges`,
+ *     params: { orgId: queryArg.orgId },
+ *   }),
+ *
+ * When every parameter of an endpoint is optional, the generated
+ * `*ApiArg` type marks every field `?`. Consumers relying on that type
+ * may legitimately invoke the hook with no argument (e.g.
+ * `useGetAvailableBadgesQuery()`), at which point RTK hands the query
+ * function `queryArg === undefined` and `queryArg.orgId` throws
+ * synchronously with `TypeError: Cannot read properties of undefined`.
+ *
+ * The fix is to emit `queryArg?.<name>` (or `queryArg?.["<name>"]`
+ * for bracket-notation accesses, which the codegen uses when the
+ * property name is a JS reserved word such as `type` or `class`)
+ * inside `params: { ... }` blocks. `fetchBaseQuery` already filters
+ * `undefined` param values from the URL, so wire behaviour for a
+ * no-arg call is unchanged. Path- and body-parameter accesses are
+ * left untouched because those are required by the endpoint contract
+ * and a `TypeError` there signals a real caller bug that must not be
+ * silently swallowed.
+ *
+ * Cross-reference:
+ *   - Upstream issue: https://github.com/reduxjs/redux-toolkit/issues/5018
+ *   - Downstream hotfix (to be reverted after this lands):
+ *     https://github.com/layer5io/meshery-cloud/pull/5102
+ *
+ * @param {string} filePath - Absolute path to the generated TS file
+ * @returns {number} count of `queryArg.X` / `queryArg["X"]` rewrites applied
+ */
+function guardOptionalQueryParams(filePath) {
+  if (!paths.fileExists(filePath)) {
+    logger.warn(`Post-process skipped: ${filePath} not found.`);
+    return 0;
+  }
+  const content = fs.readFileSync(filePath, "utf8");
+
+  // Match every `params: { ... }` block emitted by the RTK codegen
+  // inside a `query: (queryArg) => ({ ... })` arrow. Within each block,
+  // rewrite both access forms the codegen emits so an `undefined`
+  // queryArg produces an `undefined` param value (filtered by
+  // fetchBaseQuery) rather than throwing:
+  //
+  //   queryArg.<id>       → queryArg?.<id>
+  //   queryArg["<id>"]    → queryArg?.["<id>"]        (reserved-word keys)
+  //   queryArg['<id>']    → queryArg?.['<id>']
+  //
+  // Important: this only runs on text inside `params: { ... }` blocks.
+  // It must NOT rewrite:
+  //   - path-parameter template literals (`${queryArg.X}` or
+  //     `${queryArg["X"]}`), because `${undefined}` stringifies to
+  //     "undefined" and silently corrupts the URL rather than
+  //     surfacing the caller bug;
+  //   - `body: queryArg.X` assignments, because a missing body is a
+  //     real caller error for mutations that require one.
+  //
+  // Generated `params` blocks are flat (OpenAPI query params cannot be
+  // nested objects), so a non-greedy match up to the closing `}` is
+  // safe. The codegen does not (currently) enable `encodeQueryParams`
+  // in either cloud or meshery configs, so the values inside are plain
+  // property/element accesses off `queryArg`.
+  let totalRewrites = 0;
+  const paramsBlockRe = /(params:\s*\{)([\s\S]*?)(\n\s*\},)/g;
+  const patched = content.replace(paramsBlockRe, (match, open, body, close) => {
+    let localRewrites = 0;
+    const rewrittenBody = body
+      // Dot access: queryArg.foo → queryArg?.foo
+      .replace(
+        /\bqueryArg\.([A-Za-z_$][A-Za-z0-9_$]*)/g,
+        (_hit, prop) => {
+          localRewrites += 1;
+          return `queryArg?.${prop}`;
+        }
+      )
+      // Bracket access (reserved-word keys): queryArg["foo"] → queryArg?.["foo"].
+      // The regex requires `[` immediately after `queryArg` so an already-
+      // optional `queryArg?.[...]` is not re-matched.
+      .replace(
+        /\bqueryArg(\[(['"])[^'"\]]+\2\])/g,
+        (_hit, bracket) => {
+          localRewrites += 1;
+          return `queryArg?.${bracket}`;
+        }
+      );
+    totalRewrites += localRewrites;
+    return `${open}${rewrittenBody}${close}`;
+  });
+
+  const unguardedAccesses = findUnguardedQueryParamAccesses(patched);
+  if (unguardedAccesses.length > 0) {
+    throw new Error(
+      `Post-process failed: unguarded queryArg access(es) remain in \`params: { ... }\` blocks of ${filePath}: ` +
+        unguardedAccesses
+          .map(({ block, access }) => `block ${block} -> ${access}`)
+          .join(", ")
+    );
+  }
+
+  if (totalRewrites === 0) {
+    logger.info(
+      `Post-process note: no optional query-param rewrites were needed in ${filePath}.`
+    );
+    return 0;
+  }
+
+  fs.writeFileSync(filePath, patched, "utf8");
+  logger.success(
+    `Post-processed: guarded ${totalRewrites} optional query-param access(es) in ${filePath}`
+  );
+  return totalRewrites;
+}
+
+/**
  * Post-process a generated RTK file to add extra named exports.
  * The codegen only emits `export { injectedRtkApi as <exportName> }`.
  * For consumers that import `injectedRtkApi` by its original internal name
@@ -128,6 +288,9 @@ async function generateRtkClient(rtk) {
   try {
     await npx("@rtk-query/codegen-openapi", [configPath]);
     logger.success(`Generated: ${rtk.outputDescription}`);
+    if (rtk.outputFile) {
+      guardOptionalQueryParams(paths.fromRoot(rtk.outputFile));
+    }
     if (rtk.outputFile && rtk.outputExportName) {
       addInjectedRtkApiExport(paths.fromRoot(rtk.outputFile), rtk.outputExportName);
     }
@@ -169,4 +332,15 @@ async function main() {
   }
 }
 
-main();
+module.exports = {
+  addInjectedRtkApiExport,
+  checkPrerequisites,
+  findUnguardedQueryParamAccesses,
+  generateRtkClient,
+  guardOptionalQueryParams,
+  main,
+};
+
+if (require.main === module) {
+  main();
+}

@@ -136,7 +136,9 @@ Before opening a PR, verify:
 
 ## Naming conventions
 
-- Property names: preserve published wire-format casing; new non-DB properties use `camelCase`, DB-backed properties use the exact snake_case database column name
+> Canonical naming contract — see [`docs/identifier-naming-contributor-guide.md`](docs/identifier-naming-contributor-guide.md) for the full directory (26-row table with before/after and do/don't examples). The rules below remain the inline authority; the guide is the reader-friendly cross-repo reference.
+
+- Property names: for **newly authored API versions**, use **camelCase on the wire, uniformly.** New schema properties and their JSON tags use `camelCase`. For DB-backed fields, the `x-oapi-codegen-extra-tags.db` tag carries the snake_case DB column name separately from the wire identifier — the ORM layer is the sole translation boundary. For an already-published API version that publishes `snake_case` on the wire, additions to that same version must preserve the version's published wire casing until the resource is version-bumped; do not perform partial casing migrations within a version (see §Casing rules at a glance and the [identifier-naming migration plan](docs/identifier-naming-migration.md)).
 - ID-suffix fields: `lowerCamelCase` + `Id` (`modelId`, `registrantId`)
 - New enum values: lowercase words (`enabled`, `ignored`, `duplicate`); preserve published enum literals as-is within the same API version
 - Object names: singular nouns (`model`, `component`, `design`)
@@ -148,32 +150,38 @@ Before opening a PR, verify:
 
 ## Casing rules at a glance
 
-Every element in the API has exactly one correct casing. The table below is the single authoritative reference:
+> This section is the inline authority; for the reader-friendly directory, see [`docs/identifier-naming-contributor-guide.md`](docs/identifier-naming-contributor-guide.md).
 
-| Element | Casing | Example | Counter-example |
+Within a given API version / resource version, every element has exactly one correct casing. The table below is the single authoritative reference for **newly authored (canonical-casing) API versions.** Already-published legacy API versions retain their published wire casing until the resource receives its next canonical-casing version bump — do not recase their fields in-place.
+
+**The one-sentence rule (target state):** *Wire is camelCase everywhere; DB is snake_case; Go fields follow Go idiom; the ORM layer is the sole translation boundary.*
+
+| Layer / element | Casing | Example | Counter-example |
 |---|---|---|---|
-| Schema property names (non-DB) | camelCase | `schemaVersion`, `displayName` | ~~`schema_version`~~, ~~`SchemaVersion`~~ |
-| ID-suffix properties | camelCase + `Id` | `modelId`, `registrantId` | ~~`modelID`~~, ~~`model_id`~~ |
-| DB-backed / DB-mirrored fields | exact snake_case db column name | `created_at`, `updated_at`, `user_id`, `first_name`, `plan_id` | ~~`createdAt`~~, ~~`firstName`~~, ~~`planId`~~ |
+| DB column / `db:` tag | `snake_case` | `user_id`, `org_id`, `created_at`, `pattern_file` | ~~`userId`~~, ~~`orgID`~~ |
+| Go struct field | `PascalCase` with Go-idiomatic initialisms | `UserID`, `OrgID`, `WorkspaceID`, `CreatedAt` | ~~`User_id`~~, ~~`UserIdentifier`~~ |
+| JSON tag / schema property / wire form | `camelCase` (DB-backed **and** non-DB-backed alike) | `json:"userId"`, `json:"orgId"`, `json:"patternFile"`, `json:"createdAt"` | ~~`json:"user_id"`~~, ~~`json:"orgID"`~~ |
+| ID-suffix properties | `camelCase + Id` (lowercase `d`) | `modelId`, `registrantId`, `userId` | ~~`modelID`~~, ~~`model_id`~~ |
 | New enum values | lowercase | `enabled`, `ignored` | ~~`Enabled`~~, ~~`ENABLED`~~ |
-| `components/schemas` names | PascalCase | `ModelDefinition`, `KeychainPayload` | ~~`modelDefinition`~~ |
+| `components/schemas` type names | PascalCase | `ModelDefinition`, `KeychainPayload` | ~~`modelDefinition`~~ |
 | File and folder names | lowercase | `api.yml`, `keychain.yaml` | ~~`Keychain.yaml`~~ |
-| Path segments | kebab-case, plural nouns | `/api/role-holders` | ~~`/api/roleHolders`~~ |
-| Path parameters | camelCase + `Id` | `{orgId}`, `{workspaceId}` | ~~`{orgID}`~~, ~~`{org_id}`~~ |
-| `operationId` | lower camelCase verbNoun | `getAllRoles`, `createWorkspace` | ~~`GetAllRoles`~~, ~~`get_all_roles`~~ |
+| URL path segments | kebab-case, plural nouns | `/api/role-holders`, `/api/workspaces` | ~~`/api/roleHolders`~~ |
+| URL path params + ID-like query params | `camelCase + Id` | `{orgId}`, `?userId=…`, `?workspaceId=…` | ~~`{orgID}`~~, ~~`{org_id}`~~, ~~`?workspace_id=…`~~ |
+| Shared pagination/search/sort/filter query params | `camelCase` | `?page=…`, `?pageSize=…`, `?search=…`, `?order=…`, `?filter=…` | ~~`?pagesize=…`~~, ~~`?page_size=…`~~ |
+| `operationId` | lower camelCase verbNoun | `getAllRoles`, `createWorkspace`, `getWorkspaces` | ~~`GetAllRoles`~~, ~~`get_all_roles`~~ |
+| TypeScript property / RTK arg | camelCase | `response.userId`, `queryArg.orgId` | ~~`response.user_id`~~, ~~`queryArg.orgID`~~ |
 | Go type names | PascalCase (generated) | `Connection`, `KeychainPayload` | — |
-| Go field names | PascalCase (generated) | `CreatedAt`, `UpdatedAt` | — |
 | TypeScript type names | PascalCase (generated) | `Connection`, `KeychainPayload` | — |
 
-**The database naming is the compatibility boundary.** If a property has `x-oapi-codegen-extra-tags.db` and that `db` value is snake_case, then the schema property name and JSON tag must use that exact snake_case name. Do not camelize DB-backed fields in-place within an existing API version.
+**The database naming is the ORM boundary, not a wire-format dictator.** In newly authored (canonical-casing) API versions, every JSON tag / schema property name — DB-backed or not — is camelCase. For legacy published API versions that publish snake_case on the wire, retain the published wire casing until that resource receives its next API-version bump; do not "fix" snake_case wire properties in-place. In canonical-casing versions, when a property is DB-backed, the snake_case DB column name lives *only* in `x-oapi-codegen-extra-tags.db` (and in the generated Go field's `db:` struct tag); it does not propagate to the JSON tag, the OpenAPI schema property name, URL parameters, or any other wire form. On DB-backed fields the `json:` and `db:` tags differ by design.
 
-**Partial casing migrations are forbidden.** Do not rename selected fields within the same resource from snake_case to camelCase while leaving other published fields unchanged. If the wire format must change, introduce a new API version and migrate the resource consistently there.
+**Partial casing migrations are forbidden.** Do not rename selected fields within the same resource from snake_case to camelCase while leaving other published fields unchanged. If the wire format must change, introduce a new API version and migrate the resource consistently there. See the [identifier-naming migration plan](docs/identifier-naming-migration.md) for the per-resource rollout.
 
 **Existing enum wire values are compatibility-sensitive.** Use lowercase for newly introduced enum literals, but do not recase published enum values in-place within the same API version. The validator exempts legacy enum values that already exist on the baseline branch.
 
-**Pagination envelopes are fixed API contract fields** — use `page`, `page_size`, and `total_count`, not `pageSize` or `totalCount`.
+**Pagination envelope fields (`page`, `page_size`, `total_count`) are on a deprecation path, not a perpetual exception.** Current forms remain accepted for backward compatibility within an existing API version; each resource migrates to `pageSize` / `totalCount` at its next canonical-casing API-version bump (per the Phase 3 per-resource plan). On a freshly authored API version, use camelCase directly. The field `page` stays `page` under the canonical contract (it's already a camelCase-compatible single-word identifier).
 
-**`page_size` properties must have `minimum: 1`.** A page size of zero is never valid. The validator enforces this (Rule 41) on all properties named `page_size`, `pagesize`, or `pageSize`.
+**`pageSize` / `page_size` properties must have `minimum: 1`.** A page size of zero is never valid. The validator enforces this (Rule 41) on all properties named `page_size`, `pagesize`, or `pageSize`.
 
 ## Per-Property Validation Constraints
 
@@ -298,11 +306,11 @@ Use `x-generate-db-helpers: true` on a schema component to auto-generate `Scan`/
 
 ## x-internal annotation
 
-Control which bundled output includes an API path:
+**Required on every operation.** The bundler and validate-schemas Rule 14 reject operations that omit it. Use the annotation to declare which bundled outputs include the path:
 
 - `x-internal: ["cloud"]` — cloud-only (`_openapi_build/cloud_openapi.yml`)
 - `x-internal: ["meshery"]` — Meshery-only (`_openapi_build/meshery_openapi.yml`)
-- Omit `x-internal` — included in both bundled outputs
+- `x-internal: ["cloud", "meshery"]` — both bundled outputs
 
 See [The Dual-Schema Pattern](#the-dual-schema-pattern-required) above for the canonical entity/payload rules and reference examples used throughout this repo.
 
@@ -359,9 +367,9 @@ These patterns are deliberate. Do not suggest changes during code review:
 1. **`SqlNullTime` vs `NullTime`** — Some entities use `SqlNullTime` for backward compatibility with v1beta1 and downstream GORM/Pop consumers. Do not suggest switching unless the entire entity is being migrated.
 2. **Core Go package** — All core types (both generated scalars like `Uuid`, `Time`, `Id` and manual utilities like `Map`, `NullTime`, `MapObject`) live in a single package: `github.com/meshery/schemas/models/core`. Generator output path overrides and Go import overrides map all schema core versions (`v1alpha1/core`, `v1beta1/core`, `v1beta2/core`) to this single package. Schema `x-go-type-import` for any core type must use `models/core` with alias `core`.
 3. **`x-enum-casing-exempt: true`** — Enums with this annotation contain published values that will never be lowercased (e.g., `PlanName`, `FeatureName`). Do not suggest lowercasing.
-4. **`page_size` / `total_count`** — Pagination envelope fields use snake_case as a published API contract, not because they are database-backed. Do not suggest `pageSize`/`totalCount`.
-5. **Deprecated v1beta1 constructs** — Files with `x-deprecated: true` are kept for backward compatibility. Known casing violations are fixed in v1beta2. Do not flag issues in deprecated constructs.
-6. **Same field name, different casing across constructs** — A property like `subType` may be camelCase in one construct (not DB-backed) and `sub_type` in another (DB-backed with `db: "sub_type"`). Both are correct. Casing is determined per-property by whether it maps to a database column in that specific construct, not by what other constructs use.
+4. **`page_size` / `total_count` — deprecation list, not a perpetual exception.** These snake_case envelope fields remain accepted for backward compatibility within an existing API version. Each resource migrates its pagination envelope to `pageSize` / `totalCount` at its next canonical-casing API-version bump (per the [Phase 3 plan](docs/identifier-naming-migration.md)). On a newly authored API version, use camelCase directly. `page` stays `page` (already a camelCase-compatible single-word identifier).
+5. **Deprecated v1beta1 constructs** — Files with `x-deprecated: true` are kept for backward compatibility. Known casing violations are fixed in the next canonical-casing version. Do not flag issues in deprecated constructs.
+6. **Target-state wire form: camelCase regardless of DB backing.** Under the canonical contract, a property like `subType` is camelCase on every wire (JSON tag, OpenAPI property name, TS field) whether or not it is DB-backed. When it is DB-backed, the snake_case column name lives only in `x-oapi-codegen-extra-tags.db` (e.g., `db: "sub_type"`); the JSON tag stays `subType`. The legacy pattern of DB-backed fields using snake_case on the wire is retired per-resource across Phase 3; legacy resources that still publish `sub_type` on the wire migrate at their next API-version bump, not in-place.
 7. **`x-id-format: external`** — ID properties annotated with this hold external system identifiers (e.g., Stripe IDs) that are not UUIDs. The validator skips `format: uuid` enforcement for these. Do not remove the annotation or add `format: uuid`.
 
 ## Common Mistakes to Avoid
@@ -390,7 +398,8 @@ These patterns are deliberate. Do not suggest changes during code review:
 22. ❌ Template files with wrong value types — if schema says `type: array`, use `[]` not `{}`; if `type: string`, use `""` not `{}`
 23. ❌ Adding `format: uuid` to ID properties that hold external system identifiers (Stripe IDs, etc.) — use `x-id-format: external` instead
 24. ❌ Setting `minimum: 0` on page-size properties — page size must be at least 1
-23. ❌ Omitting `tags` from operations — every operation must have at least one tag for API documentation and client generation
+25. ❌ Omitting `tags` from operations — every operation must have at least one tag for API documentation and client generation
+26. ❌ In newly authored / canonical-casing API-version work, introducing a `json:` tag that matches the `db:` tag on a new DB-backed field — under the canonical contract wire is camel and DB is snake, so they differ by design on DB-backed fields. `db: "user_id"` pairs with `json: "userId"`, never `json: "user_id"`. Legacy published constructs may intentionally retain matching `json:` and `db:` tags for wire compatibility and should not be flagged on that basis alone.
 
 ## Checklist for Schema Changes
 
@@ -420,6 +429,89 @@ These patterns are deliberate. Do not suggest changes during code review:
 - [ ] (New property) ID properties have `format: uuid` (or `$ref` to UUID type), OR `x-id-format: external` if they hold non-UUID external identifiers
 - [ ] (New property) Page-size properties have `minimum: 1`
 - [ ] (New endpoint) Operation has at least one `tags` entry matching the construct's top-level tag definition
+- [ ] (New property, canonical-casing version) JSON tag and OpenAPI schema property name are camelCase **regardless of DB backing**; when DB-backed, the snake_case column name lives only in `x-oapi-codegen-extra-tags.db` (and must differ from the `json:` tag)
+- [ ] (New resource version) Pagination envelope uses `pageSize` / `totalCount` (not `page_size` / `total_count`) — the deprecated forms are accepted only within existing API versions until Phase 3 migrates each resource
+
+## Identifier-naming migration (complete; v1beta1 retained for back-compat)
+
+The uniform **camelCase-on-the-wire** identifier-naming migration has landed. Every resource in the §9.1 inventory of [`docs/identifier-naming-migration.md`](docs/identifier-naming-migration.md) now has a canonical-casing target-version directory; Phase 4.A was administratively closed on 2026-04-23 **without physical deletion of the deprecated directories.** The authoritative execution plan remains operative reading for historical context, and §8 of [`docs/identifier-naming-impact-report.md`](docs/identifier-naming-impact-report.md) is the canonical index of the retained legacy directories that external consumers may still pin.
+
+**The contract in one sentence:** *Wire is camelCase everywhere; DB is snake_case; Go fields follow Go idiom; the ORM layer is the sole translation boundary.*
+
+**Phase 4.A non-deletion policy.** The original plan (§10 Agent 4.A) called for physical deletion of each deprecated `schemas/constructs/<old-version>/<resource>/` directory after one release cycle. The maintainer has explicitly overridden that step: the three in-repo consumers (`meshery/meshery`, `layer5io/meshery-cloud`, `layer5labs/meshery-extensions`) have all migrated, but **external consumers that pin deprecated versions cannot be enumerated from the in-repo consumer graph**, and stranding them is not acceptable. Every deprecated directory therefore stays on `master` indefinitely, gated by its `info.x-deprecated: true` + `info.x-superseded-by: <new-version>` markers (the OpenAPI bundler reads those markers to exclude the legacy path from the merged spec, so path-space collisions are avoided). Any future decision to physically remove a deprecated directory is a separate maintainer action — it is not scheduled and will not be implicit in any Phase 4 follow-up.
+
+**What this means for contributors.** Do not recase fields in-place inside a published API version — introduce a new version instead, as during the migration. Do not delete or modify `x-deprecated: true` markers on the retained legacy trees; they are the compatibility signal that documents why the directory is still present. When adding a new resource or a new version of an existing resource, follow the canonical-casing contract at §Casing rules at a glance — the validator and the doc are now aligned.
+
+Baseline metrics and the per-resource consumer graph captured in Phase 0 live under [`validation/baseline/`](validation/baseline/) and can be regenerated with:
+
+```bash
+make baseline-field-count
+make baseline-tag-divergence  MESHERY_REPO=../meshery CLOUD_REPO=../meshery-cloud
+make baseline-consumer-audit  MESHERY_REPO=../meshery CLOUD_REPO=../meshery-cloud
+make baseline-consumer-graph  MESHERY_REPO=../meshery CLOUD_REPO=../meshery-cloud EXTENSIONS_REPO=../meshery-extensions
+```
+
+## Advisory baseline
+
+`make audit-schemas` suppresses violations listed in `build/validate-schemas.advisory-baseline.txt` (one `file\tmessage` per line, `#` comments allowed). This file holds the *pre-canonical* backlog so the `advisory-audit` CI job stays green while Phases 2–3 migrate each resource. **New violations introduced after the baseline was last refreshed block CI** — the baseline is subtractive, not additive, and it is intentional that any new `json:"snake_case"` tag or missing `orgIdQuery` ref on a list endpoint fails the advisory-audit workflow.
+
+To resolve a baselined violation, migrate the affected resource per the [Phase 3 plan](docs/identifier-naming-migration.md#9-phase-3-agents--per-resource-versioned-wire-migration) and then refresh the baseline:
+
+```bash
+make audit-schemas-style-full \
+  | awk '/^  schemas\// { f=$1; next } /^    → / { sub(/^    → /, "", $0); if (f) print f "\t" $0 }' \
+  | sort -u > build/validate-schemas.advisory-baseline.txt
+```
+
+Do not add new entries to the baseline by hand — every entry must correspond to a real audit finding that is deferred to a Phase 3 migration.
+
+## Consumer audit
+
+The consumer audit joins the schemas endpoint index against the routers and RTK Query clients of the downstream repos, producing a per-endpoint coverage and drift report. Three parsers are registered:
+
+- **Gorilla (Go)** — `meshery/meshery`'s `server/router/server.go`.
+- **Echo (Go)** — `meshery-cloud`'s `server/router/router.go` and related handler files.
+- **TypeScript (RTK Query)** — `meshery/meshery/ui/rtk-query`, `meshery-cloud/ui/api` + `meshery-cloud/ui/rtk-query`, and `meshery-extensions/meshmap/src/rtk-query`.
+
+The TS consumer is intentionally regex-based per the Phase 1.F charter; full TypeScript semantic analysis would require the TS compiler. It extracts `builder.query({url, params})` and `builder.mutation({url, params, body})` sites and flags three finding kinds:
+
+- `case-flip` — a wire key that re-introduces SCREAMING or mixed-case identifiers the camelCase schema contract forbids (e.g. `orgID: queryArg.orgId`).
+- `snake-case-wrapper` — a body wrapper keyed in snake_case (`pattern_data`, `k8s_manifest`) instead of the camelCase schema contract.
+- `snake-case-param` — a params key in snake_case outside the reserved pagination envelope (`page_size`, `total_count` are exempt).
+
+Run it against any or all downstream repos:
+
+```bash
+make consumer-audit MESHERY_REPO=../meshery CLOUD_REPO=../meshery-cloud \
+                    EXTENSIONS_REPO=../meshery-extensions
+```
+
+Each `*_REPO` variable is optional; consumers whose path is not provided are silently skipped. Override the TS scan path independently when the UI lives outside the Go checkout via `MESHERY_REPO_UI=` / `CLOUD_REPO_UI=`. Add `VERBOSE=1` to print the full schema-only / consumer-only lists after the summary.
+
+The TS findings section appears below the main audit report and is grouped by repo so reviewers can focus on one downstream at a time.
+
+### CI behavior (blocking)
+
+The `consumer-audit` job in `.github/workflows/schema-audit.yml` runs the audit against all three downstream repos on every `pull_request` event (and on `workflow_dispatch`). Per Phase 4.B of the [identifier-naming migration plan](docs/identifier-naming-migration.md), the job is **blocking**: a non-zero exit from `make consumer-audit` fails CI and blocks the PR. The Phase 1.H advisory wrapper (`set +e` around the make target plus a trailing `exit 0`) has been removed; the Go tool's exit status propagates directly.
+
+The Go tool (`cmd/consumer-audit/main.go`) still exits 0 on pure data divergence — it returns non-zero only on operational errors (missing repo root, bad flag combinations, failed sheet credentials, parser errors). That's intentional: Phase 4.B tightens the CI contract while keeping the tool's local-dev ergonomics unchanged. The practical effect is that divergence counts continue to flow through the PR comment, but any future regression that causes the tool itself to error (e.g., malformed schema, missing endpoint index) now halts the merge rather than being swallowed.
+
+On each run the job:
+
+1. Checks out `meshery/schemas` (the repo under test), then `meshery/meshery`, `layer5io/meshery-cloud`, and `layer5labs/meshery-extensions` under `./_consumer/`. The sibling checkouts use a PAT secret named `CI_CONSUMER_PAT` for private-repo access (`meshery-cloud` and `meshery-extensions` are private). Each sibling checkout has `continue-on-error: true`, so a missing PAT, insufficient scopes, or a temporary GitHub outage simply results in that column being skipped — the job still runs and posts a comment against whatever consumers *are* available. A skipped checkout does not fail the audit itself: the Go tool treats an unset `*_REPO` path as "not provided", not as an error.
+2. Invokes `make consumer-audit MESHERY_REPO=_consumer/meshery CLOUD_REPO=_consumer/meshery-cloud EXTENSIONS_REPO=_consumer/meshery-extensions VERBOSE=1` and pipes the output to both `/tmp/consumer-audit.txt` and the job log via `tee`. A non-zero exit fails the step — and therefore the job.
+3. Uploads the captured output as a build artifact named `consumer-audit-output` (retained for 14 days) so reviewers can download the raw per-endpoint list. This step runs on `if: always()`, so the artifact is available even when the audit step fails.
+4. Posts a summary comment on the PR listing the per-repo totals (`Total Endpoints`, `Schema Backed`, `Consumer Only`) pulled from the audit report table, plus a rolled-up count of TypeScript findings by kind (`case-flip`, `snake-case-wrapper`, `snake-case-param`) and the set of repos those findings span. The comment step also runs on `if: always()` so reviewers see the divergence summary that explains why CI went red. The comment is keyed by an HTML marker and is upserted across runs so repeat pushes to the same PR update the existing comment rather than spamming new ones. Any sibling repo whose checkout failed is surfaced in a "Skipped consumer checkouts" note under the table so a zero in that column cannot be mistaken for perfect alignment.
+
+### Provisioning `CI_CONSUMER_PAT`
+
+The secret is **provisioned** on `meshery/schemas` and authorises all three sibling checkouts. It must be a fine-grained or classic PAT with read access to:
+
+- `meshery/meshery` (public — read access is implicit, but including the repo in the PAT's scope list keeps all three checkouts on a single credential path)
+- `layer5io/meshery-cloud` (private — PAT must be a member of the `layer5io` org with `contents: read`)
+- `layer5labs/meshery-extensions` (private — PAT must be a member of the `layer5labs` org with `contents: read`)
+
+If the secret is ever removed or becomes under-scoped, `actions/checkout@v4` receives an empty `token:` input and falls back to unauthenticated access. The public `meshery/meshery` checkout still succeeds; both private siblings will fail and — thanks to `continue-on-error: true` — be skipped cleanly. The job remains green, the comment surfaces only the public column, and the "Skipped consumer checkouts" note lists which consumers were omitted. When the PAT nears expiry it must be rotated in the repo secrets; the workflow itself needs no change.
 
 ## Questions?
 

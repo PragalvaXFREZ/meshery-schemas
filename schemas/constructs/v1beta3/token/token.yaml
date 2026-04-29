@@ -1,0 +1,92 @@
+type: object
+additionalProperties: false
+description: Represents a user-owned API token or OAuth session.
+required:
+- id
+- userId
+- provider
+properties:
+  id:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: Unique identifier for the token.
+    x-oapi-codegen-extra-tags:
+      db: id
+      json: id
+    x-order: 1
+  userId:
+    $ref: ../../v1beta2/core/api.yml#/components/schemas/Uuid
+    description: UUID of the user who owns the token.
+    x-go-name: UserID
+    x-oapi-codegen-extra-tags:
+      db: user_id
+      json: userId
+    x-order: 2
+  provider:
+    type: string
+    description: Authentication provider associated with the token.
+    x-oapi-codegen-extra-tags:
+      db: provider
+      json: provider
+    maxLength: 500
+    x-order: 3
+  accessToken:
+    type: string
+    description: Access token value.
+    x-oapi-codegen-extra-tags:
+      db: access_token
+      json: accessToken
+    maxLength: 4096
+    x-order: 4
+  refreshToken:
+    type: string
+    description: Refresh token value when applicable.
+    x-oapi-codegen-extra-tags:
+      db: refresh_token
+      json: refreshToken
+    maxLength: 4096
+    x-order: 5
+  name:
+    type: string
+    description: Human-readable token name.
+    x-oapi-codegen-extra-tags:
+      db: name
+      json: name
+    minLength: 1
+    maxLength: 255
+    x-order: 6
+  purpose:
+    type: string
+    description: Purpose for which the token was created.
+    x-oapi-codegen-extra-tags:
+      db: purpose
+      json: purpose
+    maxLength: 500
+    x-order: 7
+  isOauth:
+    type: boolean
+    description: Whether this entry represents an OAuth session.
+    x-go-name: IsOAuth
+    x-oapi-codegen-extra-tags:
+      db: is_oauth
+      json: isOauth
+    x-order: 8
+  createdAt:
+    type: string
+    format: date-time
+    description: Timestamp when the token was created.
+    x-go-type: time.Time
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: created_at
+      json: createdAt
+    x-order: 9
+  updatedAt:
+    type: string
+    format: date-time
+    description: Timestamp when the token was last updated.
+    x-go-type: time.Time
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+      json: updatedAt
+    x-order: 10

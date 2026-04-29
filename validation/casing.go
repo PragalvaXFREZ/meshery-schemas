@@ -7,6 +7,34 @@ import (
 )
 
 // Casing validation helpers — ported from build/validate-schemas.js lines 238–381.
+//
+// Phase 4.D — `knownLowercaseSuffixViolations` retired.
+//
+// Phase 3 migrated all 22 resources in the §9.1 inventory of
+// docs/identifier-naming-migration.md to canonical camelCase wire form,
+// and Phase 4.A administratively closed with every legacy directory
+// carrying `info.x-deprecated: true`. The audit walker
+// (validation/audit.go::walkValidatedConstructSpecs) skips deprecated
+// specs and only processes the latest non-deprecated API version per
+// construct, so the historical lowercase-suffix names enumerated by the
+// old allowlist (`userid`, `orgid`, `workspaceid`, `pageurl`,
+// `avatarurl`, …) can no longer reach the audit on any live resource:
+// the only occurrences that remain in the source tree are inside
+// deprecated legacy directories.
+//
+// Per Agent 4.D's charter the allowlist is retired. The map is left
+// empty so `HasLowercaseSuffix` keeps its public signature and
+// `GetCamelCaseIssues` keeps its caller contract, but the check is a
+// no-op. The `screamingIDRE` detector (retained, never retired)
+// continues to catch `orgID` / `workspaceID`-shaped regressions, which
+// is the forward-looking guardrail that matters going forward — a
+// brand-new all-lowercase compound like `teamid` would instead be
+// caught by Rule 4's `IsBadPathParam` check on path/query parameters
+// and, for schema properties, by whatever stricter lint we grow in a
+// future phase. We intentionally do not retain a pattern-based
+// lowercase-suffix detector here because it would regress on
+// legitimate all-lowercase identifiers like `id` and `url` standing
+// alone.
 
 var (
 	camelCaseRE  = regexp.MustCompile(`^[a-z][a-zA-Z0-9]*$`)
@@ -26,27 +54,31 @@ var (
 
 	// pathParamRE extracts path parameter names from route paths.
 	pathParamRE = regexp.MustCompile(`\{([^}]+)\}`)
-
-	// lowercaseSuffixPattern matches compound words with all-lowercase known
-	// suffixes that should be capitalized (e.g., "userid" → "userId").
-	lowercaseSuffixPattern = regexp.MustCompile(`[a-z](id|ids|url|uri)$`)
 )
 
-// knownLowercaseSuffixViolations lists compound property names that end in
-// a known suffix ("id", "url", "uri") but are incorrectly all-lowercase.
-var knownLowercaseSuffixViolations = map[string]bool{
-	"userid": true, "orgid": true, "teamid": true, "workspaceid": true,
-	"modelid": true, "designid": true, "connectionid": true,
-	"environmentid": true, "credentialid": true, "subscriptionid": true,
-	"invitationid": true, "tokenid": true, "eventid": true, "keyid": true,
-	"roleid": true, "badgeid": true, "planid": true, "schemaid": true,
-	"registrantid": true, "componentid": true, "categoryid": true,
-	"pageurl": true, "avatarurl": true, "snapshoturl": true,
-	"callbackurl": true, "redirecturl": true,
-}
+// knownLowercaseSuffixViolations was an allowlist of historical compound
+// property names that ended in an all-lowercase suffix (`userid`,
+// `orgid`, `pageurl`, …). Phase 4.D retired it: every entry referred to
+// a property that only survived in a deprecated legacy directory, and
+// those directories are skipped by the audit walker (see file-level doc
+// above). The empty map is retained so `HasLowercaseSuffix` keeps its
+// public signature — callers inside `GetCamelCaseIssues` still
+// type-check and simply never append a lowercase-suffix issue. See
+// docs/identifier-naming-migration.md §10 Agent 4.D.
+var knownLowercaseSuffixViolations = map[string]bool{}
 
-// dbMirroredFields are known contract-stable snake_case fields that may not
-// carry explicit db tags but are DB-backed.
+// dbMirroredFields enumerates known snake_case property names that originated
+// as DB column mirrors in pre-canonical-contract schemas.
+//
+// Under the canonical identifier-naming contract (see AGENTS.md § Casing
+// rules at a glance and docs/identifier-naming-migration.md), wire tags are
+// camelCase regardless of DB backing — so these names are no longer treated
+// as an exception to Rule 6. They surface as Rule 6 violations and are
+// routed through the same `--style-debt` severity path as every other
+// legacy snake_case violation. The set remains defined because
+// matcher.go still uses it to distinguish server-generated / DB-mirrored
+// fields from request-side client input when diffing consumer Go types
+// against schema shapes.
 var dbMirroredFields = map[string]bool{
 	"created_at": true, "updated_at": true, "deleted_at": true,
 	"user_id": true, "org_id": true, "organization_id": true,
@@ -151,19 +183,30 @@ type CasingIssue struct {
 	Description string
 }
 
-// GetCamelCaseIssues checks a name for camelCase violations.
-// If allowDBMirrored is true, known DB-backed snake_case fields are exempt.
-// dbTag and gormColumn are the values from x-oapi-codegen-extra-tags.
-func GetCamelCaseIssues(name string, allowDBMirrored bool, dbTag, gormColumn string) []CasingIssue {
-	if allowDBMirrored && isAllowedSnakeCaseProperty(name, dbTag, gormColumn) {
-		return nil
-	}
-
+// GetCamelCaseIssues checks a wire identifier (schema property name,
+// OpenAPI query/header parameter name, or any similar camelCase-expected
+// token) for casing violations.
+//
+// Under the canonical identifier-naming contract (AGENTS.md § Casing rules
+// at a glance, docs/identifier-naming-migration.md §1), wire names are
+// camelCase regardless of DB backing — the snake_case DB column name lives
+// only in `x-oapi-codegen-extra-tags.db`, not on the wire. Accordingly this
+// checker is unconditional: there is no DB-mirroring exception. The
+// legacy-DB-mirrored field set (dbMirroredFields) remains defined for use
+// by matcher.go's consumer-type diff, but it is no longer an exception.
+//
+// The returned issue descriptions are context-agnostic — each caller
+// (Rule 6 for schema/entity properties, Rule 9 for query/header
+// parameters, etc.) is responsible for adding any context-specific
+// guidance on top of the generic message. Severity is determined at the
+// caller via classifyStyleIssue / the --style-debt / --strict-consistency
+// flags.
+func GetCamelCaseIssues(name string) []CasingIssue {
 	var issues []CasingIssue
 
 	if HasUnderscore(name) {
 		issues = append(issues, CasingIssue{
-			Description: "uses snake_case (only DB-backed contract fields may use underscores)",
+			Description: "uses snake_case (must be camelCase)",
 		})
 	}
 	if len(name) > 0 && unicode.IsUpper(rune(name[0])) {
@@ -176,6 +219,11 @@ func GetCamelCaseIssues(name string, allowDBMirrored bool, dbTag, gormColumn str
 			Description: `uses "ID" token (must be "Id")`,
 		})
 	}
+	// HasLowercaseSuffix is a no-op after Phase 4.D retired the
+	// `knownLowercaseSuffixViolations` allowlist (see file-level doc
+	// above). The block is retained so that if a future phase re-adds
+	// a pattern-based detector the issue-construction plumbing is
+	// already in place; until then it never fires.
 	if HasLowercaseSuffix(name) {
 		lc := strings.ToLower(name)
 		for _, suffix := range []string{"ids", "id", "url", "uri"} {
@@ -202,30 +250,6 @@ func GetCamelCaseIssues(name string, allowDBMirrored bool, dbTag, gormColumn str
 	}
 
 	return issues
-}
-
-// isAllowedSnakeCaseProperty returns true if a snake_case name is permitted
-// because it maps to a database column.
-func isAllowedSnakeCaseProperty(name, dbTag, gormColumn string) bool {
-	if dbMirroredFields[name] {
-		return true
-	}
-	if isDBBackedSnakeCaseProperty(name, dbTag, gormColumn) {
-		return true
-	}
-	return false
-}
-
-// isDBBackedSnakeCaseProperty returns true if the property name matches its
-// db or gorm column tag exactly.
-func isDBBackedSnakeCaseProperty(name, dbTag, gormColumn string) bool {
-	if dbTag != "" && IsValidDBTag(dbTag) && HasUnderscore(dbTag) && name == dbTag {
-		return true
-	}
-	if gormColumn != "" && IsValidDBTag(gormColumn) && HasUnderscore(gormColumn) && name == gormColumn {
-		return true
-	}
-	return false
 }
 
 // IsValidOperationID checks if an operationId is lower camelCase verbNoun.

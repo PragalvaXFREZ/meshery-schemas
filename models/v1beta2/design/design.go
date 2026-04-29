@@ -11,6 +11,15 @@ import (
 	catalogv1alpha2 "github.com/meshery/schemas/models/v1alpha2/catalog"
 	component "github.com/meshery/schemas/models/v1beta2/component"
 	relationship "github.com/meshery/schemas/models/v1beta2/relationship"
+	"github.com/oapi-codegen/runtime"
+	openapi_types "github.com/oapi-codegen/runtime/types"
+)
+
+// Defines values for ContentSharePayloadContentType.
+const (
+	Filter  ContentSharePayloadContentType = "filter"
+	Pattern ContentSharePayloadContentType = "pattern"
+	View    ContentSharePayloadContentType = "view"
 )
 
 // DesignPreferences Design-level preferences
@@ -74,6 +83,32 @@ type CatalogRequestsPage struct {
 	TotalCount *int `json:"total_count,omitempty" yaml:"total_count,omitempty"`
 }
 
+// ContentSharePayload Payload for sharing a piece of content (design, filter, or view) with one
+// or more recipients by email. This schema backs both
+// `POST /api/content/design/share` and `POST /api/content/view/share`; the
+// server dispatches on `content_type` to decide which entity to mutate.
+type ContentSharePayload struct {
+	// ContentId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ContentId core.Uuid `json:"content_id" yaml:"content_id"`
+
+	// ContentType The kind of content being shared. Must match the entity the handler
+	// expects — `pattern` and `filter` are valid on the design share
+	// endpoint; `view` is valid on the view share endpoint.
+	ContentType ContentSharePayloadContentType `json:"content_type" yaml:"content_type"`
+
+	// Emails Email addresses of the recipients to share this content with.
+	Emails []openapi_types.Email `json:"emails" yaml:"emails"`
+
+	// Share When true, flip visibility to public and send invitation emails to
+	// the recipients. When false, revert visibility to private.
+	Share bool `json:"share" yaml:"share"`
+}
+
+// ContentSharePayloadContentType The kind of content being shared. Must match the entity the handler
+// expects — `pattern` and `filter` are valid on the design share
+// endpoint; `view` is valid on the view share endpoint.
+type ContentSharePayloadContentType string
+
 // DeletePatternModel defines model for DeletePatternModel.
 type DeletePatternModel struct {
 	ID   core.Id   `json:"id,omitempty" yaml:"id,omitempty"`
@@ -104,19 +139,30 @@ type MesheryPatternDeleteRequestBody struct {
 	Patterns *[]DeletePatternModel `json:"patterns,omitempty" yaml:"patterns,omitempty"`
 }
 
-// MesheryPatternImportRequestBody Choose the method you prefer to upload your  design file. Select 'File Upload' if you have the file on your local system, or 'URL Import' if you have the file hosted online.
+// MesheryPatternImportFilePayload Upload a design file from the local system. Both `file` and `file_name` are required; the server uses the file name to identify the file type (Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design).
+type MesheryPatternImportFilePayload struct {
+	// File Base64-encoded file bytes. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details.
+	File []byte `json:"file" yaml:"file"`
+
+	// FileName The name of the pattern file being imported. Include the extension (e.g. `design.yaml`), as the server uses it to identify the file type.
+	FileName string `json:"file_name" yaml:"file_name"`
+
+	// Name Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.
+	Name *string `json:"name,omitempty" yaml:"name,omitempty"`
+}
+
+// MesheryPatternImportRequestBody Body for POST /api/pattern/import. Consumed by the server as application/json. Exactly one of two variants must be supplied: a File Import carrying base64-encoded bytes plus a file name, or a URL Import naming a remote location the server will fetch. Sending both variants at once, or neither, is rejected with 400.
 type MesheryPatternImportRequestBody struct {
-	// File Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details
-	File *string `json:"file,omitempty" yaml:"file,omitempty"`
+	union json.RawMessage
+}
 
-	// FileName The name of the pattern file being imported.
-	FileName *string `json:"fileName,omitempty" yaml:"fileName,omitempty"`
-
-	// Name Provide a name for your design file. This name will help you identify the file more easily. You can also change the name of your design after importing it.
+// MesheryPatternImportURLPayload Import a design by URL. The server will fetch the resource and derive the file type from the response.
+type MesheryPatternImportURLPayload struct {
+	// Name Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.
 	Name *string `json:"name,omitempty" yaml:"name,omitempty"`
 
-	// Url Provide the URL of the file you want to import. This should be a direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Also, ensure that design is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details
-	Url *string `json:"url,omitempty" yaml:"url,omitempty"`
+	// Url A direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details.
+	Url string `json:"url" yaml:"url"`
 }
 
 // MesheryPatternPage defines model for MesheryPatternPage.
@@ -362,4 +408,66 @@ func (a PatternFile_Metadata) MarshalJSON() ([]byte, error) {
 		}
 	}
 	return json.Marshal(object)
+}
+
+// AsMesheryPatternImportFilePayload returns the union data inside the MesheryPatternImportRequestBody as a MesheryPatternImportFilePayload
+func (t MesheryPatternImportRequestBody) AsMesheryPatternImportFilePayload() (MesheryPatternImportFilePayload, error) {
+	var body MesheryPatternImportFilePayload
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMesheryPatternImportFilePayload overwrites any union data inside the MesheryPatternImportRequestBody as the provided MesheryPatternImportFilePayload
+func (t *MesheryPatternImportRequestBody) FromMesheryPatternImportFilePayload(v MesheryPatternImportFilePayload) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMesheryPatternImportFilePayload performs a merge with any union data inside the MesheryPatternImportRequestBody, using the provided MesheryPatternImportFilePayload
+func (t *MesheryPatternImportRequestBody) MergeMesheryPatternImportFilePayload(v MesheryPatternImportFilePayload) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMesheryPatternImportURLPayload returns the union data inside the MesheryPatternImportRequestBody as a MesheryPatternImportURLPayload
+func (t MesheryPatternImportRequestBody) AsMesheryPatternImportURLPayload() (MesheryPatternImportURLPayload, error) {
+	var body MesheryPatternImportURLPayload
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMesheryPatternImportURLPayload overwrites any union data inside the MesheryPatternImportRequestBody as the provided MesheryPatternImportURLPayload
+func (t *MesheryPatternImportRequestBody) FromMesheryPatternImportURLPayload(v MesheryPatternImportURLPayload) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeMesheryPatternImportURLPayload performs a merge with any union data inside the MesheryPatternImportRequestBody, using the provided MesheryPatternImportURLPayload
+func (t *MesheryPatternImportRequestBody) MergeMesheryPatternImportURLPayload(v MesheryPatternImportURLPayload) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t MesheryPatternImportRequestBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *MesheryPatternImportRequestBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
 }

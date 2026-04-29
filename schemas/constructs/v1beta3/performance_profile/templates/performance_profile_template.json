@@ -1,0 +1,21 @@
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "name": "Sample performance profile",
+  "userId": "00000000-0000-0000-0000-000000000000",
+  "schedule": null,
+  "loadGenerators": ["fortio"],
+  "endpoints": ["http://localhost:8080/"],
+  "serviceMesh": "",
+  "concurrentRequest": 1,
+  "qps": 0,
+  "duration": "30s",
+  "requestHeaders": "",
+  "requestCookies": "",
+  "requestBody": "",
+  "contentType": "",
+  "metadata": {},
+  "lastRun": null,
+  "totalResults": 0,
+  "createdAt": "0001-01-01T00:00:00Z",
+  "updatedAt": "0001-01-01T00:00:00Z"
+}

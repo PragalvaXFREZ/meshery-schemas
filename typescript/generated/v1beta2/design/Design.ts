@@ -37,7 +37,18 @@ export interface paths {
     get: operations["getDesignPatternFile"];
   };
   "/api/content/patterns/upload/{id}": {
-    /** Uploads or replaces the source content for a design. */
+    /**
+     * Replaces the raw source content blob stored alongside a design.
+     * The server (meshery-cloud's UpsertPatternSourceContent handler)
+     * reads the entire request body as opaque bytes via io.ReadAll and
+     * persists them without interpretation, so the content-type is
+     * whatever the uploader sent — `application/octet-stream` is the
+     * canonical choice. The previous declaration reused
+     * MesheryPatternImportRequestBody under multipart/form-data, which
+     * the handler never parses; it remained wired up solely to share
+     * a schema ref with /api/pattern/import. See meshery/schemas#771
+     * for the drift analysis.
+     */
     post: operations["upsertPatternSourceContent"];
   };
   "/api/pattern/import": {
@@ -70,6 +81,16 @@ export interface paths {
   };
   "/api/resource/{resourceType}/share/{resourceId}/{actorType}": {
     get: operations["getResourceAccessActorsByType"];
+  };
+  "/api/content/design/share": {
+    /**
+     * Shares a design (pattern), view, or filter with a list of email
+     * addresses. When `share` is true, the content's visibility is flipped to
+     * public and an invitation email is sent to each recipient. When `share`
+     * is false, visibility is reverted to private. Only the owner of the
+     * content may change its sharing mode.
+     */
+    post: operations["shareDesign"];
   };
   "/api/catalog/requests": {
     get: operations["getCatalogRequest"];
@@ -6479,11 +6500,68 @@ export interface components {
       /** @description Name of the mesherypatternrequestbody. */
       name?: string;
     };
+    /** @description Body for POST /api/pattern/import. Consumed by the server as application/json. Exactly one of two variants must be supplied: a File Import carrying base64-encoded bytes plus a file name, or a URL Import naming a remote location the server will fetch. Sending both variants at once, or neither, is rejected with 400. */
+    MesheryPatternImportRequestBody:
+      | {
+          /**
+           * Format: byte
+           * @description Base64-encoded file bytes. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details.
+           */
+          file: string;
+          /** @description The name of the pattern file being imported. Include the extension (e.g. `design.yaml`), as the server uses it to identify the file type. */
+          file_name: string;
+          /**
+           * @description Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.
+           * @default Untitled Design
+           */
+          name?: string;
+        }
+      | {
+          /**
+           * Format: uri
+           * @description A direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details.
+           */
+          url: string;
+          /**
+           * @description Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.
+           * @default Untitled Design
+           */
+          name?: string;
+        };
     /**
-     * @description Choose the method you prefer to upload your  design file. Select 'File Upload' if you have the file on your local system, or 'URL Import' if you have the file hosted online.
-     * @enum {object}
+     * File Import
+     * @description Upload a design file from the local system. Both `file` and `file_name` are required; the server uses the file name to identify the file type (Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design).
      */
-    MesheryPatternImportRequestBody: "file" | "url";
+    MesheryPatternImportFilePayload: {
+      /**
+       * Format: byte
+       * @description Base64-encoded file bytes. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details.
+       */
+      file: string;
+      /** @description The name of the pattern file being imported. Include the extension (e.g. `design.yaml`), as the server uses it to identify the file type. */
+      file_name: string;
+      /**
+       * @description Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.
+       * @default Untitled Design
+       */
+      name?: string;
+    };
+    /**
+     * URL Import
+     * @description Import a design by URL. The server will fetch the resource and derive the file type from the response.
+     */
+    MesheryPatternImportURLPayload: {
+      /**
+       * Format: uri
+       * @description A direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details.
+       */
+      url: string;
+      /**
+       * @description Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.
+       * @default Untitled Design
+       */
+      name?: string;
+    };
     /** @description Design-level preferences */
     DesignPreferences: {
       /** @description Map of available layers, where keys are layer names. */
@@ -8132,6 +8210,34 @@ export interface components {
       /** @description The users of the resourceaccessactorsresponse. */
       users?: { [key: string]: unknown }[];
     };
+    /**
+     * @description Payload for sharing a piece of content (design, filter, or view) with one
+     * or more recipients by email. This schema backs both
+     * `POST /api/content/design/share` and `POST /api/content/view/share`; the
+     * server dispatches on `content_type` to decide which entity to mutate.
+     */
+    ContentSharePayload: {
+      /**
+       * Format: uuid
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+       */
+      content_id: string;
+      /**
+       * @description The kind of content being shared. Must match the entity the handler
+       * expects — `pattern` and `filter` are valid on the design share
+       * endpoint; `view` is valid on the view share endpoint.
+       *
+       * @enum {string}
+       */
+      content_type: "pattern" | "filter" | "view";
+      /** @description Email addresses of the recipients to share this content with. */
+      emails: string[];
+      /**
+       * @description When true, flip visibility to public and send invitation emails to
+       * the recipients. When false, revert visibility to private.
+       */
+      share: boolean;
+    };
   };
   responses: {
     /** Invalid request body or request param */
@@ -8180,6 +8286,33 @@ export interface components {
     resourceSharePayload: {
       content: {
         "application/json": { [key: string]: unknown };
+      };
+    };
+    /** Body for sharing a design, filter, or view with recipients by email. */
+    contentSharePayload: {
+      content: {
+        "application/json": {
+          /**
+           * Format: uuid
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+           */
+          content_id: string;
+          /**
+           * @description The kind of content being shared. Must match the entity the handler
+           * expects — `pattern` and `filter` are valid on the design share
+           * endpoint; `view` is valid on the view share endpoint.
+           *
+           * @enum {string}
+           */
+          content_type: "pattern" | "filter" | "view";
+          /** @description Email addresses of the recipients to share this content with. */
+          emails: string[];
+          /**
+           * @description When true, flip visibility to public and send invitation emails to
+           * the recipients. When false, revert visibility to private.
+           */
+          share: boolean;
+        };
       };
     };
   };
@@ -16646,7 +16779,18 @@ export interface operations {
       };
     };
   };
-  /** Uploads or replaces the source content for a design. */
+  /**
+   * Replaces the raw source content blob stored alongside a design.
+   * The server (meshery-cloud's UpsertPatternSourceContent handler)
+   * reads the entire request body as opaque bytes via io.ReadAll and
+   * persists them without interpretation, so the content-type is
+   * whatever the uploader sent — `application/octet-stream` is the
+   * canonical choice. The previous declaration reused
+   * MesheryPatternImportRequestBody under multipart/form-data, which
+   * the handler never parses; it remained wired up solely to share
+   * a schema ref with /api/pattern/import. See meshery/schemas#771
+   * for the drift analysis.
+   */
   upsertPatternSourceContent: {
     parameters: {
       path: {
@@ -16684,7 +16828,7 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "multipart/form-data": "file" | "url";
+        "application/octet-stream": string;
       };
     };
   };
@@ -16711,7 +16855,33 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "multipart/form-data": "file" | "url";
+        "application/json":
+          | {
+              /**
+               * Format: byte
+               * @description Base64-encoded file bytes. Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details.
+               */
+              file: string;
+              /** @description The name of the pattern file being imported. Include the extension (e.g. `design.yaml`), as the server uses it to identify the file type. */
+              file_name: string;
+              /**
+               * @description Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.
+               * @default Untitled Design
+               */
+              name?: string;
+            }
+          | {
+              /**
+               * Format: uri
+               * @description A direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Ensure the resource is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details.
+               */
+              url: string;
+              /**
+               * @description Provide a name for your design. This name will help you identify the design later. You can also change the name of your design after importing it.
+               * @default Untitled Design
+               */
+              name?: string;
+            };
       };
     };
   };
@@ -18750,6 +18920,72 @@ export interface operations {
       500: {
         content: {
           "text/plain": string;
+        };
+      };
+    };
+  };
+  /**
+   * Shares a design (pattern), view, or filter with a list of email
+   * addresses. When `share` is true, the content's visibility is flipped to
+   * public and an invitation email is sent to each recipient. When `share`
+   * is false, visibility is reverted to private. Only the owner of the
+   * content may change its sharing mode.
+   */
+  shareDesign: {
+    responses: {
+      /** Content shared. */
+      200: unknown;
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Caller is not the owner of the content. */
+      403: unknown;
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    /** Body for sharing a design, filter, or view with recipients by email. */
+    requestBody: {
+      content: {
+        "application/json": {
+          /**
+           * Format: uuid
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+           */
+          content_id: string;
+          /**
+           * @description The kind of content being shared. Must match the entity the handler
+           * expects — `pattern` and `filter` are valid on the design share
+           * endpoint; `view` is valid on the view share endpoint.
+           *
+           * @enum {string}
+           */
+          content_type: "pattern" | "filter" | "view";
+          /** @description Email addresses of the recipients to share this content with. */
+          emails: string[];
+          /**
+           * @description When true, flip visibility to public and send invitation emails to
+           * the recipients. When false, revert visibility to private.
+           */
+          share: boolean;
         };
       };
     };
