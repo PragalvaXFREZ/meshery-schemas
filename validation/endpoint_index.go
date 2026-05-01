@@ -2,6 +2,8 @@ package validation
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -72,73 +74,176 @@ type schemaIndex struct {
 func buildEndpointIndex(rootDir string) (*schemaIndex, error) {
 	index := &schemaIndex{}
 	if err := walkValidatedConstructSpecs(rootDir, func(spec constructSpec) error {
-		if !spec.APIExists {
-			return nil
-		}
-		if spec.LoadErr != nil {
-			return nil // skip specs that fail to load; schema validator reports the violation
-		}
-		doc := spec.Doc
-		if doc == nil || doc.Paths == nil {
-			return nil
-		}
-		for path, pathItem := range doc.Paths.Map() {
-			if pathItem == nil {
-				continue
-			}
-			for _, method := range httpMethods {
-				op := getOperation(pathItem, method)
-				if op == nil {
-					continue
-				}
-
-				xInternal, err := parseXInternal(op.Extensions)
-				if err != nil {
-					return err
-				}
-
-				ep := schemaEndpoint{
-					Method:      strings.ToUpper(method),
-					Path:        path,
-					OperationID: op.OperationID,
-					Tags:        append([]string(nil), op.Tags...),
-					XInternal:   xInternal,
-					Deprecated:  op.Deprecated,
-					Public:      isExplicitlyPublic(op, doc),
-					Construct:   spec.Construct,
-					Version:     spec.Version,
-					SourceFile:  spec.RelativePath,
-				}
-
-				if op.RequestBody != nil && op.RequestBody.Value != nil {
-					ep.RequestBody = true
-					for _, media := range op.RequestBody.Value.Content {
-						if media != nil && media.Schema != nil {
-							ep.RequestShape = buildSchemaShape(media.Schema)
-							break
-						}
-					}
-				}
-
-				ep.ResponseShape, ep.HasSuccessRef, ep.Has2xx, ep.SuccessStatusCode = pickResponseShape(op)
-				ep.QueryParams = mergeQueryParams(pathItem.Parameters, op.Parameters)
-
-				index.Endpoints = append(index.Endpoints, ep)
-			}
-		}
-		return nil
+		return indexEndpointsFromSpec(spec, index)
 	}); err != nil {
 		return nil, err
 	}
 
-	sort.Slice(index.Endpoints, func(i, j int) bool {
-		if index.Endpoints[i].Path != index.Endpoints[j].Path {
-			return index.Endpoints[i].Path < index.Endpoints[j].Path
-		}
-		return index.Endpoints[i].Method < index.Endpoints[j].Method
-	})
+	sortSchemaEndpoints(index.Endpoints)
 
 	return index, nil
+}
+
+// indexEndpointsFromSpec appends every operation in one loaded api.yml to idx.
+// It intentionally does not skip deprecated specs; whole-tree callers perform
+// that filtering before this seam, while authoring mode must inspect the exact
+// files the author supplied.
+func indexEndpointsFromSpec(spec constructSpec, idx *schemaIndex) error {
+	if idx == nil || !spec.APIExists {
+		return nil
+	}
+	if spec.LoadErr != nil {
+		return nil // schema validation reports load failures.
+	}
+	doc := spec.Doc
+	if doc == nil || doc.Paths == nil {
+		return nil
+	}
+	constructDeprecated := isDeprecatedDoc(doc)
+	for path, pathItem := range doc.Paths.Map() {
+		if pathItem == nil {
+			continue
+		}
+		for _, method := range httpMethods {
+			op := getOperation(pathItem, method)
+			if op == nil {
+				continue
+			}
+
+			xInternal, err := parseXInternal(op.Extensions)
+			if err != nil {
+				return err
+			}
+
+			ep := schemaEndpoint{
+				Method:      strings.ToUpper(method),
+				Path:        path,
+				OperationID: op.OperationID,
+				Tags:        append([]string(nil), op.Tags...),
+				XInternal:   xInternal,
+				Deprecated:  constructDeprecated || op.Deprecated,
+				Public:      isExplicitlyPublic(op, doc),
+				Construct:   spec.Construct,
+				Version:     spec.Version,
+				SourceFile:  spec.RelativePath,
+			}
+
+			if op.RequestBody != nil && op.RequestBody.Value != nil {
+				ep.RequestBody = true
+				for _, media := range op.RequestBody.Value.Content {
+					if media != nil && media.Schema != nil {
+						ep.RequestShape = buildSchemaShape(media.Schema)
+						break
+					}
+				}
+			}
+
+			ep.ResponseShape, ep.HasSuccessRef, ep.Has2xx, ep.SuccessStatusCode = pickResponseShape(op)
+			ep.QueryParams = mergeQueryParams(pathItem.Parameters, op.Parameters)
+
+			idx.Endpoints = append(idx.Endpoints, ep)
+		}
+	}
+	return nil
+}
+
+func sortSchemaEndpoints(endpoints []schemaEndpoint) {
+	sort.Slice(endpoints, func(i, j int) bool {
+		if endpoints[i].Path != endpoints[j].Path {
+			return endpoints[i].Path < endpoints[j].Path
+		}
+		return endpoints[i].Method < endpoints[j].Method
+	})
+}
+
+func sortSchemaEndpointsBySource(endpoints []schemaEndpoint) {
+	sort.Slice(endpoints, func(i, j int) bool {
+		if endpoints[i].SourceFile != endpoints[j].SourceFile {
+			return endpoints[i].SourceFile < endpoints[j].SourceFile
+		}
+		if endpoints[i].Path != endpoints[j].Path {
+			return endpoints[i].Path < endpoints[j].Path
+		}
+		return endpoints[i].Method < endpoints[j].Method
+	})
+}
+
+func buildEndpointIndexFromFiles(rootDir string, files []string) (*schemaIndex, []AuthoringInputFile, error) {
+	index := &schemaIndex{}
+	inputs := make([]AuthoringInputFile, 0, len(files))
+	for _, file := range files {
+		spec, input, err := loadConstructSpec(rootDir, file)
+		if err != nil {
+			return nil, nil, err
+		}
+		if err := indexEndpointsFromSpec(spec, index); err != nil {
+			return nil, nil, err
+		}
+		inputs = append(inputs, input)
+	}
+	sortSchemaEndpointsBySource(index.Endpoints)
+	return index, inputs, nil
+}
+
+func loadConstructSpec(rootDir, path string) (constructSpec, AuthoringInputFile, error) {
+	if strings.TrimSpace(path) == "" {
+		return constructSpec{}, AuthoringInputFile{}, fmt.Errorf("empty api file path")
+	}
+	absPath := path
+	if !filepath.IsAbs(absPath) {
+		absPath = filepath.Join(rootDir, path)
+	}
+	info, err := os.Stat(absPath)
+	if err != nil {
+		return constructSpec{}, AuthoringInputFile{}, fmt.Errorf("%s: %w", path, err)
+	}
+	if info.IsDir() {
+		absPath = filepath.Join(absPath, "api.yml")
+		info, err = os.Stat(absPath)
+		if err != nil {
+			return constructSpec{}, AuthoringInputFile{}, fmt.Errorf("%s: %w", absPath, err)
+		}
+	}
+	if info.IsDir() || filepath.Base(absPath) != "api.yml" {
+		return constructSpec{}, AuthoringInputFile{}, fmt.Errorf("%s is not an api.yml file or construct directory", path)
+	}
+
+	relPath := relativeToRoot(absPath, rootDir)
+	version, construct := versionConstructFromAPIPath(relPath)
+	constructDir := filepath.Dir(absPath)
+	doc, loadErr := loadAPISpec(absPath)
+	deprecated := isDeprecatedDoc(doc)
+
+	spec := constructSpec{
+		Version:      version,
+		Construct:    construct,
+		ConstructDir: constructDir,
+		APIYMLPath:   absPath,
+		RelativePath: relPath,
+		APIExists:    true,
+		Doc:          doc,
+		LoadErr:      loadErr,
+	}
+	input := AuthoringInputFile{
+		Path:       relPath,
+		Version:    version,
+		Construct:  construct,
+		Deprecated: deprecated,
+	}
+	return spec, input, loadErr
+}
+
+func versionConstructFromAPIPath(relPath string) (string, string) {
+	parts := strings.Split(filepath.ToSlash(relPath), "/")
+	for i, part := range parts {
+		if part == "constructs" && i+2 < len(parts) {
+			return parts[i+1], parts[i+2]
+		}
+	}
+	if len(parts) >= 3 {
+		return parts[len(parts)-3], parts[len(parts)-2]
+	}
+	return "", strings.TrimSuffix(filepath.Base(filepath.Dir(relPath)), string(filepath.Separator))
 }
 
 // mergeQueryParams collects query parameters from path-level and

@@ -19,6 +19,7 @@ type consumerEndpoint struct {
 	Path               string      // normalized: starts with /, params as {name}
 	HandlerName        string      // "GetConnections", "(anonymous)", ""
 	HandlerFile        string      // "server/handlers/user_handler.go" (repo-relative)
+	HandlerLine        int         // line number of the handler function
 	RouterFile         string      // where registration lives
 	RouterLine         int         // line number in the router file
 	ImportsSchemas     bool        // handler file imports github.com/meshery/schemas/models/*
@@ -76,6 +77,7 @@ type goTypeInfo struct {
 // handlerInfo summarizes what we learn from a single handler file walk.
 type handlerInfo struct {
 	File           string
+	Line           int
 	ImportsSchemas bool
 	RequestType    *goTypeInfo
 	ResponseType   *goTypeInfo
@@ -101,6 +103,7 @@ func indexHandlers(tree sourceTree, endpoints []consumerEndpoint) []consumerEndp
 	type fileCtx struct {
 		path    string
 		dir     string
+		fset    *token.FileSet
 		file    *ast.File
 		imports map[string]string
 	}
@@ -137,6 +140,7 @@ func indexHandlers(tree sourceTree, endpoints []consumerEndpoint) []consumerEndp
 			ctxs = append(ctxs, fileCtx{
 				path:    p,
 				dir:     path.Dir(p),
+				fset:    fset,
 				file:    file,
 				imports: collectImportMap(file),
 			})
@@ -287,6 +291,7 @@ func indexHandlers(tree sourceTree, endpoints []consumerEndpoint) []consumerEndp
 			req, resp, delegate, qps, writesRaw, successCodes := scanHandlerBody(fn, c.imports, localPkgTypes[c.dir], localPkgAliases[c.dir], funcReturns[c.dir], allFuncReturns, pkgTypes, pkgAliases)
 			handlers[name] = append(handlers[name], handlerInfo{
 				File:               c.path,
+				Line:               c.fset.Position(fn.Pos()).Line,
 				ImportsSchemas:     importsSchemas,
 				RequestType:        req,
 				ResponseType:       resp,
@@ -320,6 +325,7 @@ func indexHandlers(tree sourceTree, endpoints []consumerEndpoint) []consumerEndp
 		}
 		info := candidates[0]
 		ep.HandlerFile = info.File
+		ep.HandlerLine = info.Line
 		ep.ImportsSchemas = info.ImportsSchemas
 		if ep.RequestType == nil {
 			ep.RequestType = info.RequestType

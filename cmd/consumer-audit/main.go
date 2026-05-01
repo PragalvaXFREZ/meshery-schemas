@@ -16,18 +16,21 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 
 	"github.com/meshery/schemas/validation"
 	"github.com/rodaine/table"
 )
 
 func main() {
+	var apiFiles repeatedStringFlag
 	mesheryRepo := flag.String("meshery-repo", "", "Path to a meshery/meshery checkout (Gorilla router + ui/rtk-query)")
 	cloudRepo := flag.String("cloud-repo", "", "Path to a meshery-cloud checkout (Echo router + ui/api + ui/rtk-query)")
 	extensionsRepo := flag.String("extensions-repo", "", "Path to a meshery-extensions checkout (meshmap/src/rtk-query)")
@@ -36,12 +39,51 @@ func main() {
 	verbose := flag.Bool("verbose", false, "Print per-endpoint Schema-only and Consumer-only lists")
 	sheetID := flag.String("sheet-id", "", "Google Sheet ID to reconcile against and update")
 	credentials := flag.String("credentials", "", "Path to Google service-account JSON credentials (required with --sheet-id)")
+	format := flag.String("format", "cli", "Authoring output format: cli, markdown, or json")
+	failOn := flag.String("fail-on", "", "Comma-separated authoring verdicts that should exit 1")
+	outPath := flag.String("out", "", "Write authoring output to this file instead of stdout")
+	hints := flag.Bool("hints", true, "Show nearby-route hints in authoring mode")
+	flag.Var(&apiFiles, "api-file", "Authoring mode api.yml path or construct directory; repeatable")
 	flag.Parse()
+	visited := visitedFlags()
 
 	rootDir, err := findRepoRoot()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "consumer-audit: could not find repository root: %v\n", err)
 		os.Exit(1)
+	}
+
+	if len(apiFiles) > 0 {
+		if *sheetID != "" || *credentials != "" {
+			fmt.Fprintln(os.Stderr, "consumer-audit: --api-file cannot be used with --sheet-id or --credentials")
+			os.Exit(2)
+		}
+		if *extensionsRepo != "" {
+			fmt.Fprintln(os.Stderr, "consumer-audit: --extensions-repo is ignored in authoring mode")
+		}
+		if err := runAuthoring(rootDir, authoringCLIOptions{
+			APIFiles:    apiFiles,
+			MesheryRepo: *mesheryRepo,
+			CloudRepo:   *cloudRepo,
+			Format:      *format,
+			FailOn:      *failOn,
+			Out:         *outPath,
+			Hints:       *hints,
+		}); err != nil {
+			if errors.Is(err, errAuthoringFailed) {
+				os.Exit(1)
+			}
+			fmt.Fprintf(os.Stderr, "consumer-audit: %v\n", err)
+			os.Exit(2)
+		}
+		return
+	}
+
+	for _, name := range []string{"format", "fail-on", "out", "hints"} {
+		if visited[name] {
+			fmt.Fprintf(os.Stderr, "consumer-audit: --%s is only valid in authoring mode (pass --api-file=...).\n", name)
+			os.Exit(2)
+		}
 	}
 
 	if (*sheetID == "") != (*credentials == "") {
@@ -87,6 +129,119 @@ func main() {
 		fmt.Fprintln(out)
 		printDiff(out, result.Tracked, result.NewDeletions)
 	}
+}
+
+type repeatedStringFlag []string
+
+func (f *repeatedStringFlag) String() string {
+	return strings.Join(*f, ",")
+}
+
+func (f *repeatedStringFlag) Set(value string) error {
+	if strings.TrimSpace(value) == "" {
+		return fmt.Errorf("empty value")
+	}
+	*f = append(*f, value)
+	return nil
+}
+
+func visitedFlags() map[string]bool {
+	visited := make(map[string]bool)
+	flag.Visit(func(f *flag.Flag) {
+		visited[f.Name] = true
+	})
+	return visited
+}
+
+type authoringCLIOptions struct {
+	APIFiles    []string
+	MesheryRepo string
+	CloudRepo   string
+	Format      string
+	FailOn      string
+	Out         string
+	Hints       bool
+}
+
+var errAuthoringFailed = errors.New("authoring failure threshold matched")
+
+func runAuthoring(rootDir string, opts authoringCLIOptions) error {
+	format := strings.ToLower(strings.TrimSpace(opts.Format))
+	switch format {
+	case "cli", "markdown", "json":
+	default:
+		return fmt.Errorf("--format must be one of cli, markdown, or json")
+	}
+
+	failOn, err := parseFailOn(opts.FailOn)
+	if err != nil {
+		return err
+	}
+
+	result, err := validation.RunConsumerAuthoringAudit(validation.ConsumerAuthoringOptions{
+		RootDir:     rootDir,
+		APIFiles:    opts.APIFiles,
+		MesheryRepo: opts.MesheryRepo,
+		CloudRepo:   opts.CloudRepo,
+		Hints:       opts.Hints,
+	})
+	if err != nil {
+		return err
+	}
+
+	out := io.Writer(os.Stdout)
+	var file *os.File
+	if opts.Out != "" {
+		file, err = os.Create(resolvePath(rootDir, opts.Out))
+		if err != nil {
+			return fmt.Errorf("create --out file: %w", err)
+		}
+		defer file.Close()
+		out = file
+	}
+
+	switch format {
+	case "json":
+		err = validation.RenderConsumerAuthoringJSON(out, result)
+	case "markdown":
+		err = validation.RenderConsumerAuthoringMarkdown(out, result)
+	default:
+		err = validation.RenderConsumerAuthoringCLI(out, result)
+	}
+	if err != nil {
+		return err
+	}
+	if validation.ConsumerAuthoringHasFailure(result, failOn) {
+		return errAuthoringFailed
+	}
+	return nil
+}
+
+func parseFailOn(value string) ([]string, error) {
+	if strings.TrimSpace(value) == "" {
+		return nil, nil
+	}
+	allowed := map[string]bool{
+		validation.AuthoringVerdictContractMismatch:      true,
+		validation.AuthoringVerdictMissingImplementation: true,
+		validation.AuthoringVerdictXInternalDrift:        true,
+		validation.AuthoringVerdictSecurityDrift:         true,
+		validation.AuthoringVerdictInsufficientEvidence:  true,
+		validation.AuthoringVerdictAdvisoryOnly:          true,
+		validation.AuthoringVerdictScopeMismatch:         true,
+	}
+	var out []string
+	for _, part := range strings.Split(value, ",") {
+		part = strings.TrimSpace(part)
+		if part == "" {
+			continue
+		}
+		if !allowed[part] {
+			return nil, fmt.Errorf("--fail-on contains unknown verdict %q", part)
+		}
+		out = append(out, part)
+	}
+	return out, nil
 }
 
 // findRepoRoot walks up from the current working directory looking for go.mod.

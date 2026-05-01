@@ -163,7 +163,7 @@ baseline-consumer-graph:
 #-----------------------------------------------------------------------------
 # Consumer audit (schemas vs. consumer repos)
 #-----------------------------------------------------------------------------
-.PHONY: consumer-audit consumer-audit-update
+.PHONY: consumer-audit consumer-audit-update consumer-authoring-audit
 
 # Override via:
 #   make consumer-audit MESHERY_REPO=../meshery CLOUD_REPO=../meshery-cloud \
@@ -180,16 +180,37 @@ MESHERY_REPO_UI  ?=
 CLOUD_REPO_UI    ?=
 SHEET_ID         ?=
 CREDENTIALS      ?=
+API_FILES        ?=
+FORMAT           ?= cli
+FAIL_ON          ?=
+OUT              ?=
 
 ## Dry-run the consumer audit without reconciling or updating Google Sheets.
 consumer-audit:
 	@go run ./cmd/consumer-audit \
+		$(foreach f,$(API_FILES),--api-file=$(f)) \
 		$(if $(MESHERY_REPO),--meshery-repo=$(MESHERY_REPO)) \
 		$(if $(CLOUD_REPO),--cloud-repo=$(CLOUD_REPO)) \
 		$(if $(EXTENSIONS_REPO),--extensions-repo=$(EXTENSIONS_REPO)) \
 		$(if $(MESHERY_REPO_UI),--meshery-repo-ui=$(MESHERY_REPO_UI)) \
 		$(if $(CLOUD_REPO_UI),--cloud-repo-ui=$(CLOUD_REPO_UI)) \
+		$(if $(API_FILES),--format=$(FORMAT)) \
+		$(if $(FAIL_ON),--fail-on=$(FAIL_ON)) \
+		$(if $(OUT),--out=$(OUT)) \
 		$(if $(VERBOSE),--verbose)
+
+## Run the consumer-informed authoring check for one or more api.yml files.
+consumer-authoring-audit:
+	@if [ -z "$(API_FILES)" ]; then \
+		echo "consumer-authoring-audit: API_FILES is required"; exit 2; \
+	fi
+	@$(MAKE) --no-print-directory consumer-audit \
+		API_FILES="$(API_FILES)" \
+		MESHERY_REPO="$(MESHERY_REPO)" \
+		CLOUD_REPO="$(CLOUD_REPO)" \
+		FORMAT="$(FORMAT)" \
+		FAIL_ON="$(FAIL_ON)" \
+		OUT="$(OUT)"
 
 ## Reconcile the consumer audit against the canonical Google Sheet and update it.
 consumer-audit-update:
