@@ -291,14 +291,6 @@ components:
       schema:
         $ref: "../../v1alpha1/core/api.yml#/components/schemas/organization_id"
 
-    userId:
-      name: userId
-      in: path
-      required: true
-      description: User ID.
-      schema:
-        $ref: "../../v1alpha1/core/api.yml#/components/schemas/user_uuid"
-
     teamId:
       name: teamId
       in: path
