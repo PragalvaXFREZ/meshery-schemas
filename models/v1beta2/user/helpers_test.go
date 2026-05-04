@@ -3,7 +3,7 @@ package user
 import (
 	"testing"
 
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
 )
 
 func TestPreferenceScan_LegacyEmptySelectedOrganizationId(t *testing.T) {
@@ -27,7 +27,7 @@ func TestPreferenceScan_LegacyNonUUIDSelectedOrganizationId(t *testing.T) {
 }
 
 func TestPreferenceScan_ValidSelectedOrganizationIdPreserved(t *testing.T) {
-	id := uuid.Must(uuid.NewV4())
+	id := uuid.New()
 	p := &Preference{}
 	if err := p.Scan([]byte(`{"selectedOrganizationId":"` + id.String() + `"}`)); err != nil {
 		t.Fatalf("scan with valid UUID should not error, got: %v", err)
