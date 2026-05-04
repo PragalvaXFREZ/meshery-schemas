@@ -7,11 +7,13 @@ required:
   - email
   - firstName
   - lastName
-  - status
+  - avatarUrl
+  - acceptedTermsAt
+  - firstLoginTime
+  - lastLoginTime
+  - preferences
   - createdAt
   - updatedAt
-  - lastLoginTime
-  - deletedAt
 properties:
   id:
     $ref: "../core/api.yml#/components/schemas/Uuid"
@@ -31,7 +33,7 @@ properties:
   provider:
     type: string
     maxLength: 100
-    description: "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)"
+    description: "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, GitHub)"
     example:
       - local
       - github
@@ -179,17 +181,17 @@ properties:
         - workspace manager
         - organization admin
         - user
-    description: List of global roles assigned to the user
+    description: List of global roles assigned to the user.
     example: ["admin", "meshmap"]
     x-oapi-codegen-extra-tags:
-      db: "role_names"
-      json: "roleNames"
+      db: "-"
+      json: "roleNames,omitempty"
   teams:
     type: object
-    description: Teams the user belongs to with role information
+    description: Teams the user belongs to with their assigned role information.
     x-oapi-codegen-extra-tags:
-      db: "teams"
-      json: "teams"
+      db: "-"
+      json: "teams,omitempty"
     properties:
       teamsWithRoles:
         type: array
@@ -197,21 +199,21 @@ properties:
         items:
           type: object
         x-oapi-codegen-extra-tags:
-          db: "teams_with_roles"
-          json: "teamsWithRoles"
+          db: "-"
+          json: "teamsWithRoles,omitempty"
       totalCount:
         type: integer
         description: Total number of team memberships returned for the user.
         minimum: 0
         x-oapi-codegen-extra-tags:
-          db: "total_count"
-          json: "totalCount"
+          db: "-"
+          json: "totalCount,omitempty"
   organizations:
     type: object
-    description: Organizations the user belongs to with role information
+    description: Organizations the user belongs to with their assigned role information.
     x-oapi-codegen-extra-tags:
-      db: "organizations"
-      json: "organizations"
+      db: "-"
+      json: "organizations,omitempty"
     properties:
       organizationsWithRoles:
         type: array
@@ -219,13 +221,13 @@ properties:
         items:
           type: object
         x-oapi-codegen-extra-tags:
-          db: "organizations_with_roles"
-          json: "organizationsWithRoles"
+          db: "-"
+          json: "organizationsWithRoles,omitempty"
       totalCount:
         type: integer
         description: Total number of organization memberships returned for the user.
         minimum: 0
         x-oapi-codegen-extra-tags:
-          db: "total_count"
-          json: "totalCount"
+          db: "-"
+          json: "totalCount,omitempty"
 additionalProperties: false

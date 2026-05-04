@@ -56,7 +56,7 @@ paths:
       x-internal: ["cloud"]
       tags:
         - users
-      operationId: addUserToOrganization
+      operationId: addUserToOrg
       summary: Add user to organization
       description: Adds a user to an organization.
       parameters:
@@ -82,7 +82,7 @@ paths:
       x-internal: ["cloud"]
       tags:
         - users
-      operationId: removeUserFromOrganization
+      operationId: deleteUserFromOrg
       summary: Remove user from organization
       description: Removes a user from an organization.
       parameters:
@@ -127,6 +127,8 @@ paths:
           $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
 
@@ -140,6 +142,8 @@ paths:
       description: Returns recently online users for an organization.
       parameters:
         - $ref: "#/components/parameters/orgId"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
       responses:
         "200":
           description: Recently online organization users
@@ -151,12 +155,14 @@ paths:
                   $ref: "#/components/schemas/User"
         "401":
           $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
 
   /api/users:
     get:
-      x-internal: ["cloud", "meshery"]
+      x-internal: ["cloud"]
       tags:
         - users
       operationId: getUsers
@@ -367,6 +373,9 @@ paths:
       operationId: getRecentlyOnlineUsers
       summary: Get recently online users
       description: Returns recently online users.
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
       responses:
         "200":
           description: Recently online users
@@ -424,6 +433,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AvailableNotificationPreferences"
+        "401":
+          $ref: "#/components/responses/401"
         "500":
           $ref: "#/components/responses/500"
     put:
@@ -744,16 +755,14 @@ components:
       required: true
       description: Organization ID
       schema:
-        type: string
-        format: uuid
+        $ref: "../core/api.yml#/components/schemas/Uuid"
     userId:
       name: userId
       in: path
       required: true
       description: User ID
       schema:
-        type: string
-        format: uuid
+        $ref: "../core/api.yml#/components/schemas/Uuid"
     page:
       name: page
       in: query
@@ -778,8 +787,7 @@ components:
       required: false
       description: Optional team filter when listing organization users
       schema:
-        type: string
-        format: uuid
+        $ref: "../core/api.yml#/components/schemas/Uuid"
 
   securitySchemes:
     jwt:
@@ -1189,10 +1197,8 @@ components:
           additionalProperties: true
           description: The dashboard preferences of the preference.
         selectedOrganizationId:
-          type: string
+          $ref: "../core/api.yml#/components/schemas/Uuid"
           description: ID of the associated selectedOrganization.
-          maxLength: 500
-          format: uuid
         selectedWorkspaceForOrganizations:
           type: object
           additionalProperties:
@@ -1237,10 +1243,8 @@ components:
           additionalProperties: true
           description: The dashboard preferences of the preference.
         selectedOrganizationId:
-          type: string
+          $ref: "../core/api.yml#/components/schemas/Uuid"
           description: ID of the associated selectedOrganization.
-          maxLength: 500
-          format: uuid
         selectedWorkspaceForOrganizations:
           type: object
           additionalProperties:
