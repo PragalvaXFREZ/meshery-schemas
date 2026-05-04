@@ -392,7 +392,7 @@ paths:
 
   /api/identity/users/preferences:
     put:
-      x-internal: ["cloud"]
+      x-internal: ["cloud", "meshery"]
       tags:
         - users
       operationId: updateUserPreference
@@ -678,51 +678,6 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "500":
-          $ref: "#/components/responses/500"
-
-  /api/user/prefs:
-    get:
-      x-internal: ["meshery"]
-      tags:
-        - users
-      operationId: getUserPreferences
-      summary: Get user preferences
-      description: Returns user preferences for the authenticated user.
-      responses:
-        "200":
-          description: User preferences
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Preference"
-        "401":
-          $ref: "#/components/responses/401"
-        "500":
-          $ref: "#/components/responses/500"
-    post:
-      x-internal: ["meshery"]
-      tags:
-        - users
-      operationId: updateUserPreferences
-      summary: Update user preferences
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/PreferencePayload"
-      responses:
-        "200":
-          description: Updated user preferences
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Preference"
         "400":
           $ref: "#/components/responses/400"
         "401":
