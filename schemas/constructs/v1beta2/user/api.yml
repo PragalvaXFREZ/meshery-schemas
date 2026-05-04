@@ -160,34 +160,6 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  /api/users:
-    get:
-      x-internal: ["cloud"]
-      tags:
-        - users
-      operationId: getUsers
-      summary: Get users
-      description: Returns user records visible to the authenticated caller.
-      parameters:
-        - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pageSize"
-        - $ref: "#/components/parameters/search"
-        - $ref: "#/components/parameters/order"
-        - $ref: "#/components/parameters/filter"
-      responses:
-        "200":
-          description: Paginated list of users
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UsersPageForNonAdmin"
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "500":
-          $ref: "#/components/responses/500"
-
   /api/identity/users/profile/{id}:
     get:
       x-internal: ["cloud", "meshery"]
@@ -631,12 +603,12 @@ paths:
 
   /api/identity/users:
     get:
-      x-internal: ["meshery"]
+      x-internal: ["cloud", "meshery"]
       tags:
         - users
-      operationId: listUsers
-      summary: List users
-      description: Lists users visible to the authenticated caller.
+      operationId: getUsers
+      summary: Get users
+      description: Returns user records visible to the authenticated caller.
       parameters:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pageSize"
