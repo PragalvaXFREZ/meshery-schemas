@@ -575,32 +575,6 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  /api/user/profile/{id}:
-    get:
-      x-internal: ["meshery"]
-      tags:
-        - users
-      operationId: getMesheryUserProfileById
-      summary: Get user by ID
-      description: Returns a user profile by ID.
-      parameters:
-        - $ref: "#/components/parameters/id"
-      responses:
-        "200":
-          description: User profile for the requested ID
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "404":
-          $ref: "#/components/responses/404"
-        "500":
-          $ref: "#/components/responses/500"
-
   /api/identity/users:
     get:
       x-internal: ["cloud", "meshery"]
