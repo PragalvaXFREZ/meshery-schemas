@@ -166,9 +166,8 @@ paths:
       tags:
         - users
       operationId: getUsers
-      summary: Get public users
-      description: Returns publicly viewable user records.
-      security: []
+      summary: Get users
+      description: Returns user records visible to the authenticated caller.
       parameters:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pageSize"
@@ -177,7 +176,7 @@ paths:
         - $ref: "#/components/parameters/filter"
       responses:
         "200":
-          description: Paginated list of public users
+          description: Paginated list of users
           content:
             application/json:
               schema:
