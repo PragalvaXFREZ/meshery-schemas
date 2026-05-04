@@ -1,7 +1,7 @@
 {
   "id": "00000000-0000-0000-0000-000000000000",
   "userId": "",
-  "provider": "local",
+  "provider": "Layer5",
   "email": "user@example.com",
   "firstName": "",
   "lastName": "",
@@ -10,7 +10,16 @@
   "bio": "",
   "country": {},
   "region": {},
-  "preferences": {},
+  "preferences": {
+    "anonymousUsageStats": false,
+    "anonymousPerfResults": false,
+    "updatedAt": "0001-01-01T00:00:00Z",
+    "dashboardPreferences": {},
+    "selectedOrganizationId": "00000000-0000-0000-0000-000000000000",
+    "selectedWorkspaceForOrganizations": {},
+    "usersExtensionPreferences": {},
+    "remoteProviderPreferences": {}
+  },
   "acceptedTermsAt": "0001-01-01T00:00:00Z",
   "firstLoginTime": "0001-01-01T00:00:00Z",
   "lastLoginTime": "0001-01-01T00:00:00Z",

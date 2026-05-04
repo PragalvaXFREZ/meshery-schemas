@@ -710,15 +710,15 @@ components:
           type: string
           format: email
           maxLength: 300
-          description: User email address.
+          description: User's email address.
         firstName:
           type: string
           maxLength: 200
-          description: User first name.
+          description: User's first name.
         lastName:
           type: string
           maxLength: 300
-          description: User last name.
+          description: User's last name.
         avatarUrl:
           type: string
           format: uri
@@ -727,18 +727,28 @@ components:
         bio:
           type: string
           maxLength: 1000
-          description: User biography or description.
+          description: User's biography or description.
         country:
           type: object
           additionalProperties: true
-          description: User country information.
+          description: User's country information.
+          x-go-type: "core.Map"
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          x-go-type-skip-optional-pointer: true
         region:
           type: object
           additionalProperties: true
-          description: User region information.
+          description: User's region information.
+          x-go-type: "core.Map"
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          x-go-type-skip-optional-pointer: true
         socials:
           type: array
-          description: Online profiles associated with the user account.
+          description: Online profiles associated with the user's account.
           items:
             $ref: "#/components/schemas/Social"
 
@@ -838,9 +848,8 @@ components:
             type: string
             maxLength: 200
         userId:
-          type: string
+          $ref: "../core/api.yml#/components/schemas/Uuid"
           description: User ID whose notification preferences are updated.
-          format: uuid
 
     Message:
       type: object

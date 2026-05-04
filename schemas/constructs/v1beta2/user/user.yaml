@@ -25,7 +25,7 @@ properties:
   userId:
     type: string
     maxLength: 200
-    description: User identifier (username or external ID)
+    description: User's identifier (username or external ID)
     x-oapi-codegen-extra-tags:
       db: "user_id"
       json: "userId"
@@ -33,12 +33,8 @@ properties:
   provider:
     type: string
     maxLength: 100
-    description: "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, GitHub)"
-    example:
-      - local
-      - github
-      - google
-      - twitter
+    description: "User's authentication provider (e.g., Layer5, Twitter, Facebook, GitHub)"
+    example: Layer5
     x-oapi-codegen-extra-tags:
       db: "provider"
       json: "provider"
@@ -68,7 +64,7 @@ properties:
     type: string
     format: uri
     maxLength: 500
-    description: URL to user's avatar image
+    description: URL to the user's avatar image
     x-oapi-codegen-extra-tags:
       db: "avatar_url"
       json: "avatarUrl"
@@ -80,7 +76,7 @@ properties:
       - inactive
       - pending
       - anonymous
-    description: User account status
+    description: User's account status
     x-oapi-codegen-extra-tags:
       db: "status"
       json: "status"
@@ -97,6 +93,9 @@ properties:
     description: User's country information stored as JSONB
     additionalProperties: true
     x-go-type: "core.Map"
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
     x-go-type-skip-optional-pointer: true
     x-oapi-codegen-extra-tags:
       db: "country"
@@ -106,6 +105,9 @@ properties:
     description: User's region information stored as JSONB
     additionalProperties: true
     x-go-type: "core.Map"
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
     x-go-type-skip-optional-pointer: true
     x-oapi-codegen-extra-tags:
       db: "region"
@@ -113,25 +115,25 @@ properties:
   preferences:
     $ref: "./api.yml#/components/schemas/Preference"
     x-go-type: "Preference"
-    description: User preferences stored as JSONB
+    description: User's preferences stored as JSONB
     x-oapi-codegen-extra-tags:
       db: "preferences"
       json: "preferences"
   acceptedTermsAt:
     $ref: "../core/api.yml#/components/schemas/Time"
-    description: Timestamp when user accepted terms and conditions
+    description: Timestamp when the user accepted terms and conditions
     x-oapi-codegen-extra-tags:
       db: "accepted_terms_at"
       json: "acceptedTermsAt"
   firstLoginTime:
     $ref: "../core/api.yml#/components/schemas/Time"
-    description: Timestamp of user's first login
+    description: Timestamp of the user's first login
     x-oapi-codegen-extra-tags:
       db: "first_login_time"
       json: "firstLoginTime"
   lastLoginTime:
     $ref: "../core/api.yml#/components/schemas/Time"
-    description: Timestamp of user's most recent login
+    description: Timestamp of the user's most recent login
     x-oapi-codegen-extra-tags:
       db: "last_login_time"
       json: "lastLoginTime"
@@ -149,7 +151,7 @@ properties:
       json: "updatedAt"
   socials:
     type: array
-    description: Various online profiles associated with the user account
+    description: Various online profiles associated with the user's account
     # use a custom type to represent a slice of Social structs , the default is []Social which
     # cant be used with sql drivers as we cant add methods to that type
     x-go-type: "UserSocials"
@@ -165,6 +167,9 @@ properties:
     nullable: true
     description: Timestamp when the user record was soft-deleted (null if not deleted)
     x-go-type: "core.NullTime"
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
     x-oapi-codegen-extra-tags:
       db: "deleted_at"
       json: "deletedAt"
