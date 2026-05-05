@@ -362,6 +362,24 @@ paths:
           $ref: "#/components/responses/500"
 
   /api/identity/users/preferences:
+    get:
+      x-internal: ["meshery"]
+      tags:
+        - users
+      operationId: getUserPreference
+      summary: Get user preferences
+      description: Returns preferences for the authenticated user.
+      responses:
+        "200":
+          description: User preferences response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Preference"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
     put:
       x-internal: ["cloud", "meshery"]
       tags:
