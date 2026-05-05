@@ -555,26 +555,6 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  /api/user:
-    get:
-      x-internal: ["meshery"]
-      tags:
-        - users
-      operationId: getCurrentUser
-      summary: Get current user
-      description: Returns the authenticated user profile.
-      responses:
-        "200":
-          description: Current user
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
-        "401":
-          $ref: "#/components/responses/401"
-        "500":
-          $ref: "#/components/responses/500"
-
   /api/identity/users:
     get:
       x-internal: ["cloud", "meshery"]
