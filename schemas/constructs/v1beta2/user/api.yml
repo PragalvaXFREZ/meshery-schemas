@@ -1104,7 +1104,7 @@ components:
 
     PreferencePayload:
       type: object
-      description: Payload for creating or updating user preferences. Contains only client-settable fields.
+      description: Payload for updating user preferences. Contains only client-settable fields; omitted fields are left unchanged by the server.
       properties:
         meshAdapters:
           type: array
