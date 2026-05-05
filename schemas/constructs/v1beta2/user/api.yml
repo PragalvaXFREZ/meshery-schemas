@@ -779,13 +779,28 @@ components:
 
     ProfileDetails:
       type: object
-      description: Profile details for the authenticated user.
-      additionalProperties: true
+      description: Profile details for the authenticated user, including counts of associated resources.
+      additionalProperties: false
+      required:
+        - k8sCount
+        - patternCount
+      properties:
+        k8sCount:
+          type: integer
+          description: Number of Kubernetes contexts registered by the user.
+          minimum: 0
+        patternCount:
+          type: integer
+          description: Number of designs owned by the user.
+          minimum: 0
 
     UserProvider:
-      type: object
-      description: Provider information for the authenticated user.
-      additionalProperties: true
+      type: array
+      description: List of external identity providers linked to the authenticated user's account.
+      items:
+        type: string
+        description: Provider name (e.g., GitHub, Google).
+        maxLength: 100
 
     NotificationPreference:
       type: object
@@ -942,7 +957,15 @@ components:
     PasswordUpdatePayload:
       type: object
       description: Payload for updating a user password.
-      additionalProperties: true
+      additionalProperties: false
+      required:
+        - password
+      properties:
+        password:
+          type: string
+          description: New password for the user account.
+          minLength: 8
+          maxLength: 200
 
     AnonymousUserPayload:
       type: object

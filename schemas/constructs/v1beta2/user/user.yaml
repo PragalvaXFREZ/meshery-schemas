@@ -7,11 +7,10 @@ required:
   - email
   - firstName
   - lastName
-  - avatarUrl
+  - status
   - acceptedTermsAt
   - firstLoginTime
   - lastLoginTime
-  - preferences
   - createdAt
   - updatedAt
 properties:
