@@ -262,6 +262,9 @@ paths:
       operationId: getUserProvider
       summary: Get user provider
       description: Returns provider information for the authenticated user.
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
       responses:
         "200":
           description: User provider information
