@@ -21,7 +21,7 @@ tags:
 paths:
   /api/identity/orgs/{orgId}/users:
     get:
-      x-internal: ["cloud", "meshery"]
+      x-internal: ["cloud"]
       tags:
         - users
       operationId: getUsersForOrg
