@@ -757,7 +757,7 @@ components:
 
     BulkUserDeletePayload:
       type: object
-      description: Payload for deleting multiple users from an organization.
+      description: Payload for deleting multiple users from an organization. User IDs and email addresses are both required and must be index-aligned so audit and response messages can identify each deleted user.
       required:
         - userIds
         - userEmails
@@ -767,15 +767,13 @@ components:
           description: User IDs to delete.
           minItems: 1
           items:
-            type: string
-            format: uuid
+            $ref: "../core/api.yml#/components/schemas/Uuid"
         userEmails:
           type: array
           description: Email addresses for the users to delete.
           minItems: 1
           items:
-            type: string
-            format: email
+            $ref: "../core/api.yml#/components/schemas/Email"
 
     ProfileDetails:
       type: object
@@ -1133,6 +1131,7 @@ components:
           type: object
           additionalProperties:
             type: string
+            format: uuid
           description: The selected workspace for organizations of the preference.
         usersExtensionPreferences:
           type: object
