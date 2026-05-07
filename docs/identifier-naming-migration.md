@@ -4,7 +4,7 @@
 
 | Field | Value |
 |---|---|
-| Status | **Complete (2026-04-23)** — Phases 0–4 landed across `meshery/schemas`, `meshery/meshery`, `layer5io/meshery-cloud`, `meshery/meshkit`, and `layer5io/sistent`; `layer5labs/meshery-extensions` deferred (billing-blocked); see [§21 Status as of 2026-04-28](#21-status-as-of-2026-04-28) for the post-completion landed-PR + tagged-release inventory; legacy directories retained on master (§10 Agent 4.A administrative close) |
+| Status | **Complete (2026-05-06)** — Phases 0–4 landed across all in-scope repos: `meshery/schemas`, `meshery/meshery`, `layer5io/meshery-cloud`, `meshery/meshkit`, `layer5io/sistent`, and `layer5labs/meshery-extensions`; the previously-deferred Kanvas RTK / mesherySdk / collab deferred slice landed on 2026-05-06 (cloud PRs #5206 + #5207, extensions PR #4228); see [§21 Status as of 2026-05-06](#21-status-as-of-2026-05-06) for the full landed-PR inventory; legacy directories retained on master (§10 Agent 4.A administrative close) |
 | Authority | `meshery/schemas/AGENTS.md` after Phase 1.A |
 | Scope | `meshery/schemas`, `meshery/meshery`, `layer5io/meshery-cloud`, `layer5labs/meshery-extensions` |
 | Contract | camelCase on wire, snake_case only at the DB/ORM boundary |
@@ -1097,12 +1097,16 @@ ACCEPTANCE
 | 1.0 | 2026-04-22 | Lee Calcote (via orchestrator) | Initial authoring. camelCase-on-wire decision recorded. Phases 0–4 defined. Agent templates inlined. |
 | 1.1 | 2026-04-23 | Lee Calcote (via Phase 4.A administrative-close agent) | Phase 4.A administratively closed. One-release-cycle safety window overridden by maintainer decision; physical deletion of deprecated `schemas/constructs/v1beta1/` and `schemas/constructs/v1beta2/` directories is **not slated**. Deprecated directories remain on `master` indefinitely behind `x-deprecated: true` / `x-superseded-by:` markers so external consumers that pin legacy versions are not stranded. Status banner (§0), Phase Structure table (§4), Agent 4.A charter (§10), and DAG dependency rules (§11) updated to reflect the non-deletion policy. See [`identifier-naming-impact-report.md`](identifier-naming-impact-report.md) §8 for the canonical index of retained legacy directories. Any future physical deletion is a separate maintainer decision, not scheduled. |
 | 1.2 | 2026-04-28 | Lee Calcote (via Phase 4-7 documentation-sweep agent) | Added [§21 Status as of 2026-04-28](#21-status-as-of-2026-04-28) recording the canonical-naming overhaul as **complete across the in-scope cluster** (`meshery/schemas`, `meshery/meshery`, `layer5io/meshery-cloud`, `meshery/meshkit`, `layer5io/sistent`) with tagged releases (`schemas v1.2.6`, `meshery v1.0.14`, `meshkit v1.0.7`, `sistent v0.20.1`) and **`layer5labs/meshery-extensions` formally deferred** pending lift of the layer5labs billing block. Status header (§0) updated to point at §21 for the post-completion landed-PR and tagged-release inventory. No changes to the contract, the agent charters, or §10 Agent 4.A's non-deletion policy. |
+| 1.3 | 2026-05-06 | Lee Calcote | §21 deferred slice fully landed: `layer5io/meshery-cloud` PRs #5206 (60-file snake→camelCase audit) + #5207 (colViews + typo follow-up) merged 2026-05-06; `layer5labs/meshery-extensions` PR #4228 (Kanvas RTK / mesherySdk / collab user-id deferred slice) merged 2026-05-06. §21 heading updated to reflect full-completion date; deferred table replaced with landed entry; practice-note billing-block caveat removed; status header (§0) updated to reflect all-repos-complete. |
+| 1.4 | 2026-05-06 | Lee Calcote | §21.A reconciled with shipped state: schemas-side `getSubscriptions` `planId` exposure landed via [`meshery/schemas#872`](https://github.com/meshery/schemas/pull/872) (also bundling the §21 layer5labs deferred-slice closure docs). Moved that follow-up out of "still open" into the "What landed" inventory and adjusted §21 callout + §21.A intro from "two remaining cross-repo follow-ups" to one (sistent `useRoomActivity`). #5209 row updated to point at #872 as the unblock for the UI `planId` arg. |
 
 ---
 
-## 21. Status as of 2026-04-28
+## 21. Status as of 2026-05-06
 
-The canonical-naming overhaul has **landed in production** across every in-scope repo except `layer5labs/meshery-extensions`. This section is the authoritative inventory of what shipped and what remains deferred. It supplements §0 (the status banner) and §20 (revision history); it does **not** modify any agent charter, validator rule, or non-deletion policy.
+The canonical-naming overhaul has **landed in production** across every in-scope repo — including `layer5labs/meshery-extensions`, which was previously deferred pending lift of the layer5labs billing block. The billing block has been lifted and all deferred PRs have merged. This section is the authoritative inventory of what shipped. It supplements §0 (the status banner) and §20 (revision history); it does **not** modify any agent charter, validator rule, or non-deletion policy.
+
+> **2026-05-05 update (§21.A):** layer5labs billing block lifted. Deferred slice closed via `layer5labs/meshery-extensions#4228`. See [§21.A](#21a-meshery-extensions-deferred-slice-closed-2026-05-05) below for the full inventory of what landed, the cluster-wide audit follow-ups (`layer5io/meshery-cloud#5206`, `#5207`, `#5209`), the schemas-side `getSubscriptions` `planId` exposure landed via [`meshery/schemas#872`](https://github.com/meshery/schemas/pull/872), and the one remaining cross-repo follow-up (sistent `useRoomActivity` parameter rename).
 
 ### Landed releases
 
@@ -1114,25 +1118,77 @@ The canonical-naming overhaul has **landed in production** across every in-scope
 | `layer5io/meshery-cloud` | (master HEAD; rolling) | Phase-4 tail wire flips for Credential / Organization / Team / MesheryFilter siblings landed; consumer-audit at zero TS findings. No tagged release because `meshery-cloud` ships from `master` continuously. |
 | `layer5io/sistent` | `v0.20.1` | Component prop names aligned to canonical camelCase; identifier-naming impact was small (UI surface, not wire). |
 
-### Deferred
+### Previously Deferred — Now Complete
 
-| Repo | Status | Reason | Re-engagement trigger |
+| Repo | Status | PRs landed | Date |
 |---|---|---|---|
-| `layer5labs/meshery-extensions` | **Deferred** | layer5labs billing block — the org's GitHub Actions / repo write access is administratively suspended; PR landings are blocked until billing is restored. | Billing reinstated → re-run §10 Agent 3 charter for the deferred resources (Kanvas RTK catalog/designs case-flip removal; `SaveDesign` wrapper alignment `pattern_data` → `patternData`; `mesherySdk` event-type casing; `collab/config` user-ID duality). |
+| `layer5labs/meshery-extensions` | **Complete** | PR #4228 — Kanvas RTK / mesherySdk event-type casing / collab user-id duality resolution (all deferred Phase-3 resources shipped) | 2026-05-06 |
+
+The following `layer5io/meshery-cloud` PRs completed the companion snake→camelCase audit that unblocked the extensions deferred slice:
+
+| Repo | PR | Description | Date |
+|---|---|---|---|
+| `layer5io/meshery-cloud` | #5206 | 60-file snake→camelCase wire-format audit (full Phase-3 tail for cloud) | 2026-05-06 |
+| `layer5io/meshery-cloud` | #5207 | colViews + typo follow-up to PR #5206 | 2026-05-06 |
 
 ### What this means in practice
 
 - **For new code in any in-scope repo:** the canonical contract at §1 applies in full. Validator Rule 6 / 45 / 46 in `meshery/schemas` block re-introduction of snake_case wire on canonical-version constructs.
-- **For new code in `meshery-extensions`:** until the billing block lifts, the repo continues to ship pre-canonical wire forms for any field the deferred Phase-3 work would have flipped. Coordinated changes that cross `meshery-extensions` and another in-scope repo must align on the **canonical** form on the meshery-side and accept the temporary case-flip on the extensions-side; do **not** re-introduce snake_case in the in-scope repo to "match" extensions.
+- **For `meshery-extensions`:** the repo now ships canonical camelCase wire forms for all fields covered by the deferred Phase-3 work. No temporary case-flip accommodation is required for coordinated changes crossing `meshery-extensions` and another in-scope repo. See §21.A for the full landed-PR inventory and surfaced out-of-scope debt.
 - **For external consumers pinning a v1beta1 / v1beta2 version:** §10 Agent 4.A guarantees those directories remain on `master` indefinitely under `info.x-deprecated: true` + `info.x-superseded-by:` markers. No physical deletion is scheduled.
 
 ### Documentation refreshed in this status pass
 
-- `meshery/schemas` — this section (§21) plus header status update (§0).
+- `meshery/schemas` — this section (§21) updated to mark full completion; status header (§0) updated; revision 1.3 added to §20.
 - `meshery/meshery` — `docs/content/en/reference/graphql-apis.md` Rakefile reference replaced with the schemas-bundle source-of-truth pointer; `docs/content/en/project/contributing/build-and-release.md` Jekyll versioning steps rewritten for Hugo; `docs/content/en/reference/extensibility/providers/index.md` capability example wire form updated to match `server/models/providers.go` canonical JSON tags.
 - `meshery/meshkit` — verified `docs/event-streaming.md` reflects canonical wire (no further changes; PR #999 already aligned this in Phase 6a).
-- `layer5io/meshery-cloud` — `docs/USER_MODEL_COMPARISON.md` and `docs/USER_SCHEMA_INTEGRATION.md` wire-format snippets updated to camelCase to match `server/models/users.go` post-canonical state.
+- `layer5io/meshery-cloud` — `docs/USER_MODEL_COMPARISON.md` and `docs/USER_SCHEMA_INTEGRATION.md` wire-format snippets updated to camelCase to match `server/models/users.go` post-canonical state; PRs #5206 and #5207 landed 2026-05-06 completing the cloud-side deferred slice.
 - `layer5io/docs` (public docs site) — verified no wire-format references stale (only a v0.8.228 release-note historical reference to `orgID`, which is an immutable historical artifact).
+- `layer5labs/meshery-extensions` — PR #4228 landed 2026-05-06, completing Kanvas RTK / mesherySdk event-type casing / collab user-id duality resolution.
 - Per-repo `AGENTS.md` / `CLAUDE.md` — short status note added pointing to this section.
+
+---
+
+## 21.A. meshery-extensions deferred slice closed (2026-05-05)
+
+The deferred slice on `layer5labs/meshery-extensions` (see §21 row above) re-engaged on 2026-05-05 once the layer5labs billing block lifted. This subsection inventories what landed, the cluster-wide audit follow-ups it surfaced, and the one remaining cross-repo follow-up still open.
+
+### What landed
+
+| PR | Repo | Coverage |
+|---|---|---|
+| [`#4228`](https://github.com/layer5labs/meshery-extensions/pull/4228) | `layer5labs/meshery-extensions` | All four §21 deferred items in a single branch: Kanvas RTK catalog/designs case-flip removal; `SaveDesign` wrapper alignment (already canonical at audit time); `mesherySdk` event-type casing; `collab/config` user-ID duality. **25 files, two commits**, surfaced **12 silently-broken paths** in production extensions UX (HTTP 400 from validation events, sort dropdown was a no-op, `viewIsOwnedByUser` always false, visibility update silently dropped catalog metadata, `anonymousUserId` URL param always empty, `providerUrl` undefined at 4 call sites, catalog cards always defaulted, K8s context lookups silently empty, etc.). |
+| [`#5206`](https://github.com/layer5io/meshery-cloud/pull/5206) | `layer5io/meshery-cloud` | Parallel cloud-side audit that re-engaged the slice. ~130 wire-format reads across 60 UI files plus the `paymentprocessor.Invoice` Go struct + `VerifyRepositoryResponse.FileURL` flips. Test fixtures, RTK args, and one-line drift fixes (the catalog-widget bug that triggered the audit). |
+| [`#5207`](https://github.com/layer5io/meshery-cloud/pull/5207) | `layer5io/meshery-cloud` | Cloud follow-up surfaced by Copilot+Gemini review on the audit: orphan `keychainId` column on the security/keys table; `forecastedAmount` typo + colViews drift on the subscriptions table; NaN-guard on the forecasted-bill arithmetic. |
+| [`#5209`](https://github.com/layer5io/meshery-cloud/pull/5209) | `layer5io/meshery-cloud` | Cloud follow-up: `getSubscriptions` server handler dual-accepts canonical `planId` (was `plan_id` only); UI drops three silently-dropped query args (`organization_id`, `search`, `planId` — the latter unblocked once `@meshery/schemas` is bumped to a release containing #872). |
+| [`#872`](https://github.com/meshery/schemas/pull/872) | `meshery/schemas` | Schemas-side companion to #5209: `getSubscriptions` OpenAPI exposes `planId` (array, query, repeatable, typed as canonical `Uuid`) so the generated `GetSubscriptionsApiArg` carries `planId` and the UI arg landed in #5209 starts filtering server-side as soon as `meshery-cloud` bumps `@meshery/schemas`. The legacy `plan_id` reader on the cloud handler stays in place for the deprecation window per #5209. |
+
+### Cluster-wide canonical-casing follow-ups still open
+
+These are non-blocking but tracked here so they don't slip again:
+
+| Item | Owning repo | Status |
+|---|---|---|
+| `useRoomActivity` hook parameter `provider_url` → `providerUrl`. | `layer5io/sistent` | Open. The cluster-wide canonical contract (row 7) requires this. The current snake parameter forced `meshery-extensions` to keep an outer `provider_url:` key in the call site at `ExpandedDesignerDrawer/index.tsx`, even after the inner read was canonicalized in #4228. When sistent flips, that outer key flips with it. |
+| v1beta1 TypeScript namespace cleanup so `meshery-extensions` `collabActor.ts` can annotate `AwarenessModel.user` against a canonical-cased `User` instead of a stale stub. | `meshery/schemas` | Tracked separately at [`#866`](https://github.com/meshery/schemas/issues/866). Not blocking #4228 — the runtime accesses already work because the type is loose (the package emits `firstName`/`lastName` on `User` per `v1beta2`, but the namespace export only surfaces `v1beta1`). |
+
+### Out-of-scope debt surfaced during the audit
+
+Not part of identifier-naming, but called out so future migrations have a starting inventory:
+
+- **JSONB internal map keys** (`metadata->>'kubernetes_server_id'`, user-prefs `notification_preferences`, etc.). Cluster has dual-read fallbacks in place; flipping to canonical-only requires a coordinated DB migration and is **not** within the identifier-naming charter.
+- **Academy resources are uniformly snake-legacy in `@meshery/schemas`**: ~44 snake reads under `meshery-cloud/ui/components/academy/` plus extensions. Closing this requires a v1beta3 academy schema cut → cloud server flip → UI flip in lockstep — separate workstream.
+- **`MemberFormOne.Firstname/Lastname` webhook payload** (`meshery-cloud/server/models/webhooks_payload.go`): forwarded verbatim to an external help-and-support receiver via `WEBHOOK_HELP_AND_SUPPORT`. Flipping requires external receiver coordination first.
+- **Subscriptions table client-side search**: cloud DAO has no search predicate; the table's search input was vestigial UI removed in #5209. If the product wants search on subscriptions, the DAO needs a `LIKE` predicate (probably across plan name + status + start-date string) and the schema needs a `search` query param.
+
+### Tagged releases
+
+| Repo | Tag | Date | Contents |
+|---|---|---|---|
+| `layer5labs/meshery-extensions` | `v1.0.18-2` (or whichever bump the maintainer chooses) | TBD | Bundles #4228 fixes for the extensions-packages downstream pipeline. (`#4228` merged 2026-05-06; the tagged release is still pending — captures the bundle of #4228 + sistent v0.21.3 bump in #4221 once that lands.) |
+
+End of §21.A.
+
+---
 
 End of plan.
