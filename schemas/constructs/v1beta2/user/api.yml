@@ -596,7 +596,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UsersPageForNonAdmin"
+                $ref: "#/components/schemas/PublicUsersPage"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -661,7 +661,7 @@ components:
       name: userId
       in: path
       required: true
-      description: User ID
+      description: Internal user UUID. This is distinct from external/string user identifiers on user records.
       schema:
         $ref: "../core/api.yml#/components/schemas/Uuid"
     page:
@@ -1043,6 +1043,11 @@ components:
     UsersPageForAdmin:
       type: object
       description: Paginated list of users with organization and team role context
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - data
       properties:
         page:
           type: integer
@@ -1059,12 +1064,17 @@ components:
         data:
           type: array
           items:
-            $ref: "#/components/schemas/User"
+            $ref: "#/components/schemas/UserWithRole"
           description: The data of the userspageforadmin.
 
-    UsersPageForNonAdmin:
+    PublicUsersPage:
       type: object
       description: Paginated list of public user records
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - data
       properties:
         page:
           type: integer
@@ -1081,8 +1091,414 @@ components:
         data:
           type: array
           items:
-            $ref: "#/components/schemas/User"
-          description: The data of the userspagefornonadmin.
+            $ref: "#/components/schemas/PublicUserView"
+          description: Public user records.
+
+    SearchableUsersPage:
+      type: object
+      description: Paginated list of searchable public user records.
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - data
+      properties:
+        page:
+          type: integer
+          description: Current page number of the result set.
+          minimum: 0
+        pageSize:
+          type: integer
+          description: Number of items per page.
+          minimum: 1
+        totalCount:
+          type: integer
+          description: Total number of items available.
+          minimum: 0
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/SearchableUserView"
+          description: Searchable user records.
+
+    PublicUserView:
+      type: object
+      description: Public user fields returned by directory and picker endpoints.
+      required:
+        - userId
+        - username
+      properties:
+        userId:
+          $ref: "../core/api.yml#/components/schemas/Uuid"
+          description: User ID.
+        username:
+          type: string
+          description: Public username.
+          maxLength: 300
+        avatarUrl:
+          type: string
+          format: uri
+          description: User avatar URL.
+          maxLength: 500
+
+    SearchableUserView:
+      type: object
+      description: User fields returned by user search endpoints.
+      properties:
+        id:
+          $ref: "../core/api.yml#/components/schemas/Uuid"
+          description: User record ID.
+        userId:
+          type: string
+          description: User ID as a searchable string.
+          maxLength: 200
+          x-id-format: external
+        username:
+          type: string
+          description: Public username.
+          maxLength: 300
+        email:
+          type: string
+          format: email
+          description: User email.
+          maxLength: 300
+        avatarUrl:
+          type: string
+          format: uri
+          description: User avatar URL.
+          maxLength: 500
+
+    OrganizationsWithCount:
+      type: object
+      description: Organization memberships with total count.
+      required:
+        - organizationsWithRoles
+        - totalCount
+      properties:
+        organizationsWithRoles:
+          type: array
+          description: Organization memberships and roles.
+          items:
+            $ref: "#/components/schemas/OrganizationWithUserRoles"
+        totalCount:
+          type: integer
+          description: Total number of organization memberships.
+          minimum: 0
+
+    TeamsWithCount:
+      type: object
+      description: Team memberships with total count.
+      required:
+        - teamsWithRoles
+        - totalCount
+      properties:
+        teamsWithRoles:
+          type: array
+          description: Team memberships and roles.
+          items:
+            $ref: "#/components/schemas/TeamWithUserRoles"
+        totalCount:
+          type: integer
+          description: Total number of team memberships.
+          minimum: 0
+
+    UserListingOrganizationRoles:
+      type: object
+      description: Organization role names attached to a user listing row.
+      properties:
+        roleNames:
+          type: array
+          description: Organization role names.
+          x-go-type: pq.StringArray
+          x-go-type-import:
+            path: github.com/lib/pq
+            name: pq
+          items:
+            type: string
+
+    UserWithRole:
+      type: object
+      description: User listing row with role context.
+      required:
+        - createdAt
+        - updatedAt
+        - lastLoginTime
+        - joinedAt
+        - deletedAt
+      properties:
+        id:
+          $ref: "../core/api.yml#/components/schemas/Uuid"
+          description: User record ID.
+          x-oapi-codegen-extra-tags:
+            db: "id"
+        userId:
+          $ref: "../core/api.yml#/components/schemas/Uuid"
+          description: User ID.
+          x-oapi-codegen-extra-tags:
+            db: "user_id"
+        username:
+          type: string
+          description: Public username.
+          maxLength: 300
+          x-oapi-codegen-extra-tags:
+            db: "username"
+        email:
+          type: string
+          format: email
+          description: User email.
+          maxLength: 300
+          x-oapi-codegen-extra-tags:
+            db: "email"
+        firstName:
+          type: string
+          description: User first name.
+          maxLength: 200
+          x-oapi-codegen-extra-tags:
+            db: "first_name"
+        lastName:
+          type: string
+          description: User last name.
+          maxLength: 300
+          x-oapi-codegen-extra-tags:
+            db: "last_name"
+        status:
+          type: string
+          description: User status.
+          maxLength: 100
+        roleNames:
+          type: array
+          description: Role names attached to the user.
+          x-go-type: pq.StringArray
+          x-go-type-import:
+            path: github.com/lib/pq
+            name: pq
+          items:
+            type: string
+          x-oapi-codegen-extra-tags:
+            db: "role_names"
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the user was created.
+          x-oapi-codegen-extra-tags:
+            db: "created_at"
+        updatedAt:
+          type: string
+          format: date-time
+          description: Legacy listing timestamp currently scanned from the created_at projection.
+          x-oapi-codegen-extra-tags:
+            db: "created_at"
+        lastLoginTime:
+          type: string
+          format: date-time
+          description: Timestamp of the user's most recent login.
+          x-oapi-codegen-extra-tags:
+            db: "last_login_time"
+        joinedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the user joined the team.
+          x-oapi-codegen-extra-tags:
+            db: "joined_at"
+        deletedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the listing row was deleted.
+          x-go-type: sql.NullTime
+          x-go-type-import:
+            path: database/sql
+            name: sql
+          x-oapi-codegen-extra-tags:
+            db: "deleted_at"
+        avatarUrl:
+          type: string
+          format: uri
+          description: User avatar URL.
+          maxLength: 500
+          x-oapi-codegen-extra-tags:
+            db: "avatar_url"
+        preferences:
+          type: object
+          description: User preferences.
+          additionalProperties: true
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: "preferences"
+        organizationWithUserRoles:
+          $ref: "#/components/schemas/UserListingOrganizationRoles"
+          description: Organization role context for the listing row.
+
+    TeamWithUserRoles:
+      type: object
+      description: Team membership row with role names.
+      required:
+        - id
+        - name
+        - description
+        - owner
+        - metadata
+        - createdAt
+        - updatedAt
+        - deletedAt
+        - roleNames
+      properties:
+        id:
+          $ref: "../core/api.yml#/components/schemas/Uuid"
+          description: Team ID.
+          x-oapi-codegen-extra-tags:
+            db: "id"
+        name:
+          type: string
+          description: Team name.
+          maxLength: 300
+          x-oapi-codegen-extra-tags:
+            db: "name"
+        description:
+          type: string
+          description: Team description.
+          maxLength: 1000
+          x-oapi-codegen-extra-tags:
+            db: "description"
+        owner:
+          $ref: "../core/api.yml#/components/schemas/Uuid"
+          description: Team owner ID.
+          x-oapi-codegen-extra-tags:
+            db: "owner"
+        metadata:
+          type: object
+          description: Team metadata.
+          additionalProperties: true
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: "metadata"
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the team was created.
+          x-oapi-codegen-extra-tags:
+            db: "created_at"
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the team was updated.
+          x-oapi-codegen-extra-tags:
+            db: "updated_at"
+        deletedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the team was deleted.
+          x-go-type: sql.NullTime
+          x-go-type-import:
+            path: database/sql
+            name: sql
+          x-oapi-codegen-extra-tags:
+            db: "deleted_at"
+        roleNames:
+          type: array
+          description: Team role names.
+          items:
+            type: string
+          x-oapi-codegen-extra-tags:
+            db: "role_names"
+
+    OrganizationWithUserRoles:
+      type: object
+      description: Organization membership row with role names.
+      required:
+        - id
+        - name
+        - description
+        - country
+        - region
+        - owner
+        - metadata
+        - createdAt
+        - updatedAt
+        - deletedAt
+        - roleNames
+      properties:
+        id:
+          $ref: "../core/api.yml#/components/schemas/Uuid"
+          description: Organization ID.
+          x-oapi-codegen-extra-tags:
+            db: "id"
+        name:
+          type: string
+          description: Organization name.
+          maxLength: 300
+          x-oapi-codegen-extra-tags:
+            db: "name"
+        description:
+          type: string
+          description: Organization description.
+          maxLength: 1000
+          x-oapi-codegen-extra-tags:
+            db: "description"
+        country:
+          type: string
+          description: Organization country.
+          maxLength: 200
+          x-oapi-codegen-extra-tags:
+            db: "country"
+        region:
+          type: string
+          description: Organization region.
+          maxLength: 200
+          x-oapi-codegen-extra-tags:
+            db: "region"
+        owner:
+          $ref: "../core/api.yml#/components/schemas/Uuid"
+          description: Organization owner ID.
+          x-oapi-codegen-extra-tags:
+            db: "owner"
+        metadata:
+          type: object
+          description: Organization metadata.
+          additionalProperties: true
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+            name: core
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: "metadata"
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the organization was created.
+          x-oapi-codegen-extra-tags:
+            db: "created_at"
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the organization was updated.
+          x-oapi-codegen-extra-tags:
+            db: "updated_at"
+        deletedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the organization was deleted.
+          x-go-type: sql.NullTime
+          x-go-type-import:
+            path: database/sql
+            name: sql
+          x-oapi-codegen-extra-tags:
+            db: "deleted_at"
+        roleNames:
+          type: array
+          description: Organization role names.
+          items:
+            type: string
+          x-oapi-codegen-extra-tags:
+            db: "role_names"
 
     Preference:
       x-generate-db-helpers: true
@@ -1134,7 +1550,6 @@ components:
           type: object
           additionalProperties:
             type: string
-            format: uuid
           description: The selected workspace for organizations of the preference.
         usersExtensionPreferences:
           type: object
